@@ -177,5 +177,5 @@ module.exports = function ({ db, cfg, msg, auth, log }) {
     return { seq: row.seq, name: SEQ[row.seq] ? SEQ[row.seq].name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || '{}')), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
   }
 
-  return { start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async s => { await loadSettings(); await setKv('lead-settings', Object.assign({}, current, s)); await loadSettings(); }, ukAt, pick };
+  return { series: SEQ, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async s => { await loadSettings(); await setKv('lead-settings', Object.assign({}, current, s)); await loadSettings(); }, ukAt, pick };
 };
