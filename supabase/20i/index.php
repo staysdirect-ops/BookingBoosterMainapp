@@ -47,7 +47,8 @@ if ($res === false) {
   exit;
 }
 http_response_code(curl_getinfo($ch, CURLINFO_RESPONSE_CODE));
-$drop = ['content-length', 'content-encoding', 'transfer-encoding', 'connection', 'keep-alive', 'content-type', 'x-bb-type', 'date', 'server', 'vary', 'alt-svc', 'cf-ray', 'cf-cache-status', 'strict-transport-security-x'];
+// Supabase marks every function reply with a sandbox content security policy; it is meant for its own domain, not ours.
+$drop = ['content-length', 'content-encoding', 'transfer-encoding', 'connection', 'keep-alive', 'content-type', 'x-bb-type', 'date', 'server', 'vary', 'alt-svc', 'cf-ray', 'cf-cache-status', 'content-security-policy', 'x-served-by'];
 $type = null; $plain = null;
 foreach ($got as [$k, $v]) {
   if ($k === 'x-bb-type') { $type = $v; continue; }
