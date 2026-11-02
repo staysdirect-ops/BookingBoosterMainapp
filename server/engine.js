@@ -1,13 +1,17 @@
 // Runs the shared business rules (web/src/store.js + store-ext.js) on the server, one sandbox per workspace.
 // The same code runs in the browser for instant feedback; the server's result is the one that is saved.
 'use strict';
-const vm = require('vm');
 const fs = require('fs');
 const path = require('path');
 
 const SRC = path.join(__dirname, '..', 'web', 'src');
 const code = ['store.js', 'store-ext.js'].map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n;\n');
-const script = new vm.Script(code, { filename: 'bb-rules.js' });
+// The rules run inside a function whose parameters stand in for the browser globals they look for, so they see
+// their own window and nothing of the server (no storage, no network). A plain function, rather than node:vm,
+// because Supabase's Edge Runtime does not support vm.Script.
+const SHADOW = ['localStorage', 'sessionStorage', 'BroadcastChannel', 'document', 'navigator', 'location', 'fetch', 'XMLHttpRequest', 'WebSocket', 'process', 'require', 'Deno', 'globalThis', 'self', 'global'];
+const PARAMS = ['window', '__BB_BOOT__', 'console', 'Date', 'Math', 'JSON', 'Intl', 'setTimeout', 'clearTimeout'].concat(SHADOW);
+const rules = new Function(...PARAMS, code + '\n//# sourceURL=bb-rules.js');
 
 // Keys an action may never receive (prototype pollution through Object.assign patches).
 function clean(v, depth = 0) {
@@ -26,8 +30,7 @@ function sandbox(state) {
   const ctx = { console, Date, Math, JSON, Intl, setTimeout: () => 0, clearTimeout: () => {} };
   ctx.window = ctx;
   ctx.__BB_BOOT__ = { state };
-  vm.createContext(ctx);
-  script.runInContext(ctx);
+  rules.call(ctx, ctx, ctx.__BB_BOOT__, console, Date, Math, JSON, Intl, ctx.setTimeout, ctx.clearTimeout, ...SHADOW.map(() => undefined));
   return ctx.BB;
 }
 

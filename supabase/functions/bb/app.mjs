@@ -11287,12 +11287,13 @@ var require_files = __commonJS({
 var require_engine = __commonJS({
   "server/engine.js"(exports, module) {
     var __dirname = "/app/server";
-    var vm = __require("vm");
     var fs = require_vfs();
     var path = __require("path");
     var SRC = path.join(__dirname, "..", "web", "src");
     var code = ["store.js", "store-ext.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
-    var script = new vm.Script(code, { filename: "bb-rules.js" });
+    var SHADOW = ["localStorage", "sessionStorage", "BroadcastChannel", "document", "navigator", "location", "fetch", "XMLHttpRequest", "WebSocket", "process", "require", "Deno", "globalThis", "self", "global"];
+    var PARAMS = ["window", "__BB_BOOT__", "console", "Date", "Math", "JSON", "Intl", "setTimeout", "clearTimeout"].concat(SHADOW);
+    var rules = new Function(...PARAMS, code + "\n//# sourceURL=bb-rules.js");
     function clean(v, depth = 0) {
       if (depth > 8) return null;
       if (Array.isArray(v)) return v.slice(0, 500).map((x) => clean(x, depth + 1));
@@ -11312,8 +11313,7 @@ var require_engine = __commonJS({
       } };
       ctx.window = ctx;
       ctx.__BB_BOOT__ = { state };
-      vm.createContext(ctx);
-      script.runInContext(ctx);
+      rules.call(ctx, ctx, ctx.__BB_BOOT__, console, Date, Math, JSON, Intl, ctx.setTimeout, ctx.clearTimeout, ...SHADOW.map(() => void 0));
       return ctx.BB;
     }
     function seedDemo() {
