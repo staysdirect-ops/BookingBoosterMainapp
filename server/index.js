@@ -58,6 +58,7 @@ const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
 const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
+const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, log });
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
 
@@ -464,6 +465,7 @@ async function route(req, res) {
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
+  if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) return await campaignsRoute(req, res, p, m);
   if (p === '/admin/backup') {
     if (!await isAdmin(req)) return notFound(res);
     const name = 'bookingbooster-' + new Date().toISOString().slice(0, 10) + '.json';
@@ -658,7 +660,7 @@ async function adminPage(req, res, note) {
     '<label>Walkthrough call joining link' + inp('meeting_url', st.meeting_url, 'https://meet.google.com/…') + '</label><label>Page where people book a walkthrough' + inp('book_call_url', st.book_call_url, 'https://…/book-call') + '</label>' +
     '<label>Sample audit report page' + inp('sample_report_url', st.sample_report_url, 'https://…/sample-report') + '</label><button>Save</button></form></details>';
   send(res, 200, authPage('Team', '<h1>Leads and accounts</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + '<p>' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.</p>' +
-    '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
+    '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> · the designed campaigns to leads, ready as drafts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
     '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div>' +
     '<div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map(a => '<tr><td>' + d(a.created_at) + '</td><td>' + E(a.slug) + '</td><td>' + E(a.plan || '') + '</td><td>' + E(a.billing_status || '') + '</td></tr>').join('') + '</table></div>', true), 'text/html; charset=utf-8');
 }
@@ -683,6 +685,46 @@ async function adminPost(req, res, p) {
     await leads.advance(id); return await adminPage(req, res, mm[2] === 'stop' ? 'Emails stopped.' : 'Sent.');
   }
   return notFound(res);
+}
+/* ---------------- team email campaigns to leads (server/campaigns.js) ---------------- */
+async function campaignsRoute(req, res, p, m) {
+  if (!await isAdmin(req)) return notFound(res);
+  const mm = p.match(/^\/admin\/campaigns(?:\/([a-z0-9-]+))?(?:\/(preview|save|test|send))?$/); if (!mm) return notFound(res);
+  const key = mm[1], act = mm[2], c = key && campaigns.byKey(key);
+  if (key && !c) return notFound(res);
+  if (!key) return send(res, 200, await campaignsPage(), 'text/html; charset=utf-8');
+  if (act === 'preview') return send(res, 200, (await campaigns.preview(key)).html, 'text/html; charset=utf-8', { 'cache-control': 'no-store', 'content-security-policy': "default-src 'none'; img-src * data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" });
+  if (m !== 'POST') return send(res, 200, await campaignPage(key), 'text/html; charset=utf-8');
+  const f = await formBody(req); let note = '', err = '';
+  if (act === 'save') { await campaigns.save(key, f); note = 'Saved. Still a draft: nothing has been sent.'; }
+  if (act === 'test') { const u = await me(req); await campaigns.save(key, f); const r = await campaigns.sendTest(key, u.email); r.ok ? note = 'Test sent to ' + u.email + '. Nobody else got it.' : err = r.error; }
+  if (act === 'send') { const r = await campaigns.send(key, f.confirm); r.ok ? note = 'Sent to ' + r.sent + (r.failed ? ', ' + r.failed + ' failed (press send again to retry them)' : '') + '.' : err = r.error; }
+  return send(res, 200, await campaignPage(key, note, err), 'text/html; charset=utf-8');
+}
+const campStatus = (o) => o.s.status === 'sent' ? '<b style="color:#12805C">Sent</b> ' + new Date(o.s.sent_at).toLocaleDateString('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short' }) + ' to ' + Object.keys(o.s.sent).length
+  : o.blocked.length ? '<b style="color:#B4540A">Draft</b> · needs details' : '<b style="color:#2747F5">Draft</b> · ready to send';
+async function campaignsPage() {
+  const all = await campaigns.overview();
+  const rows = all.map(o => '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td><a href="/admin/campaigns/' + o.c.key + '"><b>' + E(o.c.name) + '</b></a><br><small>' + E(o.c.about) + '</small></td><td><small>' + E(o.s.subject) + '</small></td><td><small>' + E(o.c.audience) + '</small><br><b>' + o.count + '</b> <small>can get it now</small></td><td><small>' + E(o.c.when) + '</small></td><td>' + campStatus(o) + '</td></tr>').join('');
+  const auto = Object.values(leads.series || {}).map(sq => '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td><b>' + E(sq.name) + '</b></td><td><small>' + sq.steps.map(st => E(st.key) + ': ' + E(typeof st.subject === 'function' ? '' : st.subject)).join('<br>') + '</small></td></tr>').join('');
+  return authPage('Email campaigns', '<p><a href="/admin">← Leads and accounts</a></p><h1>Email campaigns</h1>' +
+    '<p>The designed campaigns to leads, loaded as drafts. <b>Nothing goes out until you open one, send yourself a test and confirm the send.</b> People who unsubscribed, signed up or had their emails stopped are always left out.</p>' +
+    '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">Campaign</th><th align="left">Subject</th><th align="left">Who gets it</th><th align="left">When to send</th><th align="left">Status</th></tr>' + rows + '</table></div>' +
+    '<details class="card"><summary><b>Automatic emails already running</b></summary><p><small>These send by themselves from each lead form (see Leads) and to hosts after sign-up (welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed). Listed here so you can see everything in one place.</small></p><table style="width:100%;font-size:13px">' + auto + '</table></details>', true);
+}
+async function campaignPage(key, note, err) {
+  const o = (await campaigns.overview()).find(x => x.c.key === key), { c, s } = o;
+  const inp = (n, v, label, type) => '<label>' + E(label) + '<input name="' + n + '" value="' + E(v || '') + '"' + (type ? ' type="' + type + '"' : '') + ' style="width:100%"></label>';
+  const sent = s.status === 'sent';
+  const skipped = Object.entries(o.skipped).map(([r, n]) => n + ' ' + r).join(' · ');
+  const form = sent ? '' : '<form method="post" action="/admin/campaigns/' + key + '/save" class="card">' + inp('subject', s.subject, 'Subject') + inp('preview', s.preview, 'Preview line (shown after the subject in the inbox)') +
+    c.needs.map(([k, label, , type]) => inp(k, s.settings[k], label, type)).join('') + '<p><small>Fields in {{double_braces}} are filled in for each person.</small></p><button>Save draft</button> <button formaction="/admin/campaigns/' + key + '/test" class="sec">Save and send me a test</button></form>';
+  const sendBox = sent ? '' : '<form method="post" action="/admin/campaigns/' + key + '/send" class="card"><b>Send for real</b><p><small>' +
+    (o.blocked.length ? E(o.blocked.join(' ')) : !s.tests ? 'Send yourself a test first.' : 'This goes to <b>' + o.count + '</b> people now and cannot be undone. Type ' + o.count + ' to confirm.') + '</small></p>' +
+    (o.blocked.length || !s.tests || !o.count ? '' : inp('confirm', '', 'Number of people') + '<button>Send to ' + o.count + ' people</button>') + '</form>';
+  return authPage(c.name, '<p><a href="/admin/campaigns">← Email campaigns</a></p><h1>' + E(c.name) + '</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + (err ? '<p class="err" style="color:#B42318">' + E(err) + '</p>' : '') +
+    '<p>' + campStatus(o) + ' · ' + E(c.about) + '</p><p><small><b>Who:</b> ' + E(c.audience) + ' · <b>' + o.count + '</b> can get it now' + (skipped ? ' · left out: ' + E(skipped) : '') + '<br><b>When:</b> ' + E(c.when) + '</small></p>' +
+    form + sendBox + '<div class="card"><b>Preview</b> <small>(' + (o.count ? 'with the first person’s details' : 'with sample details') + ', <a href="/admin/campaigns/' + key + '/preview" target="_blank">open full size</a>)</small><iframe src="/admin/campaigns/' + key + '/preview" style="width:100%;height:900px;border:1px solid #E4E7F0;border-radius:8px;margin-top:8px" sandbox></iframe></div>', true);
 }
 async function lead(req, res) {
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST', 'access-control-allow-headers': 'content-type' };
