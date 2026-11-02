@@ -35,7 +35,19 @@ test.after(() => { srv.stop(); icsSrv.close(); fs.rmSync(DATA, { recursive: true
 test('marketing pages, robots and llms.txt', async () => {
   const home = await call('/'); assert.equal(home.status, 200); assert.match(home.body, /bookingbooster/i);
   const robots = await call('/robots.txt'); assert.match(robots.body, /GPTBot/); assert.match(robots.body, /Sitemap:/);
-  const llms = await call('/llms.txt'); assert.equal(llms.status, 200);
+  const llms = await call('/llms.txt'); assert.equal(llms.status, 200); assert.match(llms.body, /£997/); assert.match(llms.body, /## Questions/);
+  // Crawlable words and structured data, without running JavaScript
+  assert.match(home.body, /<h1>More direct bookings/); assert.match(home.body, /application\/ld\+json/);
+  const ld = JSON.parse(home.body.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
+  const types = ld['@graph'].map(x => x['@type']); for (const t of ['Organization', 'WebSite', 'Service', 'FAQPage']) assert.ok(types.includes(t), t);
+  assert.doesNotMatch(home.body, /01234567|Sample Street/);
+  const map = await call('/sitemap.xml'); assert.doesNotMatch(map.body, /\/demo</); assert.match(map.body, /\/help</);
+  const help = await call('/help'); assert.doesNotMatch(help.body, /noindex/);
+});
+
+test('marketing FAQ for crawlers matches the FAQ on the page', () => {
+  const site = fs.readFileSync(path.join(__dirname, '..', 'web', 'src', 'site.js'), 'utf8');
+  for (const [q, a] of require('../server/marketing').FAQ) { assert.ok(site.includes(q), q); assert.ok(site.includes(a), a.slice(0, 40)); }
 });
 
 test('sign up creates a live account with an honest, empty home', async () => {

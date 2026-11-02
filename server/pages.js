@@ -23,7 +23,7 @@ function page(o) {
     (o.description ? '<meta name="description" content="' + esc(o.description) + '">' : '') +
     (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : '') +
     (o.head || '') +
-    '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + (o.app ? APP_HEAD : '') + FONTS +
+    '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/icon-192.png" type="image/png" sizes="192x192">' + (o.app ? APP_HEAD : '') + FONTS +
     '<link rel="stylesheet" href="/assets/app.' + bundle.hash.css + '.css">' +
     '<style>[hidden]{display:none!important}body{margin:0}.seo{max-width:760px;margin:0 auto;padding:32px 20px;font:16px/1.6 system-ui,sans-serif;color:#1b1f2a}.seo h1{font-size:32px;line-height:1.15}</style>' +
     '</head><body>' +
@@ -36,7 +36,7 @@ function page(o) {
     '</body></html>';
 }
 function plain(o) {
-  return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + '</title><meta name="robots" content="noindex">' +
+  return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + '</title>' + (o.index ? '' : '<meta name="robots" content="noindex">') +
     '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS +
     '<style>' + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === 'read' ? ' read' : o.wide ? ' wide' : '') + '"><a class="au-logo" href="/">' + MARK + '<b>bookingbooster</b></a>' + o.body + '</main></body></html>';
 }

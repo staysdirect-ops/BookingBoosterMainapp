@@ -14,6 +14,7 @@ const ws = require('./workspaces')(db, cfg);
 const auth = require('./auth')(db, cfg);
 const pages = require('./pages');
 const seo = require('./seo');
+const mkt = require('./marketing');
 const pub = require('./public');
 const ical = require('./ical');
 const msg = require('./messaging')(db, cfg);
@@ -261,7 +262,9 @@ async function welcome(wid) {
 /* ---------------- account pages ---------------- */
 // Signed out: drop the offline copy of the console that the service worker keeps (web/sw.js).
 const CLEAR_OFFLINE = '<script>try{caches.keys().then(function(k){k.forEach(function(n){if(n.indexOf("bb-app")===0)caches.delete(n)})})}catch(e){}</script>';
-const authPage = (title, inner, wide) => pages.plain({ title, body: inner, wide });
+const authPage = (title, inner, wide, index) => pages.plain({ title, body: inner, wide, index });
+// Company details we show in public. Placeholders such as "to be confirmed" are left out.
+const publicCompany = () => { const c = cfg.company; return { name: c.name, number: c.number || '', vat: c.vat || '', address: /to be confirmed/i.test(c.address || '') ? '' : (c.address || ''), support: c.support }; };
 const E = pages.esc;
 function loginForm(o) {
   o = o || {};
@@ -287,6 +290,7 @@ async function route(req, res) {
   if (host.replace(/:\d+$/, '') === 'www.' + MAIN_HOST) return send(res, 301, '', 'text/plain', { location: cfg.baseUrl + req.url });
 
   /* assets (any host) */
+  if (p === '/favicon.ico') return send(res, 301, '', 'text/plain', { location: '/assets/icons/icon-192.png', 'cache-control': 'public, max-age=604800' });
   if (p.startsWith('/assets/')) {
     const a = pages.assets();
     if (p === '/assets/mark.svg') return send(res, 200, MARK_SVG, 'image/svg+xml', { 'cache-control': 'public, max-age=86400' });
@@ -445,17 +449,19 @@ async function route(req, res) {
     const q = k => String(u.searchParams.get(k) || '').trim().slice(0, 120);
     const pre = p === '/start' ? { plan: ['starter', 'growth', 'portfolio'].includes(q('plan').toLowerCase()) ? q('plan').toLowerCase() : undefined,
       annual: q('annual') === '1', addon: q('addon') === '1', email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
-    return send(res, 200, pages.page({ title: 'Bookingbooster · Direct booking websites for UK holiday lets', description: 'Your own booking website, found on Google and in AI answers, with guest check-in, payments and email marketing in one place. £997 setup, first month free, then £200 a month. No commission.',
-      head: '<link rel="canonical" href="' + cfg.baseUrl + '/"><meta property="og:title" content="Bookingbooster"><meta property="og:description" content="Direct booking websites for UK holiday lets.">',
-      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), signupUrl: '/api/signup', loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+    const co = publicCompany();
+    return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
+      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
+      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
   if (p === '/sitemap.xml') {
-    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/demo' }];
+    // Privacy and terms join the sitemap once a solicitor has reviewed them (LEGAL_REVIEWED); until then they say Draft and stay out of search.
+    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
     for (const id of await ws.liveIds()) { const w = await ws.open(id); for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }
-  if (p === '/llms.txt') return send(res, 200, '# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site, found on Google and in AI answers, with online check-in, payments, guest email and text marketing. Not a channel manager: an optional add-on syncs calendars with your channel manager, Airbnb, Vrbo or Booking.com so you never double book.\n\n- Price: £997 one-off setup, first month free, then £200 a month, including VAT. Calendar sync add-on £15 a month. No commission on bookings.\n- [Demo](' + cfg.baseUrl + '/demo)\n- [Start](' + cfg.baseUrl + '/start)\n', 'text/plain; charset=utf-8');
+  if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
   if (p === '/admin/backup') {
@@ -508,7 +514,7 @@ async function route(req, res) {
     const user = await auth.finishReset(f.t, f.password); if (!user) return send(res, 400, authPage('Link expired', '<h1>That link has expired.</h1><p><a href="/forgot">Ask for a new one</a></p>'));
     return redirect(res, '/app', { 'set-cookie': cookie('bb_s', await auth.startSession(user.id), 30 * 86400) });
   }
-  if (p === '/help' || p === '/privacy' || p === '/terms') return send(res, 200, authPage({ help: 'Help', privacy: 'Privacy notice', terms: 'Terms of service' }[p.slice(1)], staticPage(p), p !== '/help' && 'read'));
+  if (p === '/help' || p === '/privacy' || p === '/terms') return send(res, 200, authPage({ help: 'Help', privacy: 'Privacy notice', terms: 'Terms of service' }[p.slice(1)] + ' · Bookingbooster', staticPage(p), p !== '/help' && 'read', p === '/help' || !!cfg.legalReviewed));
 
   /* host console and API (signed in) */
   if (p === '/app' || p.startsWith('/app/') || p.startsWith('/api/')) {

@@ -4,6 +4,9 @@
 (function () {
   const BB = window.BB, esc = BB.esc, D = BB.D, $ = BB.money, icon = BB.icon;
   const FEE = () => BB.PLATFORM_FEE.airbnb;
+  // On the real marketing site (not the demo) we show no sample customers or figures, and the real company details.
+  const LIVE = () => !!(BB.BOOT && BB.BOOT.mode === 'marketing');
+  const CO = () => Object.assign({ name: 'Bookingbooster Ltd', number: '', address: '', vat: '', support: 'help@booking-booster.co.uk' }, (BB.BOOT && BB.BOOT.company) || {});
 
   /* ---------- static content ---------- */
   const PLANS = [
@@ -87,7 +90,7 @@
      HOME
      ===================================================================== */
   function nav(inst) {
-    const u = inst.uid, links = [['product', 'Product'], ['ai', 'AI search'], ['pricing', 'Pricing'], ['customers', 'Customers']];
+    const u = inst.uid, links = [['product', 'Product'], ['ai', 'AI search'], ['pricing', 'Pricing'], LIVE() ? ['faq', 'FAQ'] : ['customers', 'Customers']];
     return '<header class="s-nav"><div class="s-w s-nav-in">' +
       '<button class="s-logo" data-scroll="top" aria-label="Bookingbooster home">' + BB.lockup() + '</button>' +
       '<nav class="s-links" aria-label="Main">' + links.map(([k, t]) => '<button data-scroll="' + k + '">' + t + '</button>').join('') + '</nav>' +
@@ -111,8 +114,9 @@
         '<h1 class="s-h1 s-rise" style="--d:1">More direct bookings. <span class="s-hl">Less platform fees.</span></h1>' +
         '<p class="s-lead s-rise" style="--d:2">Own your bookings, your guests and your website. We get your holiday let found on Google and in AI answers, bring past guests back, and you stop paying 15% or more on every stay.</p>' +
         '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg s-glow" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'See the live demo</button></div>' +
-        '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
-          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">★★★★★</span>4.9 average<small>Sample figures</small></span></div>' +
+        (LIVE() ? '<div class="s-proof s-rise" style="--d:4"><span><b>No commission on bookings.</b> First month free. Prices include VAT.</span></div>'
+          : '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
+          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">★★★★★</span>4.9 average<small>Sample figures</small></span></div>') +
       '</div>' +
       '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
         '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser' }) + '</div>' +
@@ -300,6 +304,7 @@
   }
 
   function customers(inst) {
+    if (LIVE()) return '';
     return '<section class="s-sec s-cust" id="s-customers-' + inst.uid + '"><div class="s-w">' +
       '<figure class="s-quote"><div class="s-face" aria-hidden="true"><i></i></div><div><blockquote>“Our past guests were sitting in an inbox we never used. The first email brought back twenty-three bookings.”</blockquote>' +
         '<figcaption><b>Dana Whitfield</b><span>Fell &amp; Harbour Stays, 3 holiday lets in Cumbria, Cornwall and Bath</span><small>Sample customer story</small></figcaption></div></figure>' +
@@ -324,7 +329,7 @@
 
   function faq(inst) {
     const open = inst.st.faq;
-    return '<section class="s-sec s-faq-sec"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email hello@bookingbooster.com and a person in our Manchester team answers within a working day.</p></div>' +
+    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
       '<div class="s-faq">' + FAQ.map(([q, a], i) => '<div class="s-qa' + (open === i ? ' open' : '') + '"><h3><button id="s-faq-' + i + '-' + inst.uid + '" data-faq="' + i + '" aria-expanded="' + (open === i) + '" aria-controls="s-faqp-' + i + '-' + inst.uid + '">' + q + '<span class="s-pm" aria-hidden="true"></span></button></h3>' +
         '<div class="s-ans" id="s-faqp-' + i + '-' + inst.uid + '" role="region"' + (open === i ? '' : ' hidden') + '><p>' + a + '</p></div></div>').join('') + '</div></div></section>';
   }
@@ -335,8 +340,9 @@
       '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em></span>' +
       '<nav aria-label="Footer"><div><b>Product</b><button data-scroll="product">Overview</button><button data-scroll="ai">AI search</button><button data-scroll="pricing">Pricing</button></div>' +
       '<div><b>Try it</b><button' + go('live') + '>Live demo</button><button' + go('app') + '>Host console</button><button' + go('property', { propertyId: 'laurel' }) + '>Property site</button></div>' +
-      '<div><b>Company</b><button data-scroll="customers">Customers</button><button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
-      '<p class="s-foot-fine">© 2026 Bookingbooster Ltd. Registered in England and Wales, company no. 01234567. Registered office: 1 Sample Street, Manchester M1 1AA. Prices include VAT. <b>Sample details:</b> this is a prototype, and customers, figures and stories are sample data.</p></footer>' +
+      '<div><b>Company</b>' + (LIVE() ? '<a href="/help">Help</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>' : '<button data-scroll="customers">Customers</button>') + '<button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
+      (LIVE() ? '<p class="s-foot-fine">© ' + new Date().getFullYear() + ' ' + esc(CO().name) + '.' + (CO().number ? ' Registered in England and Wales, company no. ' + esc(CO().number) + '.' : '') + (CO().address && !/to be confirmed/i.test(CO().address) ? ' Registered office: ' + esc(CO().address) + '.' : '') + (CO().vat ? ' VAT no. ' + esc(CO().vat) + '.' : '') + ' Prices include VAT. <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a></p></footer>'
+        : '<p class="s-foot-fine">© 2026 Bookingbooster Ltd. Registered in England and Wales, company no. 01234567. Registered office: 1 Sample Street, Manchester M1 1AA. Prices include VAT. <b>Sample details:</b> this is a prototype, and customers, figures and stories are sample data.</p></footer>') +
       '</div></section>';
   }
 
@@ -600,7 +606,7 @@
     if (ob.step === 8) return obSuccess(inst);
     const pctDone = Math.round(100 * (ob.step - 1) / STEPS.length);
     const enter = inst._obStep !== ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0); inst._obStep = ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0);
-    return '<div class="s-ob"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to bookingbooster.com">' + BB.lockup() + '</button>' +
+    return '<div class="s-ob"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
       '<span class="s-ob-count num">Step ' + ob.step + ' of ' + STEPS.length + '<em> · ' + STEPS[ob.step - 1] + '</em></span>' +
       '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Save and exit</span><span class="s-exit-s">Exit</span></button></div>' +
       '<div class="s-ob-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pctDone + '" aria-label="Setup progress"><i style="width:' + pctDone + '%"></i></div>' +

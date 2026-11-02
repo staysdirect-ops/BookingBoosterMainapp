@@ -7081,8 +7081,9 @@ body.p-lock { overflow: hidden; }
 .x-site .s-foot nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .x-site .s-foot nav div { display: grid; gap: 4px; align-content: start; }
 .x-site .s-foot nav b { font: 500 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #C2CCFF; margin-bottom: 6px; }
-.x-site .s-foot nav button { border: 0; background: none; padding: 4px 0; color: #fff; text-align: left; font-size: 15px; }
-.x-site .s-foot nav button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.x-site .s-foot nav button, .x-site .s-foot nav a { border: 0; background: none; padding: 4px 0; color: #fff; text-align: left; font-size: 15px; text-decoration: none; }
+.x-site .s-foot nav button:hover, .x-site .s-foot nav a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.x-site .s-foot-fine a { color: inherit; }
 .x-site .s-foot-fine { grid-column: 1 / -1; color: #C2CCFF; font-size: 13px; margin: 8px 0 0; }
 @media (max-width: 760px) { .x-site .s-foot { grid-template-columns: 1fr; } }
 @media (max-width: 420px) { .x-site .s-foot nav { grid-template-columns: 1fr 1fr; } }
@@ -7296,6 +7297,9 @@ body.p-lock { overflow: hidden; }
 (function () {
   const BB = window.BB, esc = BB.esc, D = BB.D, $ = BB.money, icon = BB.icon;
   const FEE = () => BB.PLATFORM_FEE.airbnb;
+  // On the real marketing site (not the demo) we show no sample customers or figures, and the real company details.
+  const LIVE = () => !!(BB.BOOT && BB.BOOT.mode === 'marketing');
+  const CO = () => Object.assign({ name: 'Bookingbooster Ltd', number: '', address: '', vat: '', support: 'help@booking-booster.co.uk' }, (BB.BOOT && BB.BOOT.company) || {});
 
   /* ---------- static content ---------- */
   const PLANS = [
@@ -7379,7 +7383,7 @@ body.p-lock { overflow: hidden; }
      HOME
      ===================================================================== */
   function nav(inst) {
-    const u = inst.uid, links = [['product', 'Product'], ['ai', 'AI search'], ['pricing', 'Pricing'], ['customers', 'Customers']];
+    const u = inst.uid, links = [['product', 'Product'], ['ai', 'AI search'], ['pricing', 'Pricing'], LIVE() ? ['faq', 'FAQ'] : ['customers', 'Customers']];
     return '<header class="s-nav"><div class="s-w s-nav-in">' +
       '<button class="s-logo" data-scroll="top" aria-label="Bookingbooster home">' + BB.lockup() + '</button>' +
       '<nav class="s-links" aria-label="Main">' + links.map(([k, t]) => '<button data-scroll="' + k + '">' + t + '</button>').join('') + '</nav>' +
@@ -7403,8 +7407,9 @@ body.p-lock { overflow: hidden; }
         '<h1 class="s-h1 s-rise" style="--d:1">More direct bookings. <span class="s-hl">Less platform fees.</span></h1>' +
         '<p class="s-lead s-rise" style="--d:2">Own your bookings, your guests and your website. We get your holiday let found on Google and in AI answers, bring past guests back, and you stop paying 15% or more on every stay.</p>' +
         '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg s-glow" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'See the live demo</button></div>' +
-        '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
-          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">\u2605\u2605\u2605\u2605\u2605</span>4.9 average<small>Sample figures</small></span></div>' +
+        (LIVE() ? '<div class="s-proof s-rise" style="--d:4"><span><b>No commission on bookings.</b> First month free. Prices include VAT.</span></div>'
+          : '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
+          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">\u2605\u2605\u2605\u2605\u2605</span>4.9 average<small>Sample figures</small></span></div>') +
       '</div>' +
       '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
         '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser' }) + '</div>' +
@@ -7592,6 +7597,7 @@ body.p-lock { overflow: hidden; }
   }
 
   function customers(inst) {
+    if (LIVE()) return '';
     return '<section class="s-sec s-cust" id="s-customers-' + inst.uid + '"><div class="s-w">' +
       '<figure class="s-quote"><div class="s-face" aria-hidden="true"><i></i></div><div><blockquote>\u201COur past guests were sitting in an inbox we never used. The first email brought back twenty-three bookings.\u201D</blockquote>' +
         '<figcaption><b>Dana Whitfield</b><span>Fell &amp; Harbour Stays, 3 holiday lets in Cumbria, Cornwall and Bath</span><small>Sample customer story</small></figcaption></div></figure>' +
@@ -7616,7 +7622,7 @@ body.p-lock { overflow: hidden; }
 
   function faq(inst) {
     const open = inst.st.faq;
-    return '<section class="s-sec s-faq-sec"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email hello@bookingbooster.com and a person in our Manchester team answers within a working day.</p></div>' +
+    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
       '<div class="s-faq">' + FAQ.map(([q, a], i) => '<div class="s-qa' + (open === i ? ' open' : '') + '"><h3><button id="s-faq-' + i + '-' + inst.uid + '" data-faq="' + i + '" aria-expanded="' + (open === i) + '" aria-controls="s-faqp-' + i + '-' + inst.uid + '">' + q + '<span class="s-pm" aria-hidden="true"></span></button></h3>' +
         '<div class="s-ans" id="s-faqp-' + i + '-' + inst.uid + '" role="region"' + (open === i ? '' : ' hidden') + '><p>' + a + '</p></div></div>').join('') + '</div></div></section>';
   }
@@ -7627,8 +7633,9 @@ body.p-lock { overflow: hidden; }
       '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em></span>' +
       '<nav aria-label="Footer"><div><b>Product</b><button data-scroll="product">Overview</button><button data-scroll="ai">AI search</button><button data-scroll="pricing">Pricing</button></div>' +
       '<div><b>Try it</b><button' + go('live') + '>Live demo</button><button' + go('app') + '>Host console</button><button' + go('property', { propertyId: 'laurel' }) + '>Property site</button></div>' +
-      '<div><b>Company</b><button data-scroll="customers">Customers</button><button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
-      '<p class="s-foot-fine">\xA9 2026 Bookingbooster Ltd. Registered in England and Wales, company no. 01234567. Registered office: 1 Sample Street, Manchester M1 1AA. Prices include VAT. <b>Sample details:</b> this is a prototype, and customers, figures and stories are sample data.</p></footer>' +
+      '<div><b>Company</b>' + (LIVE() ? '<a href="/help">Help</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>' : '<button data-scroll="customers">Customers</button>') + '<button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
+      (LIVE() ? '<p class="s-foot-fine">\xA9 ' + new Date().getFullYear() + ' ' + esc(CO().name) + '.' + (CO().number ? ' Registered in England and Wales, company no. ' + esc(CO().number) + '.' : '') + (CO().address && !/to be confirmed/i.test(CO().address) ? ' Registered office: ' + esc(CO().address) + '.' : '') + (CO().vat ? ' VAT no. ' + esc(CO().vat) + '.' : '') + ' Prices include VAT. <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a></p></footer>'
+        : '<p class="s-foot-fine">\xA9 2026 Bookingbooster Ltd. Registered in England and Wales, company no. 01234567. Registered office: 1 Sample Street, Manchester M1 1AA. Prices include VAT. <b>Sample details:</b> this is a prototype, and customers, figures and stories are sample data.</p></footer>') +
       '</div></section>';
   }
 
@@ -7892,7 +7899,7 @@ body.p-lock { overflow: hidden; }
     if (ob.step === 8) return obSuccess(inst);
     const pctDone = Math.round(100 * (ob.step - 1) / STEPS.length);
     const enter = inst._obStep !== ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0); inst._obStep = ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0);
-    return '<div class="s-ob"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to bookingbooster.com">' + BB.lockup() + '</button>' +
+    return '<div class="s-ob"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
       '<span class="s-ob-count num">Step ' + ob.step + ' of ' + STEPS.length + '<em> \xB7 ' + STEPS[ob.step - 1] + '</em></span>' +
       '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Save and exit</span><span class="s-exit-s">Exit</span></button></div>' +
       '<div class="s-ob-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pctDone + '" aria-label="Setup progress"><i style="width:' + pctDone + '%"></i></div>' +
@@ -11789,10 +11796,10 @@ var require_pages = __commonJS({
     var APP_HEAD = '<link rel="manifest" href="/app/manifest.webmanifest"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bookings"><meta name="apple-mobile-web-app-status-bar-style" content="default"><script>if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("/app/sw.js",{scope:"/app"}).catch(function(){})})</script>';
     function page(o) {
       const js = o.bundle === "demo" ? "demo" : "prod";
-      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title || "Bookingbooster") + "</title>" + (o.description ? '<meta name="description" content="' + esc(o.description) + '">' : "") + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + (o.head || "") + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + (o.app ? APP_HEAD : "") + FONTS + '<link rel="stylesheet" href="/assets/app.' + bundle.hash.css + '.css"><style>[hidden]{display:none!important}body{margin:0}.seo{max-width:760px;margin:0 auto;padding:32px 20px;font:16px/1.6 system-ui,sans-serif;color:#1b1f2a}.seo h1{font-size:32px;line-height:1.15}</style></head><body><header class="pbar" id="bbBar"></header><main id="bbApp" class="surface">' + (o.content || "") + '</main><aside class="drawer" id="bbDrawer" hidden aria-label="Activity"><button class="iconbtn drawer-x" data-close aria-label="Close activity"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="drawer-body"></div></aside>' + (o.banner ? '<div class="test-banner" role="note">' + o.banner + "</div>" : "") + "<script>window.__BB_BOOT__=" + safeJson(o.boot) + ';</script><script src="/assets/' + js + "." + bundle.hash[js] + '.js"></script></body></html>';
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title || "Bookingbooster") + "</title>" + (o.description ? '<meta name="description" content="' + esc(o.description) + '">' : "") + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + (o.head || "") + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/icon-192.png" type="image/png" sizes="192x192">' + (o.app ? APP_HEAD : "") + FONTS + '<link rel="stylesheet" href="/assets/app.' + bundle.hash.css + '.css"><style>[hidden]{display:none!important}body{margin:0}.seo{max-width:760px;margin:0 auto;padding:32px 20px;font:16px/1.6 system-ui,sans-serif;color:#1b1f2a}.seo h1{font-size:32px;line-height:1.15}</style></head><body><header class="pbar" id="bbBar"></header><main id="bbApp" class="surface">' + (o.content || "") + '</main><aside class="drawer" id="bbDrawer" hidden aria-label="Activity"><button class="iconbtn drawer-x" data-close aria-label="Close activity"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="drawer-body"></div></aside>' + (o.banner ? '<div class="test-banner" role="note">' + o.banner + "</div>" : "") + "<script>window.__BB_BOOT__=" + safeJson(o.boot) + ';</script><script src="/assets/' + js + "." + bundle.hash[js] + '.js"></script></body></html>';
     }
     function plain(o) {
-      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + '</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + "</title>" + (o.index ? "" : '<meta name="robots" content="noindex">') + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
     }
     var MARK = '<svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
     var AUTH_CSS = `:root{--p:#3355FF;--ink:#0A0F2C;--fg:#14161C;--mut:#5B6275;--line:#E3E6EE;--bg:#F5F6FA;--bad:#C2362B}
@@ -11916,6 +11923,104 @@ var require_seo = __commonJS({
       return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => "  <url><loc>" + esc(u.loc) + "</loc>" + (u.lastmod ? "<lastmod>" + u.lastmod + "</lastmod>" : "") + "</url>").join("\n") + "\n</urlset>\n";
     }
     module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf };
+  }
+});
+
+// server/marketing.js
+var require_marketing = __commonJS({
+  "server/marketing.js"(exports, module) {
+    var { esc } = require_pages();
+    var PRICE = { setup: 997, month: 200, year: 2e3, addon: 15, homes: 3 };
+    var FAQ = [
+      ["Do I have to leave Airbnb or Vrbo?", "No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there."],
+      ["How do guests pay?", "By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout."],
+      ["What is AI visibility?", "How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps."],
+      ["How long does setup take?", "Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week."],
+      ["Who owns the guest list?", "You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR."],
+      ["Do prices include VAT?", "Yes. Every price on this page includes VAT. There is a one-off \xA3997 setup fee, your first month is free, then it is \xA3200 a month. There is no contract, and you can cancel from your console at any time. Your domain stays yours."]
+    ];
+    var MORE = [
+      ["What is Bookingbooster?", "Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission."],
+      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3200 a month after a one-off \xA3997 setup fee, and your first month is free. Guests pay you directly through your own Stripe account, and you keep every booking."],
+      ["Is Bookingbooster a channel manager?", "No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (\xA315 a month) keeps your calendars in step so you never double book."],
+      ["Who is Bookingbooster for?", "Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us."]
+    ];
+    var FEATURES = [
+      ["Your own booking website", "Your domain, live availability, instant booking, card payments and security deposit holds. Guests skip the platform service fee, so they pick you."],
+      ["Found on Google", "Local pages for the searches guests really make near you, written and published every month."],
+      ["Recommended by AI", "Structured so your holiday let shows up in ChatGPT, Gemini, Perplexity and Google AI answers, with a link that books direct."],
+      ["Guests who return", "A check-in app, door codes, emails and texts that turn one stay into three, sent from your own name."]
+    ];
+    var INCLUDED = ["Booking site on your own domain", "Card payments, deposit holds and payouts", "Guest check-in app and door codes", "New local SEO pages every month", "AI visibility tracking and fixes", "Campaigns written and sent for you", "Text message outreach"];
+    var STEPS = [
+      ["Paste your listing link", "We copy your photos, reviews and house rules from an Airbnb or Vrbo listing in about a minute. Nothing is connected or changed there."],
+      ["We build and tune it", "Your booking site, local SEO pages, AI-ready answers and your guest list, set up and kept up for you."],
+      ["Bookings come direct", "Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season."]
+    ];
+    var TITLE = "Bookingbooster \xB7 Direct booking websites for UK holiday lets";
+    var DESCRIPTION = "Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. \xA3997 setup, first month free, then \xA3200 a month. No commission.";
+    var allFaq = () => FAQ.concat(MORE);
+    function jsonLd(base, co) {
+      const url = base + "/";
+      const org = {
+        "@type": "Organization",
+        "@id": url + "#org",
+        name: "Bookingbooster",
+        url,
+        logo: base + "/assets/icons/icon-512.png",
+        email: co.support,
+        description: "Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.",
+        areaServed: { "@type": "Country", name: "United Kingdom" },
+        contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: co.support, areaServed: "GB", availableLanguage: "en-GB" }
+      };
+      if (co.name) org.legalName = co.name;
+      if (co.number) org.identifier = { "@type": "PropertyValue", propertyID: "Companies House number", value: co.number };
+      if (co.vat) org.vatID = co.vat;
+      const offer = (name, price, unit, extra) => Object.assign({
+        "@type": "Offer",
+        name,
+        price: String(price),
+        priceCurrency: "GBP",
+        url: base + "/start",
+        availability: "https://schema.org/InStock",
+        priceSpecification: Object.assign({ "@type": "UnitPriceSpecification", price: String(price), priceCurrency: "GBP", valueAddedTaxIncluded: true }, unit ? { unitCode: unit, referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: unit } } : {})
+      }, extra || {});
+      return { "@context": "https://schema.org", "@graph": [
+        org,
+        { "@type": "WebSite", "@id": url + "#site", name: "Bookingbooster", url, inLanguage: "en-GB", publisher: { "@id": url + "#org" } },
+        { "@type": "WebPage", "@id": url + "#page", url, name: TITLE, description: DESCRIPTION, inLanguage: "en-GB", isPartOf: { "@id": url + "#site" }, about: { "@id": url + "#service" } },
+        {
+          "@type": "Service",
+          "@id": url + "#service",
+          name: "Bookingbooster direct booking website",
+          serviceType: "Direct booking website and marketing for holiday lets",
+          provider: { "@id": url + "#org" },
+          areaServed: { "@type": "Country", name: "United Kingdom" },
+          audience: { "@type": "BusinessAudience", audienceType: "UK holiday let and short-term let owners" },
+          description: DESCRIPTION,
+          hasOfferCatalog: { "@type": "OfferCatalog", name: "Bookingbooster pricing", itemListElement: [
+            offer("One-off setup fee", PRICE.setup, null, { description: "Paid once when you start. Your first month is then free." }),
+            offer("Monthly plan", PRICE.month, "MON", { description: "Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
+            offer("Annual plan", PRICE.year, "ANN", { description: "Two months free compared with paying monthly." }),
+            offer("Calendar sync add-on", PRICE.addon, "MON", { description: "Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager." })
+          ] }
+        },
+        { "@type": "FAQPage", "@id": url + "#faq", mainEntity: allFaq().map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }
+      ] };
+    }
+    function head(base, path) {
+      const url = base + "/";
+      return '<link rel="canonical" href="' + esc(url) + '"><meta property="og:type" content="website"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(TITLE) + '"><meta property="og:description" content="' + esc(DESCRIPTION) + '"><meta property="og:url" content="' + esc(url) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + "/assets/icons/icon-512.png") + '"><meta name="twitter:card" content="summary"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(base + "/llms.txt") + '">';
+    }
+    var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
+    function content(base, co) {
+      const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+      return '<article class="seo" id="seo"><h1>More direct bookings. Less platform fees.</h1><p>Own your bookings, your guests and your website. Bookingbooster gets your UK holiday let found on Google and in AI answers, brings past guests back, and you stop paying 15% or more on every stay.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. A one-off \xA3" + PRICE.setup + " setup fee, your first month free, then \xA3" + PRICE.month + " a month, or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year (two months free). No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p></article>';
+    }
+    function llms(base, co) {
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.setup + " one-off setup fee, first month free, then \xA3" + PRICE.month + " a month (or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
+    }
+    module.exports = { FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
 });
 
@@ -14043,6 +14148,7 @@ var require_server = __commonJS({
     var auth = require_auth()(db, cfg);
     var pages = require_pages();
     var seo = require_seo();
+    var mkt = require_marketing();
     var pub = require_public();
     var ical = require_ical();
     var msg = require_messaging()(db, cfg);
@@ -14467,7 +14573,11 @@ var require_server = __commonJS({
       await msg.sendEmail({ workspaceId: wid, to: s.account.email, subject: "Welcome to Bookingbooster", text: "Welcome, " + v.first_name + ". Your console: " + v.dashboard_url, html: msg.template("host-o01-welcome", v), meta: { template: "welcome" } });
     }
     var CLEAR_OFFLINE = '<script>try{caches.keys().then(function(k){k.forEach(function(n){if(n.indexOf("bb-app")===0)caches.delete(n)})})}catch(e){}</script>';
-    var authPage = (title, inner, wide) => pages.plain({ title, body: inner, wide });
+    var authPage = (title, inner, wide, index) => pages.plain({ title, body: inner, wide, index });
+    var publicCompany = () => {
+      const c = cfg.company;
+      return { name: c.name, number: c.number || "", vat: c.vat || "", address: /to be confirmed/i.test(c.address || "") ? "" : c.address || "", support: c.support };
+    };
     var E = pages.esc;
     function loginForm(o) {
       o = o || {};
@@ -14487,6 +14597,7 @@ var require_server = __commonJS({
         return send(res, d === MAIN_HOST || d === "www." + MAIN_HOST || row && row.verified ? 200 : 404, "", "text/plain");
       }
       if (host.replace(/:\d+$/, "") === "www." + MAIN_HOST) return send(res, 301, "", "text/plain", { location: cfg.baseUrl + req.url });
+      if (p === "/favicon.ico") return send(res, 301, "", "text/plain", { location: "/assets/icons/icon-192.png", "cache-control": "public, max-age=604800" });
       if (p.startsWith("/assets/")) {
         const a = pages.assets();
         if (p === "/assets/mark.svg") return send(res, 200, MARK_SVG, "image/svg+xml", { "cache-control": "public, max-age=86400" });
@@ -14706,23 +14817,25 @@ var require_server = __commonJS({
           name: q("name"),
           business: q("business")
         } : {};
+        const co = publicCompany();
         return send(res, 200, pages.page({
-          title: "Bookingbooster \xB7 Direct booking websites for UK holiday lets",
-          description: "Your own booking website, found on Google and in AI answers, with guest check-in, payments and email marketing in one place. \xA3997 setup, first month free, then \xA3200 a month. No commission.",
-          head: '<link rel="canonical" href="' + cfg.baseUrl + '/"><meta property="og:title" content="Bookingbooster"><meta property="og:description" content="Direct booking websites for UK holiday lets.">',
-          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), signupUrl: "/api/signup", loggedIn: !!await me(req) }
+          title: p === "/start" ? "Start your booking site \xB7 Bookingbooster" : mkt.TITLE,
+          description: mkt.DESCRIPTION,
+          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) : ""),
+          content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
+          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
       }
       if (p === "/robots.txt") return send(res, 200, seo.robots(cfg.baseUrl + "/sitemap.xml"), "text/plain; charset=utf-8");
       if (p === "/sitemap.xml") {
-        const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/demo" }];
+        const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/help" }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + "/privacy" }, { loc: cfg.baseUrl + "/terms" }] : []);
         for (const id of await ws.liveIds()) {
           const w = await ws.open(id);
           for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today });
         }
         return send(res, 200, seo.sitemap(list.filter((x) => x.loc.startsWith(cfg.baseUrl))), "application/xml");
       }
-      if (p === "/llms.txt") return send(res, 200, "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site, found on Google and in AI answers, with online check-in, payments, guest email and text marketing. Not a channel manager: an optional add-on syncs calendars with your channel manager, Airbnb, Vrbo or Booking.com so you never double book.\n\n- Price: \xA3997 one-off setup, first month free, then \xA3200 a month, including VAT. Calendar sync add-on \xA315 a month. No commission on bookings.\n- [Demo](" + cfg.baseUrl + "/demo)\n- [Start](" + cfg.baseUrl + "/start)\n", "text/plain; charset=utf-8");
+      if (p === "/llms.txt") return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), "text/plain; charset=utf-8");
       if (p === "/api/signup" && m === "POST") return await signup(req, res);
       if (p === "/admin") return await adminPage(req, res);
       if (p === "/admin/backup") {
@@ -14806,7 +14919,7 @@ var require_server = __commonJS({
         if (!user) return send(res, 400, authPage("Link expired", '<h1>That link has expired.</h1><p><a href="/forgot">Ask for a new one</a></p>'));
         return redirect(res, "/app", { "set-cookie": cookie("bb_s", await auth.startSession(user.id), 30 * 86400) });
       }
-      if (p === "/help" || p === "/privacy" || p === "/terms") return send(res, 200, authPage({ help: "Help", privacy: "Privacy notice", terms: "Terms of service" }[p.slice(1)], staticPage(p), p !== "/help" && "read"));
+      if (p === "/help" || p === "/privacy" || p === "/terms") return send(res, 200, authPage({ help: "Help", privacy: "Privacy notice", terms: "Terms of service" }[p.slice(1)] + " \xB7 Bookingbooster", staticPage(p), p !== "/help" && "read", p === "/help" || !!cfg.legalReviewed));
       if (p === "/app" || p.startsWith("/app/") || p.startsWith("/api/")) {
         const s = await me(req);
         if (!s) return p.startsWith("/api/") ? json(res, { error: "Sign in again" }, 401) : redirect(res, "/login?next=" + encodeURIComponent(p));

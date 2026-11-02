@@ -445,8 +445,9 @@
 .x-site .s-foot nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .x-site .s-foot nav div { display: grid; gap: 4px; align-content: start; }
 .x-site .s-foot nav b { font: 500 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #C2CCFF; margin-bottom: 6px; }
-.x-site .s-foot nav button { border: 0; background: none; padding: 4px 0; color: #fff; text-align: left; font-size: 15px; }
-.x-site .s-foot nav button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.x-site .s-foot nav button, .x-site .s-foot nav a { border: 0; background: none; padding: 4px 0; color: #fff; text-align: left; font-size: 15px; text-decoration: none; }
+.x-site .s-foot nav button:hover, .x-site .s-foot nav a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.x-site .s-foot-fine a { color: inherit; }
 .x-site .s-foot-fine { grid-column: 1 / -1; color: #C2CCFF; font-size: 13px; margin: 8px 0 0; }
 @media (max-width: 760px) { .x-site .s-foot { grid-template-columns: 1fr; } }
 @media (max-width: 420px) { .x-site .s-foot nav { grid-template-columns: 1fr 1fr; } }
