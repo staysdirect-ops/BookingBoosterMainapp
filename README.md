@@ -127,3 +127,7 @@ Hosts' own domains need a certificate each:
 - Set `CUSTOM_DOMAIN_TARGET` to the name hosts should point `www` at (it defaults to the `BASE_URL` host), and `CUSTOM_DOMAIN_IPS` to the server's IPv4 addresses for the bare-domain A record.
 
 ChatGPT, Gemini, Perplexity, Google, Claude and Copilot are trademarks of their owners. Bookingbooster is not affiliated with or endorsed by them.
+
+## Deploying
+
+See [DEPLOY.md](DEPLOY.md). Pushing to `main` deploys the Supabase functions through the Supabase GitHub integration.
