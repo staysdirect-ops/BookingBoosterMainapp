@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+Purpose: Win a repeat stay from a past guest with a returning-guest code, and teach them to book direct and skip platform fees.
+Trigger/timing: 45 days after checkout (or 11 months after, for an anniversary send). Suppress if the guest has a future booking.
+Subject: {{first_name}}, come back to {{property_name}}: {{offer_percent}} off
+Alt subject 1: Your returning-guest code is inside
+Alt subject 2: Same cabin, better price: book direct and skip the fees
+Preheader: Code {{promo_code}} takes {{offer_percent}} off. Booking direct also skips the platform service fee.
+Merge tags: first_name, property_name, property_initials, property_url, property_town, promo_code, offer_percent, offer_expiry, last_stay_month, compare_platform_total, compare_direct_total, compare_saving, preferences_url, unsubscribe_url, host_name, host_phone, company_address
+
+THEME (host accent, swap by find-and-replace; Bookingbooster injects the host brand colour):
+  accent #2F5D46  accent-dark #234735  accent-tint #E4ECE6  page #F3EEE4  card #FFFDF8  soft #F8F4EC  line #E6DFD1
+  alternate cobalt: accent #2747F5  accent-dark #1B34C4  accent-tint #E4E9FF  page #F5F7FF  card #FFFFFF  soft #F7F8FE  line #DFE4F5
+Fonts: Fraunces (display, matches the property site serif) / Geist / Geist Mono via Google Fonts, falling back to Georgia / Helvetica, Arial.
+Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own photo).
+-->
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Win a repeat stay from a past guest with a returning-guest code, and teach them to book direct and skip platform fees.</title>
+<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+<!--[if !mso]><!--><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet"><!--<![endif]-->
+<style>
+  body { margin:0 !important; padding:0 !important; width:100% !important; }
+  a { text-decoration:none; }
+  img { border:0; outline:none; display:block; -ms-interpolation-mode:bicubic; }
+  @media only screen and (max-width:599px) {
+    .container { width:100% !important; }
+    .outer { padding:0 10px !important; }
+    .px { padding-left:22px !important; padding-right:22px !important; }
+    .px0 { padding-left:12px !important; padding-right:12px !important; }
+    .stack { display:block !important; width:100% !important; box-sizing:border-box; padding-left:0 !important; padding-right:0 !important; }
+    .stack-gap { padding-top:16px !important; }
+    .h1 { font-size:31px !important; line-height:36px !important; }
+    .h2 { font-size:23px !important; line-height:29px !important; }
+    .code { font-size:34px !important; width:52px !important; }
+    .hide-sm { display:none !important; }
+    .full { width:100% !important; height:auto !important; }
+    .btn a { display:block !important; }
+    .btn { width:100% !important; }
+    .star { padding:0 2px !important; }
+    .star a { width:42px !important; font-size:20px !important; }
+    .cal td { font-size:12px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .dm-page { background:#141815 !important; }
+  }
+</style>
+</head>
+<body class="dm-page" style="margin:0;padding:0;background:#F3EEE4;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">Code {{promo_code}} takes {{offer_percent}} off. Booking direct also skips the platform service fee.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F3EEE4" style="background:#F3EEE4;">
+<tr><td align="center" class="outer" style="padding:0;">
+<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td><![endif]-->
+<table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+<tr><td class="px0" style="padding:28px 8px 18px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td valign="middle"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+<td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;border-radius:20px;background:#2F5D46;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:15px;font-weight:600;letter-spacing:0.5px;color:#FFFFFF;">{{property_initials}}</td>
+<td valign="middle" style="padding-left:12px;"><a href="https://{{property_url}}" style="font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:21px;line-height:26px;font-weight:600;letter-spacing:-0.2px;color:#1E2621;text-decoration:none;">{{property_name}}</a></td>
+</tr></table></td>
+<td align="right" valign="middle" class="hide-sm" style="font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#666B62;">Returning guest</td>
+</tr></table></td></tr>
+<tr><td style="padding:0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFDF8" style="background:#FFFDF8;border:1px solid #E6DFD1;border-radius:20px;border-collapse:separate;">
+<tr><td style="padding:0;"><img src="guest-img/hero-cabin.jpg" width="600" height="257" alt="Illustration of {{property_name}} by the lake in the fells" class="full" style="width:100%;max-width:600px;height:auto;border-radius:19px 19px 0 0;background:#E4ECE6;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:#666B62;"></td></tr><tr><td class="px" style="padding:36px 40px 34px;"><p style="margin:0 0 12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:16px;letter-spacing:1.6px;text-transform:uppercase;color:#2F5D46;font-weight:500;">Welcome back offer</p><h1 class="h1" style="margin:0 0 14px;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:38px;line-height:44px;font-weight:600;letter-spacing:-0.5px;color:#1E2621;">The fells are calling you back, {{first_name}}.</h1><p style="margin:0 0 24px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;color:#666B62;">It's been a while since your stay in {{last_stay_month}}. As a past guest you get {{offer_percent}} off your next stay when you book with us directly.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td align="center" style="border:2px dashed #2F5D46;border-radius:16px;padding:20px;background:#FFFFFF;">
+<p style="margin:0 0 4px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#2F5D46;font-weight:500;">Your returning-guest code</p>
+<p style="margin:6px 0 6px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:28px;line-height:34px;font-weight:500;letter-spacing:3px;color:#1E2621;">{{promo_code}}</p>
+<p style="margin:0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;color:#666B62;">Valid until {{offer_expiry}} on stays of 2 nights or more.</p></td></tr></table><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="22" style="height:22px;font-size:0;line-height:0;">&nbsp;</td></tr></table><table role="presentation" class="btn" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
+<tr><td align="center" bgcolor="#2F5D46" style="border-radius:999px;background:#2F5D46;border:1.5px solid #2F5D46;mso-padding-alt:14px 28px;">
+<a href="https://{{property_url}}/?promo={{promo_code}}" target="_blank" style="display:inline-block;padding:14px 28px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:999px;white-space:nowrap;">Book my return stay</a>
+</td></tr></table></td></tr><tr><td class="px" style="padding:0 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:1px solid #E6DFD1;font-size:0;line-height:0;height:1px;">&nbsp;</td></tr></table></td></tr><tr><td class="px" style="padding:32px 40px 32px;"><p style="margin:0 0 12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:16px;letter-spacing:1.6px;text-transform:uppercase;color:#2F5D46;font-weight:500;">Book direct, skip the fees</p><h2 class="h2" style="margin:0 0 10px;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:25px;line-height:31px;font-weight:600;letter-spacing:-0.3px;color:#1E2621;">Same cabin. Less to pay.</h2><p style="margin:0 0 20px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#666B62;">Booking platforms add a guest service fee at checkout. On our own site there isn't one, and the code comes off on top.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td class="stack" width="50%" valign="top" style="padding-right:6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td style="background:#FFFFFF;border:1px solid #E6DFD1;border-radius:16px;padding:20px;"><p style="margin:0 0 4px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#666B62;font-weight:500;">Via a booking platform</p><p style="margin:4px 0 2px;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:30px;line-height:36px;font-weight:600;color:#666B62;text-decoration:line-through;">{{compare_platform_total}}</p><p style="margin:0 0 0px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#666B62;">3 nights, plus a guest service fee of around 14%</p></td></tr></table></td>
+<td class="stack stack-gap" width="50%" valign="top" style="padding-left:6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td style="background:#E4ECE6;border-radius:16px;padding:20px;"><p style="margin:0 0 4px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#234735;font-weight:500;">Direct with code</p><p style="margin:4px 0 2px;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:30px;line-height:36px;font-weight:600;color:#234735;">{{compare_direct_total}}</p><p style="margin:0 0 0px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#234735;">Same 3 nights, no service fee, {{offer_percent}} off</p></td></tr></table></td>
+</tr></table><p style="margin:14px 0 0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:22px;font-weight:600;color:#234735;">You keep {{compare_saving}} on a typical 3-night stay.</p></td></tr><tr><td class="px" style="padding:0px 40px 34px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td class="stack" width="33%" valign="top" style="padding:0 10px 0 0px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="3" style="height:3px;background:#2F5D46;font-size:0;line-height:0;">&nbsp;</td></tr></table><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="12" style="height:12px;font-size:0;line-height:0;">&nbsp;</td></tr></table><h3 style="margin:0 0 4px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:22px;font-weight:600;color:#1E2621;">Our best price</h3><p style="margin:0 0 0px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#666B62;">The lowest rate is always on our own site.</p></td><td class="stack stack-gap" width="33%" valign="top" style="padding:0 10px 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="3" style="height:3px;background:#2F5D46;font-size:0;line-height:0;">&nbsp;</td></tr></table><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="12" style="height:12px;font-size:0;line-height:0;">&nbsp;</td></tr></table><h3 style="margin:0 0 4px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:22px;font-weight:600;color:#1E2621;">Talk to us directly</h3><p style="margin:0 0 0px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#666B62;">Questions come to me, not a call centre.</p></td><td class="stack stack-gap" width="33%" valign="top" style="padding:0 0px 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="3" style="height:3px;background:#2F5D46;font-size:0;line-height:0;">&nbsp;</td></tr></table><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="12" style="height:12px;font-size:0;line-height:0;">&nbsp;</td></tr></table><h3 style="margin:0 0 4px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:22px;font-weight:600;color:#1E2621;">Flexible extras</h3><p style="margin:0 0 0px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#666B62;">Early check-in or the dog? Just ask.</p></td>
+</tr></table></td></tr><tr><td class="px" style="border-radius:0 0 19px 19px;padding:24px 40px 30px;background:#F8F4EC;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td width="48" valign="top" style="width:48px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td width="48" height="48" align="center" valign="middle" style="width:48px;height:48px;border-radius:24px;background:#E4ECE6;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:20px;font-weight:600;color:#234735;">H</td></tr></table></td>
+<td valign="middle" style="padding-left:14px;"><p style="margin:0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:22px;color:#1E2621;">We'd love to have you back. Reply if you'd like help picking dates.</p>
+<p style="margin:2px 0 0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;color:#666B62;">{{host_name}}, your host &middot; <a href="tel:{{host_phone}}" style="color:#2F5D46;text-decoration:underline;">{{host_phone}}</a></p></td>
+</tr></table></td></tr>
+</table>
+</td></tr>
+<tr><td class="px" align="center" style="padding:28px 40px 8px;">
+<p style="margin:0 0 14px;line-height:20px;"><a href="https://{{property_url}}" style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#1E2621;text-decoration:underline;">Book direct</a> <span style="color:#B9B3A6;">&middot;</span> <a href="{{preferences_url}}" style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#1E2621;text-decoration:underline;">Email preferences</a> <span style="color:#B9B3A6;">&middot;</span> <a href="{{unsubscribe_url}}" style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#1E2621;text-decoration:underline;">Unsubscribe</a></p>
+<p style="margin:0 0 10px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#666B62;">You are getting this because you stayed at {{property_name}} or joined our guest list on {{property_url}}.</p>
+<p style="margin:0 0 10px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#666B62;">Not for you any more? <a href="{{unsubscribe_url}}" style="color:#666B62;text-decoration:underline;">Unsubscribe in one click</a>. We will still send booking emails for any stay you have with us.</p><p style="margin:0 0 10px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#666B62;">{{company_address}}<br>Your details are handled under UK GDPR. <a href="https://{{property_url}}/privacy" style="color:#666B62;text-decoration:underline;">Privacy notice</a></p>
+</td></tr>
+<tr><td align="center" style="padding:8px 0 36px;"><a href="https://booking-booster.co.uk/?ref=guest-email" style="font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1px;color:#9A9688;text-decoration:none;">POWERED BY <span style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-weight:700;letter-spacing:-0.2px;text-transform:none;font-size:12px;color:#7E7A6E;">bookingbooster</span></a></td></tr>
+</table>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr></table>
+</body>
+</html>

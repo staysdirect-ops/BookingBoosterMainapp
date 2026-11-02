@@ -1,0 +1,27 @@
+{
+  "name": "bookingbooster",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Direct booking websites, guest app, payments, calendar sync, SEO/AI visibility and guest marketing for UK holiday let hosts.",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/*.test.js",
+    "build": "node web/build.js",
+    "preflight": "node server/preflight.js",
+    "stripe-setup": "node scripts/stripe-setup.js",
+    "build:supabase": "node supabase/build.js",
+    "test:supabase": "BB_DENO=1 node --test --test-concurrency=3 test/*.test.js"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.14",
+    "postgres": "3.4.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "@electric-sql/pglite-socket": "^0.2.17"
+  }
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+Purpose: Day-of-arrival email with door code, address, Wi-Fi, parking and the house guide.
+Trigger/timing: 8am on the check-in day, only when online check-in is complete. A plain-text SMS with the code goes at the same time.
+Subject: Your door code for {{property_name}} is inside
+Alt subject 1: Today's the day, {{first_name}}: door code, Wi-Fi and directions
+Alt subject 2: Welcome to {{property_town}}. Here's how to get in
+Preheader: Code {{door_code}} works from {{check_in_time}} today. Address, parking and Wi-Fi inside.
+Merge tags: first_name, property_name, property_initials, property_url, property_town, booking_ref, check_in_date, check_out_date, check_in_time, check_out_time, door_code, door_code_digit_1..4, address_line1, address_line2, what3words, maps_url, wifi_name, wifi_password, parking_note, house_guide_url, host_name, host_phone, host_email, company_address
+
+THEME (host accent, swap by find-and-replace; Bookingbooster injects the host brand colour):
+  accent #2F5D46  accent-dark #234735  accent-tint #E4ECE6  page #F3EEE4  card #FFFDF8  soft #F8F4EC  line #E6DFD1
+  alternate cobalt: accent #2747F5  accent-dark #1B34C4  accent-tint #E4E9FF  page #F5F7FF  card #FFFFFF  soft #F7F8FE  line #DFE4F5
+Fonts: Fraunces (display, matches the property site serif) / Geist / Geist Mono via Google Fonts, falling back to Georgia / Helvetica, Arial.
+Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own photo).
+-->
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Day-of-arrival email with door code, address, Wi-Fi, parking and the house guide.</title>
+<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+<!--[if !mso]><!--><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet"><!--<![endif]-->
+<style>
+  body { margin:0 !important; padding:0 !important; width:100% !important; }
+  a { text-decoration:none; }
+  img { border:0; outline:none; display:block; -ms-interpolation-mode:bicubic; }
+  @media only screen and (max-width:599px) {
+    .container { width:100% !important; }
+    .outer { padding:0 10px !important; }
+    .px { padding-left:22px !important; padding-right:22px !important; }
+    .px0 { padding-left:12px !important; padding-right:12px !important; }
+    .stack { display:block !important; width:100% !important; box-sizing:border-box; padding-left:0 !important; padding-right:0 !important; }
+    .stack-gap { padding-top:16px !important; }
+    .h1 { font-size:31px !important; line-height:36px !important; }
+    .h2 { font-size:23px !important; line-height:29px !important; }
+    .code { font-size:34px !important; width:52px !important; }
+    .hide-sm { display:none !important; }
+    .full { width:100% !important; height:auto !important; }
+    .btn a { display:block !important; }
+    .btn { width:100% !important; }
+    .star { padding:0 2px !important; }
+    .star a { width:42px !important; font-size:20px !important; }
+    .cal td { font-size:12px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .dm-page { background:#141815 !important; }
+  }
+</style>
+</head>
+<body class="dm-page" style="margin:0;padding:0;background:#F3EEE4;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">Code {{door_code}} works from {{check_in_time}} today. Address, parking and Wi-Fi inside.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F3EEE4" style="background:#F3EEE4;">
+<tr><td align="center" class="outer" style="padding:0;">
+<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td><![endif]-->
+<table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+<tr><td class="px0" style="padding:28px 8px 18px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td valign="middle"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+<td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;border-radius:20px;background:#2F5D46;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:15px;font-weight:600;letter-spacing:0.5px;color:#FFFFFF;">{{property_initials}}</td>
+<td valign="middle" style="padding-left:12px;"><a href="https://{{property_url}}" style="font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:21px;line-height:26px;font-weight:600;letter-spacing:-0.2px;color:#1E2621;text-decoration:none;">{{property_name}}</a></td>
+</tr></table></td>
+<td align="right" valign="middle" class="hide-sm" style="font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#666B62;">Arriving today</td>
+</tr></table></td></tr>
+<tr><td style="padding:0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFDF8" style="background:#FFFDF8;border:1px solid #E6DFD1;border-radius:20px;border-collapse:separate;">
+<tr><td style="padding:0;"><img src="guest-img/hero-dusk.jpg" width="600" height="257" alt="Illustration of {{property_name}} at dusk with a lit window" class="full" style="width:100%;max-width:600px;height:auto;border-radius:19px 19px 0 0;background:#E4ECE6;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:#666B62;"></td></tr><tr><td class="px" style="padding:36px 40px 30px;"><p style="margin:0 0 12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:16px;letter-spacing:1.6px;text-transform:uppercase;color:#2F5D46;font-weight:500;">Check-in day &middot; {{check_in_date}}</p><h1 class="h1" style="margin:0 0 14px;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:38px;line-height:44px;font-weight:600;letter-spacing:-0.5px;color:#1E2621;">Welcome, {{first_name}}. The fire's laid.</h1><p style="margin:0 0 4px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;color:#666B62;">Everything you need to get in and settle is on this page. Save it, or open the house guide on your phone when you arrive.</p></td></tr><tr><td class="px" align="center" bgcolor="#234735" style="padding:34px 40px 36px;background:#234735;">
+<p style="margin:0 0 12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:16px;letter-spacing:1.6px;text-transform:uppercase;color:#E4ECE6;font-weight:500;">Your door code</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse:separate;"><tr><td class="code" width="60" align="center" style="width:60px;padding:12px 0;background:#2F5D46;border-radius:12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:40px;line-height:46px;font-weight:500;color:#FFFFFF;">{{door_code_digit_1}}</td><td width="10" style="width:10px;font-size:0;">&nbsp;</td><td class="code" width="60" align="center" style="width:60px;padding:12px 0;background:#2F5D46;border-radius:12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:40px;line-height:46px;font-weight:500;color:#FFFFFF;">{{door_code_digit_2}}</td><td width="10" style="width:10px;font-size:0;">&nbsp;</td><td class="code" width="60" align="center" style="width:60px;padding:12px 0;background:#2F5D46;border-radius:12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:40px;line-height:46px;font-weight:500;color:#FFFFFF;">{{door_code_digit_3}}</td><td width="10" style="width:10px;font-size:0;">&nbsp;</td><td class="code" width="60" align="center" style="width:60px;padding:12px 0;background:#2F5D46;border-radius:12px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:40px;line-height:46px;font-weight:500;color:#FFFFFF;">{{door_code_digit_4}}</td></tr></table>
+<p style="margin:16px 0 0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:22px;color:#E4ECE6;">Works from {{check_in_time}} today until {{check_out_time}} on {{check_out_date}}.<br>Tap the keypad to wake it, enter the code, then press the lock button.</p>
+</td></tr><tr><td class="px" style="padding:32px 40px 24px;"><p style="margin:0 0 4px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#666B62;font-weight:500;">Address</p><p style="margin:0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:600;color:#1E2621;">{{address_line1}}</p><p style="margin:2px 0 0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;color:#666B62;">{{address_line2}}</p><p style="margin:8px 0 18px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:13px;line-height:18px;color:#2F5D46;">what3words ///{{what3words}}</p><table role="presentation" class="btn" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
+<tr><td align="center" bgcolor="#FFFDF8" style="border-radius:999px;background:#FFFDF8;border:1.5px solid #2F5D46;mso-padding-alt:14px 28px;">
+<a href="{{maps_url}}" target="_blank" style="display:inline-block;padding:14px 28px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#2F5D46;text-decoration:none;border-radius:999px;white-space:nowrap;">Open in Maps</a>
+</td></tr></table></td></tr><tr><td class="px" style="padding:4px 40px 26px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td class="stack" width="50%" valign="top" style="padding-right:6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td style="background:#F8F4EC;border:1px solid #E6DFD1;border-radius:16px;padding:20px;"><p style="margin:0 0 4px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#666B62;font-weight:500;">Wi-Fi</p><p style="margin:0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:600;color:#1E2621;">{{wifi_name}}</p><p style="margin:6px 0 0;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:14px;line-height:20px;color:#234735;">{{wifi_password}}</p></td></tr></table></td>
+<td class="stack stack-gap" width="50%" valign="top" style="padding-left:6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td style="background:#F8F4EC;border:1px solid #E6DFD1;border-radius:16px;padding:20px;"><p style="margin:0 0 4px;font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1.4px;text-transform:uppercase;color:#666B62;font-weight:500;">Parking</p><p style="margin:0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:21px;color:#1E2621;">{{parking_note}}</p></td></tr></table></td>
+</tr></table></td></tr><tr><td class="px" style="padding:0px 40px 30px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td style="background:#E4ECE6;border-radius:16px;padding:24px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td class="stack" valign="middle"><h2 class="h2" style="margin:0 0 6px;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:25px;line-height:31px;font-weight:600;letter-spacing:-0.3px;color:#1E2621;">The house guide</h2><p style="margin:0 0 0px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#666B62;">Hot tub, log burner, bins, best walks from the door and where to eat in {{property_town}}.</p></td>
+<td class="stack stack-gap" valign="middle" align="right" style="padding-left:16px;" width="170"><table role="presentation" class="btn" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
+<tr><td align="center" bgcolor="#2F5D46" style="border-radius:999px;background:#2F5D46;border:1.5px solid #2F5D46;mso-padding-alt:14px 28px;">
+<a href="{{house_guide_url}}" target="_blank" style="display:inline-block;padding:14px 28px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:999px;white-space:nowrap;">Open the guide</a>
+</td></tr></table></td></tr></table></td></tr></table></td></tr><tr><td class="px" style="padding:0 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:1px solid #E6DFD1;font-size:0;line-height:0;height:1px;">&nbsp;</td></tr></table></td></tr><tr><td class="px" style="border-radius:0 0 19px 19px;padding:24px 40px 30px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td width="48" valign="top" style="width:48px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr><td width="48" height="48" align="center" valign="middle" style="width:48px;height:48px;border-radius:24px;background:#E4ECE6;font-family:'Fraunces', Georgia, 'Times New Roman', serif;font-size:20px;font-weight:600;color:#234735;">H</td></tr></table></td>
+<td valign="middle" style="padding-left:14px;"><p style="margin:0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;line-height:22px;color:#1E2621;">I'm 10 minutes away all weekend. If the code or anything else doesn't work, call or text me.</p>
+<p style="margin:2px 0 0;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;color:#666B62;">{{host_name}}, your host &middot; <a href="tel:{{host_phone}}" style="color:#2F5D46;text-decoration:underline;">{{host_phone}}</a></p></td>
+</tr></table></td></tr>
+</table>
+</td></tr>
+<tr><td class="px" align="center" style="padding:28px 40px 8px;">
+<p style="margin:0 0 14px;line-height:20px;"><a href="https://{{property_url}}/trip/{{booking_ref}}" style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#1E2621;text-decoration:underline;">Your trip</a> <span style="color:#B9B3A6;">&middot;</span> <a href="{{house_guide_url}}" style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#1E2621;text-decoration:underline;">House guide</a> <span style="color:#B9B3A6;">&middot;</span> <a href="mailto:{{host_email}}" style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#1E2621;text-decoration:underline;">Contact {{host_name}}</a></p>
+<p style="margin:0 0 10px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#666B62;">You are getting this because you booked {{property_name}} directly (booking {{booking_ref}}). It is a service email about your stay, so it is sent even if you have opted out of offers.</p>
+<p style="margin:0 0 10px;font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#666B62;">{{company_address}}<br>Your details are handled under UK GDPR. <a href="https://{{property_url}}/privacy" style="color:#666B62;text-decoration:underline;">Privacy notice</a></p>
+</td></tr>
+<tr><td align="center" style="padding:8px 0 36px;"><a href="https://booking-booster.co.uk/?ref=guest-email" style="font-family:'Geist Mono', ui-monospace, Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1px;color:#9A9688;text-decoration:none;">POWERED BY <span style="font-family:'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-weight:700;letter-spacing:-0.2px;text-transform:none;font-size:12px;color:#7E7A6E;">bookingbooster</span></a></td></tr>
+</table>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr></table>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# Fly.io: `fly launch --no-deploy`, then `fly volumes create bb_data --size 1`, set secrets with `fly secrets set KEY=value`, then `fly deploy`.
+app = "bookingbooster"
+primary_region = "lhr"
+
+[build]
+
+[env]
+  PORT = "8080"
+  DATA_DIR = "/data"
+
+[mounts]
+  source = "bb_data"
+  destination = "/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/healthz"
+    timeout = "5s"

@@ -1,0 +1,23 @@
+# Supabase project config. Only the parts the GitHub integration deploys matter here: Edge Functions and Storage buckets.
+project_id = "butpfekggdxafkjmfwmh"
+
+[functions.bb]
+# The whole Bookingbooster back end. app.mjs is built by `node supabase/build.js` and committed.
+# JWT checks are off because visitors arrive through the 20i pass-through, which signs each request with the proxy key.
+verify_jwt = false
+entrypoint = "./functions/bb/index.ts"
+
+[functions.guides-a]
+verify_jwt = false
+entrypoint = "./functions/guides-a/index.ts"
+static_files = ["./functions/guides-a/files/*.pdf"]
+
+[functions.guides-b]
+verify_jwt = false
+entrypoint = "./functions/guides-b/index.ts"
+static_files = ["./functions/guides-b/files/*.pdf"]
+
+[storage.buckets.files]
+# Guests' ID photos and hosts' home photos. Private: the back end serves them.
+public = false
+file_size_limit = "10MiB"

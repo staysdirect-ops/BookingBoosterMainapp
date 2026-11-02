@@ -1,0 +1,19 @@
+# Caddy in front of Bookingbooster on a VPS. It gets HTTPS certificates by itself, including for
+# hosts' own domains: before issuing one it asks the app whether that domain is connected.
+{
+	on_demand_tls {
+		ask http://127.0.0.1:8080/tls/ask
+	}
+}
+
+booking-booster.co.uk {
+	reverse_proxy 127.0.0.1:8080
+}
+
+# Hosts' own domains and the free *.SITES_DOMAIN addresses
+https:// {
+	tls {
+		on_demand
+	}
+	reverse_proxy 127.0.0.1:8080
+}
