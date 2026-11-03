@@ -273,6 +273,7 @@ function loginForm(o) {
     '<div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
 }
 
+const MEDIA = new Map(); // /media files, kept in memory once read
 const GUIDES_A = ['direct-booking-playbook.pdf', 'direct-booking-launch-checklist.pdf', 'ai-search-self-audit.pdf', 'fee-leak-worksheet.pdf'];
 /* ---------------- router ---------------- */
 async function route(req, res) {
@@ -402,6 +403,30 @@ async function route(req, res) {
     const f = path.join(ROOT, 'web', 'guides', mm[1]); if (!fs.existsSync(f)) return notFound(res);
     res.writeHead(200, Object.assign({}, SEC, { 'content-type': 'application/pdf', 'cache-control': 'public, max-age=86400', 'content-length': fs.statSync(f).size }));
     return fs.createReadStream(f).pipe(res);
+  }
+  if ((mm = p.match(/^\/media\/([a-z0-9-]+\.(mp4|jpg))$/))) { // explainer video and demo screenshots for the marketing site
+    const type = mm[2] === 'mp4' ? 'video/mp4' : 'image/jpeg';
+    let buf = MEDIA.get(mm[1]);
+    if (!buf) {
+      if (cfg.serverless) { // on Supabase they ship as static files of the small "media" function (see supabase/config.toml)
+        const r = await fetch(cfg.supabaseUrl + '/functions/v1/media/' + mm[1]); if (!r.ok) return notFound(res);
+        buf = Buffer.from(await r.arrayBuffer());
+      } else {
+        const f = path.join(ROOT, 'web', 'media', mm[1]); if (!fs.existsSync(f)) return notFound(res);
+        buf = fs.readFileSync(f);
+      }
+      MEDIA.set(mm[1], buf);
+    }
+    const hd = { 'cache-control': 'public, max-age=86400', 'accept-ranges': 'bytes' };
+    const rg = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || ''));
+    if (rg && (rg[1] || rg[2])) { // browsers (Safari above all) stream video in byte ranges
+      let a = rg[1] ? +rg[1] : Math.max(0, buf.length - +rg[2]), b = rg[1] && rg[2] ? Math.min(+rg[2], buf.length - 1) : buf.length - 1;
+      if (a >= buf.length || a > b) { res.writeHead(416, Object.assign({}, SEC, { 'content-range': 'bytes */' + buf.length })); return res.end(); }
+      res.writeHead(206, Object.assign({}, SEC, hd, { 'content-type': type, 'content-range': 'bytes ' + a + '-' + b + '/' + buf.length, 'content-length': b - a + 1 }));
+      return res.end(req.method === 'HEAD' ? undefined : buf.subarray(a, b + 1));
+    }
+    res.writeHead(200, Object.assign({}, SEC, hd, { 'content-type': type, 'content-length': buf.length }));
+    return res.end(req.method === 'HEAD' ? undefined : buf);
   }
   if ((mm = p.match(/^\/u\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)$/))) {
     const r = await ws.bySlug(mm[1]); const gid = decodeURIComponent(mm[2]);

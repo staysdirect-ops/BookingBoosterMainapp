@@ -60,7 +60,15 @@
     if (theme === 'city') return '<div class="s-scene t-city" aria-hidden="true"><i class="hill"></i><i class="ter"></i><i class="par"></i><i class="win"></i><i class="doors"></i><i class="rail"></i><i class="street"></i></div>';
     return '<div class="s-scene t-cabin" aria-hidden="true"><i class="sun"></i><i class="mtn"></i><i class="mtn m2"></i><i class="tree t1"></i><i class="tree t3"></i><i class="cab"></i><i class="win"></i><i class="tree t2"></i><i class="tree t4"></i></div>';
   }
+  // The demo guest site, shown as a real screenshot in a browser frame (see /media in server/index.js).
+  const DEMO_SHOT = '/media/demo-site.jpg';
+  function shotSite(o) {
+    return '<div class="s-browser s-shot' + (o.cls ? ' ' + o.cls : '') + '">' +
+      '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + 'larchfellcabin.co.uk</span></div>' +
+      '<div class="s-shot-vp"><img src="' + DEMO_SHOT + '" alt="Larch Fell Cabin, a demo booking website made with Bookingbooster" loading="eager"></div></div>';
+  }
   function miniSite(o) {
+    if (o.shot) return shotSite(o);
     const th = o.theme || 'cabin';
     return '<div class="s-browser th-' + th + (o.cls ? ' ' + o.cls : '') + '">' +
       '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + esc(o.domain || 'yourhome.co.uk') + '</span></div>' +
@@ -119,7 +127,7 @@
           '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">★★★★★</span>4.9 average<small>Sample figures</small></span></div>') +
       '</div>' +
       '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
-        '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser' }) + '</div>' +
+        '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser', shot: true }) + '</div>' +
         (r ? '<div class="s-fc s-fc-ai s-rise" style="--d:5"><small>' + icon(r.source === 'ai' ? 'spark' : 'search') + 'Booked via ' + via + '</small>' +
           (r.source === 'ai' ? '<p class="s-fc-q">“' + esc(L.aiQ.q.charAt(0).toUpperCase() + L.aiQ.q.slice(1)) + '?”</p>' : '') +
           '<p><b>' + esc(gname) + ' booked ' + esc(rp.short) + '</b> for ' + BB.dates(r) + '.</p><span class="s-fc-row"><b class="num">' + $(r.total) + '</b><span class="s-cite">' + icon('check') + 'You kept ' + $(Math.round(r.total * FEE())) + '</span></span></div>' : '') +
@@ -133,6 +141,13 @@
     const names = ['Stripe', 'Apple Pay', 'Google Pay', 'Nuki', 'Yale', 'Google Business Profile', 'Google Search Console', 'Email', 'Text messages'];
     return '<section class="s-logos" aria-label="Tools we run for you"><div class="s-w"><p class="eyebrow">Runs on tools you can trust</p><ul>' +
       names.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul></div></section>';
+  }
+
+  function film() {
+    return '<section class="s-sec s-film" id="s-film" aria-label="Explainer video"><div class="s-w">' +
+      '<div class="s-head s-center"><p class="eyebrow">See it in 47 seconds</p><h2 class="s-h2">What Bookingbooster does for your holiday let.</h2></div>' +
+      '<div class="s-film-frame"><video controls preload="none" playsinline poster="/media/explainer.jpg" src="/media/explainer.mp4" aria-label="Bookingbooster explainer video"></video></div>' +
+      '</div></section>';
   }
 
   function pillars(inst, L) {
@@ -293,7 +308,7 @@
         '<span class="s-mp-btn">Start check-in</span></div></div></div>';
       info = ['A check-in app guests actually finish', 'ID, agreement and deposit in three minutes. The door code arrives on its own when they are done.', go('guest', { bookingId: b.id }), 'Open the guest app'];
     } else {
-      prev = miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-tour-browser' });
+      prev = miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-tour-browser', shot: true });
       info = ['A site that books, not just a brochure', 'Live calendar, instant booking, and a price that shows guests what they save by skipping the platform.', go('property', { propertyId: L.p.id }), 'Open a property site'];
     }
     return '<section class="s-sec s-tour-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">Product tour</p><h2 class="s-h2">One login. Four places it shows up.</h2>' +
@@ -348,7 +363,7 @@
 
   function home(inst) {
     const L = liveData();
-    return nav(inst) + hero(inst, L) + logos() + pillars(inst, L) + calc(inst) + aiSection(inst) + how(inst) + tour(inst, L) + customers(inst) + pricing(inst) + faq(inst) + footer();
+    return nav(inst) + hero(inst, L) + logos() + film() + pillars(inst, L) + calc(inst) + aiSection(inst) + how(inst) + tour(inst, L) + customers(inst) + pricing(inst) + faq(inst) + footer();
   }
 
   /* =====================================================================
