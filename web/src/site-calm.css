@@ -1,0 +1,155 @@
+/* Calm theme for the marketing site. Loaded after site.css and wins on equal specificity.
+   One ink (navy), one accent (brand blue), warm whites, hairlines. No yellow, no glows, no tilt. */
+.x-site {
+  --ink: #0F1630; --blue: #2747F5; --paper: #FFFFFF; --cream: #F7F6F2; --hair: #E6E5E0; --hair-2: #D6D5CF; --soft: #5A6386;
+  --primary: var(--blue); --primary-ink: #fff; --primary-soft: #EEF1FE; --accent: var(--ink); --accent-ink: #fff;
+  --fg: var(--ink); --muted: var(--soft); --line: var(--hair); --line-2: var(--hair-2); --surface: var(--paper); --surface-2: var(--cream); --bg: var(--cream);
+  --good: #1F6B4A; --good-soft: #EAF2EC;
+  --s-bg: var(--paper); --s-alt: var(--cream);
+  --font-body: 'DM Sans', 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light; font-family: var(--font-body); background: var(--paper); color: var(--ink);
+}
+.x-site .eyebrow, .x-site .s-ink .eyebrow { font: 600 12.5px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+.x-site .btn { border-radius: 10px; font-weight: 600; box-shadow: none; }
+.x-site .btn.s-glow { box-shadow: none; }
+.x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: #1E2750; }
+.x-site .btn.ghost, .x-site .btn.lg:not(.primary):not(.accent):not(.ink) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
+.x-site .s-anim .s-rise { animation-duration: .6s; }
+
+/* type: calmer display scale */
+.x-site .s-h1 { font: 600 clamp(40px, 5vw, 64px)/1.04 var(--font-display); letter-spacing: -.035em; margin: 22px 0 22px; max-width: 14ch; }
+.x-site .s-hl { background: none; padding: 0; color: var(--soft); }
+.x-site .s-h2 { font: 600 clamp(30px, 3.6vw, 46px)/1.08 var(--font-display); letter-spacing: -.03em; max-width: 20ch; }
+.x-site .s-lead { color: var(--soft); }
+
+/* nav */
+.x-site .s-nav { border-bottom-color: var(--hair); }
+.x-site .s-links button { color: var(--soft); border-radius: 8px; }
+.x-site .s-links button:hover { background: none; color: var(--ink); }
+
+/* hero: flat, no grid, no glows, no tilt, two quiet notes */
+.x-site .s-hero { background: var(--paper); }
+.x-site .s-hero::before { display: none; }
+.x-site .s-tagline { box-shadow: none; border-color: var(--hair); background: var(--cream); color: var(--soft); }
+.x-site .s-tagline b { background: var(--ink); }
+.x-site .s-tagline .ic { color: var(--soft); }
+.x-site .s-hero-browser { transform: none; }
+.x-site .s-browser { box-shadow: 0 1px 0 var(--hair), 0 30px 60px -40px rgba(15,22,48,.35); border: 1px solid var(--hair); }
+.x-site .s-fc { border-radius: 14px; box-shadow: 0 18px 40px -28px rgba(15,22,48,.45), 0 0 0 1px var(--hair); }
+.x-site .s-fc small .ic { color: var(--soft); }
+.x-site .s-fc-fee { display: none; }
+.x-site .s-fc-ic { background: var(--cream); color: var(--ink); }
+.x-site .s-cite { background: var(--cream); color: var(--ink); }
+.x-site .s-stars { color: var(--ink); }
+.x-site .s-proof small { font-family: var(--font-body); letter-spacing: .04em; }
+
+/* integrations strip */
+.x-site .s-logos { background: var(--paper); }
+.x-site .s-logos li { font: 600 15px var(--font-body); letter-spacing: 0; color: #8A8F9F; }
+
+/* pillars: four matching white cards */
+.x-site .s-pil, .x-site .s-pil.blue, .x-site .s-pil.dark, .x-site .s-pil.yel { background: var(--paper); border: 1px solid var(--hair); --pf: var(--ink); --pm: var(--soft); border-radius: 16px; min-height: 360px; }
+.x-site .s-pil:hover { transform: none; box-shadow: 0 0 0 1px var(--hair-2); }
+.x-site .s-pil-n { font: 600 12px var(--font-body); letter-spacing: .06em; color: var(--blue); }
+.x-site .s-pil h3 { font-weight: 600; font-size: 23px; letter-spacing: -.025em; }
+.x-site .s-pil .s-viz > span, .x-site .s-pil.yel .s-viz > span, .x-site .s-pil:not(.blue):not(.dark):not(.yel) .s-viz > span { background: var(--cream); border: 1px solid var(--hair); color: var(--ink); }
+.x-site .s-yel { color: var(--ink); }
+.x-site .s-meter { background: var(--hair) !important; }
+.x-site .s-meter i { background: var(--blue); }
+.x-site .s-up { color: var(--good); }
+.x-site .s-see { font-size: 14px; border-bottom-width: 1px; }
+
+/* calculator: light result card */
+.x-site .s-calc-sec { background: var(--cream); }
+.x-site .s-slider label b { color: var(--ink); font-weight: 600; }
+.x-site .s-slider input[type=range] { height: 4px; background: linear-gradient(90deg, var(--ink) var(--p, 50%), var(--hair-2) var(--p, 50%)); }
+.x-site .s-slider input[type=range]::-webkit-slider-thumb { border-color: var(--ink); width: 22px; height: 22px; box-shadow: 0 2px 6px rgba(15,22,48,.2); }
+.x-site .s-slider input[type=range]::-moz-range-thumb { border-color: var(--ink); box-shadow: 0 2px 6px rgba(15,22,48,.2); }
+.x-site .s-ticks { font-family: var(--font-body); }
+.x-site .s-calc-r { background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 18px; box-shadow: 0 30px 60px -45px rgba(15,22,48,.35); }
+.x-site .s-calc-r::after { display: none; }
+.x-site .s-calc-k { font: 600 12px var(--font-body); letter-spacing: .08em; color: var(--soft); }
+.x-site .s-calc-big { color: var(--ink); font-weight: 600; letter-spacing: -.04em; }
+.x-site .s-calc-sm, .x-site .s-calc-pay, .x-site .s-cmp > div, .x-site .s-calc-r .s-fine { color: var(--soft); }
+.x-site .s-calc-sm b, .x-site .s-calc-pay b, .x-site .s-cmp b { color: var(--ink); }
+.x-site .s-cmp { border-color: var(--hair); }
+.x-site .s-cmp-bar { background: var(--cream); height: 6px; }
+.x-site .s-cmp-bar .kept { background: var(--blue); } .x-site .s-cmp-bar .plan { background: #B9C0D6; }
+.x-site .s-calc-net b { font-weight: 600; }
+
+/* AI band: the one dark section, kept quiet */
+.x-site .s-ink { background: var(--ink); }
+.x-site .s-ink::before { display: none; }
+.x-site .s-ink .eyebrow { color: #9AA1BE; }
+.x-site .s-ink .btn.accent, .x-site .s-ink .btn.primary { background: #fff; border-color: #fff; color: var(--ink); }
+.x-site .s-ink .btn.accent:hover { background: #E9EBF3; }
+.x-site .s-ai-r { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.1); border-radius: 18px; box-shadow: none; }
+.x-site .s-q { background: rgba(255,255,255,.1); }
+.x-site .s-ai-idle span { border-style: solid; border-color: rgba(255,255,255,.14); }
+.x-site .s-ai-hint b { color: #fff; }
+.x-site .s-prog i { background: #fff; }
+.x-site .s-scan li.on { background: rgba(255,255,255,.08); }
+.x-site .s-scan li.done .s-scan-ic { background: #fff; }
+.x-site .s-a { background: rgba(255,255,255,.06); }
+.x-site .s-a small .ic { color: #fff; }
+.x-site .s-eng .warn { color: #E8D9A8; }
+
+/* how it works */
+.x-site .s-steps { border-top: 1px solid var(--ink); }
+.x-site .s-step-n { font: 500 15px var(--font-body); color: var(--soft); letter-spacing: .04em; }
+.x-site .s-step-n::before { content: 'Step '; }
+.x-site .s-steps h3 { font-weight: 600; margin-top: 12px; }
+.x-site .s-url-demo, .x-site .s-bk-demo { font-family: var(--font-body); border-radius: 10px; border-color: var(--hair); }
+.x-site .s-url-demo .ic { color: var(--soft); }
+.x-site .s-chk span { background: var(--cream); color: var(--ink); border: 1px solid var(--hair); }
+.x-site .s-chk .ic { color: var(--good); }
+.x-site .s-bk-demo b { color: var(--ink); }
+
+/* product tour */
+.x-site .s-tour-sec { background: var(--cream); }
+.x-site .s-tabs button { border-radius: 10px; border-color: var(--hair); }
+.x-site .s-tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .s-tour { border-radius: 18px; border-color: var(--hair); }
+.x-site .s-tour-prev { background: var(--cream); }
+.x-site .s-tour-info h3 { font-weight: 600; font-size: 27px; letter-spacing: -.025em; }
+.x-site .s-con aside, .x-site .s-mp-kpi { background: var(--ink); }
+.x-site .s-col .di, .x-site .s-legend .di { background: var(--ink); }
+.x-site .s-col .pl, .x-site .s-legend .pl { background: #CBD0E0; }
+.x-site .s-mp-tabs i.on { color: var(--ink); }
+
+/* quote and stats */
+.x-site .s-quote { background: var(--cream); border: 1px solid var(--hair); border-radius: 18px; }
+.x-site .s-face { background: linear-gradient(180deg, #E9E6DE, #D9D4C8); }
+.x-site .s-face::after { background: var(--ink); }
+.x-site .s-quote blockquote { font-weight: 500; }
+.x-site .s-stats div { border-top-width: 1px; }
+.x-site .s-stats b { font-weight: 600; }
+
+/* pricing: one clean white card */
+.x-site .s-pricing { background: var(--cream); }
+.x-site .s-plan, .x-site .s-plan.hot { background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 18px; transform: none; box-shadow: 0 30px 60px -45px rgba(15,22,48,.35); padding: 32px 30px 30px; }
+.x-site .s-plan.hot .s-plan-tag, .x-site .s-plan.hot .s-plan-bill, .x-site .s-plan.hot .s-amt span { color: var(--soft); }
+.x-site .s-tag { background: var(--cream); color: var(--ink); border: 1px solid var(--hair); }
+.x-site .s-amt b { font-weight: 600; letter-spacing: -.04em; }
+.x-site .s-plan li .ic, .x-site .s-plan.hot li .ic { color: var(--ink); }
+.x-site .s-bill button em { color: var(--soft); }
+
+/* faq */
+.x-site .s-qa h3 button { font-weight: 500; font-size: 17px; }
+.x-site .s-qa.open .s-pm { background: none; color: var(--ink); border-color: var(--hair-2); }
+
+/* closing band: cream, ink text, then a quiet footer */
+.x-site .s-final { background: var(--cream); color: var(--ink); border-top: 1px solid var(--hair); }
+.x-site .s-final::before { display: none; }
+.x-site .s-final-h { font: 600 clamp(36px, 5vw, 64px)/1.04 var(--font-display); letter-spacing: -.035em; }
+.x-site .s-final-h span { color: var(--soft); }
+.x-site .s-final .s-ghost-inv { color: var(--ink); border-color: var(--hair-2); }
+.x-site .s-final .s-ghost-inv:hover { background: var(--paper); }
+.x-site .s-foot { border-top-color: var(--hair); }
+.x-site .s-foot-brand .lockup { color: var(--ink); }
+.x-site .s-foot-brand .mark rect { fill: var(--blue); }
+.x-site .s-foot-brand .mark path[stroke="#fff"] { stroke: #fff; }
+.x-site .s-foot-brand em, .x-site .s-foot-fine { color: var(--soft); }
+.x-site .s-foot nav b { font: 600 12px var(--font-body); letter-spacing: .08em; color: var(--soft); }
+.x-site .s-foot nav button, .x-site .s-foot nav a { color: var(--ink); }

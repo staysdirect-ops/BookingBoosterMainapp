@@ -6634,6 +6634,161 @@ body.p-lock { overflow: hidden; }
   BB.go(SURFACES.some(x => x[0] === start) ? start : 'site');
   paintBar();
 })();
+` }, "/app/web/src/site-calm.css": { "t": `/* Calm theme for the marketing site. Loaded after site.css and wins on equal specificity.
+   One ink (navy), one accent (brand blue), warm whites, hairlines. No yellow, no glows, no tilt. */
+.x-site {
+  --ink: #0F1630; --blue: #2747F5; --paper: #FFFFFF; --cream: #F7F6F2; --hair: #E6E5E0; --hair-2: #D6D5CF; --soft: #5A6386;
+  --primary: var(--blue); --primary-ink: #fff; --primary-soft: #EEF1FE; --accent: var(--ink); --accent-ink: #fff;
+  --fg: var(--ink); --muted: var(--soft); --line: var(--hair); --line-2: var(--hair-2); --surface: var(--paper); --surface-2: var(--cream); --bg: var(--cream);
+  --good: #1F6B4A; --good-soft: #EAF2EC;
+  --s-bg: var(--paper); --s-alt: var(--cream);
+  --font-body: 'DM Sans', 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light; font-family: var(--font-body); background: var(--paper); color: var(--ink);
+}
+.x-site .eyebrow, .x-site .s-ink .eyebrow { font: 600 12.5px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+.x-site .btn { border-radius: 10px; font-weight: 600; box-shadow: none; }
+.x-site .btn.s-glow { box-shadow: none; }
+.x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: #1E2750; }
+.x-site .btn.ghost, .x-site .btn.lg:not(.primary):not(.accent):not(.ink) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
+.x-site .s-anim .s-rise { animation-duration: .6s; }
+
+/* type: calmer display scale */
+.x-site .s-h1 { font: 600 clamp(40px, 5vw, 64px)/1.04 var(--font-display); letter-spacing: -.035em; margin: 22px 0 22px; max-width: 14ch; }
+.x-site .s-hl { background: none; padding: 0; color: var(--soft); }
+.x-site .s-h2 { font: 600 clamp(30px, 3.6vw, 46px)/1.08 var(--font-display); letter-spacing: -.03em; max-width: 20ch; }
+.x-site .s-lead { color: var(--soft); }
+
+/* nav */
+.x-site .s-nav { border-bottom-color: var(--hair); }
+.x-site .s-links button { color: var(--soft); border-radius: 8px; }
+.x-site .s-links button:hover { background: none; color: var(--ink); }
+
+/* hero: flat, no grid, no glows, no tilt, two quiet notes */
+.x-site .s-hero { background: var(--paper); }
+.x-site .s-hero::before { display: none; }
+.x-site .s-tagline { box-shadow: none; border-color: var(--hair); background: var(--cream); color: var(--soft); }
+.x-site .s-tagline b { background: var(--ink); }
+.x-site .s-tagline .ic { color: var(--soft); }
+.x-site .s-hero-browser { transform: none; }
+.x-site .s-browser { box-shadow: 0 1px 0 var(--hair), 0 30px 60px -40px rgba(15,22,48,.35); border: 1px solid var(--hair); }
+.x-site .s-fc { border-radius: 14px; box-shadow: 0 18px 40px -28px rgba(15,22,48,.45), 0 0 0 1px var(--hair); }
+.x-site .s-fc small .ic { color: var(--soft); }
+.x-site .s-fc-fee { display: none; }
+.x-site .s-fc-ic { background: var(--cream); color: var(--ink); }
+.x-site .s-cite { background: var(--cream); color: var(--ink); }
+.x-site .s-stars { color: var(--ink); }
+.x-site .s-proof small { font-family: var(--font-body); letter-spacing: .04em; }
+
+/* integrations strip */
+.x-site .s-logos { background: var(--paper); }
+.x-site .s-logos li { font: 600 15px var(--font-body); letter-spacing: 0; color: #8A8F9F; }
+
+/* pillars: four matching white cards */
+.x-site .s-pil, .x-site .s-pil.blue, .x-site .s-pil.dark, .x-site .s-pil.yel { background: var(--paper); border: 1px solid var(--hair); --pf: var(--ink); --pm: var(--soft); border-radius: 16px; min-height: 360px; }
+.x-site .s-pil:hover { transform: none; box-shadow: 0 0 0 1px var(--hair-2); }
+.x-site .s-pil-n { font: 600 12px var(--font-body); letter-spacing: .06em; color: var(--blue); }
+.x-site .s-pil h3 { font-weight: 600; font-size: 23px; letter-spacing: -.025em; }
+.x-site .s-pil .s-viz > span, .x-site .s-pil.yel .s-viz > span, .x-site .s-pil:not(.blue):not(.dark):not(.yel) .s-viz > span { background: var(--cream); border: 1px solid var(--hair); color: var(--ink); }
+.x-site .s-yel { color: var(--ink); }
+.x-site .s-meter { background: var(--hair) !important; }
+.x-site .s-meter i { background: var(--blue); }
+.x-site .s-up { color: var(--good); }
+.x-site .s-see { font-size: 14px; border-bottom-width: 1px; }
+
+/* calculator: light result card */
+.x-site .s-calc-sec { background: var(--cream); }
+.x-site .s-slider label b { color: var(--ink); font-weight: 600; }
+.x-site .s-slider input[type=range] { height: 4px; background: linear-gradient(90deg, var(--ink) var(--p, 50%), var(--hair-2) var(--p, 50%)); }
+.x-site .s-slider input[type=range]::-webkit-slider-thumb { border-color: var(--ink); width: 22px; height: 22px; box-shadow: 0 2px 6px rgba(15,22,48,.2); }
+.x-site .s-slider input[type=range]::-moz-range-thumb { border-color: var(--ink); box-shadow: 0 2px 6px rgba(15,22,48,.2); }
+.x-site .s-ticks { font-family: var(--font-body); }
+.x-site .s-calc-r { background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 18px; box-shadow: 0 30px 60px -45px rgba(15,22,48,.35); }
+.x-site .s-calc-r::after { display: none; }
+.x-site .s-calc-k { font: 600 12px var(--font-body); letter-spacing: .08em; color: var(--soft); }
+.x-site .s-calc-big { color: var(--ink); font-weight: 600; letter-spacing: -.04em; }
+.x-site .s-calc-sm, .x-site .s-calc-pay, .x-site .s-cmp > div, .x-site .s-calc-r .s-fine { color: var(--soft); }
+.x-site .s-calc-sm b, .x-site .s-calc-pay b, .x-site .s-cmp b { color: var(--ink); }
+.x-site .s-cmp { border-color: var(--hair); }
+.x-site .s-cmp-bar { background: var(--cream); height: 6px; }
+.x-site .s-cmp-bar .kept { background: var(--blue); } .x-site .s-cmp-bar .plan { background: #B9C0D6; }
+.x-site .s-calc-net b { font-weight: 600; }
+
+/* AI band: the one dark section, kept quiet */
+.x-site .s-ink { background: var(--ink); }
+.x-site .s-ink::before { display: none; }
+.x-site .s-ink .eyebrow { color: #9AA1BE; }
+.x-site .s-ink .btn.accent, .x-site .s-ink .btn.primary { background: #fff; border-color: #fff; color: var(--ink); }
+.x-site .s-ink .btn.accent:hover { background: #E9EBF3; }
+.x-site .s-ai-r { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.1); border-radius: 18px; box-shadow: none; }
+.x-site .s-q { background: rgba(255,255,255,.1); }
+.x-site .s-ai-idle span { border-style: solid; border-color: rgba(255,255,255,.14); }
+.x-site .s-ai-hint b { color: #fff; }
+.x-site .s-prog i { background: #fff; }
+.x-site .s-scan li.on { background: rgba(255,255,255,.08); }
+.x-site .s-scan li.done .s-scan-ic { background: #fff; }
+.x-site .s-a { background: rgba(255,255,255,.06); }
+.x-site .s-a small .ic { color: #fff; }
+.x-site .s-eng .warn { color: #E8D9A8; }
+
+/* how it works */
+.x-site .s-steps { border-top: 1px solid var(--ink); }
+.x-site .s-step-n { font: 500 15px var(--font-body); color: var(--soft); letter-spacing: .04em; }
+.x-site .s-step-n::before { content: 'Step '; }
+.x-site .s-steps h3 { font-weight: 600; margin-top: 12px; }
+.x-site .s-url-demo, .x-site .s-bk-demo { font-family: var(--font-body); border-radius: 10px; border-color: var(--hair); }
+.x-site .s-url-demo .ic { color: var(--soft); }
+.x-site .s-chk span { background: var(--cream); color: var(--ink); border: 1px solid var(--hair); }
+.x-site .s-chk .ic { color: var(--good); }
+.x-site .s-bk-demo b { color: var(--ink); }
+
+/* product tour */
+.x-site .s-tour-sec { background: var(--cream); }
+.x-site .s-tabs button { border-radius: 10px; border-color: var(--hair); }
+.x-site .s-tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .s-tour { border-radius: 18px; border-color: var(--hair); }
+.x-site .s-tour-prev { background: var(--cream); }
+.x-site .s-tour-info h3 { font-weight: 600; font-size: 27px; letter-spacing: -.025em; }
+.x-site .s-con aside, .x-site .s-mp-kpi { background: var(--ink); }
+.x-site .s-col .di, .x-site .s-legend .di { background: var(--ink); }
+.x-site .s-col .pl, .x-site .s-legend .pl { background: #CBD0E0; }
+.x-site .s-mp-tabs i.on { color: var(--ink); }
+
+/* quote and stats */
+.x-site .s-quote { background: var(--cream); border: 1px solid var(--hair); border-radius: 18px; }
+.x-site .s-face { background: linear-gradient(180deg, #E9E6DE, #D9D4C8); }
+.x-site .s-face::after { background: var(--ink); }
+.x-site .s-quote blockquote { font-weight: 500; }
+.x-site .s-stats div { border-top-width: 1px; }
+.x-site .s-stats b { font-weight: 600; }
+
+/* pricing: one clean white card */
+.x-site .s-pricing { background: var(--cream); }
+.x-site .s-plan, .x-site .s-plan.hot { background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 18px; transform: none; box-shadow: 0 30px 60px -45px rgba(15,22,48,.35); padding: 32px 30px 30px; }
+.x-site .s-plan.hot .s-plan-tag, .x-site .s-plan.hot .s-plan-bill, .x-site .s-plan.hot .s-amt span { color: var(--soft); }
+.x-site .s-tag { background: var(--cream); color: var(--ink); border: 1px solid var(--hair); }
+.x-site .s-amt b { font-weight: 600; letter-spacing: -.04em; }
+.x-site .s-plan li .ic, .x-site .s-plan.hot li .ic { color: var(--ink); }
+.x-site .s-bill button em { color: var(--soft); }
+
+/* faq */
+.x-site .s-qa h3 button { font-weight: 500; font-size: 17px; }
+.x-site .s-qa.open .s-pm { background: none; color: var(--ink); border-color: var(--hair-2); }
+
+/* closing band: cream, ink text, then a quiet footer */
+.x-site .s-final { background: var(--cream); color: var(--ink); border-top: 1px solid var(--hair); }
+.x-site .s-final::before { display: none; }
+.x-site .s-final-h { font: 600 clamp(36px, 5vw, 64px)/1.04 var(--font-display); letter-spacing: -.035em; }
+.x-site .s-final-h span { color: var(--soft); }
+.x-site .s-final .s-ghost-inv { color: var(--ink); border-color: var(--hair-2); }
+.x-site .s-final .s-ghost-inv:hover { background: var(--paper); }
+.x-site .s-foot { border-top-color: var(--hair); }
+.x-site .s-foot-brand .lockup { color: var(--ink); }
+.x-site .s-foot-brand .mark rect { fill: var(--blue); }
+.x-site .s-foot-brand .mark path[stroke="#fff"] { stroke: #fff; }
+.x-site .s-foot-brand em, .x-site .s-foot-fine { color: var(--soft); }
+.x-site .s-foot nav b { font: 600 12px var(--font-body); letter-spacing: .08em; color: var(--soft); }
+.x-site .s-foot nav button, .x-site .s-foot nav a { color: var(--ink); }
 ` }, "/app/web/src/site.css": { "t": `/* Bookingbooster marketing site and onboarding. Everything is scoped under .x-site and prefixed .s- */
 .x-site { --s-bg: var(--surface); --s-alt: var(--bg); --s-w: 1200px; --s-ease: cubic-bezier(.2,.7,.2,1); background: var(--s-bg); color: var(--fg); overflow-x: clip; font-size: 16px; }
 .x-site .s-root { min-height: 80vh; }
@@ -7610,7 +7765,7 @@ body.p-lock { overflow: hidden; }
     const an = inst.st.annual;
     return '<section class="s-sec s-pricing" id="s-pricing-' + inst.uid + '"><div class="s-w">' +
       '<div class="s-head s-head-row"><div><p class="eyebrow">Pricing</p><h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. A one-off \xA3997 setup fee, your first month free, then \xA3200 a month. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
-        '<div class="seg s-bill" role="group" aria-label="Billing"><button data-bill="m" aria-pressed="' + !an + '">Monthly</button><button data-bill="y" aria-pressed="' + an + '">Annual<em>2 months free</em></button></div></div>' +
+        '</div>' +
       '<div class="s-plans">' + PLANS.map(p => '<article class="s-plan' + (p.hot ? ' hot' : '') + '">' + '' +
         '<h3>' + p.name + '</h3><p class="s-plan-tag">' + p.tag + '</p><div class="s-amt"><b class="num">\xA3' + perMonth(p, an) + '</b><span>/ month</span></div>' +
         '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' Plus a one-off ' + $(p.setup) + ' setup fee. First month free.</p>' +
@@ -7832,7 +7987,6 @@ body.p-lock { overflow: hidden; }
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
       }
       case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">A one-off \xA3997 setup fee, your first month free, then \xA3200 a month. Cancel anytime, prices include VAT.</p>' +
-        '<div class="seg s-bill" role="group" aria-label="Billing"><button data-obbill="m" aria-pressed="' + !ob.annual + '">Monthly</button><button data-obbill="y" aria-pressed="' + ob.annual + '">Annual<em>2 months free</em></button></div>' +
         '<div class="s-obplans" role="radiogroup" aria-label="Plan">' + PLANS.map(p => '<button class="s-obplan' + (ob.plan === p.id ? ' on' : '') + '" role="radio" aria-checked="' + (ob.plan === p.id) + '" data-pick-plan="' + p.id + '">' +
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
           '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' Plus a one-off ' + $(p.setup) + ' setup fee. First month free.</span>' +
@@ -7928,7 +8082,7 @@ body.p-lock { overflow: hidden; }
     create(root, opts, inst) {
       inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = [];
       Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 60000, share: 30, tour: 'console', annual: false, faq: 0,
-        ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: !!opts.annual, addon: !!opts.addon },
+        ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
           opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
       root.classList.add('x-site');
@@ -11767,7 +11921,7 @@ var require_build = __commonJS({
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
     var MODS = ["site", "app", "app-grow", "mobile", "property", "guest"];
     function build() {
-      const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css"))).join("\n");
+      const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css")]).join("\n");
       const core = [rd("store.js"), rd("store-ext.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
       const prodJs = core.concat([rd("sync.js"), rd("shell-prod.js")]).join("\n;\n");
       const demoJs = core.concat([rd("sync.js"), rd("shell.js")]).join("\n;\n");
@@ -11792,7 +11946,7 @@ var require_pages = __commonJS({
     };
     var esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
     var safeJson = (o) => JSON.stringify(o).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
-    var FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Outfit:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap">';
+    var FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:opsz,wght@9..40,400..700&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Outfit:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap">';
     var APP_HEAD = '<link rel="manifest" href="/app/manifest.webmanifest"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bookings"><meta name="apple-mobile-web-app-status-bar-style" content="default"><script>if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("/app/sw.js",{scope:"/app"}).catch(function(){})})</script>';
     function page(o) {
       const js = o.bundle === "demo" ? "demo" : "prod";
@@ -11802,16 +11956,15 @@ var require_pages = __commonJS({
       return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + "</title>" + (o.index ? "" : '<meta name="robots" content="noindex">') + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
     }
     var MARK = '<svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
-    var AUTH_CSS = `:root{--p:#3355FF;--ink:#0A0F2C;--fg:#14161C;--mut:#5B6275;--line:#E3E6EE;--bg:#F5F6FA;--bad:#C2362B}
-@media (prefers-color-scheme:dark){:root{--fg:#ECEEF5;--mut:#A2A8BA;--line:#2A2F44;--bg:#0B0E1E}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 Geist,system-ui,sans-serif}
+    var AUTH_CSS = `:root{--p:#2747F5;--ink:#0F1630;--fg:#0F1630;--mut:#5A6386;--line:#E6E5E0;--bg:#F7F6F2;--bad:#B4362B;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 'DM Sans',Geist,system-ui,sans-serif}
 .au{max-width:440px;margin:0 auto;padding:48px 16px 64px}.au-logo{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font:700 21px 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin-bottom:28px}
-h1{font:700 32px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin:0 0 8px}p{margin:0 0 18px;color:var(--mut)}
+h1{font:600 32px/1.12 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin:0 0 8px}p{margin:0 0 18px;color:var(--mut)}
 form{display:grid;gap:14px;margin-top:22px}label{display:grid;gap:6px;font-weight:600;font-size:14px}
-input{font:inherit;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:inherit}input:focus{outline:2px solid var(--p);outline-offset:1px}
-button{font:inherit;font-weight:700;padding:13px 18px;border-radius:999px;border:0;background:var(--p);color:#fff;cursor:pointer}
+input{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF;background:#fff;color:inherit}input:focus{outline:2px solid var(--p);outline-offset:1px}
+button{font:inherit;font-weight:600;padding:13px 18px;border-radius:10px;border:0;background:var(--ink);color:#fff;cursor:pointer}
 .err{color:var(--bad);font-weight:600;margin:0}.ok{color:#178a4c;font-weight:600}.links{display:flex;justify-content:space-between;gap:12px;margin-top:18px;font-size:14px}a{color:var(--p)}
-.card{background:rgba(127,127,127,.06);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px}
 .au.wide{max-width:1180px}.au.read{max-width:720px}.au.read li{margin-bottom:6px}.wide table td,.wide table th{padding:8px 10px 8px 0}.wide td form{margin-top:6px;gap:4px}.wide td input{padding:7px 10px;font-size:13px;border-radius:8px}.wide td button{padding:7px 14px;font-size:13px}.wide td summary{cursor:pointer;color:var(--p);font-weight:600}.wide td.act{min-width:260px}.wide button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}@media(min-width:760px){.wide details.card>form{grid-template-columns:1fr 1fr}.wide details.card>form>p,.wide details.card>form>button{grid-column:1/-1}}`;
     module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle };
   }
@@ -12001,7 +12154,6 @@ var require_marketing = __commonJS({
           hasOfferCatalog: { "@type": "OfferCatalog", name: "Bookingbooster pricing", itemListElement: [
             offer("One-off setup fee", PRICE.setup, null, { description: "Paid once when you start. Your first month is then free." }),
             offer("Monthly plan", PRICE.month, "MON", { description: "Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
-            offer("Annual plan", PRICE.year, "ANN", { description: "Two months free compared with paying monthly." }),
             offer("Calendar sync add-on", PRICE.addon, "MON", { description: "Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager." })
           ] }
         },
@@ -12015,10 +12167,10 @@ var require_marketing = __commonJS({
     var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
     function content(base, co) {
       const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
-      return '<article class="seo" id="seo"><h1>More direct bookings. Less platform fees.</h1><p>Own your bookings, your guests and your website. Bookingbooster gets your UK holiday let found on Google and in AI answers, brings past guests back, and you stop paying 15% or more on every stay.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. A one-off \xA3" + PRICE.setup + " setup fee, your first month free, then \xA3" + PRICE.month + " a month, or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year (two months free). No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p></article>';
+      return '<article class="seo" id="seo"><h1>More direct bookings. Less platform fees.</h1><p>Own your bookings, your guests and your website. Bookingbooster gets your UK holiday let found on Google and in AI answers, brings past guests back, and you stop paying 15% or more on every stay.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. A one-off \xA3" + PRICE.setup + " setup fee, your first month free, then \xA3" + PRICE.month + " a month. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p></article>';
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.setup + " one-off setup fee, first month free, then \xA3" + PRICE.month + " a month (or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.setup + " one-off setup fee, first month free, then \xA3" + PRICE.month + " a month. All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
     }
     module.exports = { FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
@@ -14050,9 +14202,9 @@ var require_legal = __commonJS({
       ) + sec(
         "Plans and payment",
         "Bookingbooster costs a one-off setup fee of \xA3997. Your first month is free, then it is \xA3200 a month. The calendar sync add-on is \xA315 a month. All prices include VAT. There is no minimum term.",
-        "The setup fee is taken when you start your plan, and the plan is first billed a month later. The setup fee is not refundable once we have started building your site. You can pay yearly instead, for the price of 10 months; the add-on is then billed yearly at 12 months' price.",
-        "We take payment in advance, monthly or yearly, through Stripe. If a payment fails, we will email you and may pause your account until it is paid. We will give you at least 30 days' notice of any price change.",
-        "You can cancel at any time from your console. Your plan runs to the end of the month or year you have paid for. We do not refund part periods, except where the law says we must."
+        "The setup fee is taken when you start your plan, and the plan is first billed a month later. The setup fee is not refundable once we have started building your site.",
+        "We take payment monthly in advance through Stripe. If a payment fails, we will email you and may pause your account until it is paid. We will give you at least 30 days' notice of any price change.",
+        "You can cancel at any time from your console. Your plan runs to the end of the month you have paid for. We do not refund part periods, except where the law says we must."
       ) + sec(
         "Your bookings and your guests",
         [

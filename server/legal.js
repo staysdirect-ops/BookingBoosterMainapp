@@ -59,9 +59,9 @@ module.exports = function (cfg, E) {
       'Bookingbooster is not a channel manager. The only sync is the optional calendar sync add-on, which reads calendar links (iCal) from your channel manager, Airbnb, Vrbo or Booking.com to block dates. It moves dates only. Those sites can be slow to update their own calendar links, so you remain responsible for avoiding double bookings.') +
     sec('Plans and payment',
       'Bookingbooster costs a one-off setup fee of £997. Your first month is free, then it is £200 a month. The calendar sync add-on is £15 a month. All prices include VAT. There is no minimum term.',
-      'The setup fee is taken when you start your plan, and the plan is first billed a month later. The setup fee is not refundable once we have started building your site. You can pay yearly instead, for the price of 10 months; the add-on is then billed yearly at 12 months\' price.',
-      'We take payment in advance, monthly or yearly, through Stripe. If a payment fails, we will email you and may pause your account until it is paid. We will give you at least 30 days\' notice of any price change.',
-      'You can cancel at any time from your console. Your plan runs to the end of the month or year you have paid for. We do not refund part periods, except where the law says we must.') +
+      'The setup fee is taken when you start your plan, and the plan is first billed a month later. The setup fee is not refundable once we have started building your site.',
+      'We take payment monthly in advance through Stripe. If a payment fails, we will email you and may pause your account until it is paid. We will give you at least 30 days\' notice of any price change.',
+      'You can cancel at any time from your console. Your plan runs to the end of the month you have paid for. We do not refund part periods, except where the law says we must.') +
     sec('Your bookings and your guests',
       [
         'Bookings made on your sites are contracts between you and your guest. We are not a party to them.',

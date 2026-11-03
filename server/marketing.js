@@ -56,7 +56,6 @@ function jsonLd(base, co) {
       hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Bookingbooster pricing', itemListElement: [
         offer('One-off setup fee', PRICE.setup, null, { description: 'Paid once when you start. Your first month is then free.' }),
         offer('Monthly plan', PRICE.month, 'MON', { description: 'Everything included for up to ' + PRICE.homes + ' homes. No commission. Cancel anytime.' }),
-        offer('Annual plan', PRICE.year, 'ANN', { description: 'Two months free compared with paying monthly.' }),
         offer('Calendar sync add-on', PRICE.addon, 'MON', { description: 'Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager.' }),
       ] } },
     { '@type': 'FAQPage', '@id': url + '#faq', mainEntity: allFaq().map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
@@ -82,7 +81,7 @@ function content(base, co) {
     '<p><a href="/start">Get my booking site</a> · <a href="/demo">See the live demo</a></p>' +
     '<h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p>').join('') +
     '<h2>How it works</h2><ol>' + STEPS.map(([h, p]) => '<li><strong>' + esc(h) + '.</strong> ' + esc(p) + '</li>').join('') + '</ol>' +
-    '<h2>Pricing</h2><p>One plan, done for you. A one-off £' + PRICE.setup + ' setup fee, your first month free, then £' + PRICE.month + ' a month, or £' + PRICE.year.toLocaleString('en-GB') + ' a year (two months free). No commission on bookings. Cancel anytime. Prices include VAT. Covers up to ' + PRICE.homes + ' homes.</p>' +
+    '<h2>Pricing</h2><p>One plan, done for you. A one-off £' + PRICE.setup + ' setup fee, your first month free, then £' + PRICE.month + ' a month. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to ' + PRICE.homes + ' homes.</p>' +
     li(INCLUDED) + '<p>Optional calendar sync add-on: £' + PRICE.addon + ' a month.</p>' +
     '<h2>Questions hosts ask</h2>' + allFaq().map(([q, a]) => '<h3>' + esc(q) + '</h3><p>' + esc(a) + '</p>').join('') +
     '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p>' +
@@ -95,7 +94,7 @@ function llms(base, co) {
     '> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n' +
     '## Key facts\n\n' +
     '- Website: ' + base + '/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd’s huts)\n' +
-    '- Price: £' + PRICE.setup + ' one-off setup fee, first month free, then £' + PRICE.month + ' a month (or £' + PRICE.year.toLocaleString('en-GB') + ' a year). All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
+    '- Price: £' + PRICE.setup + ' one-off setup fee, first month free, then £' + PRICE.month + ' a month. All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
     '- Calendar sync add-on: £' + PRICE.addon + ' a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
     '## What is included\n\n' + INCLUDED.map(x => '- ' + x).join('\n') + '\n\n' +
     '## How it works\n\n' + STEPS.map(([h, p], i) => (i + 1) + '. ' + h + ': ' + p).join('\n') + '\n\n' +
