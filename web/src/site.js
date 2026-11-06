@@ -111,29 +111,30 @@
   }
 
   function hero(inst, L) {
-    const r = L.found, g = r && BB.q.guest(r.guestId), rp = r && BB.q.property(r.propertyId);
-    const gname = g ? g.name.split(' ')[0] + ' ' + (g.name.split(' ')[1] || '')[0] + '.' : '';
-    const via = r && r.source === 'ai' ? 'ChatGPT' : r && r.source === 'google' ? 'Google search' : 'your site';
-    const ret = Math.round(L.m.returningShare * 100);
-    const retNames = L.s.guests.filter(x => x.tags.includes('Repeat')).slice(0, 3).map(x => x.name);
-    return '<section class="s-hero" id="s-top-' + inst.uid + '"><div class="s-w s-hero-in">' +
-      '<div class="s-hero-copy">' +
-        '<button class="s-tagline s-rise" style="--d:0" data-scroll="ai"><b>New</b>Does AI recommend your holiday let?' + icon('arrow') + '</button>' +
-        '<h1 class="s-h1 s-rise" style="--d:1">More direct bookings. <span class="s-hl">Less platform fees.</span></h1>' +
-        '<p class="s-lead s-rise" style="--d:2">Own your bookings, your guests and your website. We get your holiday let found on Google and in AI answers, bring past guests back, and you stop paying 15% or more on every stay.</p>' +
-        '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg s-glow" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'See the live demo</button></div>' +
-        (LIVE() ? '<div class="s-proof s-rise" style="--d:4"><span><b>No commission on bookings.</b> First month free. Prices include VAT.</span></div>'
-          : '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
-          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">★★★★★</span>4.9 average<small>Sample figures</small></span></div>') +
+    const pillar = (ic, t, d) => '<li><span class="s-h2-ic">' + icon(ic) + '</span><span><b>' + t + '</b><em>' + d + '</em></span></li>';
+    return '<section class="s-hero s-hero2" id="s-top-' + inst.uid + '"><div class="s-w">' +
+      '<div class="s-hero2-in">' +
+        '<div class="s-hero-copy">' +
+          '<p class="s-hero2-kick s-rise" style="--d:0">For UK holiday let and short-term let hosts</p>' +
+          '<h1 class="s-h1 s-rise" style="--d:1">Your holiday let, <span class="s-hl">booked direct.</span></h1>' +
+          '<p class="s-lead s-rise" style="--d:2">We build your booking website, get it found on Google and in AI answers, take the payments and bring past guests back. One system, done for you, with no commission on bookings.</p>' +
+          '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'Try the demo</button></div>' +
+          '<p class="s-hero2-price s-rise" style="--d:4"><b>£997 setup, first month free,</b> then £200 a month. Prices include VAT. Cancel anytime.</p>' +
+        '</div>' +
+        '<div class="s-hero2-stage s-rise" style="--d:2" aria-label="What hosts get: a booking website, found on Google and AI assistants, with a guest app">' +
+          miniSite({ shot: true, cls: 's-hero2-browser' }) +
+          '<div class="s-hero2-card s-hc-ai"><small>' + BB.aiName('chatgpt', 'ChatGPT') + '</small><p>For a cabin with a hot tub near Windermere, try <b>Larch Fell Cabin</b>. You can book direct on its own site.</p><span class="s-hc-link">' + icon('lock') + 'larchfellcabin.co.uk</span></div>' +
+          '<div class="s-hero2-card s-hc-g"><small>' + BB.aiName('google', 'Google') + '</small><b>Larch Fell Cabin · Lake District</b><span>Cabin with private hot tub near Windermere. Book direct with no booking fee.</span></div>' +
+          '<div class="s-hero2-card s-hc-app"><span class="s-hc-ic">' + icon('key') + '</span><span><b>Check-in tomorrow</b><em>Door code and directions sent to your guest</em></span></div>' +
+        '</div>' +
       '</div>' +
-      '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
-        '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser', shot: true }) + '</div>' +
-        (r ? '<div class="s-fc s-fc-ai s-rise" style="--d:5"><small>' + icon(r.source === 'ai' ? 'spark' : 'search') + 'Booked via ' + via + '</small>' +
-          (r.source === 'ai' ? '<p class="s-fc-q">“' + esc(L.aiQ.q.charAt(0).toUpperCase() + L.aiQ.q.slice(1)) + '?”</p>' : '') +
-          '<p><b>' + esc(gname) + ' booked ' + esc(rp.short) + '</b> for ' + BB.dates(r) + '.</p><span class="s-fc-row"><b class="num">' + $(r.total) + '</b><span class="s-cite">' + icon('check') + 'You kept ' + $(Math.round(r.total * FEE())) + '</span></span></div>' : '') +
-        '<div class="s-fc s-fc-bk s-rise" style="--d:6"><span class="s-faces">' + retNames.map(n => BB.avatar(n, 'sm')).join('') + '</span><span><small>Returning guests</small><b><span class="num">' + ret + '%</span> of bookings</b><em>came from guests who stayed before</em></span></div>' +
-        '<div class="s-fc s-fc-fee s-rise" style="--d:7"><small>Fees kept this year</small><b class="num">' + $(L.m.saved) + '</b><span class="s-bars">' + [32, 44, 51, 63, 78, 100].map(h => '<i style="height:' + h + '%"></i>').join('') + '</span></div>' +
-      '</div>' +
+      '<ul class="s-hero2-pillars s-rise" style="--d:5">' +
+        pillar('web', 'Booking website', 'Your domain, card payments') +
+        pillar('search', 'Google SEO', 'Local pages every month') +
+        pillar('spark', 'AI search', 'ChatGPT, Gemini, Perplexity') +
+        pillar('phone', 'Guest app', 'Check-in, door codes, messages') +
+        pillar('send', 'Guest outreach', 'Emails and texts that bring guests back') +
+      '</ul>' +
     '</div></section>';
   }
 
@@ -244,18 +245,42 @@
         '<div class="s-ai-cta"><button class="btn accent" data-act="start">Fix my AI visibility' + icon('arrow') + '</button><button class="btn s-ghost-inv"' + go('app', { view: 'ai' }) + '>See the weekly AI report</button></div>' +
       '</div>';
     }
-    return '<section class="s-ink" id="s-ai-' + u + '"><div class="s-w s-ai">' +
-      '<div class="s-ai-l"><p class="eyebrow">AI search</p><h2 class="s-h2">Travellers ask AI where to stay. Be the answer.</h2>' +
-        '<p class="s-sub">We track the questions guests ask about your area and shape your site so assistants recommend it, with a link that books direct.</p>' +
-        '<form class="s-ai-form" data-form="ai" novalidate>' +
-          '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
-          '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
-          '<button class="btn accent lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking…' : 'Check') + '</button>' +
-          (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
-        '</form>' +
-        '<p class="s-fine">Demo: this check is simulated with sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+    const ok = icon('check');
+    return '<section class="s-ink s-ai2" id="s-ai-' + u + '"><div class="s-w">' +
+      '<div class="s-ai2-head">' +
+        '<p class="eyebrow">AI search</p>' +
+        '<h2 class="s-h2">Travellers now ask AI where to stay. We make sure it names you.</h2>' +
+        '<p class="s-sub">More guests start with ChatGPT, Gemini, Perplexity or Google’s AI answers instead of scrolling a listings site. Those assistants recommend the places they can read and trust. We make your booking site one of them, with a link that books direct.</p>' +
+        '<div class="s-ai2-logos">' + ENGINES.map(([k, t]) => '<span>' + BB.aiName(k, t) + '</span>').join('') + '</div>' +
       '</div>' +
-      '<div class="s-ai-r" aria-live="polite">' + panel + '</div>' +
+      '<ol class="s-ai2-steps">' +
+        '<li><span class="s-ai2-n">1</span><h3>A guest asks</h3><p>They type a real question about your area, the way they would ask a friend.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-bubble">' + esc(question) + '</div></div></li>' +
+        '<li><span class="s-ai2-n">2</span><h3>The assistant reads the web</h3><p>It looks for clear, trusted facts. We put them on your site in the format assistants read.</p>' +
+          '<div class="s-ai2-viz"><ul class="s-ai2-src">' +
+            ['Your booking site, with structured data', 'Questions and answers about your home', 'Google Business Profile and reviews', 'An open door for AI crawlers'].map(t => '<li>' + ok + esc(t) + '</li>').join('') +
+          '</ul></div></li>' +
+        '<li><span class="s-ai2-n">3</span><h3>It recommends you</h3><p>Your home appears in the answer, with a link to your own site, so the guest books without a platform fee.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-ans"><small>' + BB.aiName('chatgpt', 'ChatGPT') + '</small><p><b>Larch Fell Cabin</b> is a cosy cabin with a private hot tub and fell views, ten minutes from Windermere.</p><span class="s-ai2-link">' + icon('lock') + 'larchfellcabin.co.uk<em>Book direct</em></span></div></div></li>' +
+      '</ol>' +
+      '<div class="s-ai2-weekly"><h3>What we do for you, every week</h3><ul>' +
+        '<li><b>Ask the questions guests ask.</b><span>We put travellers’ questions about your area to each assistant and read every answer.</span></li>' +
+        '<li><b>Make your site easy for AI to read.</b><span>Structured data, clear answers about your home, a sitemap and an llms.txt file.</span></li>' +
+        '<li><b>Fill the gaps.</b><span>When an assistant recommends someone else, we add the local pages and facts that were missing.</span></li>' +
+        '<li><b>Show you the score.</b><span>A weekly AI visibility report in your console, so you can see it move.</span></li>' +
+      '</ul></div>' +
+      '<div class="s-ai2-check">' +
+        '<div class="s-ai2-form"><h3>Check your area now</h3><p>See what assistants say when a traveller asks about stays near you.</p>' +
+          '<form class="s-ai-form" data-form="ai" novalidate>' +
+            '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
+            '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
+            '<button class="btn primary lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking…' : 'Check my area') + '</button>' +
+            (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
+          '</form>' +
+          '<p class="s-fine">This preview uses sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+        '</div>' +
+        '<div class="s-ai-r" aria-live="polite"><div class="s-ai2-win"><i></i><i></i><i></i><span>AI answer check</span></div><div class="s-ai2-body">' + panel + '</div></div>' +
+      '</div>' +
     '</div></section>';
   }
   function runAi(inst) {
