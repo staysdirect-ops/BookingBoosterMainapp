@@ -26,6 +26,7 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 | `/ical/…/<token>.ics` | Each home's calendar feed for Airbnb, Vrbo or a channel manager to read |
 | `/app/account` | The host's details, password, data download (JSON and guest list CSV) and account deletion |
 | `/admin` | Team only (`ADMIN_EMAILS`): leads, their follow-up emails, live demo settings, host accounts and the latest backup |
+| `/admin/campaigns` | Team only: email campaigns to leads and hosts (write, test, send or schedule, opens and clicks) |
 | `/guides/<name>.pdf` | The free guides that the lead forms promise |
 
 ## What works in a real account
@@ -66,6 +67,17 @@ Every lead form starts its own email series (`server/lead-emails.js`), signed by
 | Ledger and Done-for-you sites | One email saying the message arrived and what happens next |
 
 Series stop when someone unsubscribes (every email has a link) or signs up for an account. Emails more than three days late are skipped rather than sent in a burst. In `/admin`, "Waiting for you" means the next email needs something from the team first.
+
+## Team email campaigns
+
+`/admin/campaigns` is the team's email marketing tool (`server/campaigns.js`, pages in `server/campaigns-admin.js`).
+
+- **Write** a campaign in the branded layout: subject, preview line, heading, text (blank lines for paragraphs, `- ` for lists, `**bold**`, `[words](https://link)`) and an optional button. Personal fields such as `{{first_name}}` work in the subject and text. The five designed campaigns (fee check, AI search check, demo invite, Direct Booking Digest, yearly offer) are there too, and any campaign can be copied as a new draft.
+- **Audiences:** all leads or one lead form (fee leak, AI audit, live demo, call), all host accounts or hosts by billing state (paying, not paid yet, payment failed, cancelled), or everyone. Contact-form enquiries are never included. Anyone who unsubscribed, leads who signed up or whose emails the team stopped, and hosts who turned off "News and offers" are always left out.
+- **Sending:** send yourself a test first, then type the number of people to confirm and send now or pick a UK date and time. Big lists go out in batches from the background job. A campaign never reaches the same person twice, and failed sends can be retried. A send in progress can be stopped and a schedule cancelled.
+- **Results:** unique opens (a guide only, because some email apps load or block images), unique clicks with the links people clicked, unsubscribes from that campaign's link, and failures. Every email has a one-click unsubscribe (`List-Unsubscribe`).
+
+Hosts can switch "News and offers" off in their account page or with the link in each campaign email. Everything is kept in the `kv` table, so this needs no database change.
 
 ## Emails to hosts
 

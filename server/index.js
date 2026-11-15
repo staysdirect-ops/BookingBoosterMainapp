@@ -58,6 +58,8 @@ const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
 const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
+const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
+const campaignsAdmin = require('./campaigns-admin');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
@@ -384,15 +386,21 @@ async function route(req, res) {
     const dest = prop ? urls.site(w, prop) : cfg.baseUrl;
     return redirect(res, dest + (c.body && c.body.promo ? (dest.includes('?') ? '&' : '?') + 'promo=' + encodeURIComponent(c.body.promo) + '&utm_source=email&utm_campaign=' + encodeURIComponent(cid) : (dest.includes('?') ? '&' : '?') + 'utm_source=email&utm_campaign=' + encodeURIComponent(cid)));
   }
-  if ((mm = p.match(/^\/u\/host\/([A-Za-z0-9_-]+)\/(setup|report)\/([A-Za-z0-9_-]+)$/))) {
+  if ((mm = p.match(/^\/u\/host\/([A-Za-z0-9_-]+)\/(setup|report|news)\/([A-Za-z0-9_-]+)$/))) {
     if (!hostMail.verifyUnsub(mm[1], mm[2], mm[3])) return notFound(res);
-    const what = mm[2] === 'setup' ? 'setup tips' : 'the Monday report';
-    if (m === 'POST') { await hostMail.setPrefs(mm[1], { [mm[2]]: false }); return send(res, 200, pages.plain({ title: 'Unsubscribed', body: '<h1>Done. No more ' + what + '.</h1><p>Booking, billing and security emails about your account still arrive. You can switch ' + what + ' back on in your account page.</p>' })); }
+    const what = mm[2] === 'setup' ? 'setup tips' : mm[2] === 'news' ? 'news and offers' : 'the Monday report';
+    if (m === 'POST') { await hostMail.setPrefs(mm[1], { [mm[2]]: false }); if (u.searchParams.get('c')) await campaigns.unsubscribed(u.searchParams.get('c'), 'h' + mm[1]); return send(res, 200, pages.plain({ title: 'Unsubscribed', body: '<h1>Done. No more ' + what + '.</h1><p>Booking, billing and security emails about your account still arrive. You can switch ' + what + ' back on in your account page.</p>' })); }
     return send(res, 200, pages.plain({ title: 'Unsubscribe', body: '<h1>Stop ' + what + '?</h1><p>Booking, billing and security emails still arrive.</p><form method="post"><button type="submit">Stop ' + what + '</button></form>' }));
+  }
+  // Team campaign opens and clicks (server/campaigns.js): one count per person, signed links only.
+  if ((mm = p.match(/^\/t\/m\/([a-z0-9-]+)\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)\/(o\.gif|c)$/))) {
+    const r = await campaigns.hit(mm[1], mm[2], mm[3], mm[4] === 'c' ? 'c' : 'o', u.searchParams.get('u'), u.searchParams.get('k'));
+    if (mm[4] === 'o.gif') return send(res, 200, Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'), 'image/gif', { 'cache-control': 'no-store' });
+    return redirect(res, r.to || cfg.baseUrl);
   }
   if ((mm = p.match(/^\/u\/lead\/(\d+)\/([A-Za-z0-9_-]+)$/))) {
     if (!auth.verify(mm[2], 'lead', mm[1])) return notFound(res);
-    if (m === 'POST') { await leads.unsubscribe(+mm[1]); return send(res, 200, pages.plain({ title: 'Unsubscribed', body: '<h1>You are unsubscribed.</h1><p>We will not email you again about our guides, tips or offers.</p>' })); }
+    if (m === 'POST') { await leads.unsubscribe(+mm[1]); if (u.searchParams.get('c')) await campaigns.unsubscribed(u.searchParams.get('c'), 'l' + mm[1]); return send(res, 200, pages.plain({ title: 'Unsubscribed', body: '<h1>You are unsubscribed.</h1><p>We will not email you again about our guides, tips or offers.</p>' })); }
     return send(res, 200, pages.plain({ title: 'Unsubscribe', body: '<h1>Stop emails from Bookingbooster?</h1><p>No more guides, tips or offers. This takes one click.</p><form method="post"><button type="submit">Unsubscribe</button></form>' }));
   }
   if ((mm = p.match(/^\/guides\/([a-z0-9-]+\.pdf)$/))) {
@@ -466,6 +474,8 @@ async function route(req, res) {
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
+  if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
+  if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) { if (!await isAdmin(req)) return notFound(res); return await campaignsAdmin({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me })(req, res, p, m, u); }
   if (p === '/admin/backup') {
     if (!await isAdmin(req)) return notFound(res);
     const name = 'bookingbooster-' + new Date().toISOString().slice(0, 10) + '.json';
@@ -666,7 +676,7 @@ async function adminPage(req, res, note) {
     '<label>Walkthrough call joining link' + inp('meeting_url', st.meeting_url, 'https://meet.google.com/…') + '</label><label>Page where people book a walkthrough' + inp('book_call_url', st.book_call_url, 'https://…/book-call') + '</label>' +
     '<label>Sample audit report page' + inp('sample_report_url', st.sample_report_url, 'https://…/sample-report') + '</label><button>Save</button></form></details>';
   send(res, 200, authPage('Team', '<h1>Leads and accounts</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + '<p>' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.</p>' +
-    stripeLine(await stripeAuto.status()) + '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
+    stripeLine(await stripeAuto.status()) + '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> · write, schedule and track emails to leads and hosts</p>' + '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
     '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div>' +
     '<div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map(a => '<tr><td>' + d(a.created_at) + '</td><td>' + E(a.slug) + '</td><td>' + E(a.plan || '') + '</td><td>' + E(a.billing_status || '') + '</td></tr>').join('') + '</table></div>', true), 'text/html; charset=utf-8');
 }
@@ -718,7 +728,7 @@ async function accountPage(w, sess, note, err) {
   return authPage('Account', '<h1>Your account</h1><p>' + E(a.business) + '</p>' + (err ? '<p class="err" role="alert">' + E(err) + '</p>' : '') + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + '</p>' : '') +
     '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp('Your name', 'owner', a.owner, 'text', ' required autocomplete="name"') + inp('Business name', 'business', a.business, 'text', ' required') + inp('Email you sign in with', 'email', sess.email, 'email', ' required autocomplete="email"') + '<button>Save details</button></form>' +
     '<form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp('Current password', 'current', '', 'password', ' required autocomplete="current-password"') + inp('New password (at least 10 characters)', 'next', '', 'password', ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form>' +
-    '<form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box('report', pr.report, 'The Monday report: last week’s bookings, direct revenue and site visits') + box('setup', pr.setup, 'Setup tips in your first month') +
+    '<form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box('report', pr.report, 'The Monday report: last week’s bookings, direct revenue and site visits') + box('setup', pr.setup, 'Setup tips in your first month') + box('news', pr.news, 'News and offers from Bookingbooster, now and then') +
     '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form>' +
     '<div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div>' +
     '<form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' +
@@ -735,7 +745,7 @@ async function accountPost(req, res, p, w, sess) {
     await auth.setEmail(sess.user_id, email, owner); await ws.act(w.id, 'updateAccount', [{ owner, business, email }]);
     return redirect(res, '/app/account?msg=saved');
   }
-  if (p === '/app/account/emails') { await hostMail.setPrefs(w.id, { report: !!f.report, setup: !!f.setup }); return redirect(res, '/app/account?msg=emails#emails'); }
+  if (p === '/app/account/emails') { await hostMail.setPrefs(w.id, { report: !!f.report, setup: !!f.setup, news: !!f.news }); return redirect(res, '/app/account?msg=emails#emails'); }
   if (p === '/app/account/password') {
     if (String(f.next || '').length < 10) return await page('Use a new password of at least 10 characters.');
     if (!await auth.changePassword(sess.user_id, f.current, f.next)) return await page('Your current password is not right.');
@@ -799,6 +809,7 @@ async function runTick(t) {
   try { await visits.flush(ws); } catch (e) { log('visits', e.message); }
   bg('leads', leads.run(t));
   bg('host email', hostMail.run(t));
+  bg('campaigns', campaigns.run(t));
   bg('stripe', stripeAuto.ensure(t)); // creates the Stripe prices and webhooks once a key is set
   for (const id of await ws.liveIds()) {
     try {
