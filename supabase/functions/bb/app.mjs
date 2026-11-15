@@ -14139,7 +14139,7 @@ var require_host_emails = __commonJS({
         }
       };
       const put = (k, o) => kvSet.run(k, JSON.stringify(o));
-      const prefs = async (wid) => Object.assign({ setup: true, report: true }, await get("hostprefs:" + wid));
+      const prefs = async (wid) => Object.assign({ setup: true, report: true, news: true }, await get("hostprefs:" + wid));
       const setPrefs = async (wid, p) => put("hostprefs:" + wid, Object.assign(await prefs(wid), p));
       const E = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
       const fill = (tpl, v) => tpl.replace(/\{\{([a-z_]+)\}\}/g, (m, k) => E(v[k]));
@@ -14384,7 +14384,7 @@ var require_host_emails = __commonJS({
           null
         );
       }
-      return { run, paymentFailed, report, checklist, prefs, setPrefs, unsubUrl: unsub, verifyUnsub: (wid, kind, sig) => ["setup", "report"].includes(kind) && auth.verify(sig, "hostmail", wid, kind) };
+      return { run, paymentFailed, report, checklist, prefs, setPrefs, unsubUrl: unsub, verifyUnsub: (wid, kind, sig) => ["setup", "report", "news"].includes(kind) && auth.verify(sig, "hostmail", wid, kind) };
     };
   }
 });
@@ -14392,15 +14392,36 @@ var require_host_emails = __commonJS({
 // server/campaigns.js
 var require_campaigns = __commonJS({
   "server/campaigns.js"(exports, module) {
+    var crypto = __require("crypto");
     var AUDIENCE_SEQS = ["fee", "audit", "webinar", "call"];
     var AIRBNB_GUEST_FEE = 0.14;
     var GROWTH_YEAR = 200 * 12;
     var pounds = (n) => "\xA3" + Math.round(n).toLocaleString("en-GB");
-    module.exports = function({ db, cfg, msg, auth, leads, log }) {
+    var esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    var AUDIENCES = {
+      "leads:all": { label: "All leads", about: "Everyone who asked for our tips, an audit, the live demo or a call" },
+      "leads:fee": { label: "Leads: Fee Leak Calculator", about: "Leads from the fee leak opt-in" },
+      "leads:audit": { label: "Leads: AI audit requests", about: "Leads who asked for an AI search audit" },
+      "leads:webinar": { label: "Leads: live demo sign-ups", about: "Leads who registered for the live demo" },
+      "leads:call": { label: "Leads: booked a call", about: "Leads who booked a walkthrough call" },
+      "hosts:all": { label: "All host accounts", about: "Every host with a Bookingbooster account" },
+      "hosts:active": { label: "Hosts: paying", about: "Hosts whose plan is active" },
+      "hosts:trial": { label: "Hosts: not paid yet", about: "Hosts who signed up but have not paid the setup fee" },
+      "hosts:past_due": { label: "Hosts: payment failed", about: "Hosts whose last plan payment failed" },
+      "hosts:cancelled": { label: "Hosts: cancelled", about: "Hosts who cancelled their plan" },
+      everyone: { label: "Everyone", about: "All leads and all host accounts (each email once)" }
+    };
+    var BATCH_MS = 2e4;
+    module.exports = function({ db, cfg, msg, auth, leads, hostMail, log }) {
       const q = {
         kvGet: db.prepare("SELECT v FROM kv WHERE k = ?"),
         kvSet: db.prepare("INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)"),
+        kvAdd: db.prepare("INSERT OR IGNORE INTO kv (k, v) VALUES (?, ?)"),
+        kvDel: db.prepare("DELETE FROM kv WHERE k = ?"),
+        kvLike: db.prepare("SELECT k, v FROM kv WHERE k LIKE ?"),
+        kvDelLike: db.prepare("DELETE FROM kv WHERE k LIKE ?"),
         leads: db.prepare("SELECT l.id, l.email, l.name, l.kind, l.data, l.created_at, s.seq, s.status, s.vars FROM leads l JOIN lead_seq s ON s.lead_id = l.id ORDER BY l.created_at DESC"),
+        hosts: db.prepare("SELECT u.email, u.name, w.id AS wid, w.slug, w.plan, w.billing_status FROM users u JOIN workspaces w ON w.id = u.workspace_id WHERE w.kind = 'live' ORDER BY w.created_at DESC"),
         optedOut: db.prepare("SELECT email FROM lead_optout"),
         users: db.prepare("SELECT lower(email) AS email FROM users")
       };
@@ -14426,9 +14447,9 @@ var require_campaigns = __commonJS({
         } catch (_) {
         }
         const prop = String(d.property || d.property_name || d.business || "").trim().slice(0, 80);
-        return Object.assign({}, d, v, { first_name: String(l.name || "").trim().split(/\s+/)[0] || "there", property_name: prop || "your holiday let", seq: l.seq });
+        return Object.assign({}, d, v, { first_name: String(l.name || "").trim().split(/\s+/)[0] || "there", name: String(l.name || "").trim(), email: l.email, property_name: prop || "your holiday let", business: prop || "your holiday let", seq: l.seq });
       }
-      const C = [
+      const D = [
         {
           key: "fee-check",
           tpl: "host-m01-fee-leak",
@@ -14531,161 +14552,580 @@ var require_campaigns = __commonJS({
           fit: () => false
         }
       ];
-      const byKey = (k) => C.find((c) => c.key === k);
-      async function state(c) {
-        const s = await get("campaign:" + c.key) || {};
-        const settings = Object.assign({}, Object.fromEntries(c.needs.map(([k, , d]) => [k, d || ""])), s.settings);
-        return Object.assign({ status: "draft", subject: c.subject, preview: c.preview, sent: {}, sent_at: 0, tests: 0 }, s, { settings });
-      }
-      async function save(key, patch) {
-        const c = byKey(key);
-        if (!c) return null;
-        const s = await state(c);
-        if (s.status === "sent") return s;
-        if (patch.subject !== void 0) s.subject = String(patch.subject).trim().slice(0, 150) || c.subject;
-        if (patch.preview !== void 0) s.preview = String(patch.preview).trim().slice(0, 200) || c.preview;
-        for (const [k] of c.needs) if (patch[k] !== void 0) s.settings[k] = String(patch[k]).trim().slice(0, 300);
-        await put("campaign:" + key, s);
+      const design = (k) => D.find((d) => d.key === k);
+      const validId = (id) => /^[a-z0-9-]{2,40}$/.test(String(id || ""));
+      const index = async () => await get("campaigns:index") || [];
+      function shape(id, s) {
+        const d = s && s.design ? design(s.design) : design(id);
+        if (!s && !d) return null;
+        s = Object.assign({
+          id,
+          kind: d ? "designed" : "custom",
+          design: d ? d.key : "",
+          name: d ? d.name : "Untitled campaign",
+          audience: d ? "leads:all" : "leads:all",
+          status: "draft",
+          subject: d ? d.subject : "",
+          preview: d ? d.preview : "",
+          heading: "",
+          body: "",
+          button_label: "",
+          button_url: "",
+          sent: {},
+          failed: {},
+          sent_at: 0,
+          scheduled_at: 0,
+          started_at: 0,
+          tests: 0,
+          created_at: 0
+        }, s || {});
+        if (d) s.settings = Object.assign({}, Object.fromEntries(d.needs.map(([k, , def]) => [k, def || ""])), s.settings);
+        else s.settings = s.settings || {};
+        s.failed = s.failed || {};
         return s;
       }
-      function common(c, s, lead, now) {
-        const unsub = lead ? cfg.baseUrl + "/u/lead/" + lead.id + "/" + auth.sign("lead", lead.id) : "#";
+      async function load(id) {
+        if (!validId(id)) return null;
+        return shape(id, await get("campaign:" + id));
+      }
+      const save = (s) => put("campaign:" + s.id, Object.assign(s, { updated_at: Date.now() }));
+      async function all() {
+        const ids = D.map((d) => d.key).concat(await index());
+        return (await Promise.all(ids.map(load))).filter(Boolean);
+      }
+      const defOf = (s) => s.kind === "designed" ? design(s.design) : null;
+      async function create(o) {
+        o = o || {};
+        const now = Date.now();
+        const id = "c-" + now.toString(36) + crypto.randomBytes(2).toString("hex");
+        const s = shape(id, {
+          id,
+          kind: "custom",
+          name: String(o.name || "New campaign").trim().slice(0, 80) || "New campaign",
+          audience: AUDIENCES[o.audience] ? o.audience : "leads:all",
+          subject: "",
+          preview: "",
+          heading: "",
+          body: "Hi {{first_name}},\n\n",
+          button_label: "",
+          button_url: "",
+          created_at: now
+        });
+        await save(s);
+        await put("campaigns:index", (await index()).concat(id));
+        return s;
+      }
+      async function duplicate(id) {
+        const src = await load(id);
+        if (!src) return null;
+        const now = Date.now();
+        const nid = "c-" + now.toString(36) + crypto.randomBytes(2).toString("hex");
+        const s = shape(nid, {
+          id: nid,
+          kind: src.kind,
+          design: src.design,
+          name: (src.name + " (copy)").slice(0, 80),
+          audience: src.audience,
+          subject: src.subject,
+          preview: src.preview,
+          heading: src.heading,
+          body: src.body,
+          button_label: src.button_label,
+          button_url: src.button_url,
+          settings: Object.assign({}, src.settings),
+          created_at: now
+        });
+        await save(s);
+        await put("campaigns:index", (await index()).concat(nid));
+        return s;
+      }
+      async function remove(id) {
+        const s = await load(id);
+        if (!s || s.kind === "designed" && D.some((d) => d.key === id)) return { error: "The designed campaigns stay. Make a copy instead." };
+        if (!["draft", "cancelled"].includes(s.status)) return { error: "Only drafts can be deleted. Sent campaigns are kept for their numbers." };
+        await q.kvDel.run("campaign:" + id);
+        await put("campaigns:index", (await index()).filter((x) => x !== id));
+        await q.kvDelLike.run("cst:" + id + ":%");
+        return { ok: true };
+      }
+      const editable = (s) => ["draft", "cancelled"].includes(s.status);
+      const url = (v) => {
+        v = String(v || "").trim();
+        return /^https?:\/\/[^\s"<>]+$/i.test(v) || /^mailto:[^\s"<>]+$/i.test(v) ? v.slice(0, 500) : "";
+      };
+      async function update(id, patch) {
+        const s = await load(id);
+        if (!s) return null;
+        if (!editable(s)) return s;
+        const d = defOf(s), str = (k, n) => {
+          if (patch[k] !== void 0) s[k] = String(patch[k]).trim().slice(0, n);
+        };
+        if (patch.name !== void 0) s.name = String(patch.name).trim().slice(0, 80) || s.name;
+        if (patch.subject !== void 0) s.subject = String(patch.subject).trim().slice(0, 150) || (d ? d.subject : "");
+        if (patch.preview !== void 0) s.preview = String(patch.preview).trim().slice(0, 200) || (d ? d.preview : "");
+        if (d) {
+          for (const [k] of d.needs) if (patch[k] !== void 0) s.settings[k] = String(patch[k]).trim().slice(0, 300);
+        } else {
+          if (patch.audience !== void 0 && AUDIENCES[patch.audience]) s.audience = patch.audience;
+          str("heading", 150);
+          if (patch.body !== void 0) s.body = String(patch.body).replace(/\r\n/g, "\n").slice(0, 2e4);
+          str("button_label", 60);
+          if (patch.button_url !== void 0) s.button_url = url(patch.button_url) || String(patch.button_url).trim().slice(0, 500);
+        }
+        if (s.status === "cancelled") s.status = "draft";
+        await save(s);
+        return s;
+      }
+      async function recipients(s) {
+        const d = defOf(s), aud = d ? "leads:all" : s.audience;
+        const opted = new Set((await q.optedOut.all()).map((r) => String(r.email).toLowerCase())), users = new Set((await q.users.all()).map((r) => r.email));
+        const seen = /* @__PURE__ */ new Set(), list = [], skipped = {};
+        const skip = (r) => {
+          skipped[r] = (skipped[r] || 0) + 1;
+        };
+        const wantHosts = aud === "everyone" || aud.startsWith("hosts:"), wantLeads = aud === "everyone" || aud.startsWith("leads:");
+        if (wantHosts) {
+          const st = aud.split(":")[1];
+          for (const h of await q.hosts.all()) {
+            const e = String(h.email || "").toLowerCase();
+            if (!e || seen.has(e)) continue;
+            if (st && st !== "all" && (h.billing_status || "trial") !== st) continue;
+            seen.add(e);
+            if (opted.has(e)) {
+              skip("unsubscribed");
+              continue;
+            }
+            if ((await hostMail.prefs(h.wid)).news === false) {
+              skip("turned off news and offers");
+              continue;
+            }
+            const first = String(h.name || "").trim().split(/\s+/)[0] || "there";
+            list.push({ rid: "h" + h.wid, email: h.email, kind: "host", wid: h.wid, v: { first_name: first, name: String(h.name || "").trim(), email: h.email, business: h.slug, property_name: h.slug, plan: h.plan || "" } });
+          }
+        }
+        if (wantLeads) {
+          const seq = aud.startsWith("leads:") && aud !== "leads:all" ? aud.split(":")[1] : "";
+          const leadSeen = /* @__PURE__ */ new Set();
+          for (const l of await q.leads.all()) {
+            const e = String(l.email || "").toLowerCase();
+            if (!e || leadSeen.has(e)) continue;
+            leadSeen.add(e);
+            if (seen.has(e)) continue;
+            if (!AUDIENCE_SEQS.includes(l.seq)) {
+              skip("enquiry only, never asked for tips");
+              continue;
+            }
+            if (seq && l.seq !== seq) continue;
+            if (opted.has(e) || l.status === "unsubscribed") {
+              skip("unsubscribed");
+              continue;
+            }
+            if (users.has(e) || l.status === "converted") {
+              skip("signed up already");
+              continue;
+            }
+            if (l.status === "stopped") {
+              skip("emails stopped by the team");
+              continue;
+            }
+            const v = leadVars(l), why = d ? d.fit(v) : false;
+            if (why) {
+              skip(why);
+              continue;
+            }
+            seen.add(e);
+            list.push({ rid: "l" + l.id, email: l.email, kind: "lead", lead: l, v });
+          }
+        }
+        return { list, skipped };
+      }
+      async function audienceCounts() {
+        const out = {};
+        for (const k of Object.keys(AUDIENCES)) out[k] = (await recipients({ kind: "custom", audience: k })).list.length;
+        return out;
+      }
+      const unsubFor = (s, r) => !r ? "#" : (r.kind === "host" ? hostMail.unsubUrl(r.wid, "news") : cfg.baseUrl + "/u/lead/" + r.lead.id + "/" + auth.sign("lead", r.lead.id)) + "?c=" + encodeURIComponent(s.id);
+      function common(s, r, now) {
+        const d = defOf(s), unsub = unsubFor(s, r);
         return Object.assign({
           site_url: cfg.baseUrl,
           demo_url: app("/demo"),
           signup_url: app("/start?plan=Growth"),
-          account_url: app("/start?plan=Growth"),
+          account_url: r && r.kind === "host" ? app("/app/account") : app("/start?plan=Growth"),
+          dashboard_url: app("/app"),
           help_url: "mailto:" + cfg.company.support,
           privacy_url: app("/privacy"),
           unsubscribe_url: unsub,
-          preferences_url: unsub,
+          preferences_url: r && r.kind === "host" ? app("/app/account#emails") : unsub,
           book_call_url: leads.settings().book_call_url || app("/demo"),
           company_address: cfg.company.address,
           company_number: cfg.company.number,
           vat_number: cfg.company.vat
-        }, s.settings, c.vars ? c.vars(s.settings, now) : {});
+        }, s.settings, d && d.vars ? d.vars(s.settings, now) : {});
       }
-      const fillText = (t, v) => String(t).replace(/\{\{\s*([a-z0-9_]+)\s*\}\}/g, (m, k) => v[k] == null ? "" : String(v[k]));
-      function render(c, s, v) {
+      const fillText = (t, v) => String(t || "").replace(/\{\{\s*([a-z0-9_]+)\s*\}\}/g, (m, k) => v[k] == null ? "" : String(v[k]));
+      function markdown(t, v) {
+        const inline = (x) => esc(fillText(x, v)).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g, '<a href="$2" style="color:#3355FF">$1</a>').replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" style="color:#3355FF">$2</a>');
+        return String(t || "").split(/\n{2,}/).map((b) => b.trim()).filter(Boolean).map((b) => {
+          const lines = b.split("\n");
+          if (lines.every((l) => /^\s*[-*•]\s+/.test(l))) return '<ul style="margin:0 0 16px;padding-left:20px">' + lines.map((l) => '<li style="margin:0 0 6px">' + inline(l.replace(/^\s*[-*•]\s+/, "")) + "</li>").join("") + "</ul>";
+          return '<p style="margin:0 0 16px">' + lines.map(inline).join("<br>") + "</p>";
+        }).join("");
+      }
+      const plainText = (t, v) => fillText(t, v).replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)");
+      function customEmail(s, v) {
+        const why = v._kind === "host" ? "You are getting this because you have a Bookingbooster account." : "You are getting this because you asked for it on our website.";
+        const btn = s.button_label && s.button_url ? '<p style="margin:8px 0 24px"><a href="' + esc(fillText(s.button_url, v)) + '" style="display:inline-block;background:#3355FF;color:#fff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px">' + esc(fillText(s.button_label, v)) + "</a></p>" : "";
+        const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(fillText(s.subject, v)) + '</title></head><body style="margin:0;background:#F4F5F9;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#141A33"><div style="display:none;max-height:0;overflow:hidden">' + esc(fillText(s.preview, v)) + '</div><div style="max-width:560px;margin:0 auto;padding:24px 16px"><p style="margin:0 0 16px"><img src="' + esc(app("/email-img/brand/logo.png")) + '" alt="bookingbooster" height="28" style="height:28px;border:0"></p><div style="background:#fff;border-radius:16px;padding:28px 24px;font-size:16px;line-height:1.55">' + (s.heading ? '<h1 style="margin:0 0 16px;font-size:24px;line-height:1.25;color:#141A33">' + esc(fillText(s.heading, v)) + "</h1>" : "") + markdown(s.body, v) + btn + '<p style="margin:0 0 4px">Thanks,</p><p style="margin:0">' + esc(cfg.leads.signoff) + '</p></div><div style="padding:16px 8px"><p style="margin:0;color:#8A90A6;font-size:12px;line-height:1.5">' + esc(cfg.company.name) + " \xB7 United Kingdom \xB7 " + why + ' <a href="' + esc(v.unsubscribe_url) + '" style="color:#8A90A6">Unsubscribe in one click</a></p></div></div></body></html>';
+        const text = [s.heading ? fillText(s.heading, v) : "", plainText(s.body, v).trim(), btn ? fillText(s.button_label, v) + ": " + fillText(s.button_url, v) : "", "Thanks,\n" + cfg.leads.signoff, "Unsubscribe: " + v.unsubscribe_url].filter(Boolean).join("\n\n");
+        return { html, text };
+      }
+      function render(s, v) {
+        const d = defOf(s);
         v = Object.assign({}, v, { subject: fillText(s.subject, v) });
-        let html = msg.template(c.tpl, v);
+        if (!d) {
+          const r = customEmail(s, v);
+          return { subject: v.subject, html: r.html, text: r.text };
+        }
+        let html = msg.template(d.tpl, v);
         const pre = fillText(s.preview, v);
-        html = html.replace(/(<div[^>]*display:none[^>]*>)([^<]*)/, (m, a) => a + pre.replace(/[&<>]/g, (x) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[x]));
-        const text = "Hi " + v.first_name + ",\n\n" + fillText(s.preview, v) + "\n\nRead it in your browser or reply to this email.\n\n" + cfg.leads.signoff + "\n\nUnsubscribe: " + v.unsubscribe_url;
+        html = html.replace(/(<div[^>]*display:none[^>]*>)([^<]*)/, (m, a) => a + esc(pre));
+        const text = "Hi " + v.first_name + ",\n\n" + pre + "\n\nRead it in your browser or reply to this email.\n\n" + cfg.leads.signoff + "\n\nUnsubscribe: " + v.unsubscribe_url;
         return { subject: v.subject, html, text };
       }
+      const tsig = (id, rid) => auth.sign("mc", id, rid);
+      const linkSig = (u) => auth.sign("mcu", u);
+      function track(html, s, r) {
+        const base = cfg.baseUrl + "/t/m/" + s.id + "/" + r.rid + "/" + tsig(s.id, r.rid);
+        html = html.replace(/href="(https?:\/\/[^"]+)"/g, (m, h) => {
+          const u = h.replace(/&amp;/g, "&");
+          if (u.includes("/u/lead/") || u.includes("/u/host/") || u.includes("/app/account#emails")) return m;
+          return 'href="' + base + "/c?u=" + encodeURIComponent(u) + "&amp;k=" + linkSig(u) + '"';
+        });
+        const px = '<img src="' + base + '/o.gif" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0">';
+        return /<\/body>/i.test(html) ? html.replace(/<\/body>/i, px + "</body>") : html + px;
+      }
+      async function hit(id, rid, sig, type, u, k) {
+        if (!validId(id) || !/^[hl][A-Za-z0-9_-]{1,60}$/.test(rid) || !auth.verify(sig, "mc", id, rid)) return { ok: false };
+        const now = String(Date.now());
+        await q.kvAdd.run("cst:" + id + ":o:" + rid, now);
+        let to = "";
+        if (type === "c") {
+          if (u && auth.verify(k, "mcu", u) && /^(https?:|mailto:)/i.test(u)) to = u;
+          await q.kvAdd.run("cst:" + id + ":c:" + rid, now);
+          if (to) await q.kvAdd.run("cst:" + id + ":l:" + rid + ":" + crypto.createHash("sha1").update(to).digest("hex").slice(0, 10), to);
+        }
+        return { ok: true, to };
+      }
+      async function unsubscribed(id, rid) {
+        if (validId(id) && rid) await q.kvAdd.run("cst:" + id + ":u:" + rid, String(Date.now()));
+      }
+      async function stats(id) {
+        const rows = await q.kvLike.all("cst:" + id + ":%"), n = { o: 0, c: 0, u: 0 }, links = {};
+        for (const r of rows) {
+          const t = r.k.split(":")[2];
+          if (t === "l") links[r.v] = (links[r.v] || 0) + 1;
+          else if (n[t] != null) n[t]++;
+        }
+        return { opens: n.o, clicks: n.c, unsubs: n.u, links: Object.entries(links).sort((a, b) => b[1] - a[1]).slice(0, 20) };
+      }
       const SAMPLE = { fee: { seq: "fee", rate: 210, nights: 16, homes: 1, fee: 15.5 }, audit: { seq: "audit", town: "Keswick", mentions: 1, audit_url: "#" } };
-      function sampleVars(c) {
-        const v = Object.assign({ first_name: "Hannah", property_name: "Fellside Barn", seq: "webinar" }, c.key === "fee-check" ? SAMPLE.fee : c.key === "ai-search" ? SAMPLE.audit : {});
-        c.fit(v);
+      function sampleVars(s) {
+        const d = defOf(s);
+        const v = Object.assign({ first_name: "Hannah", name: "Hannah Lees", email: "hannah@example.co.uk", property_name: "Fellside Barn", business: "Fellside Barn", seq: "webinar" }, d && d.key === "fee-check" ? SAMPLE.fee : d && d.key === "ai-search" ? SAMPLE.audit : {});
+        if (d) d.fit(v);
         return v;
       }
-      async function audience(c) {
-        const out = (await q.optedOut.all()).map((r) => String(r.email).toLowerCase()), users = new Set((await q.users.all()).map((r) => r.email));
-        const opted = new Set(out), seen = /* @__PURE__ */ new Set(), list = [], skipped = {};
-        const skip = (r) => {
-          skipped[r] = (skipped[r] || 0) + 1;
-        };
-        for (const l of await q.leads.all()) {
-          const e = String(l.email || "").toLowerCase();
-          if (!e || seen.has(e)) continue;
-          seen.add(e);
-          if (!AUDIENCE_SEQS.includes(l.seq)) {
-            skip("enquiry only, never asked for tips");
-            continue;
-          }
-          if (opted.has(e) || l.status === "unsubscribed") {
-            skip("unsubscribed");
-            continue;
-          }
-          if (users.has(e) || l.status === "converted") {
-            skip("signed up already");
-            continue;
-          }
-          if (l.status === "stopped") {
-            skip("emails stopped by the team");
-            continue;
-          }
-          const v = leadVars(l), why = c.fit(v);
-          if (why) {
-            skip(why);
-            continue;
-          }
-          list.push({ lead: l, v });
+      function blockers(s) {
+        const d = defOf(s), out = [];
+        if (d) {
+          out.push(...d.needs.filter(([k]) => !String(s.settings[k] || "").trim()).map(([, label]) => "Fill in: " + label));
+          const r = d.requires && d.requires(s.settings);
+          if (r) out.push(r);
+        } else {
+          if (!s.subject) out.push("Add a subject.");
+          if (!String(s.body || "").replace(/Hi \{\{first_name\}\},?/, "").trim()) out.push("Write the email.");
+          if (s.button_label && !url(s.button_url)) out.push("The button needs a link starting with https://");
         }
-        return { list, skipped };
-      }
-      async function overview() {
-        return Promise.all(C.map(async (c) => {
-          const s = await state(c), a = await audience(c);
-          return { c, s, count: a.list.filter((x) => !s.sent[x.lead.email.toLowerCase()]).length, skipped: a.skipped, blocked: blockers(c, s) };
-        }));
-      }
-      function blockers(c, s) {
-        const out = c.needs.filter(([k]) => !String(s.settings[k] || "").trim()).map(([, label]) => "Fill in: " + label);
-        const r = c.requires && c.requires(s.settings);
-        if (r) out.push(r);
         return out;
       }
-      async function preview(key, now) {
-        const c = byKey(key);
-        if (!c) return null;
-        const s = await state(c);
-        const a = await audience(c), first = a.list[0];
-        return render(c, s, Object.assign(common(c, s, null, now || Date.now()), first ? first.v : sampleVars(c)));
+      async function preview(id, now) {
+        const s = await load(id);
+        if (!s) return null;
+        const first = (await recipients(s)).list[0];
+        const v = Object.assign(common(s, first, now || Date.now()), first ? first.v : sampleVars(s), { _kind: first ? first.kind : (s.audience || "").startsWith("hosts:") ? "host" : "lead" });
+        if (!first) v.unsubscribe_url = "#";
+        return render(s, v);
       }
-      async function sendTest(key, to) {
-        const c = byKey(key);
-        if (!c) return { error: "No such campaign" };
-        const s = await state(c);
-        const r = await preview(key);
-        const res = await msg.sendEmail({ to, subject: "[Test] " + r.subject, html: r.html, text: r.text, from: cfg.leads.from || void 0, replyTo: cfg.company.support, meta: { campaign: key, test: true } });
+      async function sendTest(id, to) {
+        const s = await load(id);
+        if (!s) return { error: "No such campaign" };
+        const b = blockers(s).filter((x) => !/^Fill in/.test(x));
+        if (!defOf(s) && b.length) return { error: b.join(" ") };
+        const r = await preview(id);
+        const res = await msg.sendEmail({ to, subject: "[Test] " + r.subject, html: r.html, text: r.text, from: cfg.leads.from || void 0, replyTo: cfg.company.support, meta: { campaign: id, test: true } });
         s.tests = (s.tests || 0) + 1;
-        await put("campaign:" + key, s);
+        s.last_test_to = to;
+        await save(s);
         return res.ok ? { ok: true } : { error: res.error || "Could not send" };
       }
-      async function send(key, confirm, now) {
-        now = now || Date.now();
-        const c = byKey(key);
-        if (!c) return { error: "No such campaign" };
-        const s = await state(c);
-        if (s.status === "sent") return { error: "This campaign has already gone out." };
-        const b = blockers(c, s);
+      async function ready(s, confirm) {
+        if (!editable(s)) return { error: s.status === "sent" ? "This campaign has already gone out." : "This campaign is already " + s.status + "." };
+        const b = blockers(s);
         if (b.length) return { error: b.join(" ") };
         if (!s.tests) return { error: "Send yourself a test first." };
-        const todo = (await audience(c)).list.filter((x) => !s.sent[x.lead.email.toLowerCase()]);
+        const todo = (await recipients(s)).list.filter((x) => !s.sent[x.email.toLowerCase()]);
         if (!todo.length) return { error: "Nobody to send to." };
         if (String(confirm).trim() !== String(todo.length)) return { error: "Type " + todo.length + " (the number of people) to confirm." };
-        let n = 0, failed = 0;
-        for (const x of todo) {
-          const v = Object.assign(common(c, s, x.lead, now), x.v), r = render(c, s, v);
-          const res = await msg.sendEmail({
-            to: x.lead.email,
-            subject: r.subject,
-            html: r.html,
-            text: r.text,
-            from: cfg.leads.from || void 0,
-            replyTo: cfg.company.support,
-            unsubscribeUrl: v.unsubscribe_url,
-            meta: { campaign: key, lead: x.lead.id, broadcast: true }
-          });
-          if (res.ok) {
-            s.sent[x.lead.email.toLowerCase()] = now;
-            n++;
-          } else {
-            failed++;
-            log("campaign", key, x.lead.id, res.error);
-          }
-          if (n % 20 === 0) await put("campaign:" + key, s);
-        }
-        if (!failed) {
-          s.status = "sent";
-          s.sent_at = now;
-        }
-        await put("campaign:" + key, s);
-        return { ok: true, sent: n, failed };
+        return { ok: true, count: todo.length };
       }
-      return { list: C, byKey, state, save, overview, preview, sendTest, send, blockers };
+      async function send(id, confirm, now) {
+        now = now || Date.now();
+        const s = await load(id);
+        if (!s) return { error: "No such campaign" };
+        const ok = await ready(s, confirm);
+        if (ok.error) return ok;
+        Object.assign(s, { status: "sending", started_at: now, scheduled_at: 0, planned: ok.count });
+        await save(s);
+        const r = await pump(id, now + BATCH_MS);
+        return Object.assign({ ok: true }, r);
+      }
+      async function schedule(id, at, confirm) {
+        const s = await load(id);
+        if (!s) return { error: "No such campaign" };
+        if (!(at > Date.now() + 6e4)) return { error: "Pick a time at least a few minutes from now (UK time)." };
+        const ok = await ready(s, confirm);
+        if (ok.error) return ok;
+        Object.assign(s, { status: "scheduled", scheduled_at: at, planned: ok.count });
+        await save(s);
+        return { ok: true, at, count: ok.count };
+      }
+      async function cancel(id) {
+        const s = await load(id);
+        if (!s) return { error: "No such campaign" };
+        if (s.status === "scheduled") {
+          s.status = "draft";
+          s.scheduled_at = 0;
+          await save(s);
+          return { ok: true, note: "Schedule cancelled. It is a draft again." };
+        }
+        if (s.status === "sending") {
+          s.status = "stopped";
+          s.sent_at = Date.now();
+          await save(s);
+          return { ok: true, note: "Stopped. " + Object.keys(s.sent).length + " had already been sent." };
+        }
+        return { error: "Nothing to cancel." };
+      }
+      async function retry(id) {
+        const s = await load(id);
+        if (!s || !Object.keys(s.failed).length) return { error: "Nothing to retry." };
+        s.failed = {};
+        s.status = "sending";
+        await save(s);
+        return Object.assign({ ok: true }, await pump(id, Date.now() + BATCH_MS));
+      }
+      async function lock(id) {
+        const k = "campaign-lock:" + id, now = Date.now();
+        if ((await q.kvAdd.run(k, String(now))).changes) return true;
+        const r = await q.kvGet.get(k);
+        if (r && now - +r.v > 12e4) {
+          await q.kvDel.run(k);
+          return (await q.kvAdd.run(k, String(now))).changes > 0;
+        }
+        return false;
+      }
+      const unlock = (id) => q.kvDel.run("campaign-lock:" + id);
+      async function pump(id, deadline) {
+        if (!await lock(id)) return { sent: 0, failed: 0, busy: true };
+        let n = 0, failed = 0, left = 0;
+        try {
+          const s = await load(id);
+          if (!s || s.status !== "sending") return { sent: 0, failed: 0 };
+          const now = Date.now();
+          const todo = (await recipients(s)).list.filter((x) => !s.sent[x.email.toLowerCase()] && !s.failed[x.email.toLowerCase()]);
+          for (let i = 0; i < todo.length; i++) {
+            if (Date.now() > deadline) {
+              left = todo.length - i;
+              break;
+            }
+            const x = todo[i], e = x.email.toLowerCase();
+            const v = Object.assign(common(s, x, now), x.v, { _kind: x.kind }), r = render(s, v);
+            const res = await msg.sendEmail({
+              workspaceId: x.kind === "host" ? x.wid : void 0,
+              to: x.email,
+              subject: r.subject,
+              html: track(r.html, s, x),
+              text: r.text,
+              from: cfg.leads.from || void 0,
+              replyTo: cfg.company.support,
+              unsubscribeUrl: v.unsubscribe_url,
+              meta: { campaign: id, [x.kind]: x.kind === "host" ? x.wid : x.lead.id, broadcast: true }
+            });
+            if (res.ok) {
+              s.sent[e] = Date.now();
+              n++;
+            } else {
+              s.failed[e] = String(res.error || "failed").slice(0, 120);
+              failed++;
+              log("campaign", id, e, res.error);
+            }
+            await save(s);
+          }
+          if (!left) {
+            s.status = "sent";
+            s.sent_at = Date.now();
+            await save(s);
+          }
+          return { sent: n, failed, left };
+        } finally {
+          await unlock(id);
+        }
+      }
+      async function run(now) {
+        now = now || Date.now();
+        let total = 0;
+        for (const s of await all()) {
+          if (s.status === "scheduled" && s.scheduled_at && s.scheduled_at <= now) {
+            s.status = "sending";
+            s.started_at = now;
+            await save(s);
+          }
+          if (s.status === "sending") total += (await pump(s.id, Date.now() + BATCH_MS)).sent;
+        }
+        return total;
+      }
+      async function overview() {
+        return Promise.all((await all()).map(async (s) => {
+          const d = defOf(s), a = await recipients(s);
+          return { s, d, count: a.list.filter((x) => !s.sent[x.email.toLowerCase()]).length, skipped: a.skipped, blocked: blockers(s), stats: s.status === "draft" && !Object.keys(s.sent).length ? null : await stats(s.id), audienceLabel: d ? d.audience : AUDIENCES[s.audience].label };
+        }));
+      }
+      return { AUDIENCES, designs: D, all, load, create, duplicate, remove, update, editable, recipients, audienceCounts, overview, preview, sendTest, send, schedule, cancel, retry, run, blockers, stats, hit, unsubscribed };
+    };
+  }
+});
+
+// server/campaigns-admin.js
+var require_campaigns_admin = __commonJS({
+  "server/campaigns-admin.js"(exports, module) {
+    var CSS = '<style>select,textarea{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF;background:#fff;color:inherit;width:100%}textarea{min-height:260px;line-height:1.5;resize:vertical}.cm-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.cm-tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}.cm-tile b{display:block;font:600 26px/1.1 "Bricolage Grotesque",sans-serif;color:var(--ink)}.cm-tile small{color:var(--mut)}.cm-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:#EEF1FF;color:#2747F5}.cm-badge.sent{background:#E6F4EC;color:#12805C}.cm-badge.warn{background:#FFF3E0;color:#B4540A}.cm-badge.live{background:#FFF6D6;color:#8A6100}.cm-badge.off{background:#F0F0F0;color:#666}.cm-table{width:100%;border-collapse:collapse;font-size:13px}.cm-table th{text-align:left;color:var(--mut);font-weight:600}.cm-table tr+tr{border-top:1px solid #E4E7F0}.cm-table td{vertical-align:top}.cm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cm-row form,.wide td .cm-row form{margin:0;display:inline}.cm-table td .cm-row{flex-wrap:nowrap}.cm-row button{padding:8px 14px;font-size:14px}button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}button.danger{background:#C62828}.cm-grid{display:grid;gap:18px}@media(min-width:1000px){.cm-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.cm-grid .cm-sticky{position:sticky;top:12px}}.cm-help{font-size:13px;color:var(--mut)}.cm-help code{background:#F1F2F6;border-radius:5px;padding:1px 5px;font-size:12px}h2{font:600 20px "Bricolage Grotesque",sans-serif;margin:28px 0 0}.cm-two{display:grid;gap:14px}@media(min-width:640px){.cm-two{grid-template-columns:1fr 1fr}}</style>';
+    module.exports = function({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me }) {
+      const html = (res, body) => send(res, 200, body, "text/html; charset=utf-8", { "cache-control": "no-store" });
+      const day = (ms) => new Date(ms).toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      const pct = (a, b) => b ? Math.round(100 * a / b) + "%" : "\u2013";
+      const sentCount = (s) => Object.keys(s.sent || {}).length;
+      const failedCount = (s) => Object.keys(s.failed || {}).length;
+      const field = (n, v, label, o) => {
+        o = o || {};
+        return "<label>" + E(label) + (o.area ? '<textarea name="' + n + '"' + (o.ph ? ' placeholder="' + E(o.ph) + '"' : "") + ">" + E(v || "") + "</textarea>" : '<input name="' + n + '" value="' + E(v || "") + '"' + (o.type ? ' type="' + o.type + '"' : "") + (o.ph ? ' placeholder="' + E(o.ph) + '"' : "") + (o.req ? " required" : "") + ' style="width:100%">') + (o.help ? '<small class="cm-help">' + o.help + "</small>" : "") + "</label>";
+      };
+      const audSelect = (cur, counts) => '<label>Who gets it<select name="audience">' + Object.entries(campaigns.AUDIENCES).map(([k, a]) => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + E(a.label) + (counts ? " (" + counts[k] + ")" : "") + "</option>").join("") + "</select></label>";
+      function badge(o) {
+        const s = o.s;
+        if (s.status === "sent") return '<span class="cm-badge sent">Sent ' + E(day(s.sent_at)) + "</span>";
+        if (s.status === "sending") return '<span class="cm-badge live">Sending \xB7 ' + sentCount(s) + " so far</span>";
+        if (s.status === "scheduled") return '<span class="cm-badge live">Scheduled ' + E(day(s.scheduled_at)) + "</span>";
+        if (s.status === "stopped") return '<span class="cm-badge off">Stopped \xB7 ' + sentCount(s) + " sent</span>";
+        return o.blocked.length ? '<span class="cm-badge warn">Draft \xB7 needs details</span>' : '<span class="cm-badge">Draft \xB7 ready</span>';
+      }
+      const tiles = (list) => '<div class="cm-tiles">' + list.map(([n, l]) => '<div class="cm-tile"><b>' + n + "</b><small>" + E(l) + "</small></div>").join("") + "</div>";
+      async function listPage(note, err) {
+        const all = await campaigns.overview(), counts = await campaigns.audienceCounts();
+        const done = all.filter((o) => ["sent", "stopped", "sending"].includes(o.s.status));
+        const totSent = done.reduce((a, o) => a + sentCount(o.s), 0), totOpen = done.reduce((a, o) => a + o.stats.opens, 0), totClick = done.reduce((a, o) => a + o.stats.clicks, 0), totUnsub = done.reduce((a, o) => a + o.stats.unsubs, 0);
+        const row = (o) => {
+          const s = o.s, n = sentCount(s), st = o.stats;
+          return '<tr><td><a href="/admin/campaigns/' + s.id + '"><b>' + E(s.name) + "</b></a>" + (s.kind === "designed" ? ' <small class="cm-help">\xB7 designed</small>' : "") + '<br><small class="cm-help">' + E(s.subject || "No subject yet") + "</small></td><td><small>" + E(o.audienceLabel) + "</small></td><td>" + badge(o) + "</td><td>" + (n ? "<b>" + n + "</b> sent" : "<b>" + o.count + '</b> <small class="cm-help">can get it</small>') + "</td><td>" + (st && n ? pct(st.opens, n) + ' <small class="cm-help">opened</small><br>' + pct(st.clicks, n) + ' <small class="cm-help">clicked</small>' + (st.unsubs ? "<br>" + st.unsubs + ' <small class="cm-help">unsubscribed</small>' : "") : '<small class="cm-help">\u2013</small>') + '</td><td><div class="cm-row"><a href="/admin/campaigns/' + s.id + '">Open</a><form method="post" action="/admin/campaigns/' + s.id + '/duplicate"><button class="sec">Copy</button></form></div></td></tr>';
+        };
+        const table = (title, list, empty) => "<h2>" + title + '</h2><div class="card" style="overflow:auto">' + (list.length ? '<table class="cm-table"><tr><th>Campaign</th><th>Audience</th><th>Status</th><th>People</th><th>Results</th><th></th></tr>' + list.map(row).join("") + "</table>" : '<p style="margin:0">' + empty + "</p>") + "</div>";
+        const byNew = (a, b) => (b.s.sent_at || b.s.scheduled_at || b.s.updated_at || 0) - (a.s.sent_at || a.s.scheduled_at || a.s.updated_at || 0);
+        const active = all.filter((o) => ["scheduled", "sending"].includes(o.s.status)), drafts = all.filter((o) => ["draft", "cancelled"].includes(o.s.status)).sort((a, b) => (a.s.kind === "designed") - (b.s.kind === "designed") || byNew(a, b)), sent = all.filter((o) => ["sent", "stopped"].includes(o.s.status)).sort(byNew);
+        const auto = Object.values(leads.series || {}).map((sq) => "<tr><td><b>" + E(sq.name) + "</b></td><td><small>" + sq.steps.map((st) => E(st.key) + (typeof st.subject === "function" ? "" : ": " + E(st.subject))).join("<br>") + "</small></td></tr>").join("");
+        return authPage("Email campaigns", CSS + '<p><a href="/admin">\u2190 Leads and accounts</a></p><h1>Email campaigns</h1>' + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err ? '<p class="err">' + E(err) + "</p>" : "") + "<p>Write an email, pick who gets it, send yourself a test, then send it now or schedule it. <b>Nothing goes out until you confirm the number of people.</b> Anyone who unsubscribed is always left out, and every email has a one-click unsubscribe.</p>" + tiles([[done.length, "campaigns sent"], [totSent.toLocaleString("en-GB"), "emails delivered"], [pct(totOpen, totSent), "opened (unique)"], [pct(totClick, totSent), "clicked a link"], [totUnsub, "unsubscribed from a campaign"]]) + '<details class="card"' + (all.some((o) => o.s.kind === "custom") ? "" : " open") + '><summary><b>New campaign</b></summary><form method="post" action="/admin/campaigns/new">' + field("name", "", "Name (only the team sees this)", { ph: "e.g. December newsletter", req: true }) + audSelect("leads:all", counts) + '<button>Create draft</button><p class="cm-help" style="margin:0">Or press <b>Copy</b> on any campaign below to start from it, including the five designed ones.</p></form></details>' + (active.length ? table("Scheduled and sending", active, "") : "") + table("Drafts", drafts, "No drafts.") + table("Sent", sent, "Nothing sent yet.") + '<h2>Audiences</h2><div class="card" style="overflow:auto"><table class="cm-table"><tr><th>Audience</th><th>Who</th><th>Can get emails now</th></tr>' + Object.entries(campaigns.AUDIENCES).map(([k, a]) => "<tr><td><b>" + E(a.label) + "</b></td><td><small>" + E(a.about) + "</small></td><td><b>" + counts[k] + "</b></td></tr>").join("") + '</table><p class="cm-help" style="margin:10px 0 0">Leads come from the website forms. Contact-form enquiries are never included, because they did not ask for emails. Hosts can turn off \u201CNews and offers\u201D in their account page or with the link in each email.</p></div><details class="card"><summary><b>Automatic emails already running</b></summary><p class="cm-help">These send by themselves from each lead form (see Leads) and to hosts after sign-up (welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed).</p><table class="cm-table">' + auto + "</table></details>", true);
+      }
+      async function editPage(id, note, err) {
+        const o = (await campaigns.overview()).find((x) => x.s.id === id);
+        if (!o) return null;
+        const { s, d } = o, ed = campaigns.editable(s), n = sentCount(s), st = o.stats, counts = d ? null : await campaigns.audienceCounts();
+        const skipped = Object.entries(o.skipped).map(([r, k]) => k + " " + r).join(" \xB7 ");
+        const head = '<p><a href="/admin/campaigns">\u2190 Email campaigns</a></p><h1>' + E(s.name) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err ? '<p class="err" role="alert">' + E(err) + "</p>" : "") + "<p>" + badge(o) + " " + (d ? E(d.about) : "") + '</p><p class="cm-help"><b>Who:</b> ' + E(o.audienceLabel) + " \xB7 <b>" + o.count + "</b> " + (n ? "more " : "") + "can get it now" + (skipped ? " \xB7 left out: " + E(skipped) : "") + (d ? "<br><b>When:</b> " + E(d.when) : "") + "</p>";
+        let results = "";
+        if (n || ["sending", "sent", "stopped"].includes(s.status)) {
+          results = tiles([[n, "delivered"], [pct(st.opens, n), st.opens + " opened"], [pct(st.clicks, n), st.clicks + " clicked"], [st.unsubs, "unsubscribed"], [failedCount(s), "failed"]]) + (st.links.length ? '<div class="card"><b>Links clicked</b> <small class="cm-help">(people, once each)</small><table class="cm-table" style="margin-top:8px">' + st.links.map(([u, k]) => '<tr><td style="word-break:break-all"><small>' + E(u) + "</small></td><td><b>" + k + "</b></td></tr>").join("") + "</table></div>" : "") + '<p class="cm-help">Opens are a guide only: some email apps load images for privacy and count as an open, others block them. Clicks are exact.</p>';
+        }
+        const actions = [];
+        if (s.status === "sending") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="danger">Stop sending</button></form>');
+        if (s.status === "scheduled") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="sec">Cancel the schedule</button></form>');
+        if (failedCount(s) && ["sent", "stopped"].includes(s.status)) actions.push('<form method="post" action="/admin/campaigns/' + id + '/retry"><button>Retry ' + failedCount(s) + " failed</button></form>");
+        actions.push('<form method="post" action="/admin/campaigns/' + id + '/duplicate"><button class="sec">Make a copy</button></form>');
+        if (s.kind === "custom" && ed) actions.push('<form method="post" action="/admin/campaigns/' + id + '/delete"><button class="sec">Delete draft</button></form>');
+        const actionRow = '<div class="cm-row" style="margin:12px 0">' + actions.join("") + "</div>";
+        let form = "", sendBox = "";
+        if (ed) {
+          const fields = d ? d.needs.map(([k, label, , type]) => field(k, s.settings[k], label, { type })).join("") : audSelect(s.audience, counts) + field("heading", s.heading, "Heading (optional)", { ph: "Fill January without the Airbnb discount" }) + field("body", s.body, "Email", { area: true, help: "Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{name}}</code> <code>{{email}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you." }) + '<div class="cm-two">' + field("button_label", s.button_label, "Button text (optional)", { ph: "Try the demo" }) + field("button_url", s.button_url, "Button link", { ph: "https://booking-booster.co.uk/demo" }) + "</div>";
+          form = '<form method="post" action="/admin/campaigns/' + id + '/save" class="card" style="margin-top:0">' + field("name", s.name, "Name (only the team sees this)") + field("subject", s.subject, "Subject", { help: "Personal fields work here too, like <code>{{first_name}}</code>." }) + field("preview", s.preview, "Preview line (shown after the subject in the inbox)") + fields + '<div class="cm-row"><button>Save draft</button><button formaction="/admin/campaigns/' + id + '/test" class="sec">Save and send me a test</button></div>' + (s.tests ? '<p class="cm-help" style="margin:0">' + s.tests + " test" + (s.tests === 1 ? "" : "s") + " sent" + (s.last_test_to ? ", last to " + E(s.last_test_to) : "") + ".</p>" : "") + "</form>";
+          const why = o.blocked.length ? E(o.blocked.join(" ")) : !s.tests ? "Send yourself a test first." : !o.count ? "Nobody in this audience can get it right now." : "";
+          sendBox = '<div class="card"><b>Send</b>' + (why ? '<p class="cm-help" style="margin:8px 0 0">' + why + "</p>" : '<p class="cm-help" style="margin:8px 0 0">This goes to <b>' + o.count + "</b> people and cannot be undone. Type <b>" + o.count + '</b> to confirm, then send now or pick a time.</p><form method="post" action="/admin/campaigns/' + id + '/send">' + field("confirm", "", "Type " + o.count + " to confirm", { req: true }) + '<div class="cm-two">' + field("day", "", "Day (UK)", { type: "date" }) + field("time", "09:30", "Time (UK)", { type: "time" }) + '</div><div class="cm-row"><button>Send now to ' + o.count + ' people</button><button formaction="/admin/campaigns/' + id + '/schedule" class="sec">Schedule for that time</button></div></form>') + "</div>";
+        } else if (s.status === "scheduled") {
+          sendBox = '<div class="card"><b>Scheduled for ' + E(day(s.scheduled_at)) + '</b><p class="cm-help" style="margin:8px 0 0">About ' + (s.planned || o.count) + " people. Anyone who unsubscribes before then is left out. Cancel the schedule to make changes.</p></div>";
+        }
+        const preview = '<div class="card cm-sticky" style="margin-top:0"><b>Preview</b> <small class="cm-help">(' + (o.count ? "with the first person\u2019s details" : "with sample details") + ', <a href="/admin/campaigns/' + id + '/preview" target="_blank">open full size</a>)</small><iframe title="Email preview" src="/admin/campaigns/' + id + '/preview" style="width:100%;height:860px;border:1px solid #E4E7F0;border-radius:8px;margin-top:8px;background:#fff" sandbox></iframe></div>';
+        return authPage(s.name, CSS + head + results + actionRow + '<div class="cm-grid"><div>' + form + sendBox + "</div>" + preview + "</div>", true);
+      }
+      return async function(req, res, p, m, u) {
+        if (p === "/admin/campaigns") return html(res, await listPage(u.searchParams.get("note"), u.searchParams.get("err")));
+        if (p === "/admin/campaigns/new" && m === "POST") {
+          const f2 = await formBody(req);
+          const s2 = await campaigns.create(f2);
+          return redirect(res, "/admin/campaigns/" + s2.id + "?note=" + encodeURIComponent("Draft created. Write it, send yourself a test, then send or schedule it."));
+        }
+        const mm = p.match(/^\/admin\/campaigns\/([a-z0-9-]+)(?:\/(preview|save|test|send|schedule|cancel|retry|duplicate|delete))?$/);
+        const s = mm && await campaigns.load(mm[1]);
+        if (!s) return send(res, 404, authPage("Not found", '<h1>Not found</h1><p><a href="/admin/campaigns">Email campaigns</a></p>'), "text/html; charset=utf-8");
+        const id = s.id, act = mm[2];
+        if (act === "preview") return send(res, 200, (await campaigns.preview(id)).html, "text/html; charset=utf-8", { "cache-control": "no-store", "content-security-policy": "default-src 'none'; img-src * data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" });
+        if (m !== "POST" || !act) return html(res, await editPage(id, u.searchParams.get("note"), u.searchParams.get("err")));
+        const f = await formBody(req);
+        let note = "", err = "";
+        if (act === "save") {
+          await campaigns.update(id, f);
+          note = "Saved. Still a draft: nothing has been sent.";
+        }
+        if (act === "test") {
+          const who = await me(req);
+          await campaigns.update(id, f);
+          const r = await campaigns.sendTest(id, who.email);
+          r.ok ? note = "Test sent to " + who.email + ". Nobody else got it." : err = r.error;
+        }
+        if (act === "send") {
+          const r = await campaigns.send(id, f.confirm);
+          r.ok ? note = "Sent to " + r.sent + (r.failed ? ", " + r.failed + " failed" : "") + (r.left ? ". The other " + r.left + " are going out in the background over the next few minutes" : "") + "." : err = r.error;
+        }
+        if (act === "schedule") {
+          const at = f.day && /^\d{4}-\d{2}-\d{2}$/.test(f.day) && /^\d{2}:\d{2}$/.test(f.time || "") ? leads.ukAt(f.day, f.time) : 0;
+          const r = at ? await campaigns.schedule(id, at, f.confirm) : { error: "Pick a day and time to schedule it." };
+          r.ok ? note = "Scheduled for " + day(r.at) + " (UK), to about " + r.count + " people." : err = r.error;
+        }
+        if (act === "cancel") {
+          const r = await campaigns.cancel(id);
+          r.ok ? note = r.note : err = r.error;
+        }
+        if (act === "retry") {
+          const r = await campaigns.retry(id);
+          r.ok ? note = "Retried: " + r.sent + " sent" + (r.failed ? ", " + r.failed + " failed again" : "") + "." : err = r.error;
+        }
+        if (act === "duplicate") {
+          const c = await campaigns.duplicate(id);
+          return redirect(res, "/admin/campaigns/" + c.id + "?note=" + encodeURIComponent("Copied as a new draft."));
+        }
+        if (act === "delete") {
+          const r = await campaigns.remove(id);
+          if (r.ok) return redirect(res, "/admin/campaigns?note=" + encodeURIComponent("Draft deleted."));
+          err = r.error;
+        }
+        return html(res, await editPage(id, note, err));
+      };
     };
   }
 });
@@ -15178,7 +15618,8 @@ var require_server = __commonJS({
     var domains = require_domains()({ cfg, auth, log });
     var backup = require_backup()({ db, cfg, log });
     var hostMail = require_host_emails()({ db, cfg, msg, auth, ws, urls, leads, log });
-    var campaigns = require_campaigns()({ db, cfg, msg, auth, leads, log });
+    var campaigns = require_campaigns()({ db, cfg, msg, auth, leads, hostMail, log });
+    var campaignsAdmin = require_campaigns_admin();
     var effects = require_effects()({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
     ws.onEffects((w, fx) => effects(w, fx).catch((e) => log("effects", e.message)));
     var SEC = Object.assign(
@@ -15714,19 +16155,26 @@ var require_server = __commonJS({
         const dest = prop ? urls.site(w, prop) : cfg.baseUrl;
         return redirect(res, dest + (c.body && c.body.promo ? (dest.includes("?") ? "&" : "?") + "promo=" + encodeURIComponent(c.body.promo) + "&utm_source=email&utm_campaign=" + encodeURIComponent(cid) : (dest.includes("?") ? "&" : "?") + "utm_source=email&utm_campaign=" + encodeURIComponent(cid)));
       }
-      if (mm = p.match(/^\/u\/host\/([A-Za-z0-9_-]+)\/(setup|report)\/([A-Za-z0-9_-]+)$/)) {
+      if (mm = p.match(/^\/u\/host\/([A-Za-z0-9_-]+)\/(setup|report|news)\/([A-Za-z0-9_-]+)$/)) {
         if (!hostMail.verifyUnsub(mm[1], mm[2], mm[3])) return notFound(res);
-        const what = mm[2] === "setup" ? "setup tips" : "the Monday report";
+        const what = mm[2] === "setup" ? "setup tips" : mm[2] === "news" ? "news and offers" : "the Monday report";
         if (m === "POST") {
           await hostMail.setPrefs(mm[1], { [mm[2]]: false });
+          if (u.searchParams.get("c")) await campaigns.unsubscribed(u.searchParams.get("c"), "h" + mm[1]);
           return send(res, 200, pages.plain({ title: "Unsubscribed", body: "<h1>Done. No more " + what + ".</h1><p>Booking, billing and security emails about your account still arrive. You can switch " + what + " back on in your account page.</p>" }));
         }
         return send(res, 200, pages.plain({ title: "Unsubscribe", body: "<h1>Stop " + what + '?</h1><p>Booking, billing and security emails still arrive.</p><form method="post"><button type="submit">Stop ' + what + "</button></form>" }));
+      }
+      if (mm = p.match(/^\/t\/m\/([a-z0-9-]+)\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)\/(o\.gif|c)$/)) {
+        const r = await campaigns.hit(mm[1], mm[2], mm[3], mm[4] === "c" ? "c" : "o", u.searchParams.get("u"), u.searchParams.get("k"));
+        if (mm[4] === "o.gif") return send(res, 200, Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64"), "image/gif", { "cache-control": "no-store" });
+        return redirect(res, r.to || cfg.baseUrl);
       }
       if (mm = p.match(/^\/u\/lead\/(\d+)\/([A-Za-z0-9_-]+)$/)) {
         if (!auth.verify(mm[2], "lead", mm[1])) return notFound(res);
         if (m === "POST") {
           await leads.unsubscribe(+mm[1]);
+          if (u.searchParams.get("c")) await campaigns.unsubscribed(u.searchParams.get("c"), "l" + mm[1]);
           return send(res, 200, pages.plain({ title: "Unsubscribed", body: "<h1>You are unsubscribed.</h1><p>We will not email you again about our guides, tips or offers.</p>" }));
         }
         return send(res, 200, pages.plain({ title: "Unsubscribe", body: '<h1>Stop emails from Bookingbooster?</h1><p>No more guides, tips or offers. This takes one click.</p><form method="post"><button type="submit">Unsubscribe</button></form>' }));
@@ -15817,7 +16265,14 @@ var require_server = __commonJS({
       if (p === "/llms.txt") return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), "text/plain; charset=utf-8");
       if (p === "/api/signup" && m === "POST") return await signup(req, res);
       if (p === "/admin") return await adminPage(req, res);
-      if (p === "/admin/campaigns" || p.startsWith("/admin/campaigns/")) return await campaignsRoute(req, res, p, m);
+      if (p === "/admin/campaigns/run" && m === "POST" && cfg.testClock && await isAdmin(req)) {
+        const b = await jsonBody(req, 1e3);
+        return json(res, { sent: await campaigns.run(+b.at || Date.now()) });
+      }
+      if (p === "/admin/campaigns" || p.startsWith("/admin/campaigns/")) {
+        if (!await isAdmin(req)) return notFound(res);
+        return await campaignsAdmin({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me })(req, res, p, m, u);
+      }
       if (p === "/admin/backup") {
         if (!await isAdmin(req)) return notFound(res);
         const name = "bookingbooster-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
@@ -16108,7 +16563,7 @@ var require_server = __commonJS({
         return '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td>' + d(l.created_at) + "</td><td>" + E(l.kind) + "</td><td>" + E(l.email) + "<br><small>" + E(l.name || "") + "</small></td><td><small>" + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</small></td><td>" + prog + '</td><td class="act">' + act + "</td></tr>";
       }))).join("");
       const settingsForm = '<details class="card"' + (st.webinar_at ? "" : " open") + '><summary><b>Live demo, call and report links</b></summary><form method="post" action="/admin/settings" style="margin-top:12px"><p style="margin:0 0 8px"><small>The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small></p><label>Next live demo date (UK)' + inp("webinar_day", wDay, "", "date") + "</label><label>Start time (UK)" + inp("webinar_time", wTime, "12:30", "time") + "</label><label>Joining link" + inp("join_url", st.join_url, "https://meet.google.com/\u2026") + "</label><label>Replay link (sent after the session)" + inp("replay_url", st.replay_url, "https://\u2026") + "</label><label>Walkthrough call joining link" + inp("meeting_url", st.meeting_url, "https://meet.google.com/\u2026") + "</label><label>Page where people book a walkthrough" + inp("book_call_url", st.book_call_url, "https://\u2026/book-call") + "</label><label>Sample audit report page" + inp("sample_report_url", st.sample_report_url, "https://\u2026/sample-report") + "</label><button>Save</button></form></details>";
-      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + ' host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p><p><a href="/admin/campaigns"><b>Email campaigns</b></a> \xB7 the designed campaigns to leads, ready as drafts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map((a) => "<tr><td>" + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td></tr>").join("") + "</table></div>", true), "text/html; charset=utf-8");
+      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + ' host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p><p><a href="/admin/campaigns"><b>Email campaigns</b></a> \xB7 write, schedule and track emails to leads and hosts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map((a) => "<tr><td>" + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td></tr>").join("") + "</table></div>", true), "text/html; charset=utf-8");
     }
     async function adminPost(req, res, p) {
       if (!await isAdmin(req)) return notFound(res);
@@ -16148,49 +16603,6 @@ var require_server = __commonJS({
       }
       return notFound(res);
     }
-    async function campaignsRoute(req, res, p, m) {
-      if (!await isAdmin(req)) return notFound(res);
-      const mm = p.match(/^\/admin\/campaigns(?:\/([a-z0-9-]+))?(?:\/(preview|save|test|send))?$/);
-      if (!mm) return notFound(res);
-      const key = mm[1], act = mm[2], c = key && campaigns.byKey(key);
-      if (key && !c) return notFound(res);
-      if (!key) return send(res, 200, await campaignsPage(), "text/html; charset=utf-8");
-      if (act === "preview") return send(res, 200, (await campaigns.preview(key)).html, "text/html; charset=utf-8", { "cache-control": "no-store", "content-security-policy": "default-src 'none'; img-src * data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" });
-      if (m !== "POST") return send(res, 200, await campaignPage(key), "text/html; charset=utf-8");
-      const f = await formBody(req);
-      let note = "", err2 = "";
-      if (act === "save") {
-        await campaigns.save(key, f);
-        note = "Saved. Still a draft: nothing has been sent.";
-      }
-      if (act === "test") {
-        const u = await me(req);
-        await campaigns.save(key, f);
-        const r = await campaigns.sendTest(key, u.email);
-        r.ok ? note = "Test sent to " + u.email + ". Nobody else got it." : err2 = r.error;
-      }
-      if (act === "send") {
-        const r = await campaigns.send(key, f.confirm);
-        r.ok ? note = "Sent to " + r.sent + (r.failed ? ", " + r.failed + " failed (press send again to retry them)" : "") + "." : err2 = r.error;
-      }
-      return send(res, 200, await campaignPage(key, note, err2), "text/html; charset=utf-8");
-    }
-    var campStatus = (o) => o.s.status === "sent" ? '<b style="color:#12805C">Sent</b> ' + new Date(o.s.sent_at).toLocaleDateString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short" }) + " to " + Object.keys(o.s.sent).length : o.blocked.length ? '<b style="color:#B4540A">Draft</b> \xB7 needs details' : '<b style="color:#2747F5">Draft</b> \xB7 ready to send';
-    async function campaignsPage() {
-      const all = await campaigns.overview();
-      const rows = all.map((o) => '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td><a href="/admin/campaigns/' + o.c.key + '"><b>' + E(o.c.name) + "</b></a><br><small>" + E(o.c.about) + "</small></td><td><small>" + E(o.s.subject) + "</small></td><td><small>" + E(o.c.audience) + "</small><br><b>" + o.count + "</b> <small>can get it now</small></td><td><small>" + E(o.c.when) + "</small></td><td>" + campStatus(o) + "</td></tr>").join("");
-      const auto = Object.values(leads.series || {}).map((sq) => '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td><b>' + E(sq.name) + "</b></td><td><small>" + sq.steps.map((st) => E(st.key) + ": " + E(typeof st.subject === "function" ? "" : st.subject)).join("<br>") + "</small></td></tr>").join("");
-      return authPage("Email campaigns", '<p><a href="/admin">\u2190 Leads and accounts</a></p><h1>Email campaigns</h1><p>The designed campaigns to leads, loaded as drafts. <b>Nothing goes out until you open one, send yourself a test and confirm the send.</b> People who unsubscribed, signed up or had their emails stopped are always left out.</p><div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">Campaign</th><th align="left">Subject</th><th align="left">Who gets it</th><th align="left">When to send</th><th align="left">Status</th></tr>' + rows + '</table></div><details class="card"><summary><b>Automatic emails already running</b></summary><p><small>These send by themselves from each lead form (see Leads) and to hosts after sign-up (welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed). Listed here so you can see everything in one place.</small></p><table style="width:100%;font-size:13px">' + auto + "</table></details>", true);
-    }
-    async function campaignPage(key, note, err2) {
-      const o = (await campaigns.overview()).find((x) => x.c.key === key), { c, s } = o;
-      const inp = (n, v, label, type) => "<label>" + E(label) + '<input name="' + n + '" value="' + E(v || "") + '"' + (type ? ' type="' + type + '"' : "") + ' style="width:100%"></label>';
-      const sent = s.status === "sent";
-      const skipped = Object.entries(o.skipped).map(([r, n]) => n + " " + r).join(" \xB7 ");
-      const form = sent ? "" : '<form method="post" action="/admin/campaigns/' + key + '/save" class="card">' + inp("subject", s.subject, "Subject") + inp("preview", s.preview, "Preview line (shown after the subject in the inbox)") + c.needs.map(([k, label, , type]) => inp(k, s.settings[k], label, type)).join("") + '<p><small>Fields in {{double_braces}} are filled in for each person.</small></p><button>Save draft</button> <button formaction="/admin/campaigns/' + key + '/test" class="sec">Save and send me a test</button></form>';
-      const sendBox = sent ? "" : '<form method="post" action="/admin/campaigns/' + key + '/send" class="card"><b>Send for real</b><p><small>' + (o.blocked.length ? E(o.blocked.join(" ")) : !s.tests ? "Send yourself a test first." : "This goes to <b>" + o.count + "</b> people now and cannot be undone. Type " + o.count + " to confirm.") + "</small></p>" + (o.blocked.length || !s.tests || !o.count ? "" : inp("confirm", "", "Number of people") + "<button>Send to " + o.count + " people</button>") + "</form>";
-      return authPage(c.name, '<p><a href="/admin/campaigns">\u2190 Email campaigns</a></p><h1>' + E(c.name) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err2 ? '<p class="err" style="color:#B42318">' + E(err2) + "</p>" : "") + "<p>" + campStatus(o) + " \xB7 " + E(c.about) + "</p><p><small><b>Who:</b> " + E(c.audience) + " \xB7 <b>" + o.count + "</b> can get it now" + (skipped ? " \xB7 left out: " + E(skipped) : "") + "<br><b>When:</b> " + E(c.when) + "</small></p>" + form + sendBox + '<div class="card"><b>Preview</b> <small>(' + (o.count ? "with the first person\u2019s details" : "with sample details") + ', <a href="/admin/campaigns/' + key + '/preview" target="_blank">open full size</a>)</small><iframe src="/admin/campaigns/' + key + '/preview" style="width:100%;height:900px;border:1px solid #E4E7F0;border-radius:8px;margin-top:8px" sandbox></iframe></div>', true);
-    }
     async function lead(req, res) {
       const cors = { "access-control-allow-origin": "*", "access-control-allow-methods": "POST", "access-control-allow-headers": "content-type" };
       if (req.method === "OPTIONS") return send(res, 204, "", "text/plain", cors);
@@ -16214,7 +16626,7 @@ var require_server = __commonJS({
       const inp = (label, name, val, type, extra) => "<label>" + label + '<input name="' + name + '" value="' + E(val || "") + '" type="' + (type || "text") + '"' + (extra || "") + "></label>";
       const msgs = { saved: "Saved.", password: "Password changed. Other devices have been signed out.", emails: "Email choices saved." };
       const pr = await hostMail.prefs(w.id), box = (name, on, label) => '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="' + name + '"' + (on ? " checked" : "") + ' style="margin-top:4px">' + label + "</label>";
-      return authPage("Account", "<h1>Your account</h1><p>" + E(a.business) + "</p>" + (err2 ? '<p class="err" role="alert">' + E(err2) + "</p>" : "") + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + "</p>" : "") + '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp("Your name", "owner", a.owner, "text", ' required autocomplete="name"') + inp("Business name", "business", a.business, "text", " required") + inp("Email you sign in with", "email", sess.email, "email", ' required autocomplete="email"') + '<button>Save details</button></form><form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp("Current password", "current", "", "password", ' required autocomplete="current-password"') + inp("New password (at least 10 characters)", "next", "", "password", ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form><form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box("report", pr.report, "The Monday report: last week\u2019s bookings, direct revenue and site visits") + box("setup", pr.setup, "Setup tips in your first month") + '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form><div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div><form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' + inp("Type DELETE to confirm", "confirm", "", "text", ' required autocomplete="off"') + inp("Your password", "password", "", "password", ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form><div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
+      return authPage("Account", "<h1>Your account</h1><p>" + E(a.business) + "</p>" + (err2 ? '<p class="err" role="alert">' + E(err2) + "</p>" : "") + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + "</p>" : "") + '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp("Your name", "owner", a.owner, "text", ' required autocomplete="name"') + inp("Business name", "business", a.business, "text", " required") + inp("Email you sign in with", "email", sess.email, "email", ' required autocomplete="email"') + '<button>Save details</button></form><form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp("Current password", "current", "", "password", ' required autocomplete="current-password"') + inp("New password (at least 10 characters)", "next", "", "password", ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form><form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box("report", pr.report, "The Monday report: last week\u2019s bookings, direct revenue and site visits") + box("setup", pr.setup, "Setup tips in your first month") + box("news", pr.news, "News and offers from Bookingbooster, now and then") + '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form><div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div><form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' + inp("Type DELETE to confirm", "confirm", "", "text", ' required autocomplete="off"') + inp("Your password", "password", "", "password", ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form><div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
     }
     async function accountPost(req, res, p, w, sess) {
       const f = await formBody(req);
@@ -16230,7 +16642,7 @@ var require_server = __commonJS({
         return redirect(res, "/app/account?msg=saved");
       }
       if (p === "/app/account/emails") {
-        await hostMail.setPrefs(w.id, { report: !!f.report, setup: !!f.setup });
+        await hostMail.setPrefs(w.id, { report: !!f.report, setup: !!f.setup, news: !!f.news });
         return redirect(res, "/app/account?msg=emails#emails");
       }
       if (p === "/app/account/password") {
@@ -16321,6 +16733,7 @@ var require_server = __commonJS({
       }
       bg("leads", leads.run(t));
       bg("host email", hostMail.run(t));
+      bg("campaigns", campaigns.run(t));
       for (const id of await ws.liveIds()) {
         try {
           const w = await ws.open(id);

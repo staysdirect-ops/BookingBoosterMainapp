@@ -12,7 +12,7 @@ module.exports = function ({ db, cfg, msg, auth, ws, urls, leads, log }) {
   const kvGet = db.prepare('SELECT v FROM kv WHERE k = ?'), kvSet = db.prepare('INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)');
   const get = async k => { const r = await kvGet.get(k); try { return r ? JSON.parse(r.v) : {}; } catch (_) { return {}; } };
   const put = (k, o) => kvSet.run(k, JSON.stringify(o));
-  const prefs = async wid => Object.assign({ setup: true, report: true }, await get('hostprefs:' + wid));
+  const prefs = async wid => Object.assign({ setup: true, report: true, news: true }, await get('hostprefs:' + wid));
   const setPrefs = async (wid, p) => put('hostprefs:' + wid, Object.assign(await prefs(wid), p));
   const E = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fill = (tpl, v) => tpl.replace(/\{\{([a-z_]+)\}\}/g, (m, k) => E(v[k]));
@@ -166,5 +166,5 @@ module.exports = function ({ db, cfg, msg, auth, ws, urls, leads, log }) {
       'Hi ' + v.first_name + ', we could not take ' + v.amount_due + '. Stripe tries again on ' + v.next_retry_date + '. Update your card: ' + v.billing_url, null);
   }
 
-  return { run, paymentFailed, report, checklist, prefs, setPrefs, unsubUrl: unsub, verifyUnsub: (wid, kind, sig) => ['setup', 'report'].includes(kind) && auth.verify(sig, 'hostmail', wid, kind) };
+  return { run, paymentFailed, report, checklist, prefs, setPrefs, unsubUrl: unsub, verifyUnsub: (wid, kind, sig) => ['setup', 'report', 'news'].includes(kind) && auth.verify(sig, 'hostmail', wid, kind) };
 };
