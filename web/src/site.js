@@ -228,7 +228,7 @@
         '<p class="s-calc-big num" data-cv="kept" data-v="' + v.kept + '">' + $(v.kept) + '</p>' +
         '<p class="s-calc-sm">on <b class="num" data-cv="direct" data-v="' + v.direct + '">' + $(v.direct) + '</b> of bookings moved direct, at Airbnb’s ' + (FEE() * 100).toFixed(1) + '% host fee</p>' +
         '<div class="s-cmp"><div><span>Fees you keep</span><span class="s-cmp-bar"><i class="kept" data-cv="barKept" style="width:' + (100 * v.kept / maxBar) + '%"></i></span><b class="num" data-cv="kept2" data-v="' + v.kept + '">' + $(v.kept) + '</b></div>' +
-        '<div><span>Growth plan, first year</span><span class="s-cmp-bar"><i class="plan" data-cv="barPlan" style="width:' + (100 * v.planYear / maxBar) + '%"></i></span><b class="num">' + $(v.planYear) + '</b></div></div>' +
+        '<div><span>Plan, first year (setup + 11 × £' + plan('growth').price + ')</span><span class="s-cmp-bar"><i class="plan" data-cv="barPlan" style="width:' + (100 * v.planYear / maxBar) + '%"></i></span><b class="num">' + $(v.planYear) + '</b></div></div>' +
         '<div class="s-calc-net"><span data-cv="netLabel">' + (v.net >= 0 ? 'Left over after the plan' : 'Short of covering the plan') + '</span><b class="num" data-cv="net" data-v="' + v.net + '">' + $(v.net) + '</b></div>' +
         '<p class="s-calc-pay" data-cv="pay">' + payLine(v) + '</p>' +
         '<button class="btn accent lg block" data-act="start">Start keeping it' + icon('arrow') + '</button>' +
