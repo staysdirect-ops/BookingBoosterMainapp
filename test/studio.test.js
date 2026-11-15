@@ -101,6 +101,16 @@ test('with a key, Claude art-directs the site and is sent back once when a desig
   } finally { t2.stop(); mock.close(); }
 });
 
+test('a published design offers bank transfer when the host has turned it on', async () => {
+  const { p, url } = await t.home();
+  await t.act('saveBankTransfer', { on: true, holder: 'Test Stays Ltd', bankName: 'Barclays', sortCode: '200000', account: '12345678', days: 5 });
+  await t.call('/api/studio/generate', { body: { propertyId: p.id, brief: { vibe: 'calm' } } });
+  await t.call('/api/studio/publish', { body: { propertyId: p.id } });
+  const page = await fetch(url).then(r => r.text());
+  assert.match(page, /"bank":\{"days":5\}/); assert.match(page, /bw-tr/); assert.doesNotMatch(page, /12345678/, 'bank details stay off the public page');
+  await t.call('/api/studio/publish', { body: { propertyId: p.id, off: true } });
+});
+
 test('the demo can use the builder too', async () => {
   const r = await fetch(t.base + '/demo'); const cookie = (r.headers.get('set-cookie') || '').split(';')[0];
   const g = await fetch(t.base + '/api/demo/studio/generate', { method: 'POST', headers: { 'content-type': 'application/json', cookie, origin: t.base }, body: JSON.stringify({ propertyId: 'laurel', brief: {} }) });
