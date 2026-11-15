@@ -8,7 +8,7 @@ const crypto = require('node:crypto');
 const start = require('./harness');
 const Credits = require('../server/credits');
 
-const pure = Credits({ cfg: { credits: { enabled: true, monthly: 50, unpaid: 5, demo: 1, markup: 1, usdToGbp: 0.8, lowWarning: 5 }, stripe: {} }, db: { prepare: () => ({}) } });
+const pure = Credits({ cfg: { credits: { enabled: true, monthly: 50, demo: 1, markup: 1, usdToGbp: 0.8, lowWarning: 5 }, stripe: {} }, db: { prepare: () => ({}) } });
 
 test('cost is tokens × the model price, in pounds', () => {
   // Sonnet 5.5: $2 in, $10 out per million. 1M in + 1M out = $12 = £9.60 at 0.8.
@@ -98,8 +98,8 @@ async function hook(t, obj) {
   return t.call('/webhooks/stripe', { body: raw, headers: { 'stripe-signature': 't=' + ts + ',v1=' + sig } });
 }
 
-test('a host who has not paid yet gets a small starter amount; paying the plan brings the full £50', async () => {
-  let c = (await b.call('/api/credits')).body; assert.equal(c.included, 5);
+test('a host who has not paid gets no allowance; paying the plan brings the full £50', async () => {
+  let c = (await b.call('/api/credits')).body; assert.equal(c.included, 0); assert.equal(c.empty, true);
   const wid = (await b.sql("SELECT id FROM workspaces WHERE kind = 'live'"))[0].id;
   await hook(b, { id: 'cs_plan', customer: 'cus_1', payment_status: 'paid', metadata: { workspace: wid, kind: 'plan', plan: 'Growth' } });
   c = (await b.call('/api/credits')).body; assert.equal(c.included, 50); assert.equal(c.balance, 50);

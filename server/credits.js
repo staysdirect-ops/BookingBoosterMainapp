@@ -52,15 +52,14 @@ module.exports = function ({ cfg, db, log }) {
     return { n, start: monthStart(anchor, n), end: monthStart(anchor, n + 1) };
   }
   // How much the plan includes this month, by billing status. Paid plans get the full allowance; a host who has not
-  // paid yet gets a small starter amount so they can try the AI; a cancelled plan gets none (top-ups still work).
+  // paid, or whose plan is cancelled, gets none (top-ups still work).
   async function allowanceFor(wid) {
     const r = await q.ws.get(wid); if (!r) return 0;
     if (r.kind !== 'live') return C.demo;
     if (!cfg.stripe.key) return C.monthly; // card billing off (local runs, self-hosting): treat as paid
     const st = r.billing_status;
     if (st === 'active' || st === 'past_due') return C.monthly;
-    if (st === 'cancelled') return 0;
-    return C.unpaid;
+    return 0;
   }
   const units = pounds => Math.round(Number(pounds) * UNIT);
   const num = v => Number(v || 0);
@@ -70,9 +69,8 @@ module.exports = function ({ cfg, db, log }) {
     now = now || Date.now();
     let r = await q.get.get(wid);
     if (!r) {
-      const w = await q.ws.get(wid); const anchor = num(w && w.created_at) || now;
       const a = units(await allowanceFor(wid));
-      await q.ins.run(wid, anchor, String(periodOf(anchor, now).n), a, a, now);
+      await q.ins.run(wid, now, '0', a, a, now);
       r = await q.get.get(wid);
     }
     const p = periodOf(num(r.anchor), now);
@@ -80,6 +78,12 @@ module.exports = function ({ cfg, db, log }) {
       const a = units(await allowanceFor(wid));
       await q.roll.run(String(p.n), a, a, now, wid, String(p.n));
       r = await q.get.get(wid);
+    }
+    // The plan has just been paid (or paid again after a cancellation): its billing month starts now, with a full allowance.
+    // Worked out here rather than in the payment webhook, so it holds however the payment is recorded.
+    if (!num(r.allowance)) {
+      const a = units(await allowanceFor(wid));
+      if (a > 0) { await q.restart.run(now, '0', a, a, now, wid); r = await q.get.get(wid); return { row: r, period: periodOf(now, now) }; }
     }
     return { row: r, period: p };
   }
@@ -144,13 +148,6 @@ module.exports = function ({ cfg, db, log }) {
     });
   }
 
-  // The plan was just paid: the billing month now starts today, with a full allowance.
-  async function planStarted(wid) {
-    const now = Date.now(); await load(wid, now);
-    const a = units(await allowanceFor(wid));
-    await q.restart.run(now, '0', a, a, now, wid);
-  }
-
   async function recent(wid, n) {
     return (await q.recent.all(wid, n || 20)).map(r => ({ kind: r.kind, pounds: num(r.amount) / UNIT, feature: r.feature, name: FEATURES[r.feature] || (r.kind === 'topup' ? 'Top-up' : r.kind === 'grant' ? 'Added by our team' : 'AI'), model: r.model, tokensIn: num(r.tokens_in), tokensOut: num(r.tokens_out), at: num(r.created_at) }));
   }
@@ -162,6 +159,6 @@ module.exports = function ({ cfg, db, log }) {
     return n >= TOPUP_MIN && n <= TOPUP_MAX ? n : null;
   }
 
-  return { enabled: C.enabled, check, charge, meter, cost, topup, planStarted, summary, recent, topupAmount, money, UNIT, TOPUP_MIN, TOPUP_MAX, TOPUP_PRESETS, FEATURES, PRICES, periodOf };
+  return { enabled: C.enabled, check, charge, meter, cost, topup, summary, recent, topupAmount, money, UNIT, TOPUP_MIN, TOPUP_MAX, TOPUP_PRESETS, FEATURES, PRICES, periodOf };
 };
 module.exports.PRICES = PRICES;

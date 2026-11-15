@@ -204,7 +204,7 @@ async function stripeWebhook(req, res) {
       if (m.kind === 'link') { await payIns.run(o.id, w.id, m.booking, 'booking', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); await ws.act(w.id, 'paymentConfirmed', [m.booking, { intent: o.payment_intent, session: o.id }]); }
       if (m.kind === 'deposit') { await payIns.run(o.id, w.id, m.booking, 'deposit', 20000, 'card-saved', o.setup_intent, Date.now(), Date.now()); await ws.act(w.id, 'checkin', [m.booking, { deposit: true }]); }
       if (m.kind === 'extra') { await payIns.run(o.id, w.id, m.booking, 'extra', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); }
-      if (m.kind === 'plan') { await ws.setMeta(w.id, { billing_status: 'active', stripe_customer: o.customer, plan: m.plan }); await ws.withWs(w.id, BB => { BB.store.get().account.plan = m.plan; BB.store.get().account.billing = 'active'; BB.store.commit({}); }); await credits.planStarted(w.id); }
+      if (m.kind === 'plan') { await ws.setMeta(w.id, { billing_status: 'active', stripe_customer: o.customer, plan: m.plan }); await ws.withWs(w.id, BB => { BB.store.get().account.plan = m.plan; BB.store.get().account.billing = 'active'; BB.store.commit({}); }); }
       if (m.kind === 'credit' && o.payment_status === 'paid') { const pounds = (o.amount_total || 0) / 100; if (await credits.topup(w.id, pounds, o.id)) log('credits', w.id, 'topped up £' + pounds); }
     }
     if (ev.type === 'checkout.session.expired' && w && m.kind === 'booking') { await payUpd.run('expired', null, Date.now(), o.id); await ws.act(w.id, 'expirePending', [m.booking]); }
@@ -795,7 +795,6 @@ async function billingPage(w, sp) {
 // AI credit: the monthly allowance, top-ups, what was used, and the top-up form.
 async function creditCard(w, sp) {
   const c = await credits.summary(w.id), rows = await credits.recent(w.id, 12), M = credits.money;
-  const st = (await ws.row(w.id) || {}).billing_status, starter = stripe.enabled && w.kind === 'live' && (!st || st === 'trial');
   const day = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/London' });
   const msg = sp && sp.get('msg') === 'topup' ? '<p class="err">Choose an amount in whole pounds from £' + credits.TOPUP_MIN + ' to £' + credits.TOPUP_MAX.toLocaleString('en-GB') + '.</p>'
     : sp && sp.get('topup') ? '<p class="ok">Thank you. £' + E(sp.get('topup')) + ' of AI credit is added as soon as Stripe confirms the payment, usually within a minute.</p>' : '';
@@ -810,7 +809,7 @@ async function creditCard(w, sp) {
     '<button>Top up with card</button><p style="margin:6px 0 0"><small>Paid by card through Stripe, inc. VAT. Top-ups never expire and are used after your monthly allowance.</small></p></form>'
     : '<p><small>Card payments are not switched on for this server yet, so top-ups are not available.</small></p>';
   return '<div class="card" id="ai-credit"><b>AI credit · ' + M(c.balance) + ' left</b>' + msg +
-    (starter ? '<p style="margin:6px 0 0">You have ' + M(c.included) + ' of AI use to try the site builder, funnels and reply drafts before your plan starts. Once it starts, your plan includes ' + M(cfg.credits.monthly) + ' of AI use every month.' + (c.topup > 0 ? ' Plus ' + M(c.topup) + ' of top-ups.' : '') + '</p>'
+    (!c.included ? '<p style="margin:6px 0 0">Your plan includes ' + M(cfg.credits.monthly) + ' of AI use a month for the site builder, funnels and reply drafts while it is active.' + (c.topup > 0 ? ' You have ' + M(c.topup) + ' of top-ups.' : '') + '</p>'
       : '<p style="margin:6px 0 0">Your plan includes ' + M(c.included) + ' of AI use a month for the site builder, funnels and reply drafts. ' + M(c.includedLeft) + ' of it is left this month, and it resets on ' + day(c.resetsAt) + '.' + (c.topup > 0 ? ' Plus ' + M(c.topup) + ' of top-ups.' : '') + '</p>') +
     '<div style="height:8px;background:#E4E7F0;border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:#3355FF"></div></div>' +
     status + used + '<p style="margin:6px 0 0"><small>Each AI action is charged by how much AI work it takes' + (c.markup === 1 ? ', at the price the AI provider charges us' : '') + '. A reply draft is usually under 1p; a full site design is usually under £1.</small></p>' + hist + form + '</div>';
