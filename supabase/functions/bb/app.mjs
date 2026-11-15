@@ -6650,7 +6650,7 @@ body.p-lock { overflow: hidden; }
 .x-site .btn.s-glow { box-shadow: none; }
 .x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--ink); border-color: var(--ink); color: #fff; }
 .x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: #1E2750; }
-.x-site .btn.ghost, .x-site .btn.lg:not(.primary):not(.accent):not(.ink) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
+.x-site .btn.ghost, .x-site .btn.lg:where(:not(.primary):not(.accent):not(.ink)) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
 .x-site .s-anim .s-rise { animation-duration: .6s; }
 
 /* type: calmer display scale */
@@ -6789,6 +6789,445 @@ body.p-lock { overflow: hidden; }
 .x-site .s-foot-brand em, .x-site .s-foot-fine { color: var(--soft); }
 .x-site .s-foot nav b { font: 600 12px var(--font-body); letter-spacing: .08em; color: var(--soft); }
 .x-site .s-foot nav button, .x-site .s-foot nav a { color: var(--ink); }
+
+/* demo site screenshot in a browser frame */
+.x-site .s-shot { display: flex; flex-direction: column; background: #fff; }
+.x-site .s-shot-vp { flex: 1; min-height: 0; overflow: hidden; background: #E9ECE7; }
+.x-site .s-shot-vp img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.x-site .s-collage .s-hero-browser.s-shot { height: 100%; }
+
+/* explainer video */
+.x-site .s-film { background: var(--paper); padding-top: clamp(56px, 7vw, 88px); }
+.x-site .s-film .s-head { margin-inline: auto; display: grid; justify-items: center; }
+.x-site .s-film .s-h2 { margin-inline: auto; }
+.x-site .s-film-frame { max-width: 960px; margin: 0 auto; border-radius: 18px; overflow: hidden; border: 1px solid var(--hair); box-shadow: 0 40px 80px -50px rgba(15,22,48,.45); background: var(--ink); aspect-ratio: 16 / 9; }
+.x-site .s-film-frame video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* hero shows the real demo screenshot only, no sample stats */
+.x-site .s-collage .s-fc { display: none; }
+.x-site .s-collage { min-height: 460px; }
+.x-site .s-collage > .s-rise:first-child { inset: 24px 0 24px 0; }
+@media (max-width: 600px) { .x-site .s-collage { display: block; } .x-site .s-collage > .s-rise:first-child { height: 240px; } }
+
+/* ---------- AI search, explained ---------- */
+.x-site .s-ai2 { --nv-line: rgba(255,255,255,.12); --nv-soft: #A9B0C8; }
+.x-site .s-ai2-head { max-width: 760px; }
+.x-site .s-ai2-head .s-h2 { max-width: 22ch; color: #fff; }
+.x-site .s-ai2-head .s-sub { color: var(--nv-soft); max-width: 62ch; }
+.x-site .s-ai2-logos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.x-site .s-ai2-logos > span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--nv-line); border-radius: 999px; font-size: 14px; font-weight: 500; color: #fff; background: rgba(255,255,255,.03); }
+.x-site .s-ai2-logos img, .x-site .s-ai2 .ai-ic { width: 18px; height: 18px; }
+
+.x-site .s-ai2-steps { list-style: none; margin: clamp(40px, 6vw, 64px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: none; }
+.x-site .s-ai2-steps > li { display: flex; flex-direction: column; border: 1px solid var(--nv-line); border-radius: 18px; padding: 26px 24px 24px; background: rgba(255,255,255,.025); min-width: 0; }
+.x-site .s-ai2-n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 600 14px var(--font-body); color: var(--ink); background: #fff; }
+.x-site .s-ai2-steps h3 { font: 600 21px/1.2 var(--font-display); letter-spacing: -.02em; color: #fff; margin: 18px 0 8px; }
+.x-site .s-ai2-steps p { color: var(--nv-soft); font-size: 15px; margin: 0 0 22px; }
+.x-site .s-ai2-viz { margin-top: auto; background: #fff; color: var(--ink); border-radius: 14px; padding: 16px; min-height: 168px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 24px 50px -30px rgba(0,0,0,.6); }
+.x-site .s-ai2-bubble { align-self: flex-end; background: var(--cream); border: 1px solid var(--hair); border-radius: 16px 16px 4px 16px; padding: 12px 14px; font-size: 15px; max-width: 92%; }
+.x-site .s-ai2-src { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 14px; }
+.x-site .s-ai2-src li { display: flex; align-items: center; gap: 9px; }
+.x-site .s-ai2-src .ic { width: 16px; height: 16px; flex: none; color: #fff; background: var(--good); border-radius: 50%; padding: 3px; stroke-width: 3; }
+.x-site .s-ai2-ans small { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--soft); }
+.x-site .s-ai2-ans p { margin: 8px 0 12px; font-size: 14.5px; line-height: 1.5; }
+.x-site .s-ai2-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--soft); border: 1px solid var(--hair); border-radius: 10px; padding: 8px 10px; }
+.x-site .s-ai2-link .ic { width: 13px; height: 13px; color: var(--good); }
+.x-site .s-ai2-link em { margin-left: auto; font-style: normal; font-weight: 600; color: #fff; background: var(--ink); border-radius: 7px; padding: 4px 10px; }
+
+.x-site .s-ai2-weekly { margin-top: clamp(40px, 6vw, 64px); padding-top: 32px; border-top: 1px solid var(--nv-line); }
+.x-site .s-ai2-weekly h3 { font: 600 13px var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--nv-soft); margin: 0 0 22px; }
+.x-site .s-ai2-weekly ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.x-site .s-ai2-weekly b { display: block; color: #fff; font-weight: 600; margin-bottom: 6px; }
+.x-site .s-ai2-weekly span { color: var(--nv-soft); font-size: 14.5px; }
+
+/* the checker: one white card */
+.x-site .s-ai2-check { margin-top: clamp(40px, 6vw, 64px); display: grid; grid-template-columns: 1fr 1.2fr; background: #fff; color: var(--ink); border-radius: 22px; overflow: hidden; box-shadow: 0 50px 100px -50px rgba(0,0,0,.7); }
+.x-site .s-ai2-form { padding: clamp(24px, 3.4vw, 44px); }
+.x-site .s-ai2-form h3 { font: 600 28px/1.1 var(--font-display); letter-spacing: -.025em; margin: 0 0 8px; }
+.x-site .s-ai2-form > p { color: var(--soft); margin: 0; }
+.x-site .s-ai2-check .s-f > span:first-child { color: var(--soft); }
+.x-site .s-ai2-check .s-f input, .x-site .s-ai2-check .s-f select { background: #fff; border-color: var(--hair-2); color: var(--ink); }
+.x-site .s-ai2-check .s-fine, .x-site .s-ai2-check .s-tm, .x-site .s-ai2-check .ai-tm { color: var(--soft); }
+.x-site .s-ai2-check .btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .s-ai2-check .s-err { color: var(--bad); }
+.x-site .s-ai2-check .s-ai-r { background: var(--cream); border: 0; border-left: 1px solid var(--hair); border-radius: 0; padding: 0; min-height: 440px; box-shadow: none; display: flex; flex-direction: column; color: var(--ink); }
+.x-site .s-ai2-win { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid var(--hair); background: #fff; font-size: 12.5px; color: var(--soft); }
+.x-site .s-ai2-win i { width: 9px; height: 9px; border-radius: 50%; background: var(--hair-2); }
+.x-site .s-ai2-win span { margin-left: 10px; font-weight: 600; }
+.x-site .s-ai2-body { padding: clamp(18px, 2.4vw, 28px); flex: 1; }
+.x-site .s-ai2-check .s-q { background: var(--ink); color: #fff; }
+.x-site .s-ai2-check .s-ai-idle span { border: 1px solid var(--hair); color: var(--ink); background: #fff; }
+.x-site .s-ai2-check .s-ai-hint { color: var(--soft); }
+.x-site .s-ai2-check .s-ai-hint b { color: var(--ink); }
+.x-site .s-ai2-check .s-scan li { background: #fff; color: var(--soft); border: 1px solid var(--hair); }
+.x-site .s-ai2-check .s-scan li.on, .x-site .s-ai2-check .s-scan li.done { color: var(--ink); background: #fff; }
+.x-site .s-ai2-check .s-scan li.done .s-scan-ic { background: var(--good); color: #fff; }
+.x-site .s-ai2-check .s-scan-ic { background: var(--cream); }
+.x-site .s-ai2-check .s-scan em { color: var(--soft); }
+.x-site .s-ai2-check .s-prog { background: var(--hair); }
+.x-site .s-ai2-check .s-prog i { background: var(--ink); }
+.x-site .s-ai2-check .s-ring { background: radial-gradient(closest-side, var(--cream) 78%, transparent 79%), conic-gradient(#C2453A calc(var(--v) * 1%), var(--hair) 0); }
+.x-site .s-ai2-check .s-ring span { color: var(--soft); }
+.x-site .s-ai2-check .s-ai-verdict { color: var(--ink); }
+.x-site .s-ai2-check .s-eng li { color: var(--ink); }
+.x-site .s-ai2-check .s-eng .bad { color: #B4362B; } .x-site .s-ai2-check .s-eng .warn { color: #8A5A00; }
+.x-site .s-ai2-check .s-a { background: #fff; color: var(--ink); border: 1px solid var(--hair); }
+.x-site .s-ai2-check .s-a small { color: var(--soft); }
+.x-site .s-ai2-check .s-a small .ic { color: var(--soft); }
+.x-site .s-ai2-check .s-a b { color: var(--ink); }
+.x-site .s-ai2-check .s-src { background: var(--cream); color: var(--soft); }
+.x-site .s-ai2-check .s-miss { color: #B4362B !important; border-top-color: var(--hair); }
+.x-site .s-ai2-check .s-ai-cta .btn.accent { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .s-ai2-check .s-ai-cta .s-ghost-inv { color: var(--ink); border-color: var(--hair-2); }
+
+@media (max-width: 960px) {
+  .x-site .s-ai2-steps { grid-template-columns: 1fr; }
+  .x-site .s-ai2-weekly ul { grid-template-columns: 1fr 1fr; }
+  .x-site .s-ai2-check { grid-template-columns: 1fr; }
+  .x-site .s-ai2-check .s-ai-r { border-left: 0; border-top: 1px solid var(--hair); min-height: 0; }
+}
+@media (max-width: 520px) { .x-site .s-ai2-weekly ul { grid-template-columns: 1fr; gap: 18px; } }
+
+.x-site .s-ai2-viz, .x-site .s-ai2-check { --ai-chatgpt: #000; }
+.x-site .s-ai2-viz p { color: var(--ink); margin: 8px 0 12px; }
+.x-site .s-ai2-viz p b { color: var(--ink); }
+.x-site .s-ai2-check .s-ai-idle > span { border: 1px solid var(--hair); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; }
+.x-site .s-ai2-check .s-ai-idle span span { border: 0; padding: 0; background: none; }
+.x-site .s-ai2-form .s-fine { margin-top: 14px; }
+
+/* ---------- hero, v2: copy + a composed product scene + what you get ---------- */
+.x-site .s-hero2 { background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%); border-bottom: 1px solid var(--hair); }
+.x-site .s-hero2-in { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 5vw, 72px); align-items: center; padding-block: clamp(48px, 7vw, 96px) clamp(40px, 5vw, 64px); }
+.x-site .s-hero2 .s-h1 { font-size: clamp(42px, 5.4vw, 72px); max-width: 11ch; margin: 18px 0 22px; }
+.x-site .s-hero2 .s-hl { color: var(--blue); }
+.x-site .s-hero2-kick { margin: 0; font: 600 13px var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+.x-site .s-hero2 .s-lead { max-width: 48ch; }
+.x-site .s-hero2-price { margin: 22px 0 0; font-size: 14.5px; color: var(--soft); }
+.x-site .s-hero2-price b { color: var(--ink); font-weight: 600; }
+
+.x-site .s-hero2-stage { position: relative; padding: 28px 0 56px 36px; min-width: 0; }
+.x-site .s-hero2-browser { height: 440px; border-radius: 16px; box-shadow: 0 50px 90px -50px rgba(15,22,48,.55), 0 0 0 1px var(--hair); }
+.x-site .s-hero2-card { position: absolute; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px; box-shadow: 0 24px 48px -26px rgba(15,22,48,.5), 0 0 0 1px var(--hair); font-size: 13.5px; line-height: 1.45; --ai-chatgpt: #000; }
+.x-site .s-hero2-card small { display: flex; font-size: 12.5px; font-weight: 600; color: var(--soft); margin-bottom: 6px; }
+.x-site .s-hero2-card p { margin: 0; }
+.x-site .s-hc-ai { left: 0; bottom: 0; width: 290px; }
+.x-site .s-hc-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12.5px; color: var(--good); font-weight: 600; }
+.x-site .s-hc-link .ic { width: 12px; height: 12px; }
+.x-site .s-hc-g { right: -16px; top: 0; width: 270px; }
+.x-site .s-hc-g b { display: block; color: #1A3EC8; font-weight: 600; font-size: 14.5px; }
+.x-site .s-hc-g span { color: var(--soft); font-size: 13px; }
+.x-site .s-hc-app { right: 20px; bottom: 18px; display: flex; gap: 12px; align-items: center; max-width: 290px; }
+.x-site .s-hc-app b { display: block; }
+.x-site .s-hc-app em { font-style: normal; color: var(--soft); font-size: 12.5px; }
+.x-site .s-hc-ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--ink); color: #fff; flex: none; }
+.x-site .s-hc-ic .ic { width: 18px; height: 18px; }
+
+.x-site .s-hero2-pillars { list-style: none; margin: 0; padding: 22px 0 30px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; border-top: 1px solid var(--hair); }
+.x-site .s-hero2-pillars li { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+.x-site .s-h2-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: #fff; border: 1px solid var(--hair); color: var(--blue); flex: none; }
+.x-site .s-h2-ic .ic { width: 18px; height: 18px; }
+.x-site .s-hero2-pillars b { display: block; font-size: 15px; font-weight: 600; }
+.x-site .s-hero2-pillars em { font-style: normal; font-size: 13px; color: var(--soft); }
+
+@media (max-width: 1080px) {
+  .x-site .s-hero2-in { grid-template-columns: 1fr; }
+  .x-site .s-hero2-stage { max-width: 680px; }
+  .x-site .s-hero2-pillars { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .x-site .s-hero2-stage { padding: 0; display: grid; gap: 10px; }
+  .x-site .s-hero2-browser { height: 260px; }
+  .x-site .s-hero2-card { position: static; width: auto; max-width: none; }
+  .x-site .s-hc-app { display: none; }
+  .x-site .s-hero2-pillars { grid-template-columns: 1fr 1fr; }
+}
+.x-site .s-hc-ai { left: auto; right: -16px; bottom: 0; }
+.x-site .s-hc-app { left: 0; right: auto; top: 210px; bottom: auto; }
+@media (max-width: 640px) { .x-site .s-hc-ai { right: auto; } }
+` }, "/app/web/src/site-social.css": { "t": `/* Social style for the marketing site, matching the BookingBooster social posts.
+   Loaded last. Cobalt, ink, sky and yellow panels; heavy Bricolage headlines with a yellow highlight;
+   mono pill labels with a yellow dot; big soft chevrons; real product screens in browser and phone frames. */
+.x-site {
+  --cobalt: #2747F5; --cobalt-d: #1B34C8; --yel: #FFC42E; --ink: #0F1630; --sky: #E4E9FF; --skybg: #F5F7FF; --soft: #5A6386; --good: #12A26B;
+  --blue: var(--cobalt); --primary: var(--cobalt); --accent: var(--yel); --cream: var(--skybg); --hair: rgba(15,22,48,.1); --hair-2: rgba(15,22,48,.16);
+  --font-body: 'Geist', 'DM Sans', system-ui, sans-serif; --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --disp: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-family: var(--font-body); -webkit-font-smoothing: antialiased;
+}
+
+/* panel themes, as on the posts */
+.x-site .t-cobalt { background: var(--cobalt); color: #fff; --fg: #fff; --sub: rgba(255,255,255,.84); --hl: var(--yel); --chip: rgba(255,255,255,.14); --chipfg: #fff; --deco: rgba(255,255,255,.09); --dot: var(--yel); --tick: var(--yel); --tickfg: var(--ink); --btn: var(--yel); --btnfg: var(--ink); }
+.x-site .t-ink { background: var(--ink); color: #fff; --fg: #fff; --sub: rgba(228,233,255,.78); --hl: var(--yel); --chip: rgba(255,255,255,.1); --chipfg: #E4E9FF; --deco: rgba(110,134,255,.13); --dot: var(--yel); --tick: var(--yel); --tickfg: var(--ink); --btn: var(--cobalt); --btnfg: #fff; }
+.x-site .t-sky { background: var(--skybg); color: var(--ink); --fg: var(--ink); --sub: var(--soft); --hl: var(--ink); --chip: #fff; --chipfg: var(--cobalt); --deco: rgba(39,71,245,.07); --dot: var(--yel); --tick: var(--cobalt); --tickfg: #fff; --btn: var(--cobalt); --btnfg: #fff; }
+.x-site .t-white { background: #fff; color: var(--ink); --fg: var(--ink); --sub: var(--soft); --hl: var(--ink); --chip: var(--sky); --chipfg: var(--cobalt); --deco: rgba(39,71,245,.06); --dot: var(--yel); --tick: var(--cobalt); --tickfg: #fff; --btn: var(--cobalt); --btnfg: #fff; }
+.x-site .t-yellow { background: var(--yel); color: var(--ink); --fg: var(--ink); --sub: rgba(15,22,48,.8); --hl: var(--cobalt); --chip: rgba(15,22,48,.08); --chipfg: var(--ink); --deco: rgba(15,22,48,.07); --dot: var(--cobalt); --tick: var(--ink); --tickfg: var(--yel); --btn: var(--ink); --btnfg: #fff; }
+
+/* type */
+.x-site .s-h1, .x-site .s-h2, .x-site .s-final-h { font-family: var(--disp); font-weight: 800; letter-spacing: -.04em; font-variation-settings: 'opsz' 96; }
+.x-site .s-h1 { font-size: clamp(44px, 6.4vw, 84px); line-height: .96; max-width: 12ch; margin: 22px 0 22px; }
+.x-site .s-h2 { font-size: clamp(34px, 4.4vw, 58px); line-height: .98; max-width: 16ch; color: var(--fg, var(--ink)); }
+.x-site .s-sub, .x-site .s-lead { color: var(--sub, var(--soft)); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.45; letter-spacing: -.01em; }
+.x-site .s-hl { color: var(--hl, var(--ink)); background: none; padding: 0; }
+.x-site .t-white .s-hl, .x-site .t-sky .s-hl, .x-site .s-sec:not([class*="t-"]) .s-hl { background: linear-gradient(transparent 58%, var(--yel) 58%, var(--yel) 92%, transparent 92%); padding: 0 .06em; margin: 0 -.06em; -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--ink); }
+.x-site .s-pill { display: inline-flex; align-items: center; gap: .55em; font: 500 13px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .14em; background: var(--chip, var(--sky)); color: var(--chipfg, var(--cobalt)); border-radius: 999px; padding: 10px 16px 9px; }
+.x-site .s-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--yel)); display: block; flex: none; }
+.x-site .eyebrow { font: 500 13px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .14em; color: var(--cobalt); }
+.x-site .s-ink .eyebrow { color: var(--yel); }
+
+/* chevrons and dots */
+.x-site .s-chev { position: absolute; pointer-events: none; width: min(620px, 60vw); height: min(620px, 60vw); right: -140px; top: -80px; z-index: 0; }
+.x-site .s-chev path { fill: none; stroke: var(--deco); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+.x-site .flip .s-chev { right: auto; left: -160px; top: auto; bottom: -160px; }
+.x-site .s-dots { position: absolute; inset: 0; background-image: radial-gradient(var(--deco) 2px, transparent 2.5px); background-size: 32px 32px; pointer-events: none; }
+
+/* buttons: pills */
+.x-site .btn { border-radius: 999px; font-weight: 700; letter-spacing: -.01em; }
+.x-site .btn.lg { padding: 14px 24px; font-size: 16.5px; }
+.x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+.x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: var(--cobalt-d); border-color: var(--cobalt-d); }
+.x-site .btn.s-yel { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .btn.s-yel:hover { background: #FFD25C; }
+.x-site .btn.s-out { background: transparent; border-color: rgba(255,255,255,.4); color: #fff; }
+.x-site .btn.s-out:hover { background: rgba(255,255,255,.1); }
+.x-site .btn.s-b { background: var(--btn); border-color: var(--btn); color: var(--btnfg); }
+.x-site .btn.s-b:hover { filter: brightness(1.08); }
+.x-site .btn:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
+.x-site .t-yellow .btn:focus-visible, .x-site .t-white .btn:focus-visible, .x-site .t-sky .btn:focus-visible { outline-color: var(--cobalt); }
+
+/* nav */
+.x-site .s-nav { background: rgba(255,255,255,.92); backdrop-filter: saturate(1.4) blur(10px); }
+.x-site .s-nav .lockup { font-family: var(--disp); font-weight: 800; letter-spacing: -.035em; }
+.x-site .s-links button { font-weight: 600; color: var(--ink); }
+.x-site .s-links button:hover { color: var(--cobalt); }
+.x-site .s-nav .btn.ink { background: var(--cobalt); border-color: var(--cobalt); }
+
+/* frames */
+.x-site .s-frame { background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid rgba(15,22,48,.08); box-shadow: 0 2px 6px rgba(15,22,48,.12), 0 40px 90px -30px rgba(15,22,48,.55); }
+.x-site .s-frame-bar { height: 38px; background: #F1F3FA; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 1px solid #E3E7F3; }
+.x-site .s-frame-bar b { width: 10px; height: 10px; border-radius: 50%; background: #D5DAE8; display: block; flex: none; }
+.x-site .s-frame-bar span { margin-left: 12px; flex: 1; max-width: 62%; height: 24px; border-radius: 7px; background: #fff; font: 500 12.5px var(--font-mono); color: var(--soft); display: flex; align-items: center; gap: 6px; padding: 0 10px; white-space: nowrap; overflow: hidden; }
+.x-site .s-frame-bar .ic { width: 12px; height: 12px; flex: none; }
+.x-site .s-frame img { display: block; width: 100%; height: auto; }
+.x-site .s-phone { background: #0B1024; border-radius: 40px; padding: 10px; box-shadow: 0 50px 100px -30px rgba(10,15,40,.6), inset 0 0 0 2px rgba(255,255,255,.08); }
+.x-site .s-phone-scr { border-radius: 31px; overflow: hidden; background: #fff; position: relative; padding-top: 26px; }
+.x-site .s-phone-scr::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 84px; height: 22px; background: #0B1024; border-radius: 14px; }
+.x-site .s-phone img { display: block; width: 100%; height: auto; }
+
+/* notification cards */
+.x-site .s-nc { position: absolute; display: flex; align-items: center; gap: 12px; background: #fff; color: var(--ink); border-radius: 18px; padding: 14px 20px 14px 14px; box-shadow: 0 24px 60px -18px rgba(10,15,40,.5), 0 2px 4px rgba(10,15,40,.08); z-index: 3; max-width: 330px; }
+.x-site .s-nc small { display: block; font: 600 11.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); margin-bottom: 3px; }
+.x-site .s-nc b { display: block; font: 750 19px/1.15 var(--font-body); letter-spacing: -.02em; }
+.x-site .s-nc.dark { background: var(--ink); color: #fff; }
+.x-site .s-nc.dark small { color: var(--yel); }
+.x-site .s-nc-ic { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; background: var(--sky); color: var(--cobalt); --ai-chatgpt: #000; }
+.x-site .s-nc-ic .ic, .x-site .s-nc-ic svg { width: 22px; height: 22px; stroke-width: 2.6; }
+.x-site .s-nc-ic.good { background: #DDF6EA; color: var(--good); }
+.x-site .s-nc-ic.up, .x-site .s-nc-ic.key { background: #FFF1CC; color: #B37A00; }
+.x-site .s-nc-ic.up svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.x-site .s-nc-ic.gpt { background: #F1F3FA; }
+
+/* ---------- hero ---------- */
+.x-site .s-hero3 { position: relative; overflow: hidden; border: 0; }
+.x-site .s-hero3::before { display: none; }
+.x-site .s-hero3-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 4vw, 56px); align-items: center; padding-block: clamp(48px, 7vw, 96px) clamp(56px, 7vw, 104px); }
+.x-site .s-hero3 .s-h1 { color: #fff; }
+.x-site .s-hero3 .s-lead { max-width: 46ch; }
+.x-site .s-hero3 .s-cta { margin-top: 30px; }
+.x-site .s-hero3-price { margin: 22px 0 0; font-size: 15px; color: rgba(255,255,255,.8); }
+.x-site .s-hero3-price b { color: #fff; }
+.x-site .s-hero3-stage { position: relative; min-height: 520px; }
+.x-site .s-hero3-browser { position: absolute; left: 0; right: -18%; top: 24px; transform: rotate(-2.5deg); transform-origin: left top; }
+.x-site .s-hero3-phone { position: absolute; width: 214px; right: 2%; top: 150px; transform: rotate(4deg); z-index: 2; }
+.x-site .s-hn1 { left: -6%; bottom: 18px; }
+.x-site .s-hn2 { left: 30%; top: -6px; }
+
+/* ---------- proof band ---------- */
+.x-site .s-proof3 { position: relative; overflow: hidden; padding-block: clamp(36px, 5vw, 56px); }
+.x-site .s-proof3 ul { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.x-site .s-proof3 b { display: block; font: 800 clamp(40px, 4.6vw, 64px)/.9 var(--disp); letter-spacing: -.05em; color: var(--yel); margin-bottom: 12px; white-space: nowrap; }
+.x-site .s-proof3 span { color: var(--sub); font-size: 15.5px; line-height: 1.4; display: block; max-width: 26ch; }
+
+/* ---------- feature rows ---------- */
+.x-site .s-feat { position: relative; overflow: hidden; padding-block: clamp(64px, 9vw, 128px); }
+.x-site .s-feat-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+.x-site .s-feat.flip .s-feat-copy { order: 2; }
+.x-site .s-feat .s-h2 { margin: 22px 0 18px; }
+.x-site .s-feat .s-sub { max-width: 48ch; margin: 0; }
+.x-site .s-ticks3 { list-style: none; margin: 26px 0 30px; padding: 0; display: grid; gap: 14px; }
+.x-site .s-ticks3 li { display: flex; gap: 12px; align-items: flex-start; font-weight: 600; font-size: 17px; line-height: 1.35; letter-spacing: -.01em; color: var(--fg); }
+.x-site .s-ticks3 li > span { flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--tick); color: var(--tickfg); display: grid; place-items: center; margin-top: -1px; }
+.x-site .s-ticks3 .ic { width: 16px; height: 16px; stroke-width: 3; }
+.x-site .s-feat-vis { position: relative; min-height: 420px; display: flex; align-items: center; }
+.x-site .s-fv-main { width: 100%; }
+.x-site .s-fv-phone { position: absolute; width: 190px; right: -14px; bottom: -36px; transform: rotate(3deg); z-index: 2; }
+.x-site .s-fv-nc { left: -18px; bottom: -24px; }
+.x-site .s-fv-p1, .x-site .s-fv-p2 { position: absolute; width: min(250px, 44%); }
+.x-site .s-fv-p1 { left: 8%; top: 0; transform: rotate(-4deg); }
+.x-site .s-fv-p2 { right: 8%; top: 46px; transform: rotate(4deg); }
+.x-site .t-yellow .s-feat-vis { min-height: 560px; }
+.x-site .t-yellow .s-fv-nc { left: 50%; bottom: 0; transform: translateX(-50%); }
+
+/* ---------- film ---------- */
+.x-site .s-film { background: #fff; }
+.x-site .s-film-frame { border-radius: 22px; border: 0; box-shadow: 0 2px 6px rgba(15,22,48,.12), 0 50px 100px -40px rgba(15,22,48,.55); }
+
+/* ---------- calculator on ink, numbers in yellow ---------- */
+.x-site .s-calc-sec { background: var(--skybg); }
+.x-site .s-calc-r { background: var(--ink); color: #fff; border: 0; border-radius: 26px; box-shadow: 0 50px 100px -40px rgba(15,22,48,.6); }
+.x-site .s-calc-k { font: 500 12.5px var(--font-mono); letter-spacing: .12em; color: var(--yel); }
+.x-site .s-calc-big { color: var(--yel); font-family: var(--disp); font-weight: 800; letter-spacing: -.05em; }
+.x-site .s-calc-sm, .x-site .s-calc-pay, .x-site .s-cmp > div, .x-site .s-calc-r .s-fine { color: rgba(228,233,255,.78); }
+.x-site .s-calc-sm b, .x-site .s-calc-pay b, .x-site .s-cmp b, .x-site .s-calc-net b { color: #fff; }
+.x-site .s-cmp { border-color: rgba(255,255,255,.14); }
+.x-site .s-cmp-bar { background: rgba(255,255,255,.1); height: 8px; }
+.x-site .s-cmp-bar .kept { background: var(--yel); } .x-site .s-cmp-bar .plan { background: #6E86FF; }
+.x-site .s-calc-net { border-color: rgba(255,255,255,.14); }
+.x-site .s-calc-net span { color: rgba(228,233,255,.78); }
+.x-site .s-calc-r .btn.accent { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .s-slider label b { color: var(--cobalt); font-weight: 800; font-family: var(--disp); font-size: 22px; letter-spacing: -.03em; }
+.x-site .s-slider input[type=range] { height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--cobalt) var(--p, 50%), #D7DDF3 var(--p, 50%)); }
+.x-site .s-slider input[type=range]::-webkit-slider-thumb { border-color: var(--cobalt); background: #fff; border-width: 4px; }
+.x-site .s-slider input[type=range]::-moz-range-thumb { border-color: var(--cobalt); background: #fff; border-width: 4px; }
+.x-site .s-ticks { font-family: var(--font-mono); font-size: 12px; }
+
+/* ---------- AI search on ink ---------- */
+.x-site .s-ink { background: var(--ink); position: relative; overflow: hidden; }
+.x-site .s-ai2 .s-chev path { stroke: rgba(110,134,255,.13); }
+.x-site .s-ai2-head .s-h2 { color: #fff; max-width: 15ch; }
+.x-site .s-ai2-head .s-hl { color: var(--yel); }
+.x-site .s-ai2-head .s-sub { color: rgba(228,233,255,.78); }
+.x-site .s-ai2-head .s-pill { background: rgba(255,255,255,.1); color: #E4E9FF; }
+.x-site .s-ai2-logos > span { border: 0; background: none; padding: 0; font-weight: 600; font-size: 17px; gap: 9px; }
+.x-site .s-ai2-logos { gap: 14px 26px; }
+.x-site .s-ai2-logos img, .x-site .s-ai2-logos .ai-logo { width: 24px; height: 24px; }
+.x-site .s-ai2-steps > li { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); border-radius: 24px; }
+.x-site .s-ai2-n { background: var(--yel); color: var(--ink); font: 800 16px var(--disp); width: 36px; height: 36px; }
+.x-site .s-ai2-steps h3 { font-weight: 800; font-size: 24px; letter-spacing: -.03em; }
+.x-site .s-ai2-viz { border-radius: 18px; }
+.x-site .s-ai2-bubble { background: var(--sky); border: 0; border-radius: 18px 18px 6px 18px; }
+.x-site .s-ai2-src .ic { background: var(--good); }
+.x-site .s-ai2-link { border: 1.5px solid #D7DDF3; border-radius: 12px; color: var(--cobalt); font-family: var(--font-mono); }
+.x-site .s-ai2-link em { background: var(--yel); color: var(--ink); font-family: var(--font-body); }
+.x-site .s-ai2-weekly h3 { font-family: var(--font-mono); font-weight: 500; letter-spacing: .14em; color: var(--yel); }
+.x-site .s-ai2-weekly b { font-size: 17px; }
+.x-site .s-ai2-shot { margin-top: clamp(40px, 6vw, 64px); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 4vw, 56px); align-items: center; }
+.x-site .s-ai2-shot h3 { font: 800 clamp(28px, 3vw, 40px)/1 var(--disp); letter-spacing: -.04em; margin: 18px 0 12px; color: #fff; }
+.x-site .s-ai2-shot h3 span { color: var(--yel); }
+.x-site .s-ai2-shot p { color: rgba(228,233,255,.78); margin: 0; font-size: 17px; }
+.x-site .s-ai2-shot .s-pill { background: rgba(255,255,255,.1); color: #E4E9FF; }
+.x-site .s-ai2-check { border-radius: 26px; }
+.x-site .s-ai2-form h3 { font-weight: 800; letter-spacing: -.035em; font-size: 30px; }
+.x-site .s-ai2-check .btn.primary, .x-site .s-ai2-check .s-ai-cta .btn.accent { background: var(--cobalt); border-color: var(--cobalt); }
+.x-site .s-ai2-check .s-q { background: var(--sky); color: var(--ink); border-radius: 18px 18px 6px 18px; }
+.x-site .s-ai2-check .s-ai-r { background: var(--skybg); }
+.x-site .s-ai2-check .s-prog i { background: var(--cobalt); }
+
+/* ---------- how it works ---------- */
+.x-site .s-steps { border-top: 0; }
+.x-site .s-step-n { font: 800 64px/.85 var(--disp); color: var(--yel); -webkit-text-stroke: 0; letter-spacing: -.05em; }
+.x-site .s-step-n::before { content: '0'; }
+.x-site .s-steps h3 { font: 800 26px/1.1 var(--disp); letter-spacing: -.03em; }
+.x-site .s-chk span { background: var(--sky); color: var(--ink); border: 0; border-radius: 999px; }
+.x-site .s-url-demo, .x-site .s-bk-demo { font-family: var(--font-mono); border-radius: 12px; border: 1.5px solid #D7DDF3; }
+
+/* ---------- myths ---------- */
+.x-site .s-myths .s-head .s-h2 { margin-top: 20px; max-width: 18ch; }
+.x-site .s-myth-grid { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.x-site .s-myth-grid li { background: var(--skybg); border-radius: 22px; padding: 26px 24px; display: grid; gap: 16px; align-content: start; }
+.x-site .s-myth-grid p { margin: 0; }
+.x-site .s-myth-grid span { display: inline-block; font: 700 11.5px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; padding: 6px 10px; border-radius: 8px; margin-bottom: 10px; }
+.x-site .s-myth span { background: #FDE3E4; color: #B4232A; }
+.x-site .s-myth s { display: block; font: 800 22px/1.15 var(--disp); letter-spacing: -.03em; color: var(--ink); text-decoration-color: #E5484D; text-decoration-thickness: 3px; }
+.x-site .s-fact span { background: #DDF6EA; color: #0C7A50; }
+.x-site .s-fact { color: var(--soft); font-size: 16px; line-height: 1.45; }
+
+/* ---------- pricing ---------- */
+.x-site .s-pricing { background: var(--skybg); }
+.x-site .s-plan, .x-site .s-plan.hot { background: var(--ink); color: #fff; border: 0; border-radius: 26px; box-shadow: 0 50px 100px -40px rgba(15,22,48,.6); }
+.x-site .s-plan h3 { font: 800 28px var(--disp); letter-spacing: -.03em; }
+.x-site .s-plan.hot .s-plan-tag, .x-site .s-plan.hot .s-plan-bill, .x-site .s-plan.hot .s-amt span, .x-site .s-plan .s-plan-tag, .x-site .s-plan .s-plan-bill, .x-site .s-plan .s-amt span { color: rgba(228,233,255,.78); }
+.x-site .s-amt b { font-family: var(--disp); font-weight: 800; color: var(--yel); }
+.x-site .s-plan li { color: #fff; }
+.x-site .s-plan li .ic, .x-site .s-plan.hot li .ic { color: var(--yel); }
+.x-site .s-plan .btn { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .s-addon { border-radius: 22px; }
+
+/* ---------- faq ---------- */
+.x-site .s-qa h3 button { font: 700 18px var(--font-body); letter-spacing: -.015em; }
+
+/* ---------- closing band: cobalt, as on the posts ---------- */
+.x-site .s-final { background: var(--cobalt); color: #fff; border-top: 0; position: relative; overflow: hidden; }
+.x-site .s-final-h { font-size: clamp(44px, 6.4vw, 88px); line-height: .95; }
+.x-site .s-final-h span { color: var(--yel); }
+.x-site .s-final .btn.accent { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .s-final .s-ghost-inv { color: #fff; border-color: rgba(255,255,255,.4); }
+.x-site .s-final .s-ghost-inv:hover { background: rgba(255,255,255,.1); }
+.x-site .s-foot { border-top-color: rgba(255,255,255,.18); }
+.x-site .s-foot-brand .lockup { color: #fff; }
+.x-site .s-foot-brand .mark rect { fill: #fff; }
+.x-site .s-foot-brand .mark path:first-of-type { stroke: var(--cobalt); }
+.x-site .s-foot-brand em, .x-site .s-foot-fine, .x-site .s-foot nav b { color: rgba(255,255,255,.75); }
+.x-site .s-foot nav b { font-family: var(--font-mono); font-weight: 500; letter-spacing: .12em; }
+.x-site .s-foot nav button, .x-site .s-foot nav a, .x-site .s-foot-fine a { color: #fff; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px) {
+  .x-site .s-hero3-in { grid-template-columns: 1fr; }
+  .x-site .s-hero3-stage { min-height: 0; aspect-ratio: 16 / 11; max-width: 720px; }
+  .x-site .s-hero3-browser { right: 6%; }
+  .x-site .s-feat-in { grid-template-columns: 1fr; }
+  .x-site .s-feat.flip .s-feat-copy { order: 0; }
+  .x-site .s-feat-vis { max-width: 720px; }
+  .x-site .s-proof3 ul { grid-template-columns: 1fr 1fr; }
+  .x-site .s-myth-grid { grid-template-columns: 1fr 1fr; }
+  .x-site .s-ai2-shot { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .x-site .s-h1 { font-size: clamp(40px, 11vw, 54px); }
+  .x-site .s-h2 { font-size: clamp(32px, 9vw, 42px); }
+  .x-site .s-hero3-stage { aspect-ratio: auto; height: 360px; }
+  .x-site .s-hero3-browser { right: -30%; top: 10px; }
+  .x-site .s-hero3-phone { width: 132px; top: 96px; right: 0; border-radius: 26px; padding: 6px; }
+  .x-site .s-hero3-phone .s-phone-scr { border-radius: 21px; padding-top: 16px; }
+  .x-site .s-hero3-phone .s-phone-scr::before { width: 50px; height: 14px; top: 5px; }
+  .x-site .s-hn1 { left: 0; bottom: 6px; }
+  .x-site .s-hn2 { display: none; }
+  .x-site .s-nc { padding: 10px 14px 10px 10px; gap: 10px; }
+  .x-site .s-nc b { font-size: 16px; }
+  .x-site .s-nc-ic { width: 34px; height: 34px; }
+  .x-site .s-cta .btn.lg { width: 100%; justify-content: center; }
+  .x-site .s-proof3 ul { gap: 22px 16px; }
+  .x-site .s-proof3 b { font-size: 34px; }
+  .x-site .s-proof3 span { font-size: 14px; }
+  .x-site .s-feat-vis { min-height: 0; padding-bottom: 40px; }
+  .x-site .s-fv-phone { width: 110px; right: -4px; bottom: 0; border-radius: 22px; padding: 5px; }
+  .x-site .s-fv-phone .s-phone-scr { border-radius: 18px; padding-top: 12px; }
+  .x-site .s-fv-phone .s-phone-scr::before { width: 40px; height: 10px; top: 4px; }
+  .x-site .s-fv-nc { left: 0; bottom: 0; }
+  .x-site .t-yellow .s-feat-vis { min-height: 460px; }
+  .x-site .s-fv-p1, .x-site .s-fv-p2 { width: 46%; }
+  .x-site .s-fv-p1 { left: 0; } .x-site .s-fv-p2 { right: 0; }
+  .x-site .t-yellow .s-fv-nc { bottom: 10px; }
+  .x-site .s-myth-grid { grid-template-columns: 1fr; }
+  .x-site .s-chev { width: 340px; height: 340px; right: -120px; top: -40px; }
+}
+@media (prefers-reduced-motion: reduce) { .x-site .s-hero3-browser, .x-site .s-hero3-phone, .x-site .s-fv-phone, .x-site .s-fv-p1, .x-site .s-fv-p2 { transition: none; } }
+
+/* social links in the footer */
+.x-site .s-social { list-style: none; display: flex; gap: 10px; margin: 18px 0 0; padding: 0; }
+.x-site .s-social a { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.14); color: #fff; transition: background .15s, color .15s; --sicon-bg: #4561F6; }
+.x-site .s-social a:hover { background: var(--yel); color: var(--ink); --sicon-bg: var(--yel); }
+.x-site .s-social a:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
+.x-site .s-social svg { width: 20px; height: 20px; display: block; }
+
+/* fixes */
+.x-site .s-myth-grid span { display: block; width: fit-content; }
+.x-site .s-head .s-pill + .s-h2 { margin-top: 20px; }
+.x-site .s-faq-sec a, .x-site .s-sub a { color: var(--cobalt); }
+.x-site .s-hero3 .s-h1 { max-width: 13ch; font-size: clamp(44px, 6vw, 80px); }
+.x-site .s-hero3-in { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); }
+.x-site .s-proof3 b { font-size: clamp(36px, 4vw, 56px); }
+@media (max-width: 640px) { .x-site .s-pill { font-size: 11px; letter-spacing: .1em; padding: 8px 12px 7px; } }
 ` }, "/app/web/src/site.css": { "t": `/* Bookingbooster marketing site and onboarding. Everything is scoped under .x-site and prefixed .s- */
 .x-site { --s-bg: var(--surface); --s-alt: var(--bg); --s-w: 1200px; --s-ease: cubic-bezier(.2,.7,.2,1); background: var(--s-bg); color: var(--fg); overflow-x: clip; font-size: 16px; }
 .x-site .s-root { min-height: 80vh; }
@@ -7508,7 +7947,15 @@ body.p-lock { overflow: hidden; }
     if (theme === 'city') return '<div class="s-scene t-city" aria-hidden="true"><i class="hill"></i><i class="ter"></i><i class="par"></i><i class="win"></i><i class="doors"></i><i class="rail"></i><i class="street"></i></div>';
     return '<div class="s-scene t-cabin" aria-hidden="true"><i class="sun"></i><i class="mtn"></i><i class="mtn m2"></i><i class="tree t1"></i><i class="tree t3"></i><i class="cab"></i><i class="win"></i><i class="tree t2"></i><i class="tree t4"></i></div>';
   }
+  // The demo guest site, shown as a real screenshot in a browser frame (see /media in server/index.js).
+  const DEMO_SHOT = '/media/shot-site.jpg';
+  function shotSite(o) {
+    return '<div class="s-browser s-shot' + (o.cls ? ' ' + o.cls : '') + '">' +
+      '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + 'larchfellcabin.co.uk</span></div>' +
+      '<div class="s-shot-vp"><img src="' + DEMO_SHOT + '" alt="Larch Fell Cabin, a demo booking website made with Bookingbooster" loading="eager"></div></div>';
+  }
   function miniSite(o) {
+    if (o.shot) return shotSite(o);
     const th = o.theme || 'cabin';
     return '<div class="s-browser th-' + th + (o.cls ? ' ' + o.cls : '') + '">' +
       '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + esc(o.domain || 'yourhome.co.uk') + '</span></div>' +
@@ -7550,31 +7997,34 @@ body.p-lock { overflow: hidden; }
       '</header>';
   }
 
-  function hero(inst, L) {
-    const r = L.found, g = r && BB.q.guest(r.guestId), rp = r && BB.q.property(r.propertyId);
-    const gname = g ? g.name.split(' ')[0] + ' ' + (g.name.split(' ')[1] || '')[0] + '.' : '';
-    const via = r && r.source === 'ai' ? 'ChatGPT' : r && r.source === 'google' ? 'Google search' : 'your site';
-    const ret = Math.round(L.m.returningShare * 100);
-    const retNames = L.s.guests.filter(x => x.tags.includes('Repeat')).slice(0, 3).map(x => x.name);
-    return '<section class="s-hero" id="s-top-' + inst.uid + '"><div class="s-w s-hero-in">' +
-      '<div class="s-hero-copy">' +
-        '<button class="s-tagline s-rise" style="--d:0" data-scroll="ai"><b>New</b>Does AI recommend your holiday let?' + icon('arrow') + '</button>' +
-        '<h1 class="s-h1 s-rise" style="--d:1">More direct bookings. <span class="s-hl">Less platform fees.</span></h1>' +
-        '<p class="s-lead s-rise" style="--d:2">Own your bookings, your guests and your website. We get your holiday let found on Google and in AI answers, bring past guests back, and you stop paying 15% or more on every stay.</p>' +
-        '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg s-glow" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'See the live demo</button></div>' +
-        (LIVE() ? '<div class="s-proof s-rise" style="--d:4"><span><b>No commission on bookings.</b> First month free. Prices include VAT.</span></div>'
-          : '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
-          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">\u2605\u2605\u2605\u2605\u2605</span>4.9 average<small>Sample figures</small></span></div>') +
+  /* ---------- social-style building blocks: pills, chevrons, real product screens ---------- */
+  const M = n => '/media/' + n + '.jpg';
+  const CHEV = '<svg class="s-chev" viewBox="0 0 100 100" aria-hidden="true"><path d="M10 52 L50 14 L90 52"/><path d="M24 80 L50 56 L76 80"/></svg>';
+  const pill = t => '<span class="s-pill"><i></i>' + t + '</span>';
+  const frame = (img, url, cls) => '<div class="s-frame ' + (cls || '') + '"><div class="s-frame-bar"><b></b><b></b><b></b><span>' + icon('lock') + esc(url) + '</span></div><img src="' + M(img) + '" alt="" loading="lazy" decoding="async" width="1600" height="1000"></div>';
+  const phoneF = (img, cls) => '<div class="s-phone ' + (cls || '') + '"><div class="s-phone-scr"><img src="' + M(img) + '" alt="" loading="lazy" decoding="async" width="560" height="1032"></div></div>';
+  const NC_IC = { good: () => icon('check'), gpt: () => BB.aiLogo('chatgpt'), up: () => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>', spark: () => icon('spark'), key: () => icon('key') };
+  const ncard = (k, b, ic, cls) => '<div class="s-nc ' + (cls || '') + '"><span class="s-nc-ic ' + ic + '">' + NC_IC[ic]() + '</span><span><small>' + k + '</small><b>' + b + '</b></span></div>';
+
+  function hero(inst) {
+    return '<section class="s-hero s-hero3 t-cobalt" id="s-top-' + inst.uid + '">' + CHEV + '<div class="s-w s-hero3-in">' +
+      '<div class="s-hero3-copy">' +
+        '<div class="s-rise" style="--d:0">' + pill('Direct bookings for UK holiday lets') + '</div>' +
+        '<h1 class="s-h1 s-rise" style="--d:1">Fill your calendar <span class="s-hl">without the 15% fee.</span></h1>' +
+        '<p class="s-lead s-rise" style="--d:2">Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Set up for you, with no commission on bookings.</p>' +
+        '<div class="s-cta s-rise" style="--d:3"><button class="btn s-yel lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn s-out lg"' + go('live') + '>' + icon('play') + 'Try the live demo</button></div>' +
+        '<p class="s-hero3-price s-rise" style="--d:4"><b>\xA3997 setup, first month free,</b> then \xA3200 a month. Prices include VAT. Cancel anytime.</p>' +
       '</div>' +
-      '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
-        '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser' }) + '</div>' +
-        (r ? '<div class="s-fc s-fc-ai s-rise" style="--d:5"><small>' + icon(r.source === 'ai' ? 'spark' : 'search') + 'Booked via ' + via + '</small>' +
-          (r.source === 'ai' ? '<p class="s-fc-q">\u201C' + esc(L.aiQ.q.charAt(0).toUpperCase() + L.aiQ.q.slice(1)) + '?\u201D</p>' : '') +
-          '<p><b>' + esc(gname) + ' booked ' + esc(rp.short) + '</b> for ' + BB.dates(r) + '.</p><span class="s-fc-row"><b class="num">' + $(r.total) + '</b><span class="s-cite">' + icon('check') + 'You kept ' + $(Math.round(r.total * FEE())) + '</span></span></div>' : '') +
-        '<div class="s-fc s-fc-bk s-rise" style="--d:6"><span class="s-faces">' + retNames.map(n => BB.avatar(n, 'sm')).join('') + '</span><span><small>Returning guests</small><b><span class="num">' + ret + '%</span> of bookings</b><em>came from guests who stayed before</em></span></div>' +
-        '<div class="s-fc s-fc-fee s-rise" style="--d:7"><small>Fees kept this year</small><b class="num">' + $(L.m.saved) + '</b><span class="s-bars">' + [32, 44, 51, 63, 78, 100].map(h => '<i style="height:' + h + '%"></i>').join('') + '</span></div>' +
+      '<div class="s-hero3-stage s-rise" style="--d:2" role="img" aria-label="A holiday let booking website, the host app showing today\u2019s bookings, a new direct booking and a ChatGPT recommendation">' +
+        frame('shot-site', 'larchfellcabin.co.uk', 's-hero3-browser') + phoneF('phone-today', 's-hero3-phone') +
+        ncard('New direct booking', '\xA31,180 \xB7 4 nights', 'good', 'dark s-hn1') + ncard('Shows up in ChatGPT', 'Larch Fell Cabin', 'gpt', 's-hn2') +
       '</div>' +
     '</div></section>';
+  }
+
+  function proof() {
+    const it = [[(FEE() * 100).toFixed(1) + '%', 'Airbnb\u2019s host fee, kept by you on every direct booking'], ['0%', 'commission on your bookings, ever'], ['Same day', 'your booking site goes live on a free address'], ['5 in 1', 'website, SEO, AI search, guest app and outreach in one login']];
+    return '<section class="s-proof3 t-ink" aria-label="At a glance"><div class="s-dots"></div><div class="s-w"><ul>' + it.map(([b, t]) => '<li><b>' + b + '</b><span>' + t + '</span></li>').join('') + '</ul></div></section>';
   }
 
   function logos() {
@@ -7583,23 +8033,67 @@ body.p-lock { overflow: hidden; }
       names.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul></div></section>';
   }
 
-  function pillars(inst, L) {
-    const vis = Object.values(L.s.website.visitors).reduce((a, b) => a + b, 0);
-    const c1 = L.s.campaigns.find(c => c.status === 'sent') || L.s.campaigns[0];
-    const lp = L.p;
-    const cards = [
-      ['blue', '01', 'Website', 'Your own booking site', 'Your domain, instant booking, payments and deposits. Guests skip the service fee, so they pick you.', '<span class="s-viz-url">' + icon('lock') + esc(lp.domain) + '</span><span class="s-viz-row"><b class="num">' + vis.toLocaleString('en-GB') + '</b> visits this month</span>', go('property', { propertyId: lp.id }), 'See a host site'],
-      ['', '02', 'SEO', 'Found on Google', 'Local pages for the searches guests really make near you, written and published every month.', '<span class="s-viz-q">\u201Ccabin hot tub lake district\u201D</span><span class="s-viz-row"><b class="num">#4</b><em class="s-up">\u25B2 3</em> in Google</span>', go('app', { view: 'website' }), 'See website and SEO'],
-      ['dark', '03', 'AI answers', 'Recommended by AI', 'Structured so your holiday let shows up in ChatGPT, Gemini, Perplexity and Google AI answers, with a link that books direct.', '<span class="s-viz-row s-viz-ai">' + BB.aiLogos() + '</span><span class="s-viz-row">Mentioned in <b class="num s-yel">' + L.ai.mentioned + ' of ' + L.ai.total + '</b> AI answers</span><span class="s-meter"><i style="width:' + L.ai.score + '%"></i></span>', go('app', { view: 'ai' }), 'See AI visibility'],
-      ['yel', '04', 'Guests', 'Guests who return', 'Check-in app, emails and texts that turn one stay into three, sent from your own name.', '<span class="s-viz-row"><b class="num">' + pct(c1.recipients ? c1.opens / c1.recipients : 0.54) + '</b> opened \xB7 <b class="num">' + c1.bookings + '</b> rebooked</span><span class="s-viz-q">' + esc(c1.subject) + '</span>', go('app', { view: 'campaigns' }), 'See campaigns'],
-    ];
-    return '<section class="s-sec" id="s-product-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head"><p class="eyebrow">One system</p><h2 class="s-h2">Everything a host needs to go direct.</h2>' +
-      '<p class="s-sub">Four tools that share one guest list you own. The guest who finds you on Google books on your site, checks in on your app and hears from you next season. No platform in the middle.</p></div>' +
-      '<div class="s-pillars">' + cards.map(([cls, n, k, h, p, viz, link, lt]) =>
-        '<article class="s-pil ' + cls + '"><span class="s-pil-n">' + n + ' \xB7 ' + k + '</span><h3>' + h + '</h3><p>' + p + '</p><div class="s-viz">' + viz + '</div>' +
-        '<button class="s-see"' + link + '>' + lt + icon('arrow') + '</button></article>').join('') + '</div>' +
+  function film() {
+    return '<section class="s-sec s-film" id="s-film" aria-label="Explainer video"><div class="s-w">' +
+      '<div class="s-head s-center">' + pill('See it in 47 seconds') + '<h2 class="s-h2">What Bookingbooster does for your holiday let.</h2></div>' +
+      '<div class="s-film-frame"><video controls preload="none" playsinline poster="/media/explainer.jpg" src="/media/explainer.mp4" aria-label="Bookingbooster explainer video"></video></div>' +
       '</div></section>';
+  }
+
+  function features(inst, L) {
+    const F = [
+      { id: 'product', t: 't-white', pill: 'Your booking website', h: 'Your cottage. Your website. <span class="s-hl">Your guests.</span>',
+        p: 'A fast, good-looking booking site on your own .co.uk domain, made from your listing. Live calendar, instant booking and card payments. Guests skip the platform\u2019s service fee, so they choose you.',
+        pts: ['Your domain, your brand, your house rules', 'Card, Apple Pay and Google Pay through Stripe', 'Security deposits held on the card, released on their own'],
+        alt: 'A holiday let booking website on a laptop and a phone',
+        vis: frame('shot-site2', 'tidewatercottage.co.uk', 's-fv-main') + phoneF('phone-site', 's-fv-phone') + ncard('Booked direct', 'No platform fee', 'good', 's-fv-nc'),
+        cta: ['See a host site', go('property', { propertyId: L.p.id })] },
+      { t: 't-sky', pill: 'Google SEO', h: 'Get found on Google for the stays <span class="s-hl">guests search.</span>',
+        p: 'Your listing can\u2019t rank on Google. Your website can. Every month we write and publish local pages for the searches guests really make near you, like \u201Ccabin with hot tub Lake District\u201D.',
+        pts: ['Local pages and area guides, written for you', 'Google Business Profile set up and kept fresh', 'Search Console connected, with a monthly report'],
+        alt: 'The website and SEO screen in the host console',
+        vis: frame('shot-seo', 'booking-booster.co.uk/app', 's-fv-main') + ncard('Example search ranking', '#4 for \u201Ccabin hot tub lake district\u201D', 'up', 'dark s-fv-nc'),
+        cta: ['See website and SEO', go('app', { view: 'website' })] },
+    ];
+    const G = [
+      { t: 't-yellow', pill: 'Guest app', h: 'Your house guide in <span class="s-hl">every guest\u2019s pocket.</span>',
+        p: 'No download. Guests open it from their booking email, check in online in about three minutes, and the door code arrives on its own when they are done.',
+        pts: ['ID check, rental agreement and deposit hold', 'Door codes for Nuki and Yale smart locks', 'House guide, local tips and messages in one place'],
+        alt: 'The guest app on two phones: the trip page and messages',
+        vis: phoneF('phone-guest', 's-fv-p1') + phoneF('phone-inbox', 's-fv-p2') + ncard('Check-in done', 'Door code sent', 'key', 's-fv-nc'),
+        cta: ['Open the guest app', go('guest', { bookingId: (BB.q.upcoming()[0] || {}).id })] },
+      { t: 't-cobalt', pill: 'Guest outreach', h: 'Quiet week? <span class="s-hl">Text your regulars.</span>',
+        p: 'Past guests are your best guests. We bring them back with emails and texts sent in your name: gap-night offers, next-season reminders and a welcome-back note that pays for itself.',
+        pts: ['Import past guests from your platform exports', 'Ready-made campaigns for gap nights and next season', 'See opens, clicks and bookings from every send'],
+        alt: 'The campaigns screen in the host console',
+        vis: frame('shot-campaigns', 'booking-booster.co.uk/app', 's-fv-main') + ncard('Example campaign', '23 rebooked from one email', 'good', 'dark s-fv-nc'),
+        cta: ['See campaigns', go('app', { view: 'campaigns' })] },
+      { t: 't-sky', pill: 'Host console and app', h: 'Every booking, message and payment. <span class="s-hl">One screen.</span>',
+        p: 'Run it all from your laptop or your phone. See who arrives today, answer guests with suggested replies, and get a buzz the moment a direct booking lands.',
+        pts: ['Calendar, bookings, payments and messages together', 'Suggested replies to guest questions', 'Fees kept and returning guests, tracked every month'],
+        alt: 'The host console dashboard and the host app on a phone',
+        vis: frame('shot-console', 'booking-booster.co.uk/app', 's-fv-main') + phoneF('phone-grow', 's-fv-phone'),
+        cta: ['Open the host console', go('app', { view: 'dashboard' })] },
+    ];
+    const row = (f, i) => '<section class="s-feat ' + f.t + (i % 2 ? ' flip' : '') + '"' + (f.id ? ' id="s-' + f.id + '-' + inst.uid + '"' : '') + '>' + CHEV + '<div class="s-w s-feat-in">' +
+      '<div class="s-feat-copy">' + pill(f.pill) + '<h2 class="s-h2">' + f.h + '</h2><p class="s-sub">' + f.p + '</p>' +
+        '<ul class="s-ticks3">' + f.pts.map(x => '<li><span>' + icon('check') + '</span>' + x + '</li>').join('') + '</ul>' +
+        '<button class="btn s-b lg"' + f.cta[1] + '>' + f.cta[0] + icon('arrow') + '</button></div>' +
+      '<div class="s-feat-vis" role="img" aria-label="' + esc(f.alt) + '">' + f.vis + '</div></div></section>';
+    return { top: F.map(row).join(''), bottom: G.map((f, i) => row(f, i + F.length + 1)).join('') };
+  }
+
+  const MYTHS = [
+    ['SEO takes years.', 'Local pages for specific searches can rank in months, especially in smaller towns.'],
+    ['I would have to leave the platforms.', 'Keep them if you like. The optional calendar sync blocks dates booked there, so you never double book.'],
+    ['Direct bookings are risky.', 'Card payments, ID checks, rental agreements and security deposits protect every direct stay.'],
+    ['My guests do not use apps.', 'No download needed. The guest app opens from a link in their booking confirmation.'],
+    ['People do not trust small websites.', 'A secure site with real reviews, clear prices and instant payment earns trust fast.'],
+    ['I need to be good with tech.', 'We set everything up. You approve it and keep hosting.'],
+  ];
+  function myths() {
+    return '<section class="s-sec s-myths t-white"><div class="s-w"><div class="s-head">' + pill('Myth vs fact') + '<h2 class="s-h2">What hosts worry about, <span class="s-hl">and what is true.</span></h2></div>' +
+      '<ul class="s-myth-grid">' + MYTHS.map(([m, f]) => '<li><p class="s-myth"><span>Myth</span><s>' + m + '</s></p><p class="s-fact"><span>Fact</span>' + f + '</p></li>').join('') + '</ul></div></section>';
   }
 
   function calcVals(st) {
@@ -7609,7 +8103,7 @@ body.p-lock { overflow: hidden; }
   function calc(inst) {
     const st = inst.st, v = calcVals(st), u = inst.uid, maxBar = Math.max(v.kept, v.planYear, 1);
     return '<section class="s-sec s-calc-sec"><div class="s-w s-calc">' +
-      '<div class="s-calc-l"><p class="eyebrow">Fee calculator</p><h2 class="s-h2">What would going direct be worth to you?</h2>' +
+      '<div class="s-calc-l">' + pill('Fee calculator') + '<h2 class="s-h2">What would going direct be worth to you?</h2>' +
         '<p class="s-sub">Every guest who books on your own site skips the platform and its fee. Here is the money that stays with you, in pounds.</p>' +
         '<div class="s-slider"><label for="s-rev-' + u + '"><span>Yearly booking revenue</span><b class="num" data-cv="rev">' + $(st.rev) + '</b></label>' +
           '<input type="range" id="s-rev-' + u + '" data-calc="rev" min="10000" max="250000" step="2000" value="' + st.rev + '" style="--p:' + ((st.rev - 10000) / 2400) + '%"><div class="s-ticks"><span>\xA310k</span><span>\xA3250k</span></div></div>' +
@@ -7677,18 +8171,44 @@ body.p-lock { overflow: hidden; }
         '<div class="s-ai-cta"><button class="btn accent" data-act="start">Fix my AI visibility' + icon('arrow') + '</button><button class="btn s-ghost-inv"' + go('app', { view: 'ai' }) + '>See the weekly AI report</button></div>' +
       '</div>';
     }
-    return '<section class="s-ink" id="s-ai-' + u + '"><div class="s-w s-ai">' +
-      '<div class="s-ai-l"><p class="eyebrow">AI search</p><h2 class="s-h2">Travellers ask AI where to stay. Be the answer.</h2>' +
-        '<p class="s-sub">We track the questions guests ask about your area and shape your site so assistants recommend it, with a link that books direct.</p>' +
-        '<form class="s-ai-form" data-form="ai" novalidate>' +
-          '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
-          '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
-          '<button class="btn accent lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking\u2026' : 'Check') + '</button>' +
-          (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
-        '</form>' +
-        '<p class="s-fine">Demo: this check is simulated with sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+    const ok = icon('check');
+    return '<section class="s-ink s-ai2" id="s-ai-' + u + '">' + CHEV + '<div class="s-w">' +
+      '<div class="s-ai2-head">' +
+        pill('AI search') +
+        '<h2 class="s-h2">When guests ask ChatGPT, <span class="s-hl">be the answer.</span></h2>' +
+        '<p class="s-sub">More guests start with ChatGPT, Gemini, Perplexity or Google\u2019s AI answers instead of scrolling a listings site. Those assistants recommend the places they can read and trust. We make your booking site one of them, with a link that books direct.</p>' +
+        '<div class="s-ai2-logos">' + ENGINES.map(([k, t]) => '<span>' + BB.aiName(k, t) + '</span>').join('') + '</div>' +
       '</div>' +
-      '<div class="s-ai-r" aria-live="polite">' + panel + '</div>' +
+      '<ol class="s-ai2-steps">' +
+        '<li><span class="s-ai2-n">1</span><h3>A guest asks</h3><p>They type a real question about your area, the way they would ask a friend.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-bubble">' + esc(question) + '</div></div></li>' +
+        '<li><span class="s-ai2-n">2</span><h3>The assistant reads the web</h3><p>It looks for clear, trusted facts. We put them on your site in the format assistants read.</p>' +
+          '<div class="s-ai2-viz"><ul class="s-ai2-src">' +
+            ['Your booking site, with structured data', 'Questions and answers about your home', 'Google Business Profile and reviews', 'An open door for AI crawlers'].map(t => '<li>' + ok + esc(t) + '</li>').join('') +
+          '</ul></div></li>' +
+        '<li><span class="s-ai2-n">3</span><h3>It recommends you</h3><p>Your home appears in the answer, with a link to your own site, so the guest books without a platform fee.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-ans"><small>' + BB.aiName('chatgpt', 'ChatGPT') + '</small><p><b>Larch Fell Cabin</b> is a cosy cabin with a private hot tub and fell views, ten minutes from Windermere.</p><span class="s-ai2-link">' + icon('lock') + 'larchfellcabin.co.uk<em>Book direct</em></span></div></div></li>' +
+      '</ol>' +
+      '<div class="s-ai2-weekly"><h3>What we do for you, every week</h3><ul>' +
+        '<li><b>Ask the questions guests ask.</b><span>We put travellers\u2019 questions about your area to each assistant and read every answer.</span></li>' +
+        '<li><b>Make your site easy for AI to read.</b><span>Structured data, clear answers about your home, a sitemap and an llms.txt file.</span></li>' +
+        '<li><b>Fill the gaps.</b><span>When an assistant recommends someone else, we add the local pages and facts that were missing.</span></li>' +
+        '<li><b>Show you the score.</b><span>A weekly AI visibility report in your console, so you can see it move.</span></li>' +
+      '</ul></div>' +
+      '<div class="s-ai2-shot"><div>' + pill('Your weekly AI report') + '<h3>Mentioned in 6 of 8 <span>AI answers.</span></h3><p>See which questions name you, which name a competitor, and the fixes that win you the next one. Example report with sample data.</p></div>' +
+        '<div role="img" aria-label="The AI visibility report in the host console">' + frame('shot-ai', 'booking-booster.co.uk/app') + '</div></div>' +
+      '<div class="s-ai2-check">' +
+        '<div class="s-ai2-form"><h3>Check your area now</h3><p>See what assistants say when a traveller asks about stays near you.</p>' +
+          '<form class="s-ai-form" data-form="ai" novalidate>' +
+            '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
+            '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
+            '<button class="btn primary lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking\u2026' : 'Check my area') + '</button>' +
+            (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
+          '</form>' +
+          '<p class="s-fine">This preview uses sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+        '</div>' +
+        '<div class="s-ai-r" aria-live="polite"><div class="s-ai2-win"><i></i><i></i><i></i><span>AI answer check</span></div><div class="s-ai2-body">' + panel + '</div></div>' +
+      '</div>' +
     '</div></section>';
   }
   function runAi(inst) {
@@ -7705,50 +8225,12 @@ body.p-lock { overflow: hidden; }
       ['We build and tune it', 'Your booking site, local SEO pages, AI-ready answers and your guest list, set up and kept up for you.', 'build'],
       ['Bookings come direct', 'Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season.', 'book'],
     ];
-    return '<section class="s-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">How it works</p><h2 class="s-h2">Live the same day. You barely lift a finger.</h2></div>' +
+    return '<section class="s-sec"><div class="s-w"><div class="s-head">' + pill('How it works') + '<h2 class="s-h2">Live the same day. You barely lift a finger.</h2></div>' +
       '<ol class="s-steps">' + steps.map(([h, p, k], i) => '<li><span class="s-step-n num">' + (i + 1) + '</span><h3>' + h + '</h3><p>' + p + '</p>' +
         (k === 'link' ? '<div class="s-step-viz"><span class="s-url-demo">' + icon('globe') + 'airbnb.co.uk/rooms/48213907</span></div>' :
          k === 'build' ? '<div class="s-step-viz s-chk">' + ['Booking site', 'SEO pages', 'AI answers', 'Guest list'].map(x => '<span>' + icon('check') + x + '</span>').join('') + '</div>' :
          '<div class="s-step-viz"><span class="s-bk-demo">' + BB.chan('direct') + '<b class="num">+\xA3980</b><em>no platform fee</em></span></div>') + '</li>').join('') + '</ol>' +
       '<div class="s-how-cta"><button class="btn primary lg" data-act="start">Paste my listing link' + icon('arrow') + '</button></div></div></section>';
-  }
-
-  function tour(inst, L) {
-    const t = inst.st.tour, s = L.s, m = L.m;
-    const tabs = [['console', 'Host console', 'dash'], ['mobile', 'Host app', 'phone'], ['guest', 'Guest app', 'key'], ['property', 'Property site', 'home']];
-    let prev, info;
-    if (t === 'console') {
-      const months = m.months.slice(-6), mx = Math.max(...months.map(k => m.byMonth[k].direct + m.byMonth[k].platforms), 1);
-      prev = '<div class="s-con"><aside><span class="s-con-logo">' + BB.MARK + '</span>' + ['dash', 'cal', 'inbox', 'users', 'mail', 'spark'].map((k, i) => '<i class="' + (i ? '' : 'on') + '">' + icon(k) + '</i>').join('') + '</aside>' +
-        '<div class="s-con-main"><div class="s-con-h"><b>Good morning, ' + esc(s.account.owner.split(' ')[0]) + '</b><span>' + D.fmt(s.today, { weekday: 'long', month: 'long' }) + '</span></div>' +
-        '<div class="s-kpis"><div><span>Revenue, 30 days</span><b class="num">' + $(m.rev30) + '</b></div><div><span>Returning guests</span><b class="num">' + pct(m.returningShare) + '</b></div><div><span>Fees kept</span><b class="num">' + $(m.saved) + '</b></div></div>' +
-        '<div class="s-chart">' + months.map(k => { const x = m.byMonth[k]; return '<div><span class="s-col"><i class="pl" style="height:' + (100 * (x.returning || 0) / mx) + '%"></i><i class="di" style="height:' + (100 * (x.newGuests || 0) / mx) + '%"></i></span><em>' + BB.monthName(k).slice(0, 3) + '</em></div>'; }).join('') + '</div>' +
-        '<div class="s-legend"><span><i class="di"></i>New guests</span><span><i class="pl"></i>Returning guests</span></div></div></div>';
-      info = ['Run everything from one screen', 'Calendar, bookings, payments, messages, guests and campaigns, all on bookings you own.', go('app', { view: 'dashboard' }), 'Open the host console'];
-    } else if (t === 'mobile') {
-      const arr = BB.q.arrivals().slice(0, 3);
-      prev = '<div class="s-mini-phone"><div class="s-mp-screen"><div class="s-mp-top"><b>Today</b><span>' + D.fmt(s.today, { weekday: 'short' }) + '</span></div>' +
-        '<div class="s-mp-kpi"><span>Arriving</span><b class="num">' + BB.q.arrivals().length + '</b><span>Staying</span><b class="num">' + BB.q.inHouse().length + '</b></div>' +
-        arr.map(b => { const g = BB.q.guest(b.guestId); return '<div class="s-mp-row">' + BB.avatar(g.name, 'sm') + '<span><b>' + esc(g.name) + '</b><em>' + esc(BB.q.property(b.propertyId).short) + ' \xB7 ' + esc(BB.sourceLabel(b)) + '</em></span>' + BB.stepDots(b) + '</div>'; }).join('') +
-        '<div class="s-mp-tabs">' + ['dash', 'cal', 'inbox', 'user'].map((k, i) => '<i class="' + (i ? '' : 'on') + '">' + icon(k) + '</i>').join('') + '</div></div></div>';
-      info = ['Your business in your pocket', 'See who arrives today, reply to guests, and get a buzz the moment a direct booking lands.', go('mobile'), 'Open the host app'];
-    } else if (t === 'guest') {
-      const b = BB.q.upcoming().find(x => !x.checkin.done) || BB.q.upcoming()[0];
-      const g = BB.q.guest(b.guestId), p = BB.q.property(b.propertyId), c = b.checkin;
-      prev = '<div class="s-mini-phone"><div class="s-mp-screen"><div class="s-mp-hero">' + scene(p.theme) + '<span>' + esc(p.name) + '</span></div>' +
-        '<div class="s-mp-body"><b class="s-mp-hi">Hi ' + esc(g.name.split(' ')[0]) + ', check in before you arrive</b><em>' + BB.dates(b) + '</em>' +
-        [['ID and selfie', c.id && c.selfie], ['Rental agreement', c.agreement], ['Deposit hold', c.deposit]].map(([x, ok]) => '<div class="s-mp-step ' + (ok ? 'ok' : '') + '"><i>' + (ok ? icon('check') : '') + '</i>' + x + '</div>').join('') +
-        '<span class="s-mp-btn">Start check-in</span></div></div></div>';
-      info = ['A check-in app guests actually finish', 'ID, agreement and deposit in three minutes. The door code arrives on its own when they are done.', go('guest', { bookingId: b.id }), 'Open the guest app'];
-    } else {
-      prev = miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-tour-browser' });
-      info = ['A site that books, not just a brochure', 'Live calendar, instant booking, and a price that shows guests what they save by skipping the platform.', go('property', { propertyId: L.p.id }), 'Open a property site'];
-    }
-    return '<section class="s-sec s-tour-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">Product tour</p><h2 class="s-h2">One login. Four places it shows up.</h2>' +
-      '<p class="s-sub">Every part runs on the same data. Book a stay on the property site and it appears in the console, the host app and the guest app at once.</p></div>' +
-      '<div class="s-tabs" role="tablist" aria-label="Product tour">' + tabs.map(([k, l, i]) => '<button role="tab" id="s-tab-' + k + '-' + inst.uid + '" aria-selected="' + (t === k) + '" data-tour="' + k + '">' + icon(i) + l + '</button>').join('') + '</div>' +
-      '<div class="s-tour" role="tabpanel"><div class="s-tour-prev">' + prev + '</div><div class="s-tour-info"><h3>' + info[0] + '</h3><p>' + info[1] + '</p><button class="btn primary"' + info[2] + '>' + info[3] + icon('arrow') + '</button><p class="s-fine">Opens the working prototype with sample data.</p></div></div>' +
-      '</div></section>';
   }
 
   function customers(inst) {
@@ -7764,7 +8246,7 @@ body.p-lock { overflow: hidden; }
   function pricing(inst) {
     const an = inst.st.annual;
     return '<section class="s-sec s-pricing" id="s-pricing-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head s-head-row"><div><p class="eyebrow">Pricing</p><h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. A one-off \xA3997 setup fee, your first month free, then \xA3200 a month. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
+      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. A one-off \xA3997 setup fee, your first month free, then \xA3200 a month. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
         '</div>' +
       '<div class="s-plans">' + PLANS.map(p => '<article class="s-plan' + (p.hot ? ' hot' : '') + '">' + '' +
         '<h3>' + p.name + '</h3><p class="s-plan-tag">' + p.tag + '</p><div class="s-amt"><b class="num">\xA3' + perMonth(p, an) + '</b><span>/ month</span></div>' +
@@ -7777,15 +8259,24 @@ body.p-lock { overflow: hidden; }
 
   function faq(inst) {
     const open = inst.st.faq;
-    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
+    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head">' + pill('FAQ') + '<h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
       '<div class="s-faq">' + FAQ.map(([q, a], i) => '<div class="s-qa' + (open === i ? ' open' : '') + '"><h3><button id="s-faq-' + i + '-' + inst.uid + '" data-faq="' + i + '" aria-expanded="' + (open === i) + '" aria-controls="s-faqp-' + i + '-' + inst.uid + '">' + q + '<span class="s-pm" aria-hidden="true"></span></button></h3>' +
         '<div class="s-ans" id="s-faqp-' + i + '-' + inst.uid + '" role="region"' + (open === i ? '' : ' hidden') + '><p>' + a + '</p></div></div>').join('') + '</div></div></section>';
   }
 
+  /* the brand's live social profiles (same list as server/marketing.js) */
+  const SOCIAL = [
+    ['Instagram', 'https://www.instagram.com/bookingbooster_1/', '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/>'],
+    ['Facebook', 'https://www.facebook.com/1300137993193053', '<path fill="currentColor" d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.4V14h2.8v8z"/>'],
+    ['TikTok', 'https://www.tiktok.com/@bookingbooster', '<path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v3.1c-1.4.1-2.7-.3-3.9-1.1v6.1c0 3.4-2.5 5.6-5.6 5.6S5.4 18.2 5.4 15.1c0-3.3 2.8-5.7 6.3-5.2v3.2c-1.5-.4-3 .5-3 2.1 0 1.2 1 2.2 2.3 2.2 1.4 0 2.4-.9 2.4-2.7V3z"/>'],
+    ['YouTube', 'https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA', '<rect x="2" y="5" width="20" height="14" rx="4.5" fill="currentColor"/><path fill="var(--sicon-bg, #2747F5)" d="M10 9v6l5.2-3z"/>'],
+  ];
+  const socials = () => '<ul class="s-social" aria-label="Follow Bookingbooster">' + SOCIAL.map(([n, u, d]) => '<li><a href="' + u + '" target="_blank" rel="me noopener" aria-label="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg></a></li>').join('') + '</ul>';
+
   function footer() {
     return '<section class="s-final"><div class="s-w"><h2 class="s-final-h">Keep the 15%.<br>Get found. <span>Get booked.</span></h2>' +
       '<div class="s-cta"><button class="btn accent lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg s-ghost-inv"' + go('live') + '>See the live demo</button></div>' +
-      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em></span>' +
+      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em>' + socials() + '</span>' +
       '<nav aria-label="Footer"><div><b>Product</b><button data-scroll="product">Overview</button><button data-scroll="ai">AI search</button><button data-scroll="pricing">Pricing</button></div>' +
       '<div><b>Try it</b><button' + go('live') + '>Live demo</button><button' + go('app') + '>Host console</button><button' + go('property', { propertyId: 'laurel' }) + '>Property site</button></div>' +
       '<div><b>Company</b>' + (LIVE() ? '<a href="/help">Help</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>' : '<button data-scroll="customers">Customers</button>') + '<button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
@@ -7796,7 +8287,8 @@ body.p-lock { overflow: hidden; }
 
   function home(inst) {
     const L = liveData();
-    return nav(inst) + hero(inst, L) + logos() + pillars(inst, L) + calc(inst) + aiSection(inst) + how(inst) + tour(inst, L) + customers(inst) + pricing(inst) + faq(inst) + footer();
+    const F = features(inst, L);
+    return nav(inst) + hero(inst) + proof() + F.top + film() + calc(inst) + aiSection(inst) + F.bottom + how(inst) + myths() + customers(inst) + pricing(inst) + faq(inst) + footer();
   }
 
   /* =====================================================================
@@ -8081,7 +8573,7 @@ body.p-lock { overflow: hidden; }
   BB.define('site', {
     create(root, opts, inst) {
       inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = [];
-      Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 60000, share: 30, tour: 'console', annual: false, faq: 0,
+      Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
         ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
           opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
@@ -9185,7 +9677,7 @@ body.p-lock { overflow: hidden; }
   BB.icon = (k, cls) => '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (I[k] || I.spark) + '</svg>';
 
   /* Brand mark (cobalt square) and inverse */
-  BB.MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
+  BB.MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   BB.lockup = (cls) => '<span class="lockup ' + (cls || '') + '">' + BB.MARK + 'bookingbooster</span>';
 
   /* Small components */
@@ -11922,7 +12414,7 @@ var require_build = __commonJS({
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
     var MODS = ["site", "app", "app-grow", "mobile", "property", "guest"];
     function build() {
-      const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css")]).join("\n");
+      const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css"), rd("site-social.css")]).join("\n");
       const core = [rd("store.js"), rd("store-ext.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
       const prodJs = core.concat([rd("sync.js"), rd("shell-prod.js")]).join("\n;\n");
       const demoJs = core.concat([rd("sync.js"), rd("shell.js")]).join("\n;\n");
@@ -12114,6 +12606,7 @@ var require_marketing = __commonJS({
     var TITLE = "Bookingbooster \xB7 Direct booking websites for UK holiday lets";
     var DESCRIPTION = "Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. \xA3997 setup, first month free, then \xA3200 a month. No commission.";
     var allFaq = () => FAQ.concat(MORE);
+    var SOCIAL = [["Instagram", "https://www.instagram.com/bookingbooster_1/"], ["Facebook", "https://www.facebook.com/1300137993193053"], ["TikTok", "https://www.tiktok.com/@bookingbooster"], ["YouTube", "https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA"]];
     function jsonLd(base, co) {
       const url = base + "/";
       const org = {
@@ -12127,6 +12620,7 @@ var require_marketing = __commonJS({
         areaServed: { "@type": "Country", name: "United Kingdom" },
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: co.support, areaServed: "GB", availableLanguage: "en-GB" }
       };
+      org.sameAs = SOCIAL.map((x) => x[1]);
       if (co.name) org.legalName = co.name;
       if (co.number) org.identifier = { "@type": "PropertyValue", propertyID: "Companies House number", value: co.number };
       if (co.vat) org.vatID = co.vat;
@@ -12168,12 +12662,12 @@ var require_marketing = __commonJS({
     var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
     function content(base, co) {
       const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
-      return '<article class="seo" id="seo"><h1>More direct bookings. Less platform fees.</h1><p>Own your bookings, your guests and your website. Bookingbooster gets your UK holiday let found on Google and in AI answers, brings past guests back, and you stop paying 15% or more on every stay.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. A one-off \xA3" + PRICE.setup + " setup fee, your first month free, then \xA3" + PRICE.month + " a month. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p></article>';
+      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. A one-off \xA3" + PRICE.setup + " setup fee, your first month free, then \xA3" + PRICE.month + " a month. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
       return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.setup + " one-off setup fee, first month free, then \xA3" + PRICE.month + " a month. All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
     }
-    module.exports = { FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
+    module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
 });
 
@@ -14897,6 +15391,7 @@ var require_server = __commonJS({
       o = o || {};
       return authPage("Sign in", CLEAR_OFFLINE + "<h1>Sign in</h1><p>Your console, bookings and guests.</p>" + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + (o.ok ? '<p class="ok">' + E(o.ok) + "</p>" : "") + '<form method="post" action="/login"><input type="hidden" name="next" value="' + E(o.next || "/app") + '"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || "") + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button></form><div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
     }
+    var MEDIA = /* @__PURE__ */ new Map();
     var GUIDES_A = ["direct-booking-playbook.pdf", "direct-booking-launch-checklist.pdf", "ai-search-self-audit.pdf", "fee-leak-worksheet.pdf"];
     async function route(req, res) {
       await db.ready;
@@ -15078,6 +15573,35 @@ var require_server = __commonJS({
         if (!fs.existsSync(f)) return notFound(res);
         res.writeHead(200, Object.assign({}, SEC, { "content-type": "application/pdf", "cache-control": "public, max-age=86400", "content-length": fs.statSync(f).size }));
         return fs.createReadStream(f).pipe(res);
+      }
+      if (mm = p.match(/^\/media\/([a-z0-9-]+\.(mp4|jpg))$/)) {
+        const type = mm[2] === "mp4" ? "video/mp4" : "image/jpeg";
+        let buf = MEDIA.get(mm[1]);
+        if (!buf) {
+          if (cfg.serverless) {
+            const r = await fetch(cfg.supabaseUrl + "/functions/v1/media/" + mm[1]);
+            if (!r.ok) return notFound(res);
+            buf = Buffer.from(await r.arrayBuffer());
+          } else {
+            const f = path.join(ROOT, "supabase", "functions", "media", "files", mm[1]);
+            if (!fs.existsSync(f)) return notFound(res);
+            buf = fs.readFileSync(f);
+          }
+          MEDIA.set(mm[1], buf);
+        }
+        const hd = { "cache-control": "public, max-age=86400", "accept-ranges": "bytes" };
+        const rg = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || ""));
+        if (rg && (rg[1] || rg[2])) {
+          let a = rg[1] ? +rg[1] : Math.max(0, buf.length - +rg[2]), b = rg[1] && rg[2] ? Math.min(+rg[2], buf.length - 1) : buf.length - 1;
+          if (a >= buf.length || a > b) {
+            res.writeHead(416, Object.assign({}, SEC, { "content-range": "bytes */" + buf.length }));
+            return res.end();
+          }
+          res.writeHead(206, Object.assign({}, SEC, hd, { "content-type": type, "content-range": "bytes " + a + "-" + b + "/" + buf.length, "content-length": b - a + 1 }));
+          return res.end(req.method === "HEAD" ? void 0 : buf.subarray(a, b + 1));
+        }
+        res.writeHead(200, Object.assign({}, SEC, hd, { "content-type": type, "content-length": buf.length }));
+        return res.end(req.method === "HEAD" ? void 0 : buf);
       }
       if (mm = p.match(/^\/u\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)$/)) {
         const r = await ws.bySlug(mm[1]);
