@@ -36,11 +36,15 @@ const TITLE = 'Bookingbooster · Direct booking websites for UK holiday lets';
 const DESCRIPTION = 'Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. £997 setup, first month free, then £200 a month. No commission.';
 const allFaq = () => FAQ.concat(MORE);
 
+// The brand's live social profiles (the accounts connected in Metricool).
+const SOCIAL = [['Instagram', 'https://www.instagram.com/bookingbooster_1/'], ['Facebook', 'https://www.facebook.com/1300137993193053'], ['TikTok', 'https://www.tiktok.com/@bookingbooster'], ['YouTube', 'https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA']];
+
 function jsonLd(base, co) {
   const url = base + '/';
   const org = { '@type': 'Organization', '@id': url + '#org', name: 'Bookingbooster', url, logo: base + '/assets/icons/icon-512.png', email: co.support,
     description: 'Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.', areaServed: { '@type': 'Country', name: 'United Kingdom' },
     contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: co.support, areaServed: 'GB', availableLanguage: 'en-GB' } };
+  org.sameAs = SOCIAL.map(x => x[1]);
   if (co.name) org.legalName = co.name;
   if (co.number) org.identifier = { '@type': 'PropertyValue', propertyID: 'Companies House number', value: co.number };
   if (co.vat) org.vatID = co.vat;
@@ -76,8 +80,8 @@ const ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stri
 function content(base, co) {
   const li = a => '<ul>' + a.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
   return '<article class="seo" id="seo">' +
-    '<h1>More direct bookings. Less platform fees.</h1>' +
-    '<p>Own your bookings, your guests and your website. Bookingbooster gets your UK holiday let found on Google and in AI answers, brings past guests back, and you stop paying 15% or more on every stay.</p>' +
+    '<h1>Fill your calendar without the 15% fee.</h1>' +
+    '<p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p>' +
     '<p><a href="/start">Get my booking site</a> · <a href="/demo">See the live demo</a></p>' +
     '<h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p>').join('') +
     '<h2>How it works</h2><ol>' + STEPS.map(([h, p]) => '<li><strong>' + esc(h) + '.</strong> ' + esc(p) + '</li>').join('') + '</ol>' +
@@ -86,6 +90,7 @@ function content(base, co) {
     '<h2>Questions hosts ask</h2>' + allFaq().map(([q, a]) => '<h3>' + esc(q) + '</h3><p>' + esc(a) + '</p>').join('') +
     '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p>' +
     '<p><a href="/help">Help</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>' +
+    '<p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + '</a>').join(' · ') + '</p>' +
     '</article>';
 }
 
@@ -102,4 +107,4 @@ function llms(base, co) {
     '## Links\n\n- [Home and pricing](' + base + '/)\n- [Start a booking site](' + base + '/start)\n- [Live demo](' + base + '/demo)\n- [Help](' + base + '/help)\n- [Privacy notice](' + base + '/privacy)\n- [Terms of service](' + base + '/terms)\n';
 }
 
-module.exports = { FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
+module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };

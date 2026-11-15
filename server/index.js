@@ -414,7 +414,7 @@ async function route(req, res) {
         const r = await fetch(cfg.supabaseUrl + '/functions/v1/media/' + mm[1]); if (!r.ok) return notFound(res);
         buf = Buffer.from(await r.arrayBuffer());
       } else {
-        const f = path.join(ROOT, 'web', 'media', mm[1]); if (!fs.existsSync(f)) return notFound(res);
+        const f = path.join(ROOT, 'supabase', 'functions', 'media', 'files', mm[1]); if (!fs.existsSync(f)) return notFound(res);
         buf = fs.readFileSync(f);
       }
       MEDIA.set(mm[1], buf);

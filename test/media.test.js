@@ -11,7 +11,7 @@ test.before(async () => { t = await start(); });
 test.after(() => t && t.stop());
 
 test('serves the explainer video whole and in byte ranges', async () => {
-  const size = fs.statSync(path.join(__dirname, '..', 'web', 'media', 'explainer.mp4')).size;
+  const size = fs.statSync(path.join(__dirname, '..', 'supabase', 'functions', 'media', 'files', 'explainer.mp4')).size;
   const whole = await fetch(t.base + '/media/explainer.mp4');
   assert.equal(whole.status, 200); assert.equal(whole.headers.get('content-type'), 'video/mp4');
   assert.equal(whole.headers.get('accept-ranges'), 'bytes'); assert.equal((await whole.arrayBuffer()).byteLength, size);
@@ -25,7 +25,7 @@ test('serves the explainer video whole and in byte ranges', async () => {
 });
 
 test('serves the demo screenshot and refuses other names', async () => {
-  const img = await fetch(t.base + '/media/demo-site.jpg');
+  const img = await fetch(t.base + '/media/shot-site.jpg');
   assert.equal(img.status, 200); assert.equal(img.headers.get('content-type'), 'image/jpeg');
   assert.equal((await fetch(t.base + '/media/missing.mp4')).status, 404);
   assert.equal((await fetch(t.base + '/media/..%2Fserver%2Fconfig.js')).status, 404);

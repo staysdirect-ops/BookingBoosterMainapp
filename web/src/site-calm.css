@@ -14,7 +14,7 @@
 .x-site .btn.s-glow { box-shadow: none; }
 .x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--ink); border-color: var(--ink); color: #fff; }
 .x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: #1E2750; }
-.x-site .btn.ghost, .x-site .btn.lg:not(.primary):not(.accent):not(.ink) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
+.x-site .btn.ghost, .x-site .btn.lg:where(:not(.primary):not(.accent):not(.ink)) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
 .x-site .s-anim .s-rise { animation-duration: .6s; }
 
 /* type: calmer display scale */
