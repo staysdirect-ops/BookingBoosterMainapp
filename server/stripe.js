@@ -64,12 +64,12 @@ module.exports = function (cfg) {
     async refund(paymentIntent, amount) { return api('POST', '/refunds', { payment_intent: paymentIntent, amount: amount ? pence(amount) : undefined, reverse_transfer: true, refund_application_fee: true }); },
     async subscribe({ customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
       // Annual billing (2 months free) uses the yearly prices; the add-on then bills yearly too, at 12 × £15.
-      // The one-off setup fee is charged at checkout; the first month is free, so the plan's first charge comes a month later.
+      // No setup fee and no free month: the first month (or year) is paid at checkout, before the host sets anything up.
       const P = cfg.stripe.prices, yearly = annual && P[plan + 'Annual'];
       const price = yearly ? P[plan + 'Annual'] : P[plan]; if (!price) throw new Error('No Stripe price is set for the ' + plan + ' plan.');
       const add = yearly ? P.addonAnnual : P.addon;
-      const items = [{ price, quantity: 1 }]; if (addon && add) items.push({ price: add, quantity: 1 }); if (P.setup) items.push({ price: P.setup, quantity: 1 });
-      const s = await api('POST', '/checkout/sessions', { mode: 'subscription', customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { trial_period_days: 30, metadata: meta }, metadata: meta, allow_promotion_codes: true });
+      const items = [{ price, quantity: 1 }]; if (addon && add) items.push({ price: add, quantity: 1 });
+      const s = await api('POST', '/checkout/sessions', { mode: 'subscription', customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
       return { id: s.id, url: s.url };
     },
     // Account deletion: end every live subscription for this customer straight away.

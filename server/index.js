@@ -128,7 +128,7 @@ function publicBoot(w, mode, extra) {
 }
 
 /* ---------------- property site & trip pages ---------------- */
-// A live host's sites stay offline to guests until the setup fee is paid (only when Stripe is on).
+// A live host's sites stay offline to guests until the first payment (only when Stripe is on).
 // The signed-in host can still preview their own site on the main domain.
 function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
@@ -214,7 +214,7 @@ async function stripeWebhook(req, res) {
       if (m.kind === 'link') { await payIns.run(o.id, w.id, m.booking, 'booking', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); await ws.act(w.id, 'paymentConfirmed', [m.booking, { intent: o.payment_intent, session: o.id }]); }
       if (m.kind === 'deposit') { await payIns.run(o.id, w.id, m.booking, 'deposit', 20000, 'card-saved', o.setup_intent, Date.now(), Date.now()); await ws.act(w.id, 'checkin', [m.booking, { deposit: true }]); }
       if (m.kind === 'extra') { await payIns.run(o.id, w.id, m.booking, 'extra', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); }
-      if (m.kind === 'plan') { await ws.setMeta(w.id, { billing_status: 'active', stripe_customer: o.customer, plan: m.plan }); await ws.withWs(w.id, BB => { BB.store.get().account.plan = m.plan; BB.store.get().account.billing = 'active'; BB.store.commit({}); }); }
+      if (m.kind === 'plan') await planPaid(w.id, o.customer, m.plan);
     }
     if (ev.type === 'checkout.session.expired' && w && m.kind === 'booking') { await payUpd.run('expired', null, Date.now(), o.id); await ws.act(w.id, 'expirePending', [m.booking]); }
     if (ev.type === 'account.updated' && o.id) { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_account = ?').get(o.id); if (r) await markStripe(r.id, !!o.charges_enabled); }
@@ -248,7 +248,7 @@ async function signup(req, res) {
   if (name.length < 2) throw err(400, 'Enter your name.');
   if (pw.length < 10) throw err(400, 'Use a password of at least 10 characters.');
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
-  const plan = 'Growth'; // one plan: £997 setup, first month free, then £200 a month
+  const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
   const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
@@ -261,9 +261,43 @@ async function signup(req, res) {
     if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
   }
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
-  const token = await auth.startSession(uid);
+  const token = await auth.startSession(uid), set = { 'set-cookie': cookie('bb_s', token, 30 * 86400) };
+  // Pay first: with card billing on, the new host goes straight to Stripe Checkout and gets into setup once it is paid.
+  if (stripe.enabled) {
+    let to = '/app/pay';
+    try { to = (await planCheckout(await ws.open(wid))).url; } catch (e) { log('signup checkout', e.message); }
+    return json(res, { ok: true, redirect: to }, 200, set);
+  }
   ws.defer(welcome(wid), 'welcome');
-  json(res, { ok: true, redirect: '/app?welcome=1' }, 200, { 'set-cookie': cookie('bb_s', token, 30 * 86400) });
+  json(res, { ok: true, redirect: '/app?welcome=1' }, 200, set);
+}
+// Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
+async function planCheckout(w) {
+  const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
+  return stripe.subscribe({ customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
+}
+// The plan is paid (from the webhook or the return from Checkout, whichever comes first): open the console and say welcome once.
+async function planPaid(wid, customer, plan) {
+  const r = await ws.row(wid); const first = !r || !r.billing_status || r.billing_status === 'trial';
+  await ws.setMeta(wid, { billing_status: 'active', stripe_customer: customer, plan });
+  await ws.withWs(wid, BB => { const a = BB.store.get().account; if (plan) a.plan = plan; a.billing = 'active'; BB.store.commit({}); });
+  if (first) ws.defer(welcome(wid), 'welcome');
+}
+// Hosts who have not paid yet only see the payment page, their billing and their account. Team members are let through.
+const PAY_OPEN = ['/app/pay', '/app/pay/done', '/app/billing', '/app/billing/start', '/app/billing/portal', '/app/account'];
+async function mustPay(req, w) {
+  if (!stripe.enabled || w.kind !== 'live') return false;
+  const r = await ws.row(w.id); if (r && r.billing_status && r.billing_status !== 'trial') return false;
+  return !await isAdmin(req);
+}
+function payPage(w, note) {
+  const s = w.state, price = 200, due = s.account.annual ? '£' + price * 10 + ' for your first year' : '£' + price + ' for your first month';
+  return authPage('Start your plan', '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>' +
+    (note ? '<p class="ok" role="status">' + E(note) + '</p>' : '') +
+    '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? 'the year' : 'the first month') + ' today, then it renews automatically. No commission on any booking. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '</div>' +
+    '<form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form>' +
+    '<div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div>' +
+    '<form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
 }
 async function welcome(wid) {
   const w = await ws.open(wid); const s = w.state; const p = s.properties[0];
@@ -477,7 +511,7 @@ async function route(req, res) {
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
       head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
-      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
   if (p === '/sitemap.xml') {
@@ -548,6 +582,16 @@ async function route(req, res) {
     const s = await me(req);
     if (!s) return p.startsWith('/api/') ? json(res, { error: 'Sign in again' }, 401) : redirect(res, '/login?next=' + encodeURIComponent(p));
     const w = await ws.open(s.workspace_id); if (!w) return json(res, { error: 'Workspace missing' }, 500);
+    if (!PAY_OPEN.includes(p) && !p.startsWith('/app/account/') && await mustPay(req, w)) return p.startsWith('/api/') ? json(res, { error: 'Start your plan to begin setting up.', redirect: '/app/pay' }, 402) : redirect(res, '/app/pay');
+    if (p === '/app/pay') { if (!await mustPay(req, w)) return redirect(res, '/app'); return send(res, 200, payPage(w, u.searchParams.get('msg') === 'pending' ? 'We are still confirming your payment with Stripe. Refresh this page in a minute.' : '')); }
+    if (p === '/app/pay/done') {
+      const sid = String(u.searchParams.get('session') || '');
+      if (/^cs_[A-Za-z0-9_]+$/.test(sid) && stripe.enabled) {
+        try { const cs = await stripe.api('GET', '/checkout/sessions/' + sid); const md = cs.metadata || {};
+          if (cs.status === 'complete' && md.kind === 'plan' && md.workspace === w.id) await planPaid(w.id, cs.customer, md.plan); } catch (e) { log('pay done', e.message); }
+      }
+      return redirect(res, await mustPay(req, w) ? '/app/pay?msg=pending' : '/app?welcome=1');
+    }
     if (w.catchUp()) ws.persist(w, { rollover: true });
     if (p === '/app' || p === '/app/phone') return send(res, 200, pages.page({ title: w.state.account.business + ' · Bookingbooster', robots: 'noindex', app: true, boot: await hostBoot(w, p === '/app/phone' ? 'mobile' : 'app'), banner: testNotes().length && u.searchParams.get('welcome') ? '<b>Test mode</b> ' + E(testNotes().join(', ')) + ' are not switched on for this server yet.' : null }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
     if (p === '/app/billing') return send(res, 200, await billingPage(w));
@@ -564,8 +608,8 @@ async function route(req, res) {
     if (p.startsWith('/app/account/') && m === 'POST') return accountPost(req, res, p, w, s);
     if (p === '/app/billing/start' && m === 'POST') {
       if (!stripe.enabled) return redirect(res, '/app/billing?msg=stripe');
-      const r = await ws.row(w.id); const sess = await stripe.subscribe({ customerEmail: w.state.account.email, plan: r.plan || w.state.account.plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/billing?ok=1', cancelUrl: cfg.baseUrl + '/app/billing', meta: { workspace: w.id, kind: 'plan', plan: r.plan || w.state.account.plan } });
-      return redirect(res, sess.url);
+      const r = await ws.row(w.id); if (r.stripe_customer && r.billing_status && r.billing_status !== 'trial') return redirect(res, '/app/billing');
+      return redirect(res, (await planCheckout(w)).url);
     }
     if (p === '/app/billing/portal' && m === 'POST') { const r = await ws.row(w.id); if (!r.stripe_customer) return redirect(res, '/app/billing'); return redirect(res, await stripe.portal(r.stripe_customer, cfg.baseUrl + '/app/billing')); }
     if (p === '/app/stripe/connect') {
@@ -786,10 +830,10 @@ async function deleteWorkspace(wid) {
   for (const dir of ['uploads', 'media']) await files.delPrefix(dir + '/' + wid);
 }
 async function billingPage(w) {
-  const r = await ws.row(w.id); const s = w.state; const price = 200, setup = 997;
-  const status = { trial: 'Not paid yet. The £' + setup + ' setup fee is due. Your booking site goes live to guests once it is paid, and your first month is free', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
-  return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">Plus a one-off setup fee of £' + setup + ', paid today. Your first month is free, and the plan is billed from a month after you start.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
-    (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Pay the £' + setup + ' setup fee and start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
+  const r = await ws.row(w.id); const s = w.state; const price = 200;
+  const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
+  return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
+    (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
     '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
 }
 const LEGAL = require('./legal')(cfg, E);
