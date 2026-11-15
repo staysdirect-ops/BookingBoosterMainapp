@@ -520,3 +520,9 @@ body.p-lock { overflow: hidden; }
   .x-property .p-gal-n3, .x-property .p-gal-n4 { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 120px; }
   .x-property .p-gal-n3 .p-tile:first-child, .x-property .p-gal-n4 .p-tile:first-child { grid-row: auto; grid-column: span 2; }
 }
+
+/* bank transfer details on the booking confirmation */
+.x-property .p-bank-d { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 14px 0; }
+.x-property .p-bank-d dt { color: var(--p-muted); }
+.x-property .p-bank-d dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.x-property .p-bank .p-btn { margin-top: 6px; }

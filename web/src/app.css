@@ -590,3 +590,8 @@
 .a-decl label{font-size:13px;font-weight:600}
 .a-decl textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;resize:vertical;background:var(--surface);color:inherit}
 .a-decl-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+/* bank transfer settings (Payments) */
+.x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
+.x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }

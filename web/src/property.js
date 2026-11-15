@@ -428,7 +428,7 @@
     const stripe = BB.q.connected('stripe');
     const fld = (k, label, type, ac, ph) => '<label class="p-field' + (e[k] ? ' bad' : '') + '"><span>' + label + '</span><input id="' + ID(inst, 'f-' + k) + '" data-f="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(f[k] || '') + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '>' + (e[k] ? '<em>' + esc(e[k]) + '</em>' : '') + '</label>';
     return '<div class="p-w p-co"><button class="p-back" data-x="home">' + BB.icon('back') + 'Back to ' + esc(p.short) + '</button>' +
-      '<h1 class="p-co-h">' + (REALSITE() && !BB.BOOT.stripe ? 'Request to book' : 'Confirm and pay') + '</h1>' +
+      '<h1 class="p-co-h">' + (REALSITE() && !BB.BOOT.stripe ? (bankOn() ? 'Book your stay' : 'Request to book') : 'Confirm and pay') + '</h1>' +
       '<div class="p-co-grid"><form class="p-co-form" data-x="payform" novalidate>' +
         '<section class="p-card"><h3><span class="p-num">1</span>Your details</h3><div class="p-fgrid">' +
           fld('name', 'Full name', 'text', 'name', 'Jordan Avery') + fld('email', 'Email', 'email', 'email', 'you@example.com') + fld('phone', 'Mobile phone', 'tel', 'tel', 'For your check-in link and door code') +
@@ -443,12 +443,22 @@
             (!stripe ? '<p>You can still send ' + esc(p.short) + ' a booking request. Your dates are held and the host sends a secure payment link to confirm.</p><button type="button" class="p-btn" data-x="request">Send a booking request instead</button>'
               : '<button type="button" class="p-btn ghost" data-x="changedates">Change dates</button>') + '</div>' : '') +
           '<button type="submit" class="p-btn p-pay"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Processing payment' : BB.icon('lock') + 'Pay ' + money(q.total)) + '</button>' +
-          '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' +
+          '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' + transferOpt(inst, q, true) +
         '</section>') + '</form>' +
         '<aside class="p-co-side">' + summary(inst, p, q) + '</aside></div></div>';
   }
 
   const REALSITE = () => !!(BB.BOOT && BB.BOOT.mode === 'site');
+  // Bank transfer: the host turned it on in Payments. Booking sites only see that it is on and how many days guests have to pay.
+  const bankOn = () => { const k = BB.store.get().account.bank; return !!(k && k.on && (REALSITE() || !BB.bankReady || BB.bankReady())); };
+  const bankDays = () => { const k = BB.store.get().account.bank; return Math.max(1, Math.min(30, +(k && k.days) || 3)); };
+  function transferOpt(inst, q, alt) {
+    if (!bankOn()) return '';
+    const st = inst.st;
+    return (alt ? '<p class="p-or"><span>or pay by bank transfer</span></p>' : '') +
+      '<button type="button" class="p-btn' + (alt ? ' ghost' : ' p-pay') + '" data-x="transfer"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying && st.method === 'transfer' ? '<i class="p-spin"></i>Booking' : BB.icon('send') + 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' +
+      '<p class="p-fine">You get an invoice by email with the bank details. Pay within ' + bankDays() + ' day' + (bankDays() === 1 ? '' : 's') + ' to keep the booking. Your dates are held in the meantime.</p>';
+  }
   // Real booking sites: card details are taken on Stripe's own page, or the guest sends a request when the host has not connected Stripe yet.
   function realPay(inst, p, q) {
     const st = inst.st, host = firstName(BB.store.get().account.owner) || 'your host';
@@ -457,7 +467,10 @@
       '<p class="p-lead-s">You pay on Stripe’s secure page by card, Apple Pay or Google Pay. Your dates are held for 30 minutes while you pay.</p>' +
       '<p class="p-fine">' + BB.icon('lock') + 'Secured by Stripe. A refundable ' + money(q.deposit) + ' damage deposit card check happens during online check-in, not now.</p>' + err +
       '<button type="submit" class="p-btn p-pay"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Opening secure payment' : BB.icon('lock') + 'Pay ' + money(q.total) + ' securely') + '</button>' +
-      '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p></section>';
+      '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' + transferOpt(inst, q, true) + '</section>';
+    if (bankOn()) return '<section class="p-card"><h3><span class="p-num">2</span>Pay by bank transfer</h3>' +
+      '<p class="p-lead-s">Book now and pay ' + esc(host) + ' by bank transfer. You get an invoice with the bank details straight away.</p>' + err + transferOpt(inst, q, false) +
+      '<p class="p-or"><span>or</span></p><button type="button" class="p-btn ghost" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + BB.icon('send') + 'Send a booking request instead</button></section>';
     return '<section class="p-card"><h3><span class="p-num">2</span>No payment today</h3>' +
       '<p class="p-lead-s">Send ' + esc(host) + ' your request. Your dates are held, and ' + esc(host) + ' sends you a secure payment link to confirm.</p>' + err +
       '<button type="button" class="p-btn p-pay" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Sending' : BB.icon('send') + 'Send booking request') + '</button>' +
@@ -467,12 +480,19 @@
     const st = inst.st, b = BB.q.booking(st.bookingId);
     if (!b) return '<div class="p-w p-co"><p class="p-empty">That booking could not be found.</p><button class="p-btn" data-x="home">Back to ' + esc(p.short) + '</button></div>';
     const g = BB.q.guest(b.guestId) || { name: 'Guest', email: '' };
-    const req = st.request || !b.paid;
+    const transfer = b.payBy === 'transfer' && !b.paid && b.status !== 'cancelled';
+    const req = !transfer && (st.request || !b.paid);
     const host = firstName(BB.store.get().account.owner);
     const q = { avg: Math.round(b.price.nightly / Math.max(1, nightsBetween(b.checkIn, b.checkOut))), nights: nightsBetween(b.checkIn, b.checkOut), nightly: b.price.nightly, cleaning: b.price.cleaning, pet: b.price.pet || 0, discount: b.price.discount || 0, promo: b.promo, promoPct: b.promo ? (BB.store.get().promos[b.promo] || 0) : 0, total: b.total, airbnb: Math.round(b.total * 1.142) };
     q.guestSaves = q.airbnb - q.total;
     const lockLive = !S().live || BB.q.connected('lock');
-    const steps = req && S().live ? [
+    const due = transfer && b.invoice ? D.fmt(b.invoice.due, { weekday: 'short' }) : '';
+    const steps = transfer ? [
+      ['Now', 'Invoice emailed', 'Sent to ' + g.email + ' with the bank details and the amount to pay.'],
+      ['By ' + due, 'Pay by bank transfer', 'Send ' + money(b.total) + ' with ' + b.id + ' as the reference. Your dates are held until then.'],
+      ['When it arrives', host + ' confirms', 'You get an email saying your payment arrived and your stay is paid in full.'],
+      [D.fmt(b.checkIn, { weekday: 'short' }), lockLive ? 'Door code on arrival day' : 'Arrival details', 'Shown in your guest app once check-in is done and your payment has arrived.'],
+    ] : req && S().live ? [
       ['Now', 'Request sent to ' + host, 'Nothing was charged. ' + host + ' has been told and will accept or decline your request.'],
       ['Next', host + ' confirms', BB.q.connected('stripe') ? 'If ' + host + ' accepts, you get a secure link to pay by card, Apple Pay or Google Pay.' : host + ' gets in touch about payment once your stay is confirmed.'],
       ['Before you arrive', 'Online check-in', 'Add an ID photo and agree to the house rules in a few minutes.'],
@@ -488,17 +508,29 @@
       [D.fmt(D.add(b.checkIn, -3)), 'Reminder', 'A nudge to finish check-in if you have not yet, plus directions and parking.'],
       [D.fmt(b.checkIn, { weekday: 'short' }), lockLive ? 'Door code on arrival day' : 'Arrival details', lockLive ? 'Your code arrives once check-in is done and works from ' + p.checkinTime + '.' : 'Shown in your guest app once check-in is done.'],
     ];
-    return '<div class="p-w p-co p-done"><div class="p-done-h"><span class="p-tick' + (req ? ' req' : '') + '">' + BB.icon(req ? 'send' : 'check') + '</span>' +
-      '<p class="p-eb">' + (req ? 'Request ' : 'Booking ') + esc(b.id) + '</p><h1 class="p-co-h">' + (req ? 'Request sent. Your dates are held.' : 'You are booked, ' + esc(firstName(g.name)) + '.') + '</h1>' +
+    return '<div class="p-w p-co p-done"><div class="p-done-h"><span class="p-tick' + (req || transfer ? ' req' : '') + '">' + BB.icon(req || transfer ? 'send' : 'check') + '</span>' +
+      '<p class="p-eb">' + (req ? 'Request ' : 'Booking ') + esc(b.id) + '</p><h1 class="p-co-h">' + (req ? 'Request sent. Your dates are held.' : transfer ? 'You are booked, ' + esc(firstName(g.name)) + '. Pay by bank transfer by ' + esc(due) + '.' : 'You are booked, ' + esc(firstName(g.name)) + '.') + '</h1>' +
       '<p class="p-lead">' + esc(p.name) + ' · ' + D.fmt(b.checkIn, { weekday: 'long', month: 'long' }) + ' to ' + D.fmt(b.checkOut, { weekday: 'long', month: 'long' }) + '</p></div>' +
       '<div class="p-co-grid"><div class="p-done-main">' +
         '<div class="p-card p-sync"><div class="p-sync-i">' + BB.icon('cal') + '</div><div><b>Your dates are now closed to other guests</b>' +
           '<p>' + (S().live ? 'Your dates are held on ' + esc(host) + '’s calendar, so nobody else can book them while ' + (req ? 'your request is open.' : 'you are booked.') : 'The moment you booked, ' + esc(p.domain) + ' and ' + esc(host) + '’s calendar were updated, so nobody else can take these nights.') + '</p>' +
           '<div class="p-chans">' + [p.domain, host + '’s calendar'].map(c => '<span>' + BB.icon('check') + esc(c) + '</span>').join('') + '</div></div></div>' +
+        (transfer ? bankCard(b) : '') +
         '<div class="p-card"><h3>What happens next</h3><ol class="p-tl">' + steps.map((x, i) => '<li class="' + (i === 0 ? 'on' : '') + '"><span class="p-tl-w">' + esc(x[0]) + '</span><div><b>' + esc(x[1]) + '</b><p>' + esc(x[2]) + '</p></div></li>').join('') + '</ol></div>' +
         '<div class="p-done-acts"><button class="p-btn" data-x="guestapp">' + BB.icon('phone') + 'Open the guest app</button>' + (REALSITE() ? '' : '<button class="p-btn ghost" data-x="console">' + BB.icon('dash') + 'See it in the host console</button>') + '</div>' +
         '<button class="p-link" data-x="again">Back to ' + esc(p.short) + '</button>' +
       '</div><aside class="p-co-side">' + summary(inst, p, q, b) + '</aside></div></div>';
+  }
+
+  // The bank details for a guest who chose bank transfer (only on their own booking, never on the public site).
+  function bankCard(b) {
+    const k = BB.store.get().account.bank || {};
+    const rows = [['Account name', k.holder], ['Bank', k.bankName], ['Sort code', k.sortCode], ['Account number', k.account], ['IBAN', k.iban], ['BIC / SWIFT', k.bic], ['Reference', b.id], ['Amount', money(b.total)]].filter(r => r[1]);
+    const inv = BB.BOOT && BB.BOOT.invoices && BB.BOOT.invoices[b.id];
+    return '<div class="p-card p-bank"><h3>Pay by bank transfer</h3><p>Please use <b>' + esc(b.id) + '</b> as the payment reference so your payment is matched to your booking.</p>' +
+      (k.holder ? '<dl class="p-bank-d">' + rows.map(r => '<dt>' + esc(r[0]) + '</dt><dd class="num">' + esc(r[1]) + '</dd>').join('') + '</dl>' : '<p>The bank details are in the invoice we emailed you.</p>') +
+      (k.note ? '<p class="p-fine">' + esc(k.note) + '</p>' : '') +
+      (inv ? '<a class="p-btn ghost" href="' + esc(inv) + '" target="_blank" rel="noopener">' + BB.icon('out') + 'View or print your invoice</a>' : '') + '</div>';
   }
 
   function lightbox(inst, p) {
@@ -567,9 +599,10 @@
       if (!inst.alive) return;
       if (!j.ok) return inst.set({ paying: false, payErr: j.error || 'That did not go through. Try again.' });
       BB.BOOT.trips = BB.BOOT.trips || {}; BB.BOOT.trips[j.bookingId] = j.tripUrl;
+      if (j.invoiceUrl) { BB.BOOT.invoices = BB.BOOT.invoices || {}; BB.BOOT.invoices[j.bookingId] = j.invoiceUrl; }
       if (j.checkoutUrl) { location.href = j.checkoutUrl; return; }
       inst.st.paying = false; inst.set({ view: 'done', bookingId: j.bookingId, request: !!j.request }); window.scrollTo({ top: 0 });
-      BB.toast(j.request ? 'Request sent to ' + firstName(BB.store.get().account.owner) : 'Booked. Confirmation sent to ' + f.email.trim(), 'good');
+      BB.toast(j.request ? 'Request sent to ' + firstName(BB.store.get().account.owner) : j.invoiceUrl ? 'Booked. Invoice sent to ' + f.email.trim() : 'Booked. Confirmation sent to ' + f.email.trim(), 'good');
     }).catch(e => { if (inst.alive) inst.set({ paying: false, payErr: e.message }); });
   }
   function input(inst) {
@@ -634,6 +667,16 @@
             const r = BB.act.requestPropertyBooking(input(inst));
             if (r.ok) { inst.set({ view: 'done', bookingId: r.booking.id, request: true, payErr: null }); window.scrollTo({ top: 0 }); BB.toast('Request sent to ' + firstName(BB.store.get().account.owner), 'good'); }
             else inst.set({ payErr: r.error });
+            break;
+          }
+          case 'transfer': {
+            const e = validate(inst); delete e.card;
+            if (Object.keys(e).length) { inst.set({ errors: e }); break; }
+            inst.set({ paying: true, method: 'transfer', errors: {}, payErr: null });
+            if (BB.api && BB.BOOT.mode === 'site') { serverBook(inst, 'transfer'); break; }
+            const r = BB.act.bookByTransfer(input(inst));
+            if (r.ok) { inst.st.paying = false; inst.set({ view: 'done', bookingId: r.booking.id, request: false }); window.scrollTo({ top: 0 }); BB.toast('Booked. Invoice sent to ' + inst.form.email.trim(), 'good'); }
+            else inst.set({ paying: false, payErr: r.error });
             break;
           }
           case 'changedates': inst.set({ view: 'site', payErr: null }); openBooking(inst); break;

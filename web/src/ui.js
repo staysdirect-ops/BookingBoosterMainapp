@@ -120,6 +120,7 @@
     if (b.status === 'completed') return BB.pill('muted', 'Completed');
     if (b.status === 'pending') return BB.pill('warn', 'Awaiting payment');
     if (b.status === 'request') return BB.pill('info', 'Request');
+    if (b.payBy === 'transfer' && !b.paid) return BB.pill('warn', 'Awaiting transfer');
     const t = BB.store.get().today;
     if (b.checkIn <= t && b.checkOut > t) return BB.pill('good', 'Staying');
     if (b.checkOut === t) return BB.pill('info', 'Departs today');

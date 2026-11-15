@@ -2032,6 +2032,11 @@ var require_bb_embedded_files = __commonJS({
 .a-decl label{font-size:13px;font-weight:600}
 .a-decl textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;resize:vertical;background:var(--surface);color:inherit}
 .a-decl-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+/* bank transfer settings (Payments) */
+.x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
+.x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }
 ` }, "/app/web/src/app.js": { "t": `/* Bookingbooster prototype: host console frame (sidebar, top bar, search, notifications, routing, modal host)
    and the "Run" views: dashboard, calendar, reservations, booking, inbox, check-in, payments, notifications. */
 (function () {
@@ -2686,6 +2691,8 @@ var require_bb_embedded_files = __commonJS({
       // payment
       const payLine = b.status === 'cancelled' ? ['bad', 'Refunded', BB.money(b.total) + ' returned to the guest.'] :
         b.channel !== 'direct' ? ['good', 'Paid through ' + BB.CHANNEL[b.channel], BB.CHANNEL[b.channel] + ' pays out ' + BB.money(payout) + ' after check-in.'] :
+        b.paid && b.payBy === 'transfer' ? ['good', 'Paid by bank transfer', 'Recorded ' + D.fmt(b.paidAt || b.createdAt) + (b.invoice ? '. Invoice ' + b.invoice.no + '.' : '.')] :
+        b.payBy === 'transfer' && b.status !== 'request' ? ['warn', b.invoice && b.invoice.due < t ? 'Bank transfer overdue' : 'Awaiting bank transfer', (b.invoice ? 'Invoice ' + b.invoice.no + ' due ' + D.fmt(b.invoice.due) + '. ' : '') + 'The guest pays with ' + b.id + ' as the reference. Mark it paid when the money reaches your bank.'] :
         b.paid ? ['good', 'Paid by card', 'Charged ' + D.fmt(b.createdAt) + ' through Stripe. Payout ' + (D.add(b.createdAt, 2) <= t ? 'landed ' : 'lands ') + D.fmt(D.add(b.createdAt, 2)) + '.'] :
         b.status === 'request' ? ['warn', 'Not paid yet', BB.q.connected('stripe') ? 'Accept the request and the guest gets a Stripe payment link.' : 'Accept the request, then take payment your usual way. Connect Stripe to send a card payment link instead.'] :
         ['warn', 'Not paid yet', S().live ? 'Record the payment when it arrives.' : 'Booked by phone or by hand. Record the payment when it arrives.'];
@@ -2732,7 +2739,11 @@ var require_bb_embedded_files = __commonJS({
             card('Payment', '', '<div class="a-pay"><div class="a-trow"><span>' + payLine[1] + '<em>' + esc(payLine[2]) + '</em></span>' + BB.pill(payLine[0], payLine[0] === 'good' ? 'Paid' : payLine[0] === 'bad' ? 'Refunded' : 'Unpaid') + '</div>' +
               '<div class="a-trow"><span>Security deposit<em>' + esc(depTxt) + '</em></span>' + depPill + '</div></div>' +
               (b.status === 'request' ? '<button class="btn sm block primary" data-accept="' + b.id + '">' + ic('check') + 'Accept request</button><button class="btn sm block" data-decline="' + b.id + '">Decline</button>' : '') +
-              (!b.paid && b.status === 'confirmed' ? (S().live ? '<button class="btn sm block primary" data-paylink="' + b.id + '">' + ic('send') + 'Email a payment link</button>' : '') + '<button class="btn sm block" data-paid="' + b.id + '">' + ic('check') + 'Mark as paid</button>' : '')) +
+              (!b.paid && b.status === 'confirmed' ? (b.payBy === 'transfer' ? '<button class="btn sm block primary" data-paid="' + b.id + '">' + ic('check') + 'Bank transfer received</button>' : '') +
+                (S().live && b.payBy !== 'transfer' ? '<button class="btn sm block primary" data-paylink="' + b.id + '">' + ic('send') + 'Email a payment link</button>' : '') +
+                (b.channel === 'direct' ? '<button class="btn sm block" data-invoice="' + b.id + '">' + ic('send') + (b.payBy === 'transfer' ? 'Email the invoice again' : 'Email an invoice for bank transfer') + '</button>' : '') +
+                (b.payBy === 'transfer' ? '' : '<button class="btn sm block" data-paid="' + b.id + '">' + ic('check') + 'Mark as paid</button>') : '') +
+              (S().live && b.invoice ? '<a class="btn sm block" href="/app/invoice/' + encodeURIComponent(b.id) + '" target="_blank" rel="noopener">' + ic('out') + 'View invoice</a>' : '')) +
           '</div></div>' +
         '</div>';
     },
@@ -2748,6 +2759,7 @@ var require_bb_embedded_files = __commonJS({
       const dc = t.closest('[data-decline]'); if (dc) { if (dc.nextElementSibling && dc.nextElementSibling.classList.contains('a-decl')) return; const f = document.createElement('div'); f.className = 'a-decl'; f.innerHTML = '<label for="a-decl-why">Note for the guest (optional)</label><textarea id="a-decl-why" rows="3" placeholder="Sorry, those dates no longer work for us."></textarea><div class="a-decl-row"><button class="btn sm" data-decline-cancel>Keep request</button><button class="btn sm primary" data-decline-go="' + esc(dc.dataset.decline) + '">Decline and tell the guest</button></div>'; dc.after(f); f.querySelector('textarea').focus(); return; }
       const dcx = t.closest('[data-decline-cancel]'); if (dcx) { dcx.closest('.a-decl').remove(); return; }
       const dg = t.closest('[data-decline-go]'); if (dg) { const why = dg.closest('.a-decl').querySelector('textarea').value.trim(); BB.act.declineRequest(dg.dataset.declineGo, why); BB.toast('Declined. The guest has been told.'); return; }
+      const iv = t.closest('[data-invoice]'); if (iv) { if (!BB.bankReady()) { BB.toast('Add your bank details in Payments first.'); return inst.nav('payments'); } const r = BB.act.sendInvoice(iv.dataset.invoice); BB.toast(r && r.ok ? 'Invoice emailed' : (r && r.error) || 'Could not send the invoice', r && r.ok ? 'good' : undefined); return; }
       const pl = t.closest('[data-paylink]'); if (pl) { if (BB.BOOT && !BB.BOOT.stripe) { BB.toast('Connect Stripe in Connections first, so guests can pay you by card.'); return; } BB.act.sendPaymentLink(pl.dataset.paylink); BB.toast('Payment link sent', 'good'); }
     },
   };
@@ -2859,6 +2871,25 @@ var require_bb_embedded_files = __commonJS({
   /* =====================================================================================
      PAYMENTS
      ===================================================================================== */
+  // Bank transfer settings: the details printed on invoices, and whether guests can choose it at checkout.
+  function bankCard(inst) {
+    const st = inst.st, k = S().account.bank || {}, d = Object.assign({}, k, st.bank || {}), ready = BB.bankReady();
+    if (!st.bank_edit && (k.holder || k.iban)) {
+      return card('Bank transfer', ready ? BB.pill('good', 'On') : BB.pill('muted', 'Off'),
+        '<p class="a-note a-nt0">' + (ready ? 'Guests can book and pay by bank transfer. They get an invoice and have ' + BB.transferDays() + ' day' + (BB.transferDays() === 1 ? '' : 's') + ' to pay.' : 'Saved, but guests cannot choose bank transfer at checkout.') + '</p>' +
+        [['Account name', k.holder], ['Sort code', k.sortCode], ['Account number', k.account ? '\u2022\u2022\u2022\u2022' + k.account.slice(-4) : ''], ['IBAN', k.iban]].filter(r => r[1]).map(r => '<div class="a-trow"><span>' + r[0] + '</span><b class="num">' + esc(r[1]) + '</b></div>').join('') +
+        '<button class="btn sm block" data-bankedit>' + ic('edit') + 'Edit bank transfer</button>');
+    }
+    const f = (key, label, ph, extra) => '<label class="field"><span>' + label + '</span><input id="bank-' + key + '-' + inst.uid + '" data-bank="' + key + '" autocomplete="off" value="' + esc(d[key] == null ? '' : d[key]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + (extra || '') + '></label>';
+    return card('Bank transfer', '', '<p class="a-note a-nt0">Let guests book now and pay by bank transfer. They get an invoice with these details, and you mark the booking paid when the money arrives.</p><div class="a-bankf">' +
+      f('holder', 'Account name', 'Fell & Harbour Stays Ltd') + f('bankName', 'Bank (optional)', 'Barclays') +
+      '<div class="a-f2">' + f('sortCode', 'Sort code', '20-00-00', ' inputmode="numeric"') + f('account', 'Account number', '12345678', ' inputmode="numeric"') + '</div>' +
+      '<div class="a-f2">' + f('iban', 'IBAN (for guests abroad)', 'GB00 BARC 2000 0012 3456 78') + f('bic', 'BIC / SWIFT', 'BARCGB22') + '</div>' +
+      f('days', 'Days guests have to pay', '3', ' type="number" min="1" max="30" inputmode="numeric"') + f('note', 'Note on the invoice (optional)', 'Payments usually take a few hours to arrive.') +
+      '<label class="a-check"><input type="checkbox" data-bank="on" id="bank-on-' + inst.uid + '"' + (d.on !== false ? ' checked' : '') + '><span>Offer bank transfer at checkout</span></label>' +
+      (st.bank_err ? '<p class="a-warnt" role="alert">' + esc(st.bank_err) + '</p>' : '') +
+      '<div class="a-acts">' + (k.holder || k.iban ? '<button class="btn sm" data-bankcancel>Cancel</button>' : '') + '<button class="btn sm primary" data-banksave>' + ic('check') + 'Save bank details</button></div></div>');
+  }
   V.payments = {
     label: 'Payments', group: 'Run', icon: 'card', order: 60,
     render(inst) {
@@ -2890,13 +2921,23 @@ var require_bb_embedded_files = __commonJS({
           (unpaid.length ? '<div class="a-s12">' + card('Waiting for payment', plural(unpaid.length, 'booking'), '<div class="a-list">' + unpaid.map(b => '<div class="a-row">' + BB.avatar(gOf(b).name) + '<span class="a-row-t"><b>' + esc(gOf(b).name) + ' \xB7 ' + BB.money(b.total) + '</b><span>' + b.id + ' \xB7 ' + esc(P(b.propertyId).short) + ' \xB7 arrives ' + relDay(b.checkIn, true) + '</span></span><span class="a-row-m"><button class="btn sm" data-a="nav" data-view="booking" data-id="' + b.id + '">Open</button><button class="btn sm primary" data-paid="' + b.id + '">Mark paid</button></span></div>').join('') + '</div>') + '</div>' : '') +
           '<div class="a-s8">' + card('Direct payouts', plural(direct.length, 'booking'), '<div class="tblwrap a-flushx" id="paytbl-' + inst.uid + '"><table class="tbl a-tbl"><thead><tr><th>Payout</th><th>Guest</th><th>Stay</th><th class="r">Amount</th><th class="r">Fee avoided</th><th>Status</th></tr></thead><tbody>' + (rows || '<tr><td colspan="6"><div class="a-empty"><p>No direct bookings yet.</p></div></td></tr>') + '</tbody></table></div>' +
             (direct.length > lim ? '<div class="a-more"><button class="btn sm" data-paymore>Show more</button><span class="muted">Showing ' + lim + ' of ' + direct.length + '</span></div>' : ''), 'a-flushb') + '</div>' +
-          '<div class="a-s4"><div class="a-stack">' + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' \xB7 ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
+          '<div class="a-s4"><div class="a-stack">' + bankCard(inst) + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' \xB7 ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
             card('Fees you didn\u2019t pay', yr, (() => { const rev = yearDirect.reduce((a, x) => a + x.b.total, 0); return '<p class="a-note a-nt0">What the platforms would have taken from your ' + BB.money(rev) + ' of direct bookings this year.</p>' + [['airbnb', 'Airbnb', 'host fee 15.5%'], ['booking', 'Booking.com', 'commission 15%'], ['vrbo', 'Vrbo', 'fees about 8%']].map(([k, n, e]) => '<div class="a-trow"><span>' + n + '<em>' + e + '</em></span><b class="num a-saved">' + BB.money(Math.round(rev * BB.PLATFORM_FEE[k])) + '</b></div>').join('') + (platFees ? '<div class="a-trow"><span>Fees on add-on bookings<em>Stays synced from platforms</em></span><b class="num">' + BB.money(platFees) + '</b></div>' : ''); })()) +
           '</div></div>' +
         '</div>';
     },
+    input(ev, inst) { const f = ev.target.closest('[data-bank]'); if (f) { inst.st.bank = inst.st.bank || {}; inst.st.bank[f.dataset.bank] = f.type === 'checkbox' ? f.checked : f.value; } },
+    change(ev, inst) { const f = ev.target.closest('[data-bank]'); if (f && f.type === 'checkbox') { inst.st.bank = inst.st.bank || {}; inst.st.bank.on = f.checked; } },
     click(ev, inst) {
       if (ev.target.closest('[data-paymore]')) return inst.set({ pay_lim: (inst.st.pay_lim || 12) + 20 });
+      if (ev.target.closest('[data-bankedit]')) return inst.set({ bank_edit: true, bank: null });
+      if (ev.target.closest('[data-bankcancel]')) return inst.set({ bank_edit: false, bank: null, bank_err: null });
+      if (ev.target.closest('[data-banksave]')) {
+        const r = BB.act.saveBankTransfer(Object.assign({ on: true }, S().account.bank || {}, inst.st.bank || {}));
+        if (r && r.ok) { inst.set({ bank_edit: false, bank: null, bank_err: null }); BB.toast(S().account.bank.on ? 'Bank transfer is on for guests' : 'Bank details saved', 'good'); }
+        else inst.set({ bank_err: (r && r.error) || 'Could not save those details.' });
+        return;
+      }
       const p = ev.target.closest('[data-paid]'); if (p) { BB.act.markPaid(p.dataset.paid); BB.toast('Payment recorded', 'good'); }
     },
   };
@@ -3664,6 +3705,18 @@ button { cursor: pointer; }
     return { body, cta: '<button class="g-btn" data-g="tab" data-v="checkin">Start check-in</button><button class="g-btn ghost" data-g="tab" data-v="trip">Go to my trip</button>' };
   }
 
+  // Bank transfer: until the money arrives, the trip page shows what to pay, where, and the reference to use.
+  function transferAlert(b) {
+    if (b.payBy !== 'transfer' || b.paid || b.status === 'cancelled') return '';
+    const k = S().account.bank || {}, due = b.invoice ? D.fmt(b.invoice.due) : '';
+    const rows = [['Account name', k.holder], ['Sort code', k.sortCode], ['Account number', k.account], ['IBAN', k.iban], ['BIC', k.bic], ['Reference', b.id]].filter(r => r[1]);
+    const inv = BB.BOOT && BB.BOOT.mode === 'trip' && typeof location !== 'undefined' ? location.pathname + '/invoice' + location.search.replace(/[?&]step=[^&]*/, '').replace(/^&/, '?') : '';
+    return '<div class="g-alert g-bank"><b>Pay ' + money(b.total) + ' by bank transfer' + (due ? ' by ' + esc(due) : '') + '</b>' +
+      '<p>Use <b>' + esc(b.id) + '</b> as the reference. Your door code shows here once your payment has arrived and check-in is done.</p>' +
+      (k.holder ? '<p>' + rows.map(r => esc(r[0]) + ': <b class="num">' + esc(r[1]) + '</b>').join('<br>') + '</p>' : '') +
+      (inv ? '<p><a href="' + esc(inv) + '" target="_blank" rel="noopener">View or print your invoice</a></p>' : '') + '</div>';
+  }
+
   /* ---------- B. trip home ---------- */
   function tripView(inst, p, b) {
     const g = BB.q.guest(b.guestId), c = b.checkin, st = inst.st, n = doneCount(b);
@@ -3672,6 +3725,7 @@ button { cursor: pointer; }
       '<div class="g-ph"><p class="g-sub">' + (b.status === 'completed' ? 'Thanks for staying, ' + esc(first(g.name)) : started ? 'Welcome, ' + esc(first(g.name)) + '. You\u2019re staying at' : 'Hi ' + esc(first(g.name)) + ', you\u2019re going to') + '</p><h1 class="g-h">' + esc(p.name) + '</h1></div>' +
       '<div class="g-kv"><div><small>Check-in</small><b>' + esc(longDate(b.checkIn)) + '</b><span>from ' + esc(p.checkinTime) + '</span></div><div><small>Checkout</small><b>' + esc(longDate(b.checkOut)) + '</b><span>by ' + esc(p.checkoutTime) + '</span></div>' +
       '<div><small>Guests</small><b>' + esc(partyText(b)) + '</b></div><div><small>Booking</small><b class="num">#' + esc(b.id) + '</b><span>' + esc(BB.sourceLabel ? BB.sourceLabel(b) : 'Direct') + '</span></div></div>' +
+      transferAlert(b) +
       (b.status === 'request' ? '<div class="g-alert g-req"><b>Request sent</b><p>' + esc(first(S().account.owner || '') || 'Your host') + ' will accept or decline it soon. Your dates are held and nothing has been charged. Online check-in opens once your stay is confirmed.</p></div>' :
       cancelled ? '<div class="g-alert"><b>' + (b.declined ? 'This request was declined' : 'This booking was cancelled') + '</b><p>' + (b.declined ? 'Nothing was charged. Check your messages for a note from your host.' : b.paid ? money(b.total) + ' was refunded to your card.' : 'Nothing was charged.') + '</p></div>' :
         (c.done ? codeCard(b, p) :
@@ -5674,6 +5728,12 @@ body.p-lock { overflow: hidden; }
   .x-property .p-gal-n3, .x-property .p-gal-n4 { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 120px; }
   .x-property .p-gal-n3 .p-tile:first-child, .x-property .p-gal-n4 .p-tile:first-child { grid-row: auto; grid-column: span 2; }
 }
+
+/* bank transfer details on the booking confirmation */
+.x-property .p-bank-d { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 14px 0; }
+.x-property .p-bank-d dt { color: var(--p-muted); }
+.x-property .p-bank-d dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.x-property .p-bank .p-btn { margin-top: 6px; }
 ` }, "/app/web/src/property.js": { "t": `/* Bookingbooster prototype: property website template. The direct booking site Bookingbooster builds for each home
    (for example laurelridgecabin.com). Everything comes from the property record, so console edits show here at once.
    Views inside the instance: site (home page), checkout, done (confirmation or request sent). */
@@ -6104,7 +6164,7 @@ body.p-lock { overflow: hidden; }
     const stripe = BB.q.connected('stripe');
     const fld = (k, label, type, ac, ph) => '<label class="p-field' + (e[k] ? ' bad' : '') + '"><span>' + label + '</span><input id="' + ID(inst, 'f-' + k) + '" data-f="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(f[k] || '') + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '>' + (e[k] ? '<em>' + esc(e[k]) + '</em>' : '') + '</label>';
     return '<div class="p-w p-co"><button class="p-back" data-x="home">' + BB.icon('back') + 'Back to ' + esc(p.short) + '</button>' +
-      '<h1 class="p-co-h">' + (REALSITE() && !BB.BOOT.stripe ? 'Request to book' : 'Confirm and pay') + '</h1>' +
+      '<h1 class="p-co-h">' + (REALSITE() && !BB.BOOT.stripe ? (bankOn() ? 'Book your stay' : 'Request to book') : 'Confirm and pay') + '</h1>' +
       '<div class="p-co-grid"><form class="p-co-form" data-x="payform" novalidate>' +
         '<section class="p-card"><h3><span class="p-num">1</span>Your details</h3><div class="p-fgrid">' +
           fld('name', 'Full name', 'text', 'name', 'Jordan Avery') + fld('email', 'Email', 'email', 'email', 'you@example.com') + fld('phone', 'Mobile phone', 'tel', 'tel', 'For your check-in link and door code') +
@@ -6119,12 +6179,22 @@ body.p-lock { overflow: hidden; }
             (!stripe ? '<p>You can still send ' + esc(p.short) + ' a booking request. Your dates are held and the host sends a secure payment link to confirm.</p><button type="button" class="p-btn" data-x="request">Send a booking request instead</button>'
               : '<button type="button" class="p-btn ghost" data-x="changedates">Change dates</button>') + '</div>' : '') +
           '<button type="submit" class="p-btn p-pay"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Processing payment' : BB.icon('lock') + 'Pay ' + money(q.total)) + '</button>' +
-          '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' +
+          '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' + transferOpt(inst, q, true) +
         '</section>') + '</form>' +
         '<aside class="p-co-side">' + summary(inst, p, q) + '</aside></div></div>';
   }
 
   const REALSITE = () => !!(BB.BOOT && BB.BOOT.mode === 'site');
+  // Bank transfer: the host turned it on in Payments. Booking sites only see that it is on and how many days guests have to pay.
+  const bankOn = () => { const k = BB.store.get().account.bank; return !!(k && k.on && (REALSITE() || !BB.bankReady || BB.bankReady())); };
+  const bankDays = () => { const k = BB.store.get().account.bank; return Math.max(1, Math.min(30, +(k && k.days) || 3)); };
+  function transferOpt(inst, q, alt) {
+    if (!bankOn()) return '';
+    const st = inst.st;
+    return (alt ? '<p class="p-or"><span>or pay by bank transfer</span></p>' : '') +
+      '<button type="button" class="p-btn' + (alt ? ' ghost' : ' p-pay') + '" data-x="transfer"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying && st.method === 'transfer' ? '<i class="p-spin"></i>Booking' : BB.icon('send') + 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' +
+      '<p class="p-fine">You get an invoice by email with the bank details. Pay within ' + bankDays() + ' day' + (bankDays() === 1 ? '' : 's') + ' to keep the booking. Your dates are held in the meantime.</p>';
+  }
   // Real booking sites: card details are taken on Stripe's own page, or the guest sends a request when the host has not connected Stripe yet.
   function realPay(inst, p, q) {
     const st = inst.st, host = firstName(BB.store.get().account.owner) || 'your host';
@@ -6133,7 +6203,10 @@ body.p-lock { overflow: hidden; }
       '<p class="p-lead-s">You pay on Stripe\u2019s secure page by card, Apple Pay or Google Pay. Your dates are held for 30 minutes while you pay.</p>' +
       '<p class="p-fine">' + BB.icon('lock') + 'Secured by Stripe. A refundable ' + money(q.deposit) + ' damage deposit card check happens during online check-in, not now.</p>' + err +
       '<button type="submit" class="p-btn p-pay"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Opening secure payment' : BB.icon('lock') + 'Pay ' + money(q.total) + ' securely') + '</button>' +
-      '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p></section>';
+      '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' + transferOpt(inst, q, true) + '</section>';
+    if (bankOn()) return '<section class="p-card"><h3><span class="p-num">2</span>Pay by bank transfer</h3>' +
+      '<p class="p-lead-s">Book now and pay ' + esc(host) + ' by bank transfer. You get an invoice with the bank details straight away.</p>' + err + transferOpt(inst, q, false) +
+      '<p class="p-or"><span>or</span></p><button type="button" class="p-btn ghost" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + BB.icon('send') + 'Send a booking request instead</button></section>';
     return '<section class="p-card"><h3><span class="p-num">2</span>No payment today</h3>' +
       '<p class="p-lead-s">Send ' + esc(host) + ' your request. Your dates are held, and ' + esc(host) + ' sends you a secure payment link to confirm.</p>' + err +
       '<button type="button" class="p-btn p-pay" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Sending' : BB.icon('send') + 'Send booking request') + '</button>' +
@@ -6143,12 +6216,19 @@ body.p-lock { overflow: hidden; }
     const st = inst.st, b = BB.q.booking(st.bookingId);
     if (!b) return '<div class="p-w p-co"><p class="p-empty">That booking could not be found.</p><button class="p-btn" data-x="home">Back to ' + esc(p.short) + '</button></div>';
     const g = BB.q.guest(b.guestId) || { name: 'Guest', email: '' };
-    const req = st.request || !b.paid;
+    const transfer = b.payBy === 'transfer' && !b.paid && b.status !== 'cancelled';
+    const req = !transfer && (st.request || !b.paid);
     const host = firstName(BB.store.get().account.owner);
     const q = { avg: Math.round(b.price.nightly / Math.max(1, nightsBetween(b.checkIn, b.checkOut))), nights: nightsBetween(b.checkIn, b.checkOut), nightly: b.price.nightly, cleaning: b.price.cleaning, pet: b.price.pet || 0, discount: b.price.discount || 0, promo: b.promo, promoPct: b.promo ? (BB.store.get().promos[b.promo] || 0) : 0, total: b.total, airbnb: Math.round(b.total * 1.142) };
     q.guestSaves = q.airbnb - q.total;
     const lockLive = !S().live || BB.q.connected('lock');
-    const steps = req && S().live ? [
+    const due = transfer && b.invoice ? D.fmt(b.invoice.due, { weekday: 'short' }) : '';
+    const steps = transfer ? [
+      ['Now', 'Invoice emailed', 'Sent to ' + g.email + ' with the bank details and the amount to pay.'],
+      ['By ' + due, 'Pay by bank transfer', 'Send ' + money(b.total) + ' with ' + b.id + ' as the reference. Your dates are held until then.'],
+      ['When it arrives', host + ' confirms', 'You get an email saying your payment arrived and your stay is paid in full.'],
+      [D.fmt(b.checkIn, { weekday: 'short' }), lockLive ? 'Door code on arrival day' : 'Arrival details', 'Shown in your guest app once check-in is done and your payment has arrived.'],
+    ] : req && S().live ? [
       ['Now', 'Request sent to ' + host, 'Nothing was charged. ' + host + ' has been told and will accept or decline your request.'],
       ['Next', host + ' confirms', BB.q.connected('stripe') ? 'If ' + host + ' accepts, you get a secure link to pay by card, Apple Pay or Google Pay.' : host + ' gets in touch about payment once your stay is confirmed.'],
       ['Before you arrive', 'Online check-in', 'Add an ID photo and agree to the house rules in a few minutes.'],
@@ -6164,17 +6244,29 @@ body.p-lock { overflow: hidden; }
       [D.fmt(D.add(b.checkIn, -3)), 'Reminder', 'A nudge to finish check-in if you have not yet, plus directions and parking.'],
       [D.fmt(b.checkIn, { weekday: 'short' }), lockLive ? 'Door code on arrival day' : 'Arrival details', lockLive ? 'Your code arrives once check-in is done and works from ' + p.checkinTime + '.' : 'Shown in your guest app once check-in is done.'],
     ];
-    return '<div class="p-w p-co p-done"><div class="p-done-h"><span class="p-tick' + (req ? ' req' : '') + '">' + BB.icon(req ? 'send' : 'check') + '</span>' +
-      '<p class="p-eb">' + (req ? 'Request ' : 'Booking ') + esc(b.id) + '</p><h1 class="p-co-h">' + (req ? 'Request sent. Your dates are held.' : 'You are booked, ' + esc(firstName(g.name)) + '.') + '</h1>' +
+    return '<div class="p-w p-co p-done"><div class="p-done-h"><span class="p-tick' + (req || transfer ? ' req' : '') + '">' + BB.icon(req || transfer ? 'send' : 'check') + '</span>' +
+      '<p class="p-eb">' + (req ? 'Request ' : 'Booking ') + esc(b.id) + '</p><h1 class="p-co-h">' + (req ? 'Request sent. Your dates are held.' : transfer ? 'You are booked, ' + esc(firstName(g.name)) + '. Pay by bank transfer by ' + esc(due) + '.' : 'You are booked, ' + esc(firstName(g.name)) + '.') + '</h1>' +
       '<p class="p-lead">' + esc(p.name) + ' \xB7 ' + D.fmt(b.checkIn, { weekday: 'long', month: 'long' }) + ' to ' + D.fmt(b.checkOut, { weekday: 'long', month: 'long' }) + '</p></div>' +
       '<div class="p-co-grid"><div class="p-done-main">' +
         '<div class="p-card p-sync"><div class="p-sync-i">' + BB.icon('cal') + '</div><div><b>Your dates are now closed to other guests</b>' +
           '<p>' + (S().live ? 'Your dates are held on ' + esc(host) + '\u2019s calendar, so nobody else can book them while ' + (req ? 'your request is open.' : 'you are booked.') : 'The moment you booked, ' + esc(p.domain) + ' and ' + esc(host) + '\u2019s calendar were updated, so nobody else can take these nights.') + '</p>' +
           '<div class="p-chans">' + [p.domain, host + '\u2019s calendar'].map(c => '<span>' + BB.icon('check') + esc(c) + '</span>').join('') + '</div></div></div>' +
+        (transfer ? bankCard(b) : '') +
         '<div class="p-card"><h3>What happens next</h3><ol class="p-tl">' + steps.map((x, i) => '<li class="' + (i === 0 ? 'on' : '') + '"><span class="p-tl-w">' + esc(x[0]) + '</span><div><b>' + esc(x[1]) + '</b><p>' + esc(x[2]) + '</p></div></li>').join('') + '</ol></div>' +
         '<div class="p-done-acts"><button class="p-btn" data-x="guestapp">' + BB.icon('phone') + 'Open the guest app</button>' + (REALSITE() ? '' : '<button class="p-btn ghost" data-x="console">' + BB.icon('dash') + 'See it in the host console</button>') + '</div>' +
         '<button class="p-link" data-x="again">Back to ' + esc(p.short) + '</button>' +
       '</div><aside class="p-co-side">' + summary(inst, p, q, b) + '</aside></div></div>';
+  }
+
+  // The bank details for a guest who chose bank transfer (only on their own booking, never on the public site).
+  function bankCard(b) {
+    const k = BB.store.get().account.bank || {};
+    const rows = [['Account name', k.holder], ['Bank', k.bankName], ['Sort code', k.sortCode], ['Account number', k.account], ['IBAN', k.iban], ['BIC / SWIFT', k.bic], ['Reference', b.id], ['Amount', money(b.total)]].filter(r => r[1]);
+    const inv = BB.BOOT && BB.BOOT.invoices && BB.BOOT.invoices[b.id];
+    return '<div class="p-card p-bank"><h3>Pay by bank transfer</h3><p>Please use <b>' + esc(b.id) + '</b> as the payment reference so your payment is matched to your booking.</p>' +
+      (k.holder ? '<dl class="p-bank-d">' + rows.map(r => '<dt>' + esc(r[0]) + '</dt><dd class="num">' + esc(r[1]) + '</dd>').join('') + '</dl>' : '<p>The bank details are in the invoice we emailed you.</p>') +
+      (k.note ? '<p class="p-fine">' + esc(k.note) + '</p>' : '') +
+      (inv ? '<a class="p-btn ghost" href="' + esc(inv) + '" target="_blank" rel="noopener">' + BB.icon('out') + 'View or print your invoice</a>' : '') + '</div>';
   }
 
   function lightbox(inst, p) {
@@ -6243,9 +6335,10 @@ body.p-lock { overflow: hidden; }
       if (!inst.alive) return;
       if (!j.ok) return inst.set({ paying: false, payErr: j.error || 'That did not go through. Try again.' });
       BB.BOOT.trips = BB.BOOT.trips || {}; BB.BOOT.trips[j.bookingId] = j.tripUrl;
+      if (j.invoiceUrl) { BB.BOOT.invoices = BB.BOOT.invoices || {}; BB.BOOT.invoices[j.bookingId] = j.invoiceUrl; }
       if (j.checkoutUrl) { location.href = j.checkoutUrl; return; }
       inst.st.paying = false; inst.set({ view: 'done', bookingId: j.bookingId, request: !!j.request }); window.scrollTo({ top: 0 });
-      BB.toast(j.request ? 'Request sent to ' + firstName(BB.store.get().account.owner) : 'Booked. Confirmation sent to ' + f.email.trim(), 'good');
+      BB.toast(j.request ? 'Request sent to ' + firstName(BB.store.get().account.owner) : j.invoiceUrl ? 'Booked. Invoice sent to ' + f.email.trim() : 'Booked. Confirmation sent to ' + f.email.trim(), 'good');
     }).catch(e => { if (inst.alive) inst.set({ paying: false, payErr: e.message }); });
   }
   function input(inst) {
@@ -6310,6 +6403,16 @@ body.p-lock { overflow: hidden; }
             const r = BB.act.requestPropertyBooking(input(inst));
             if (r.ok) { inst.set({ view: 'done', bookingId: r.booking.id, request: true, payErr: null }); window.scrollTo({ top: 0 }); BB.toast('Request sent to ' + firstName(BB.store.get().account.owner), 'good'); }
             else inst.set({ payErr: r.error });
+            break;
+          }
+          case 'transfer': {
+            const e = validate(inst); delete e.card;
+            if (Object.keys(e).length) { inst.set({ errors: e }); break; }
+            inst.set({ paying: true, method: 'transfer', errors: {}, payErr: null });
+            if (BB.api && BB.BOOT.mode === 'site') { serverBook(inst, 'transfer'); break; }
+            const r = BB.act.bookByTransfer(input(inst));
+            if (r.ok) { inst.st.paying = false; inst.set({ view: 'done', bookingId: r.booking.id, request: false }); window.scrollTo({ top: 0 }); BB.toast('Booked. Invoice sent to ' + inst.form.email.trim(), 'good'); }
+            else inst.set({ paying: false, payErr: r.error });
             break;
           }
           case 'changedates': inst.set({ view: 'site', payErr: null }); openBooking(inst); break;
@@ -8241,9 +8344,55 @@ body.p-lock { overflow: hidden; }
   };
   BB.act.markPaid = function (id) {
     const b = BB.q.booking(id); if (!b || b.paid) return;
-    b.paid = true; if (b.status === 'pending') b.status = 'confirmed';
-    BB.log('payment', 'Host console', 'Marked ' + b.id + ' as paid offline, ' + BB.money(b.total) + ' from ' + gOf(b).name + '.', id);
+    b.paid = true; b.paidAt = S().today; if (b.status === 'pending') b.status = 'confirmed';
+    if (b.payBy === 'transfer') {
+      const g = gOf(b), p = P(b.propertyId);
+      BB.log('payment', 'Host console', 'Bank transfer received for ' + b.id + ': ' + money(b.total) + ' from ' + g.name + '. Invoice ' + (b.invoice ? b.invoice.no : '') + ' is paid.', id, ['Host console', 'Email']);
+      const t = BB.q.threadFor(id); if (t) t.messages.push({ from: 'auto', text: 'Thanks ' + first(g.name) + ', your bank transfer of ' + money(b.total) + ' has arrived. Your stay at ' + p.name + ' is paid in full.', at: stamp() });
+      // The booking email was held back while the invoice was open; now it goes out as a paid confirmation.
+      if (BB.q.connected('email')) BB.fx('email.guest', { guestId: b.guestId, bookingId: id, propertyId: b.propertyId, template: 'confirmation' });
+      if (b.checkin && b.checkin.done) BB.fx(BB.q.connected('sms') ? 'sms.guest' : 'email.guest', { guestId: b.guestId, bookingId: id, propertyId: b.propertyId, template: 'door-code' });
+    } else BB.log('payment', 'Host console', 'Marked ' + b.id + ' as paid offline, ' + BB.money(b.total) + ' from ' + gOf(b).name + '.', id);
     BB.store.commit({ type: 'booking', id });
+  };
+  /* ---------- bank transfer and invoices ---------- */
+  // The host's bank details for guests who would rather pay by bank transfer than by card.
+  const BANK_KEYS = { holder: 70, bankName: 60, sortCode: 8, account: 8, iban: 34, bic: 11, note: 300 };
+  BB.bankReady = function (s) { const k = (s || S()).account.bank; return !!(k && k.on && k.holder && ((k.sortCode && k.account) || k.iban)); };
+  BB.transferDays = function (s) { const k = (s || S()).account.bank; return Math.max(1, Math.min(30, (k && +k.days) || 3)); };
+  // Due in the host's number of days, but never later than the day before arrival (or today, for a last-minute stay).
+  BB.transferDue = function (b) { const t = S().today, due = D.add(t, BB.transferDays()), last = D.add(b.checkIn, -1); return due < last ? due : (last > t ? last : t); };
+  BB.act.saveBankTransfer = function (patch) {
+    const a = S().account, k = Object.assign({}, a.bank || {});
+    patch = patch || {};
+    Object.keys(BANK_KEYS).forEach(f => { if (patch[f] !== undefined) k[f] = String(patch[f] || '').trim().slice(0, BANK_KEYS[f]); });
+    if (patch.sortCode !== undefined) { const d = String(patch.sortCode).replace(/\\D/g, ''); k.sortCode = d.length === 6 ? d.slice(0, 2) + '-' + d.slice(2, 4) + '-' + d.slice(4) : ''; }
+    if (patch.account !== undefined) { const d = String(patch.account).replace(/\\D/g, ''); k.account = d.length === 8 ? d : ''; }
+    if (patch.iban !== undefined) k.iban = String(patch.iban).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 34);
+    if (patch.bic !== undefined) k.bic = String(patch.bic).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 11);
+    if (patch.days !== undefined) k.days = Math.max(1, Math.min(30, parseInt(patch.days, 10) || 3));
+    if (patch.on !== undefined) k.on = !!patch.on;
+    a.bank = k;
+    if (k.on && !BB.bankReady()) { k.on = false; BB.store.commit({ type: 'account' }); return { ok: false, error: 'Add the account name and either a sort code and 8-digit account number, or an IBAN.' }; }
+    BB.log('payment', 'Payments', k.on ? 'Bank transfer is on. Guests can book and pay by invoice within ' + BB.transferDays() + ' days.' : 'Bank transfer details saved. Guests cannot choose bank transfer at checkout.', null, ['Payments']);
+    BB.store.commit({ type: 'account' }); return { ok: true };
+  };
+  // A guest books on the site and pays by bank transfer: the stay is booked, unpaid, with an invoice due in a few days.
+  BB.act.bookByTransfer = function (input) {
+    if (!BB.bankReady()) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
+    return BB.act.createBooking(Object.assign({}, input, { pay: 'manual', channel: 'direct', payBy: 'transfer', pending: false, request: false }));
+  };
+  // Host sends an invoice with bank details for any unpaid direct booking (a phone booking, or an accepted request).
+  BB.act.sendInvoice = function (id) {
+    const b = BB.q.booking(id); if (!b || b.paid || b.channel !== 'direct' || !['confirmed', 'pending'].includes(b.status)) return { ok: false, error: 'Only unpaid direct bookings can be invoiced.' };
+    if (!BB.bankReady()) return { ok: false, error: 'Add your bank details in Payments first.' };
+    const again = b.payBy === 'transfer' && b.invoice;
+    b.payBy = 'transfer'; if (b.status === 'pending') { b.status = 'confirmed'; delete b.holdUntil; }
+    if (!b.invoice) b.invoice = { no: 'INV-' + b.id, issued: S().today, due: BB.transferDue(b) };
+    b.invoice.sentAt = stamp();
+    BB.log('payment', 'Host console', (again ? 'Emailed ' : 'Sent ') + gOf(b).name + ' invoice ' + b.invoice.no + ' for ' + money(b.total) + ', due by bank transfer ' + D.fmt(b.invoice.due) + '.', id, ['Host console', 'Email']);
+    BB.fx('payment.invoice', { bookingId: id });
+    BB.store.commit({ type: 'booking', id }); return { ok: true };
   };
   BB.act.buyExtra = function (bookingId, name, price) {
     const b = BB.q.booking(bookingId); if (!b) return;
@@ -8769,7 +8918,7 @@ body.p-lock { overflow: hidden; }
       a.runs++;
       if (trigger === 'booking.created') {
         const g = BB.q.guest(ctx.guestId), p = BB.q.property(ctx.propertyId);
-        if (BB.q.connected('email')) log('email', 'Automation: ' + a.name, 'Emailed ' + g.name + ' the confirmation' + (S().live ? '' : ' and wallet pass') + ' for ' + p.short + '.', ctx.id, ['Booking', 'Automation', 'Email']);
+        if (BB.q.connected('email') && !(ctx.payBy === 'transfer' && !ctx.paid)) log('email', 'Automation: ' + a.name, 'Emailed ' + g.name + ' the confirmation' + (S().live ? '' : ' and wallet pass') + ' for ' + p.short + '.', ctx.id, ['Booking', 'Automation', 'Email']);
         if (BB.q.connected('sms')) log('sms', 'Automation: ' + a.name, 'Texted ' + g.name.split(' ')[0] + ' the check-in link.', ctx.id, ['Booking', 'Automation', 'Text']);
         if (BB.q.connected('email')) fx('email.guest', { guestId: ctx.guestId, bookingId: ctx.id, propertyId: ctx.propertyId, template: 'confirmation' });
         if (BB.q.connected('sms')) fx('sms.guest', { guestId: ctx.guestId, bookingId: ctx.id, propertyId: ctx.propertyId, template: 'checkin-link' });
@@ -8820,6 +8969,7 @@ body.p-lock { overflow: hidden; }
     let bid = prefix + '-' + (2300 + S().bookings.length); while (BB.q.booking(bid)) bid = prefix + '-' + (+bid.split('-')[1] + 1);
     const pending = !!input.pending && channel === 'direct';
     const request = !pending && !!input.request && S().live && channel === 'direct';
+    const transfer = !pending && !request && channel === 'direct' && input.payBy === 'transfer';
     const b = {
       id: bid, propertyId: p.id, guestId: g.id, checkIn: input.checkIn, checkOut: input.checkOut,
       adults: input.adults || 2, children: input.children || 0, pets: input.pets ? 1 : 0, channel, status: pending ? 'pending' : request ? 'request' : 'confirmed',
@@ -8829,6 +8979,7 @@ body.p-lock { overflow: hidden; }
       code: p.lockPrefix + String(10 + ((S().seq * 37) % 89)), review: null, source: input.source || 'website',
     };
     if (input.extras) b.extras = input.extras;
+    if (transfer) { b.paid = false; b.payBy = 'transfer'; b.invoice = { no: 'INV-' + bid, issued: S().today, due: BB.transferDue(b) }; }
     S().bookings.push(b); tick(1);
     if (pending) {
       b.holdUntil = Date.now() + 30 * 60e3;
@@ -8852,13 +9003,14 @@ body.p-lock { overflow: hidden; }
     }
     const src = input.source === 'console' ? 'Host console' : input.source === 'mobile' ? 'Host app' : input.source === 'guest-app' ? 'Guest app \xB7 ' + p.domain : input.source === 'campaign' ? 'Campaign \xB7 ' + p.domain : channel === 'direct' ? p.domain : BB.CHANNEL[channel];
     log('booking', src, (channel === 'direct' ? 'New direct booking: ' : 'New ' + BB.CHANNEL[channel] + ' booking: ') + g.name + ', ' + p.short + ', ' + D.fmt(b.checkIn) + '\u2013' + D.fmt(b.checkOut) + ', ' + BB.money(b.total) + (q.promo ? ' with code ' + q.promo : '') + '.', b.id, ['Booking site', 'Bookingbooster']);
+    if (transfer) { log('payment', p.domain, g.name.split(' ')[0] + ' chose to pay by bank transfer. Invoice ' + b.invoice.no + ' for ' + BB.money(b.total) + ' was emailed and is due ' + D.fmt(b.invoice.due) + '. Mark it paid when the money reaches your bank.', b.id, ['Booking site', 'Email']); fx('payment.invoice', { bookingId: b.id }); }
     if (channel === 'direct' && b.paid) log('payment', 'Stripe', 'Charged ' + BB.money(b.total) + ' to ' + g.name.split(' ')[0] + "'s card. Payout lands in 2 days.", b.id, ['Bookingbooster', 'Stripe']);
     if (isNew) log('campaign', 'Guest list', g.name + ' added as a new guest' + (g.subscribed ? ' and subscribed to emails.' : '.'), g.id);
     runAutomations('booking.created', b);
     notify((channel === 'direct' ? 'New direct booking \xB7 ' : 'New ' + BB.CHANNEL[channel] + ' booking \xB7 ') + BB.money(b.total), g.name + ' booked ' + p.short + ', ' + D.fmt(b.checkIn) + '\u2013' + D.fmt(b.checkOut) + (channel === 'direct' ? '. You saved ' + BB.money(Math.round(b.total * PLATFORM_FEE.airbnb)) + ' in fees.' : '.'), b.id);
     let t = BB.q.threadFor(b.id);
     if (!t) { t = { id: 't' + (++S().seq), guestId: g.id, bookingId: b.id, channel, unread: 0, messages: [] }; S().threads.push(t); }
-    t.messages.push({ from: 'auto', text: 'Hi ' + g.name.split(' ')[0] + ', you are booked at ' + p.name + ' for ' + D.fmt(b.checkIn) + '\u2013' + D.fmt(b.checkOut) + '. Check in online any time before you arrive.', at: stamp() });
+    t.messages.push({ from: 'auto', text: 'Hi ' + g.name.split(' ')[0] + ', you are booked at ' + p.name + ' for ' + D.fmt(b.checkIn) + '\u2013' + D.fmt(b.checkOut) + '.' + (transfer ? ' Please pay ' + BB.money(b.total) + ' by bank transfer by ' + D.fmt(b.invoice.due) + ', using ' + b.id + ' as the reference. The bank details are on your invoice.' : ' Check in online any time before you arrive.'), at: stamp() });
     // campaign attribution
     if (q.promo) { const c = S().campaigns.find(c => c.body.promo === q.promo && c.status === 'sent'); if (c) { c.bookings++; c.revenue += b.total; log('campaign', 'Campaigns', 'Booking ' + b.id + ' credited to the "' + c.name + '" campaign.', c.id); } }
     BB.store.commit({ type: 'booking', id: b.id });
@@ -9197,6 +9349,7 @@ body.p-lock { overflow: hidden; }
     if (b.status === 'completed') return BB.pill('muted', 'Completed');
     if (b.status === 'pending') return BB.pill('warn', 'Awaiting payment');
     if (b.status === 'request') return BB.pill('info', 'Request');
+    if (b.payBy === 'transfer' && !b.paid) return BB.pill('warn', 'Awaiting transfer');
     const t = BB.store.get().today;
     if (b.checkIn <= t && b.checkOut > t) return BB.pill('good', 'Staying');
     if (b.checkOut === t) return BB.pill('info', 'Departs today');
@@ -12722,6 +12875,12 @@ var require_public = __commonJS({
       }
       return o;
     }
+    var bankReady = (s) => {
+      const k = s.account.bank;
+      return !!(k && k.on && k.holder && (k.sortCode && k.account || k.iban));
+    };
+    var bankDays = (s) => Math.max(1, Math.min(30, +(s.account.bank && s.account.bank.days) || 3));
+    var BANK_PUBLIC = ["holder", "bankName", "sortCode", "account", "iban", "bic", "note"];
     function base(s) {
       return {
         v: 1,
@@ -12729,7 +12888,7 @@ var require_public = __commonJS({
         demo: !!s.demo,
         today: s.today,
         clock: s.clock,
-        account: { business: s.account.business, owner: String(s.account.owner || "").split(" ")[0] },
+        account: { business: s.account.business, owner: String(s.account.owner || "").split(" ")[0], bank: bankReady(s) ? { on: true, days: bankDays(s) } : null },
         guests: [],
         threads: [],
         campaigns: [],
@@ -12785,6 +12944,7 @@ var require_public = __commonJS({
       const o = siteState(s, b.propertyId);
       const full = JSON.parse(JSON.stringify(b));
       if (!(b.checkin && b.checkin.done)) full.code = null;
+      if (b.payBy === "transfer" && !b.paid) full.code = null;
       o.bookings = o.bookings.filter((x) => !(x.propertyId === b.propertyId && x.checkIn === b.checkIn && x.checkOut === b.checkOut));
       o.bookings.push(full);
       s.bookings.filter((x) => x.guestId === b.guestId && x.id !== b.id).forEach((x) => {
@@ -12797,10 +12957,47 @@ var require_public = __commonJS({
       if (t) o.threads = [JSON.parse(JSON.stringify(Object.assign({}, t, { messages: t.messages.filter((m) => m.from !== "note") })))];
       const p = s.properties.find((x) => x.id === b.propertyId);
       o.properties = o.properties.map((x) => x.id === b.propertyId ? propPublic(p, !!(b.checkin && b.checkin.done) || b.checkIn <= s.today) : x);
+      if (b.payBy === "transfer" && s.account.bank) {
+        const k = s.account.bank;
+        o.account.bank = Object.assign({ on: bankReady(s), days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map((f) => [f, k[f] || ""])));
+      }
       o.trip = b.id;
       return o;
     }
     module.exports = { siteState, tripState, fnv };
+  }
+});
+
+// server/invoice.js
+var require_invoice = __commonJS({
+  "server/invoice.js"(exports, module) {
+    var E = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    var money = (n) => (n < 0 ? "\u2212" : "") + "\xA3" + Math.abs(Number(n) || 0).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    var fmt = (iso) => iso ? (/* @__PURE__ */ new Date(String(iso).slice(0, 10) + "T00:00:00Z")).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "long", year: "numeric" }) : "";
+    var nights = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5);
+    function lines(b) {
+      const pr = b.price || {}, n = nights(b.checkIn, b.checkOut), out = [];
+      out.push([n + " night" + (n === 1 ? "" : "s") + ", " + fmt(b.checkIn) + " to " + fmt(b.checkOut), pr.nightly || 0]);
+      if (pr.cleaning) out.push(["Cleaning", pr.cleaning]);
+      if (pr.pet) out.push(["Pet fee", pr.pet]);
+      if (pr.discount) out.push(["Discount" + (b.promo ? " (code " + b.promo + ")" : ""), -pr.discount]);
+      (b.extras || []).forEach((x) => out.push([x.name, x.price]));
+      return out;
+    }
+    function bankText(k, b) {
+      const rows = [["Account name", k.holder], ["Bank", k.bankName], ["Sort code", k.sortCode], ["Account number", k.account], ["IBAN", k.iban], ["BIC / SWIFT", k.bic], ["Reference", b.id], ["Amount", money(b.total)]];
+      return rows.filter((r) => r[1]).map((r) => r[0] + ": " + r[1]).join("\n");
+    }
+    function render({ s, b, p, g, host }) {
+      const a = s.account || {}, k = a.bank || {}, inv = b.invoice || { no: "INV-" + b.id, issued: b.createdAt, due: b.checkIn };
+      const paid = !!b.paid, cancelled = b.status === "cancelled";
+      const overdue = !paid && !cancelled && inv.due < s.today;
+      const stamp = cancelled ? ["void", "Cancelled"] : paid ? ["paid", "Paid" + (b.paidAt ? " " + fmt(b.paidAt) : "")] : overdue ? ["due", "Overdue"] : ["due", "Due " + fmt(inv.due)];
+      const bankRows = [["Account name", k.holder], ["Bank", k.bankName], ["Sort code", k.sortCode], ["Account number", k.account], ["IBAN", k.iban], ["BIC / SWIFT", k.bic]].filter((r) => r[1]);
+      const color = /^#[0-9a-f]{3,8}$/i.test(p.color || "") ? p.color : "#2F5D46";
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Invoice ' + E(inv.no) + " \xB7 " + E(a.business) + "</title><style>:root{--ink:#1E2621;--muted:#5F6B64;--line:#E4E0D8;--bg:#F5F1EA;--brand:" + color + '}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}.w{max-width:760px;margin:24px auto;padding:0 16px}.sheet{background:#fff;border-radius:14px;padding:40px;box-shadow:0 1px 3px rgba(0,0,0,.06)}.top{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;border-bottom:3px solid var(--brand);padding-bottom:20px}h1{margin:0;font-size:28px;letter-spacing:-.01em}h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px}.biz b{font-size:18px}.muted{color:var(--muted)}.meta{text-align:right}.meta div{white-space:nowrap}.tag{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:999px;font-weight:700;font-size:13px}.tag.paid{background:#E3F2E8;color:#1F6B3A}.tag.due{background:#FFF1D6;color:#8A5A00}.tag.void{background:#F4E1E1;color:#8A2B2B}.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0}table{width:100%;border-collapse:collapse}td,th{padding:10px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}.r{text-align:right;font-variant-numeric:tabular-nums}tr.tot td{border-bottom:0;font-weight:700;font-size:18px;padding-top:14px}.bank{margin-top:28px;background:#FAF8F4;border:1px solid var(--line);border-radius:12px;padding:20px}.bank dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:10px 0 0}.bank dt{color:var(--muted)}.bank dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}.ref{background:#fff;border:1px dashed var(--brand);border-radius:8px;padding:2px 8px}.acts{display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px}.btn{font:inherit;font-weight:600;border:0;border-radius:999px;padding:10px 18px;background:var(--brand);color:#fff;cursor:pointer;text-decoration:none}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}footer{margin-top:28px;font-size:13px;color:var(--muted)}@media (max-width:560px){.sheet{padding:22px}.cols{grid-template-columns:1fr}.meta{text-align:left}}@media print{body{background:#fff}.w{margin:0;max-width:none;padding:0}.sheet{box-shadow:none;padding:0}.acts{display:none}}</style></head><body><div class="w"><div class="acts">' + (host ? '<a class="btn ghost" href="/app">Back to console</a>' : "") + '<button class="btn" onclick="window.print()">Print or save as PDF</button></div><div class="sheet"><div class="top"><div class="biz"><h1>Invoice</h1><p><b>' + E(a.business) + "</b><br>" + (a.address ? E(a.address) + "<br>" : "") + (a.email ? E(a.replyTo || a.email) : "") + (a.phone ? "<br>" + E(a.phone) : "") + '</p></div><div class="meta"><div><span class="muted">Invoice</span> <b>' + E(inv.no) + '</b></div><div><span class="muted">Issued</span> ' + E(fmt(inv.issued)) + '</div><div><span class="muted">Due</span> ' + E(fmt(inv.due)) + '</div><div><span class="muted">Booking</span> ' + E(b.id) + '</div><span class="tag ' + stamp[0] + '">' + E(stamp[1]) + '</span></div></div><div class="cols"><div><h2>Bill to</h2><b>' + E(g.name) + "</b><br>" + E(g.email) + (g.phone ? "<br>" + E(g.phone) : "") + "</div><div><h2>Stay</h2><b>" + E(p.name) + "</b><br>" + E(p.area || "") + "<br>" + E(b.adults) + " adult" + (b.adults === 1 ? "" : "s") + (b.children ? ", " + E(b.children) + " child" + (b.children === 1 ? "" : "ren") : "") + (b.pets ? ", 1 dog" : "") + '</div></div><table><thead><tr><th>Description</th><th class="r">Amount</th></tr></thead><tbody>' + lines(b).map((l) => "<tr><td>" + E(l[0]) + '</td><td class="r">' + money(l[1]) + "</td></tr>").join("") + '<tr class="tot"><td>' + (paid ? "Total paid" : "Total due") + '</td><td class="r">' + money(b.total) + "</td></tr></tbody></table>" + (cancelled ? '<p class="muted">This booking was cancelled, so nothing is owed on this invoice.</p>' : paid ? '<p class="muted">Thank you. This invoice was paid in full' + (b.payBy === "transfer" ? " by bank transfer" : "") + ".</p>" : '<div class="bank"><h2>Pay by bank transfer</h2><p style="margin:0">Please send <b>' + money(b.total) + "</b> by <b>" + E(fmt(inv.due)) + '</b> and use <span class="ref">' + E(b.id) + "</span> as the payment reference so it can be matched to your booking.</p>" + (bankRows.length ? "<dl>" + bankRows.map((r) => "<dt>" + E(r[0]) + "</dt><dd>" + E(r[1]) + "</dd>").join("") + "<dt>Reference</dt><dd>" + E(b.id) + "</dd></dl>" : "<p>Bank details are on their way from " + E(String(a.owner || "your host").split(" ")[0]) + ".</p>") + (k.note ? '<p class="muted" style="margin-bottom:0">' + E(k.note) + "</p>" : "") + "</div>") + "<footer>" + E(a.business) + " \xB7 Questions about this invoice? Reply to your booking email" + (a.email ? " or write to " + E(a.replyTo || a.email) : "") + ".</footer></div></div></body></html>";
+    }
+    module.exports = { render, bankText, money, fmt };
   }
 });
 
@@ -15295,6 +15492,7 @@ var require_stripe_auto = __commonJS({
 var require_effects = __commonJS({
   "server/effects.js"(exports, module) {
     var ical = require_ical();
+    var invoiceMod = require_invoice();
     module.exports = function(ctx) {
       const { cfg, ws, msg, stripe, ai, auth, urls, db, log } = ctx;
       const money = (n) => "\xA3" + Number(n || 0).toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0 });
@@ -15381,6 +15579,7 @@ var require_effects = __commonJS({
         const b = d.bookingId && s.bookings.find((x) => x.id === d.bookingId);
         const p = s.properties.find((x) => x.id === (d.propertyId || b && b.propertyId)) || s.properties[0];
         if (!p) return;
+        if (b && b.payBy === "transfer" && !b.paid && ["confirmation", "door-code"].includes(d.template)) return;
         const v = vars(w, b, p, g);
         let subject, html, text;
         if (TPL[d.template] && b) {
@@ -15407,6 +15606,7 @@ var require_effects = __commonJS({
         const p = s.properties.find((x) => x.id === b.propertyId);
         const f = TEXT[d.template];
         if (!f) return;
+        if (b.payBy === "transfer" && !b.paid && ["confirmation", "door-code"].includes(d.template)) return;
         await msg.sendSms({ workspaceId: w.id, to: g.phone, text: f(vars(w, b, p, g), b, p), meta: { template: d.template, bookingId: b.id } });
       }
       async function campaign(w, d) {
@@ -15493,6 +15693,18 @@ var require_effects = __commonJS({
         if (!url) return;
         await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: "Pay for your stay at " + p.name, text: "Hi " + first(g.name) + ", here is a secure link to pay " + money(b.total) + " for " + p.name + ": " + url, html: simple(p, vars(w, b, p, g), "Hi " + first(g.name) + ", here is a secure link to pay " + money(b.total) + " for your stay at " + p.name + ", " + fmt(b.checkIn) + " to " + fmt(b.checkOut) + ".", { label: "Pay " + money(b.total), url }), from: fromFor(w), replyTo: s.account.email, meta: { bookingId: b.id, template: "payment-link" } });
       }
+      async function invoiceEmail(w, d) {
+        const s = w.state;
+        const b = s.bookings.find((x) => x.id === d.bookingId);
+        if (!b || b.paid || !b.invoice) return;
+        const g = s.guests.find((x) => x.id === b.guestId);
+        const p = s.properties.find((x) => x.id === b.propertyId);
+        if (!g || !p || /@example\.(com|org)$/.test(g.email)) return;
+        const k = s.account.bank || {};
+        const url = urls.invoice(w, b);
+        const body = "Hi " + first(g.name) + ", thank you for booking " + p.name + ", " + fmt(b.checkIn) + " to " + fmt(b.checkOut) + ".\n\nPlease pay " + money(b.total) + " by bank transfer by " + fmt(b.invoice.due) + ", using " + b.id + " as the payment reference. Your dates are held for you, and we will confirm as soon as the money arrives.\n\n" + invoiceMod.bankText(k, b) + (k.note ? "\n\n" + k.note : "");
+        await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: "Invoice " + b.invoice.no + " for your stay at " + p.name, text: body + "\n\nYour invoice: " + url, html: simple(p, vars(w, b, p, g), body, { label: "View your invoice", url }), from: fromFor(w), replyTo: s.account.email, meta: { bookingId: b.id, template: "invoice" } });
+      }
       async function lockCode(w, d) {
         const s = w.state;
         const p = s.properties.find((x) => x.id === d.propertyId);
@@ -15547,6 +15759,7 @@ var require_effects = __commonJS({
             else if (f.type === "ai.check") await aiCheck(w);
             else if (f.type === "payment.refund") await refund(w, d);
             else if (f.type === "payment.link") await paymentLink(w, d);
+            else if (f.type === "payment.invoice") await invoiceEmail(w, d);
             else if (f.type === "lock.code") await lockCode(w, d);
             else if (f.type === "email.host") await hostAlert(w, d);
             else if (f.type === "property.added") {
@@ -15729,6 +15942,7 @@ var require_server = __commonJS({
     var seo = require_seo();
     var mkt = require_marketing();
     var pub = require_public();
+    var invoice = require_invoice();
     var ical = require_ical();
     var msg = require_messaging()(db, cfg);
     var stripe = require_stripe()(cfg);
@@ -15743,6 +15957,9 @@ var require_server = __commonJS({
         if (d) return "https://" + d.host + "/";
         if (cfg.sitesDomain) return "https://" + ws.siteSub(w, p) + "." + cfg.sitesDomain + "/";
         return cfg.baseUrl + "/s/" + w.slug + "/" + p.id;
+      },
+      invoice(w, b) {
+        return cfg.baseUrl + "/trip/" + w.slug + "/" + encodeURIComponent(b.id) + "/invoice?k=" + auth.sign("trip", w.id, b.id);
       },
       trip(w, b, step) {
         return cfg.baseUrl + "/trip/" + w.slug + "/" + encodeURIComponent(b.id) + "?k=" + auth.sign("trip", w.id, b.id) + (step ? "&step=" + step : "");
@@ -15955,6 +16172,12 @@ var require_server = __commonJS({
         { "cache-control": "no-store" }
       );
     }
+    function sendInvoice(res, w, b, host) {
+      const s = w.state;
+      const p = s.properties.find((x) => x.id === b.propertyId) || {};
+      const g = s.guests.find((x) => x.id === b.guestId) || { name: "Guest", email: "" };
+      send(res, 200, invoice.render({ s, b, p, g, host }), "text/html; charset=utf-8", { "cache-control": "private, no-store", "x-robots-tag": "noindex" });
+    }
     var BOOK_KEYS = ["propertyId", "checkIn", "checkOut", "name", "email", "phone", "adults", "children", "pets", "promo", "subscribe"];
     var ISO = /^\d{4}-\d{2}-\d{2}$/;
     async function publicBook(req, res, w) {
@@ -15975,7 +16198,9 @@ var require_server = __commonJS({
       x.channel = "direct";
       const ready = stripeReady(w);
       let r;
-      if (kind === "request" || w.kind === "live" && !ready) {
+      if (kind === "transfer") {
+        r = (await ws.act(w.id, "bookByTransfer", [x])).result;
+      } else if (kind === "request" || w.kind === "live" && !ready) {
         r = (await ws.act(w.id, x.source === "guest-app" ? "requestGuestBooking" : "requestPropertyBooking", [x])).result;
         r && (r.request = true);
       } else if (ready) {
@@ -15984,6 +16209,7 @@ var require_server = __commonJS({
       if (!r || !r.ok) return json(res, { ok: false, error: r && r.error || "Those dates could not be booked." });
       const b = w.state.bookings.find((q) => q.id === r.booking.id);
       const out = { ok: true, bookingId: b.id, tripUrl: urls.trip(w, b), request: !!r.request };
+      if (b.payBy === "transfer") out.invoiceUrl = urls.invoice(w, b);
       if (r.pending) {
         try {
           out.checkoutUrl = await payUrl(w, b, req.headers.referer);
@@ -16265,6 +16491,17 @@ var require_server = __commonJS({
           }
         }
         return json(res, { error: "Not found" }, 404);
+      }
+      if (mm = p.match(/^\/trip\/([a-z0-9-]+)\/([^/]+)\/invoice$/)) {
+        const r = await ws.bySlug(mm[1]);
+        const bid = decodeURIComponent(mm[2]);
+        const k = u.searchParams.get("k");
+        if (!r || !auth.verify(k, "trip", r.id, bid)) return send(res, 403, pages.plain({ title: "Link expired", body: "<h1>This invoice link has expired.</h1><p>Ask your host to send it again.</p>" }));
+        const w = await ws.open(r.id);
+        w.catchUp();
+        const b = w.state.bookings.find((x) => x.id === bid);
+        if (!b || b.channel !== "direct" || b.status === "request") return notFound(res);
+        return sendInvoice(res, w, b, false);
       }
       if (mm = p.match(/^\/trip\/([a-z0-9-]+)\/([^/]+)$/)) {
         const r = await ws.bySlug(mm[1]);
@@ -16588,6 +16825,11 @@ var require_server = __commonJS({
           }
           const r = await ws.act(w.id, name, Array.isArray(j.args) ? j.args : []);
           return json(res, Object.assign({ state: r.w.state, version: r.version, result: r.result }, name === "addProperty" || name === "updateProperty" ? hostLinks(r.w) : {}));
+        }
+        if (mm = p.match(/^\/app\/invoice\/([^/]+)$/)) {
+          const b = w.state.bookings.find((x) => x.id === decodeURIComponent(mm[1]));
+          if (!b || b.channel !== "direct") return notFound(res);
+          return sendInvoice(res, w, b, true);
         }
         if (mm = p.match(/^\/app\/id\/([^/]+)$/)) {
           const b = await files.get("uploads/" + w.id + "/" + idFile(decodeURIComponent(mm[1])));
