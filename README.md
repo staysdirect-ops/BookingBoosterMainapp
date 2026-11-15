@@ -45,7 +45,7 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 - **Phone app.** `/app/phone` installs to the home screen (manifest, icons and a service worker). It opens the last copy when there is no signal. Signing out clears that copy.
 - **Privacy notice and terms.** `/privacy` and `/terms` are drafted from what the app actually does (`server/legal.js`). They say "Draft" until a solicitor has reviewed them.
 - **Account and data.** Hosts can change their details and password, download everything, and delete their account. Deleting ends the Stripe subscription first, then removes the account, sites, bookings, guests, photos and uploads.
-- **Billing.** One plan: a one-off £997 setup fee, first month free, then £200 a month inc. VAT, plus the £15 calendar sync add-on, through Stripe subscriptions and the customer portal.
+- **Billing.** One plan: a one-off £997 setup fee, first month free, then £200 a month inc. VAT, plus the £15 calendar sync add-on, through Stripe subscriptions and the customer portal. New hosts pay first: sign-up goes straight to Stripe Checkout, and until the setup fee is paid the console shows only the payment page (`/app/pay`), billing and account. Team members (ADMIN_EMAILS or `config:admins`) are let through. The welcome email goes out once it is paid.
 
 Some connections show as "Coming soon" in real accounts: Turno, Google Business Profile, Search Console, Google Analytics and PriceLabs. They still work in the demo.
 
@@ -85,7 +85,7 @@ Hosts can turn off the checklist, tips and weekly report under "Emails from us" 
 ## Stripe setup
 
 1. Turn on Connect (Express accounts) in your Stripe dashboard.
-2. Run `STRIPE_SECRET_KEY=sk_live_... BASE_URL=https://booking-booster.co.uk npm run stripe-setup`. It creates the monthly and yearly prices and the one-off £997 setup fee (VAT included; the yearly plan is 10 months' price, the yearly add-on is £180) and two webhooks to `/webhooks/stripe`: one for platform events (`checkout.session.completed`, `checkout.session.expired`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`) and a Connect one for hosts' `account.updated`. It prints the ids and signing secrets to add as secrets. Running it again reuses what exists.
+2. On the live server this happens by itself once the key is set (see `server/stripe-auto.js`). By hand: run `STRIPE_SECRET_KEY=sk_live_... BASE_URL=https://booking-booster.co.uk npm run stripe-setup`. It creates the monthly and yearly prices and the one-off £997 setup fee (VAT included; the yearly plan is 10 months' price, the yearly add-on is £180) and two webhooks to `/webhooks/stripe`: one for platform events (`checkout.session.completed`, `checkout.session.expired`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`) and a Connect one for hosts' `account.updated`. It prints the ids and signing secrets to add as secrets. Running it again reuses what exists.
 3. In Stripe's customer portal settings, let customers update cards and cancel at the end of the period.
 
 `npm run preflight` lists any launch setting that is still missing. In production the server also logs that list on start. The full launch steps are in `LAUNCH.md`.

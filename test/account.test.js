@@ -17,6 +17,7 @@ test.before(async () => {
   }); }).listen(0);
   t = await start({ STRIPE_SECRET_KEY: 'sk_test_fake', STRIPE_API_BASE: 'http://localhost:' + mock.address().port });
   await t.signup();
+  await t.sql("UPDATE workspaces SET billing_status = 'active'"); // paid, so the console is open
 });
 test.after(() => { t.stop(); mock.close(); });
 
