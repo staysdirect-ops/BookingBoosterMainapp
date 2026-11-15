@@ -68,12 +68,12 @@ test('a custom campaign to hosts: write, test, send, then opens, clicks and unsu
   const unsub = local(m.headers['List-Unsubscribe'].slice(1, -1));
   await t.call(unsub, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: '' });
   r = await t.call('/admin/campaigns/' + id);
-  assert.match(r.body, /<b>1<\/b><small>delivered/); assert.match(r.body, /<b>100%<\/b><small>1 opened/); assert.match(r.body, /<b>100%<\/b><small>1 clicked/); assert.match(r.body, /<b>1<\/b><small>unsubscribed/);
+  assert.match(r.body, /<span>Delivered<\/span><b class="num">1<\/b>/); assert.match(r.body, /<span>1 opened<\/span><b class="num">100%<\/b>/); assert.match(r.body, /<span>1 clicked<\/span><b class="num">100%<\/b>/); assert.match(r.body, /<span>Unsubscribed<\/span><b class="num">1<\/b>/);
   assert.match(r.body, /Links clicked/);
   r = await form('/admin/campaigns/' + id + '/send', { confirm: '1' });
   assert.match(r.body, /already gone out/);
   const list = await t.call('/admin/campaigns');
-  assert.match(list.body, /Winter host news/); assert.match(list.body, /100% <small class="cm-help">opened/);
+  assert.match(list.body, /Winter host news/); assert.match(list.body, /<b>100%<\/b> opened/);
 
   r = await form('/admin/campaigns/new', { name: 'Second host email', audience: 'hosts:all' });
   r = await t.call('/admin/campaigns/' + idFrom(r));
@@ -97,7 +97,7 @@ test('a scheduled campaign to one lead form goes out from the background job, an
   const got = to('webby@example.co.uk').filter(m => /Missed the demo/.test(m.subject));
   assert.equal(got.length, 1); assert.equal(got[0].subject, 'Missed the demo, Webby?');
   assert.equal(to('feeby@example.co.uk').filter(m => /Missed the demo/.test(m.subject)).length, 0, 'other forms are left out');
-  r = await t.call('/admin/campaigns/' + id); assert.match(r.body, /cm-badge sent/);
+  r = await t.call('/admin/campaigns/' + id); assert.match(r.body, /pill good">Sent /);
 
   r = await form('/admin/campaigns/new', { name: 'Everyone', audience: 'everyone' });
   r = await t.call('/admin/campaigns/' + idFrom(r));

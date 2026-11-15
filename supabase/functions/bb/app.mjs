@@ -13423,7 +13423,7 @@ button{font:inherit;font-weight:600;padding:13px 18px;border-radius:10px;border:
 .err{color:var(--bad);font-weight:600;margin:0}.ok{color:#178a4c;font-weight:600}.links{display:flex;justify-content:space-between;gap:12px;margin-top:18px;font-size:14px}a{color:var(--p)}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px}
 .au.wide{max-width:1180px}.au.read{max-width:720px}.au.read li{margin-bottom:6px}.wide table td,.wide table th{padding:8px 10px 8px 0}.wide td form{margin-top:6px;gap:4px}.wide td input{padding:7px 10px;font-size:13px;border-radius:8px}.wide td button{padding:7px 14px;font-size:13px}.wide td summary{cursor:pointer;color:var(--p);font-weight:600}.wide td.act{min-width:260px}.wide button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}@media(min-width:760px){.wide details.card>form{grid-template-columns:1fr 1fr}.wide details.card>form>p,.wide details.card>form>button{grid-column:1/-1}}`;
-    module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle };
+    module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle, FONTS };
   }
 });
 
@@ -16169,72 +16169,83 @@ var require_campaigns = __commonJS({
 // server/campaigns-admin.js
 var require_campaigns_admin = __commonJS({
   "server/campaigns-admin.js"(exports, module) {
-    var CSS = '<style>select,textarea{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF;background:#fff;color:inherit;width:100%}textarea{min-height:260px;line-height:1.5;resize:vertical}.cm-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.cm-tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}.cm-tile b{display:block;font:600 26px/1.1 "Bricolage Grotesque",sans-serif;color:var(--ink)}.cm-tile small{color:var(--mut)}.cm-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:#EEF1FF;color:#2747F5}.cm-badge.sent{background:#E6F4EC;color:#12805C}.cm-badge.warn{background:#FFF3E0;color:#B4540A}.cm-badge.live{background:#FFF6D6;color:#8A6100}.cm-badge.off{background:#F0F0F0;color:#666}.cm-table{width:100%;border-collapse:collapse;font-size:13px}.cm-table th{text-align:left;color:var(--mut);font-weight:600}.cm-table tr+tr{border-top:1px solid #E4E7F0}.cm-table td{vertical-align:top}.cm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cm-row form,.wide td .cm-row form{margin:0;display:inline}.cm-table td .cm-row{flex-wrap:nowrap}.cm-row button{padding:8px 14px;font-size:14px}button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}button.danger{background:#C62828}.cm-grid{display:grid;gap:18px}@media(min-width:1000px){.cm-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.cm-grid .cm-sticky{position:sticky;top:12px}}.cm-help{font-size:13px;color:var(--mut)}.cm-help code{background:#F1F2F6;border-radius:5px;padding:1px 5px;font-size:12px}h2{font:600 20px "Bricolage Grotesque",sans-serif;margin:28px 0 0}.cm-two{display:grid;gap:14px}@media(min-width:640px){.cm-two{grid-template-columns:1fr 1fr}}</style>';
-    module.exports = function({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me }) {
-      const html = (res, body) => send(res, 200, body, "text/html; charset=utf-8", { "cache-control": "no-store" });
+    module.exports = function({ campaigns, leads, cfg, E, ui, email, send, redirect, formBody, me }) {
       const day = (ms) => new Date(ms).toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const pct = (a, b) => b ? Math.round(100 * a / b) + "%" : "\u2013";
       const sentCount = (s) => Object.keys(s.sent || {}).length;
       const failedCount = (s) => Object.keys(s.failed || {}).length;
-      const field = (n, v, label, o) => {
-        o = o || {};
-        return "<label>" + E(label) + (o.area ? '<textarea name="' + n + '"' + (o.ph ? ' placeholder="' + E(o.ph) + '"' : "") + ">" + E(v || "") + "</textarea>" : '<input name="' + n + '" value="' + E(v || "") + '"' + (o.type ? ' type="' + o.type + '"' : "") + (o.ph ? ' placeholder="' + E(o.ph) + '"' : "") + (o.req ? " required" : "") + ' style="width:100%">') + (o.help ? '<small class="cm-help">' + o.help + "</small>" : "") + "</label>";
-      };
-      const audSelect = (cur, counts) => '<label>Who gets it<select name="audience">' + Object.entries(campaigns.AUDIENCES).map(([k, a]) => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + E(a.label) + (counts ? " (" + counts[k] + ")" : "") + "</option>").join("") + "</select></label>";
+      const field = (n, v, label, o) => ui.field(n, v, label, o);
+      const audSelect = (cur, counts) => ui.field("audience", cur, "Who gets it", { options: Object.entries(campaigns.AUDIENCES).map(([k, a]) => [k, a.label + (counts ? " (" + counts[k] + ")" : "")]) });
+      const page = async (res, o) => send(res, 200, ui.shell(Object.assign({ email: await email(), active: "campaigns" }, o)), "text/html; charset=utf-8", { "cache-control": "no-store" });
       function badge(o) {
         const s = o.s;
-        if (s.status === "sent") return '<span class="cm-badge sent">Sent ' + E(day(s.sent_at)) + "</span>";
-        if (s.status === "sending") return '<span class="cm-badge live">Sending \xB7 ' + sentCount(s) + " so far</span>";
-        if (s.status === "scheduled") return '<span class="cm-badge live">Scheduled ' + E(day(s.scheduled_at)) + "</span>";
-        if (s.status === "stopped") return '<span class="cm-badge off">Stopped \xB7 ' + sentCount(s) + " sent</span>";
-        return o.blocked.length ? '<span class="cm-badge warn">Draft \xB7 needs details</span>' : '<span class="cm-badge">Draft \xB7 ready</span>';
+        if (s.status === "sent") return ui.pill("good", "Sent " + day(s.sent_at));
+        if (s.status === "sending") return ui.pill("info", "Sending \xB7 " + sentCount(s) + " so far");
+        if (s.status === "scheduled") return ui.pill("info", "Scheduled " + day(s.scheduled_at));
+        if (s.status === "stopped") return ui.pill("muted", "Stopped \xB7 " + sentCount(s) + " sent");
+        return o.blocked.length ? ui.pill("warn", "Draft \xB7 needs details") : ui.pill("muted", "Draft \xB7 ready");
       }
-      const tiles = (list) => '<div class="cm-tiles">' + list.map(([n, l]) => '<div class="cm-tile"><b>' + n + "</b><small>" + E(l) + "</small></div>").join("") + "</div>";
-      async function listPage(note, err) {
+      const tiles = (list) => '<div class="adm-kpis">' + list.map(([n, l, hi]) => ui.kpi(l, n, "", "", hi)).join("") + "</div>";
+      async function listPage(res, note, err) {
         const all = await campaigns.overview(), counts = await campaigns.audienceCounts();
         const done = all.filter((o) => ["sent", "stopped", "sending"].includes(o.s.status));
         const totSent = done.reduce((a, o) => a + sentCount(o.s), 0), totOpen = done.reduce((a, o) => a + o.stats.opens, 0), totClick = done.reduce((a, o) => a + o.stats.clicks, 0), totUnsub = done.reduce((a, o) => a + o.stats.unsubs, 0);
         const row = (o) => {
           const s = o.s, n = sentCount(s), st = o.stats;
-          return '<tr><td><a href="/admin/campaigns/' + s.id + '"><b>' + E(s.name) + "</b></a>" + (s.kind === "designed" ? ' <small class="cm-help">\xB7 designed</small>' : "") + '<br><small class="cm-help">' + E(s.subject || "No subject yet") + "</small></td><td><small>" + E(o.audienceLabel) + "</small></td><td>" + badge(o) + "</td><td>" + (n ? "<b>" + n + "</b> sent" : "<b>" + o.count + '</b> <small class="cm-help">can get it</small>') + "</td><td>" + (st && n ? pct(st.opens, n) + ' <small class="cm-help">opened</small><br>' + pct(st.clicks, n) + ' <small class="cm-help">clicked</small>' + (st.unsubs ? "<br>" + st.unsubs + ' <small class="cm-help">unsubscribed</small>' : "") : '<small class="cm-help">\u2013</small>') + '</td><td><div class="cm-row"><a href="/admin/campaigns/' + s.id + '">Open</a><form method="post" action="/admin/campaigns/' + s.id + '/duplicate"><button class="sec">Copy</button></form></div></td></tr>';
+          return '<tr><td><a href="/admin/campaigns/' + s.id + '" style="color:inherit"><b>' + E(s.name) + "</b></a>" + (s.kind === "designed" ? ' <span class="adm-help">\xB7 designed</span>' : "") + "<small>" + E(s.subject || "No subject yet") + '</small></td><td class="wrap">' + E(o.audienceLabel) + "</td><td>" + badge(o) + '</td><td class="num">' + (n ? "<b>" + n + "</b> sent" : "<b>" + o.count + "</b> can get it") + '</td><td class="num">' + (st && n ? "<b>" + pct(st.opens, n) + "</b> opened<small>" + pct(st.clicks, n) + " clicked" + (st.unsubs ? " \xB7 " + st.unsubs + " unsubscribed" : "") + "</small>" : '<span class="adm-help">\u2013</span>') + '</td><td><div class="adm-inline"><a class="btn sm" href="/admin/campaigns/' + s.id + '">Open</a><form method="post" action="/admin/campaigns/' + s.id + '/duplicate"><button class="btn sm ghost">Copy</button></form></div></td></tr>';
         };
-        const table = (title, list, empty) => "<h2>" + title + '</h2><div class="card" style="overflow:auto">' + (list.length ? '<table class="cm-table"><tr><th>Campaign</th><th>Audience</th><th>Status</th><th>People</th><th>Results</th><th></th></tr>' + list.map(row).join("") + "</table>" : '<p style="margin:0">' + empty + "</p>") + "</div>";
+        const table = (title, list, empty) => '<section class="a-card a-flush" style="margin-top:16px"><div class="a-card-h" style="padding:18px 20px 0"><h3>' + title + '</h3><div class="a-card-m">' + list.length + "</div></div>" + ui.table(["Campaign", "Audience", "Status", "People", "Results", ""], list.map(row), empty) + "</section>";
         const byNew = (a, b) => (b.s.sent_at || b.s.scheduled_at || b.s.updated_at || 0) - (a.s.sent_at || a.s.scheduled_at || a.s.updated_at || 0);
         const active = all.filter((o) => ["scheduled", "sending"].includes(o.s.status)), drafts = all.filter((o) => ["draft", "cancelled"].includes(o.s.status)).sort((a, b) => (a.s.kind === "designed") - (b.s.kind === "designed") || byNew(a, b)), sent = all.filter((o) => ["sent", "stopped"].includes(o.s.status)).sort(byNew);
-        const auto = Object.values(leads.series || {}).map((sq) => "<tr><td><b>" + E(sq.name) + "</b></td><td><small>" + sq.steps.map((st) => E(st.key) + (typeof st.subject === "function" ? "" : ": " + E(st.subject))).join("<br>") + "</small></td></tr>").join("");
-        return authPage("Email campaigns", CSS + '<p><a href="/admin">\u2190 Leads and accounts</a></p><h1>Email campaigns</h1>' + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err ? '<p class="err">' + E(err) + "</p>" : "") + "<p>Write an email, pick who gets it, send yourself a test, then send it now or schedule it. <b>Nothing goes out until you confirm the number of people.</b> Anyone who unsubscribed is always left out, and every email has a one-click unsubscribe.</p>" + tiles([[done.length, "campaigns sent"], [totSent.toLocaleString("en-GB"), "emails delivered"], [pct(totOpen, totSent), "opened (unique)"], [pct(totClick, totSent), "clicked a link"], [totUnsub, "unsubscribed from a campaign"]]) + '<details class="card"' + (all.some((o) => o.s.kind === "custom") ? "" : " open") + '><summary><b>New campaign</b></summary><form method="post" action="/admin/campaigns/new">' + field("name", "", "Name (only the team sees this)", { ph: "e.g. December newsletter", req: true }) + audSelect("leads:all", counts) + '<button>Create draft</button><p class="cm-help" style="margin:0">Or press <b>Copy</b> on any campaign below to start from it, including the five designed ones.</p></form></details>' + (active.length ? table("Scheduled and sending", active, "") : "") + table("Drafts", drafts, "No drafts.") + table("Sent", sent, "Nothing sent yet.") + '<h2>Audiences</h2><div class="card" style="overflow:auto"><table class="cm-table"><tr><th>Audience</th><th>Who</th><th>Can get emails now</th></tr>' + Object.entries(campaigns.AUDIENCES).map(([k, a]) => "<tr><td><b>" + E(a.label) + "</b></td><td><small>" + E(a.about) + "</small></td><td><b>" + counts[k] + "</b></td></tr>").join("") + '</table><p class="cm-help" style="margin:10px 0 0">Leads come from the website forms. Contact-form enquiries are never included, because they did not ask for emails. Hosts can turn off \u201CNews and offers\u201D in their account page or with the link in each email.</p></div><details class="card"><summary><b>Automatic emails already running</b></summary><p class="cm-help">These send by themselves from each lead form (see Leads) and to hosts after sign-up (welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed).</p><table class="cm-table">' + auto + "</table></details>", true);
+        const auto = Object.values(leads.series || {}).map((sq) => "<div><span><b>" + E(sq.name) + "</b><small>" + sq.steps.map((st) => E(st.key) + (typeof st.subject === "function" ? "" : ": " + E(st.subject))).join("<br>") + "</small></span></div>").join("");
+        const newForm = '<details class="a-card" id="new"' + (all.some((o) => o.s.kind === "custom") ? "" : " open") + '><summary class="a-card-h"><h3>New campaign</h3></summary><form class="adm-form" method="post" action="/admin/campaigns/new"><div class="adm-two">' + field("name", "", "Name (only the team sees this)", { ph: "e.g. December newsletter", req: true }) + audSelect("leads:all", counts) + '</div><div class="row"><button class="btn primary">' + ui.icon("plus") + 'Create draft</button><span class="adm-help">Or press <b>Copy</b> on any campaign below to start from it, including the five designed ones.</span></div></form></details>';
+        return page(res, {
+          title: "Email campaigns",
+          note,
+          err,
+          sub: "Write an email, pick who gets it, send yourself a test, then send it now or schedule it. Nothing goes out until you confirm the number of people, and anyone who unsubscribed is always left out.",
+          actions: '<a class="btn primary sm" href="#new">' + ui.icon("plus") + "New campaign</a>",
+          body: tiles([[done.length, "Campaigns sent"], [totSent.toLocaleString("en-GB"), "Emails delivered"], [pct(totOpen, totSent), "Opened (unique)"], [pct(totClick, totSent), "Clicked a link", true], [totUnsub, "Unsubscribed from a campaign"]]) + newForm + (active.length ? table("Scheduled and sending", active, "") : "") + table("Drafts", drafts, "No drafts.") + table("Sent", sent, "Nothing sent yet.") + '<div class="adm-cols" style="margin-top:16px"><section class="a-card a-flush"><div class="a-card-h" style="padding:18px 20px 0"><h3>Audiences</h3><div class="a-card-m">can get emails now</div></div>' + ui.table(["Audience", "Who", ">People"], Object.entries(campaigns.AUDIENCES).map(([k, a]) => "<tr><td><b>" + E(a.label) + '</b></td><td class="wrap">' + E(a.about) + '</td><td class="r num"><b>' + counts[k] + "</b></td></tr>")) + '<p class="adm-help" style="padding:12px 20px 16px;margin:0">Leads come from the website forms. Contact-form enquiries are never included, because they did not ask for emails. Hosts can turn off \u201CNews and offers\u201D in their account page or with the link in each email.</p></section>' + ui.card("Automatic emails already running", "send by themselves", '<p class="adm-help" style="margin:0 0 6px">From each lead form (see Leads), and to hosts after sign-up: welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed.</p><div class="adm-list">' + auto + "</div>") + "</div>"
+        });
       }
-      async function editPage(id, note, err) {
+      async function editPage(res, id, note, err) {
         const o = (await campaigns.overview()).find((x) => x.s.id === id);
         if (!o) return null;
         const { s, d } = o, ed = campaigns.editable(s), n = sentCount(s), st = o.stats, counts = d ? null : await campaigns.audienceCounts();
         const skipped = Object.entries(o.skipped).map(([r, k]) => k + " " + r).join(" \xB7 ");
-        const head = '<p><a href="/admin/campaigns">\u2190 Email campaigns</a></p><h1>' + E(s.name) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err ? '<p class="err" role="alert">' + E(err) + "</p>" : "") + "<p>" + badge(o) + " " + (d ? E(d.about) : "") + '</p><p class="cm-help"><b>Who:</b> ' + E(o.audienceLabel) + " \xB7 <b>" + o.count + "</b> " + (n ? "more " : "") + "can get it now" + (skipped ? " \xB7 left out: " + E(skipped) : "") + (d ? "<br><b>When:</b> " + E(d.when) : "") + "</p>";
+        const sub = badge(o) + " " + (d ? E(d.about) : "") + "<br><b>Who:</b> " + E(o.audienceLabel) + " \xB7 <b>" + o.count + "</b> " + (n ? "more " : "") + "can get it now" + (skipped ? " \xB7 left out: " + E(skipped) : "") + (d ? "<br><b>When:</b> " + E(d.when) : "");
         let results = "";
         if (n || ["sending", "sent", "stopped"].includes(s.status)) {
-          results = tiles([[n, "delivered"], [pct(st.opens, n), st.opens + " opened"], [pct(st.clicks, n), st.clicks + " clicked"], [st.unsubs, "unsubscribed"], [failedCount(s), "failed"]]) + (st.links.length ? '<div class="card"><b>Links clicked</b> <small class="cm-help">(people, once each)</small><table class="cm-table" style="margin-top:8px">' + st.links.map(([u, k]) => '<tr><td style="word-break:break-all"><small>' + E(u) + "</small></td><td><b>" + k + "</b></td></tr>").join("") + "</table></div>" : "") + '<p class="cm-help">Opens are a guide only: some email apps load images for privacy and count as an open, others block them. Clicks are exact.</p>';
+          results = tiles([[n, "Delivered"], [pct(st.opens, n), st.opens + " opened"], [pct(st.clicks, n), st.clicks + " clicked", true], [st.unsubs, "Unsubscribed"], [failedCount(s), "Failed"]]) + (st.links.length ? ui.card("Links clicked", "people, once each", ui.table(["Link", ">People"], st.links.map(([u, k]) => '<tr><td style="word-break:break-all">' + E(u) + '</td><td class="r num"><b>' + k + "</b></td></tr>")), "") : "") + '<p class="adm-help" style="margin:10px 0 16px">Opens are a guide only: some email apps load images for privacy and count as an open, others block them. Clicks are exact.</p>';
         }
         const actions = [];
-        if (s.status === "sending") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="danger">Stop sending</button></form>');
-        if (s.status === "scheduled") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="sec">Cancel the schedule</button></form>');
-        if (failedCount(s) && ["sent", "stopped"].includes(s.status)) actions.push('<form method="post" action="/admin/campaigns/' + id + '/retry"><button>Retry ' + failedCount(s) + " failed</button></form>");
-        actions.push('<form method="post" action="/admin/campaigns/' + id + '/duplicate"><button class="sec">Make a copy</button></form>');
-        if (s.kind === "custom" && ed) actions.push('<form method="post" action="/admin/campaigns/' + id + '/delete"><button class="sec">Delete draft</button></form>');
-        const actionRow = '<div class="cm-row" style="margin:12px 0">' + actions.join("") + "</div>";
+        if (s.status === "sending") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="btn sm danger">Stop sending</button></form>');
+        if (s.status === "scheduled") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="btn sm">Cancel the schedule</button></form>');
+        if (failedCount(s) && ["sent", "stopped"].includes(s.status)) actions.push('<form method="post" action="/admin/campaigns/' + id + '/retry"><button class="btn sm primary">Retry ' + failedCount(s) + " failed</button></form>");
+        actions.push('<form method="post" action="/admin/campaigns/' + id + '/duplicate"><button class="btn sm">Make a copy</button></form>');
+        if (s.kind === "custom" && ed) actions.push('<form method="post" action="/admin/campaigns/' + id + '/delete"><button class="btn sm danger">Delete draft</button></form>');
         let form = "", sendBox = "";
         if (ed) {
-          const fields = d ? d.needs.map(([k, label, , type]) => field(k, s.settings[k], label, { type })).join("") : audSelect(s.audience, counts) + field("heading", s.heading, "Heading (optional)", { ph: "Fill January without the Airbnb discount" }) + field("body", s.body, "Email", { area: true, help: "Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{name}}</code> <code>{{email}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you." }) + '<div class="cm-two">' + field("button_label", s.button_label, "Button text (optional)", { ph: "Try the demo" }) + field("button_url", s.button_url, "Button link", { ph: "https://booking-booster.co.uk/demo" }) + "</div>";
-          form = '<form method="post" action="/admin/campaigns/' + id + '/save" class="card" style="margin-top:0">' + field("name", s.name, "Name (only the team sees this)") + field("subject", s.subject, "Subject", { help: "Personal fields work here too, like <code>{{first_name}}</code>." }) + field("preview", s.preview, "Preview line (shown after the subject in the inbox)") + fields + '<div class="cm-row"><button>Save draft</button><button formaction="/admin/campaigns/' + id + '/test" class="sec">Save and send me a test</button></div>' + (s.tests ? '<p class="cm-help" style="margin:0">' + s.tests + " test" + (s.tests === 1 ? "" : "s") + " sent" + (s.last_test_to ? ", last to " + E(s.last_test_to) : "") + ".</p>" : "") + "</form>";
+          const fields = d ? d.needs.map(([k, label, , type]) => field(k, s.settings[k], label, { type })).join("") : audSelect(s.audience, counts) + field("heading", s.heading, "Heading (optional)", { ph: "Fill January without the Airbnb discount" }) + field("body", s.body, "Email", { area: true, tall: true, help: "Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{name}}</code> <code>{{email}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you." }) + '<div class="adm-two">' + field("button_label", s.button_label, "Button text (optional)", { ph: "Try the demo" }) + field("button_url", s.button_url, "Button link", { ph: "https://booking-booster.co.uk/demo" }) + "</div>";
+          form = ui.card("Email", s.tests ? s.tests + " test" + (s.tests === 1 ? "" : "s") + " sent" : "Draft", '<form class="adm-form" method="post" action="/admin/campaigns/' + id + '/save">' + field("name", s.name, "Name (only the team sees this)") + field("subject", s.subject, "Subject", { help: "Personal fields work here too, like <code>{{first_name}}</code>." }) + field("preview", s.preview, "Preview line (shown after the subject in the inbox)") + fields + '<div class="row"><button class="btn">Save draft</button><button formaction="/admin/campaigns/' + id + '/test" class="btn primary">' + ui.icon("mail") + "Save and send me a test</button></div>" + (s.last_test_to ? '<small class="adm-help">Last test went to ' + E(s.last_test_to) + ".</small>" : "") + "</form>");
           const why = o.blocked.length ? E(o.blocked.join(" ")) : !s.tests ? "Send yourself a test first." : !o.count ? "Nobody in this audience can get it right now." : "";
-          sendBox = '<div class="card"><b>Send</b>' + (why ? '<p class="cm-help" style="margin:8px 0 0">' + why + "</p>" : '<p class="cm-help" style="margin:8px 0 0">This goes to <b>' + o.count + "</b> people and cannot be undone. Type <b>" + o.count + '</b> to confirm, then send now or pick a time.</p><form method="post" action="/admin/campaigns/' + id + '/send">' + field("confirm", "", "Type " + o.count + " to confirm", { req: true }) + '<div class="cm-two">' + field("day", "", "Day (UK)", { type: "date" }) + field("time", "09:30", "Time (UK)", { type: "time" }) + '</div><div class="cm-row"><button>Send now to ' + o.count + ' people</button><button formaction="/admin/campaigns/' + id + '/schedule" class="sec">Schedule for that time</button></div></form>') + "</div>";
+          sendBox = ui.card("Send", why ? "Not ready" : o.count + " people", why ? '<p class="adm-help" style="margin:0">' + why + "</p>" : '<form class="adm-form" method="post" action="/admin/campaigns/' + id + '/send"><p class="adm-help" style="margin:0">This goes to <b>' + o.count + "</b> people and cannot be undone. Type the number to confirm, then send now or pick a time.</p>" + field("confirm", "", "Type " + o.count + " to confirm", { req: true }) + '<div class="adm-two">' + field("day", "", "Day (UK)", { type: "date" }) + field("time", "09:30", "Time (UK)", { type: "time" }) + '</div><div class="row"><button class="btn primary">' + ui.icon("mail") + "Send now to " + o.count + ' people</button><button formaction="/admin/campaigns/' + id + '/schedule" class="btn">Schedule for that time</button></div></form>');
         } else if (s.status === "scheduled") {
-          sendBox = '<div class="card"><b>Scheduled for ' + E(day(s.scheduled_at)) + '</b><p class="cm-help" style="margin:8px 0 0">About ' + (s.planned || o.count) + " people. Anyone who unsubscribes before then is left out. Cancel the schedule to make changes.</p></div>";
+          sendBox = ui.card("Scheduled for " + day(s.scheduled_at), "about " + (s.planned || o.count) + " people", '<p class="adm-help" style="margin:0">Anyone who unsubscribes before then is left out. Cancel the schedule to make changes.</p>');
         }
-        const preview = '<div class="card cm-sticky" style="margin-top:0"><b>Preview</b> <small class="cm-help">(' + (o.count ? "with the first person\u2019s details" : "with sample details") + ', <a href="/admin/campaigns/' + id + '/preview" target="_blank">open full size</a>)</small><iframe title="Email preview" src="/admin/campaigns/' + id + '/preview" style="width:100%;height:860px;border:1px solid #E4E7F0;border-radius:8px;margin-top:8px;background:#fff" sandbox></iframe></div>';
-        return authPage(s.name, CSS + head + results + actionRow + '<div class="cm-grid"><div>' + form + sendBox + "</div>" + preview + "</div>", true);
+        const preview = '<div class="adm-sticky">' + ui.card("Preview", '<a href="/admin/campaigns/' + id + '/preview" target="_blank">Open full size</a>', '<p class="adm-help" style="margin:0 0 10px">' + (o.count ? "With the first person\u2019s details." : "With sample details.") + '</p><iframe class="adm-frame" title="Email preview" src="/admin/campaigns/' + id + '/preview" sandbox></iframe>') + "</div>";
+        return page(res, {
+          title: s.name,
+          note,
+          err,
+          sub,
+          back: ["/admin/campaigns", "Email campaigns"],
+          actions: '<div class="adm-inline">' + actions.join("") + "</div>",
+          body: results + '<div class="adm-cols"><div class="adm-stack">' + form + sendBox + "</div>" + preview + "</div>"
+        });
       }
       return async function(req, res, p, m, u) {
-        if (p === "/admin/campaigns") return html(res, await listPage(u.searchParams.get("note"), u.searchParams.get("err")));
+        if (p === "/admin/campaigns") return await listPage(res, u.searchParams.get("note"), u.searchParams.get("err"));
         if (p === "/admin/campaigns/new" && m === "POST") {
           const f2 = await formBody(req);
           const s2 = await campaigns.create(f2);
@@ -16242,10 +16253,10 @@ var require_campaigns_admin = __commonJS({
         }
         const mm = p.match(/^\/admin\/campaigns\/([a-z0-9-]+)(?:\/(preview|save|test|send|schedule|cancel|retry|duplicate|delete))?$/);
         const s = mm && await campaigns.load(mm[1]);
-        if (!s) return send(res, 404, authPage("Not found", '<h1>Not found</h1><p><a href="/admin/campaigns">Email campaigns</a></p>'), "text/html; charset=utf-8");
+        if (!s) return send(res, 404, ui.shell({ email: await email(), active: "campaigns", title: "Not found", sub: 'That campaign does not exist. <a href="/admin/campaigns">Back to email campaigns</a>', body: "" }), "text/html; charset=utf-8");
         const id = s.id, act = mm[2];
         if (act === "preview") return send(res, 200, (await campaigns.preview(id)).html, "text/html; charset=utf-8", { "cache-control": "no-store", "content-security-policy": "default-src 'none'; img-src * data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" });
-        if (m !== "POST" || !act) return html(res, await editPage(id, u.searchParams.get("note"), u.searchParams.get("err")));
+        if (m !== "POST" || !act) return await editPage(res, id, u.searchParams.get("note"), u.searchParams.get("err"));
         const f = await formBody(req);
         let note = "", err = "";
         if (act === "save") {
@@ -16284,9 +16295,89 @@ var require_campaigns_admin = __commonJS({
           if (r.ok) return redirect(res, "/admin/campaigns?note=" + encodeURIComponent("Draft deleted."));
           err = r.error;
         }
-        return html(res, await editPage(id, note, err));
+        return await editPage(res, id, note, err);
       };
     };
+  }
+});
+
+// server/admin-shell.js
+var require_admin_shell = __commonJS({
+  "server/admin-shell.js"(exports, module) {
+    var pages = require_pages();
+    var esc = pages.esc;
+    var I = {
+      dash: '<path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 8h6V4h-6z"/>',
+      users: '<circle cx="9" cy="8" r="3.5"/><path d="M2 20c1-4 4-6 7-6s6 2 7 6M16 4.5a3.5 3.5 0 010 7M18 14c2 .8 3.5 3 4 6"/>',
+      mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+      home: '<path d="M3 11l9-7 9 7v9H3z"/>',
+      card: '<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/>',
+      gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+      out: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
+      plus: '<path d="M12 5v14M5 12h14"/>',
+      back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+      check: '<path d="M5 12l5 5 9-10"/>',
+      spark: '<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+      down: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>',
+      x: '<path d="M6 6l12 12M18 6L6 18"/>'
+    };
+    var icon = (k, cls) => '<svg class="ic ' + (cls || "") + '" viewBox="0 0 24 24" aria-hidden="true">' + (I[k] || I.spark) + "</svg>";
+    var MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var NAV = [
+      ["Team", [["overview", "/admin", "dash", "Overview"], ["leads", "/admin/leads", "users", "Leads"], ["campaigns", "/admin/campaigns", "mail", "Email campaigns"], ["hosts", "/admin/hosts", "home", "Host accounts"]]],
+      ["Settings", [["settings", "/admin/settings", "gear", "Stripe, links and backups"]]]
+    ];
+    var CSS = `
+.x-app a.a-nav,.x-app a.a-tab,.x-app a.a-biz,.x-app a.a-side-foot{text-decoration:none}
+.x-app .adm-note{display:flex;gap:10px;align-items:center;border-radius:12px;padding:11px 14px;font-weight:600;font-size:14px;margin-bottom:16px;background:var(--good-soft);color:var(--good)}
+.x-app .adm-note.bad{background:var(--bad-soft);color:var(--bad)}
+.x-app .adm-note .ic{width:16px;height:16px}
+.x-app .adm-form{display:grid;gap:14px}
+.x-app .adm-form .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.x-app .adm-two{display:grid;gap:14px}@container xapp (min-width:700px){.x-app .adm-two{grid-template-columns:1fr 1fr}}
+.x-app .adm-help{font-size:12.5px;color:var(--muted);line-height:1.5}.x-app .adm-help code{font:500 11.5px var(--mono);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.x-app .field textarea.tall{min-height:280px;line-height:1.55}
+.x-app details.adm-x>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;color:var(--primary)}
+.x-app details.adm-x>summary::-webkit-details-marker{display:none}
+.x-app details.adm-x[open]>summary{margin-bottom:10px}
+.x-app details.adm-x .adm-form{gap:8px;min-width:240px}
+.x-app details.adm-x .field input{padding:8px 10px;font-size:13.5px}
+.x-app details.a-card>summary{cursor:pointer;list-style:none}.x-app details.a-card>summary::-webkit-details-marker{display:none}
+.x-app details.a-card>summary h3::after{content:' +';color:var(--muted);font-weight:500}.x-app details.a-card[open]>summary h3::after{content:''}
+.x-app details.a-card[open]>summary{margin-bottom:14px}
+.x-app .a-tbl td{vertical-align:top}.x-app .a-tbl td small,.x-app .adm-sub{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.x-app .a-tbl td.wrap{max-width:360px;font-size:13px;color:var(--muted)}
+.x-app .a-tbl td form{margin:0}
+.x-app .adm-inline{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}.x-app .adm-inline form{display:inline}
+.x-app .adm-list{display:grid;gap:0}.x-app .adm-list>div{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.x-app .adm-list>div:last-child{border-bottom:0}
+.x-app .adm-list b{font-weight:600}.x-app .adm-list small{display:block;color:var(--muted);font-size:12.5px}
+.x-app .adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:16px}
+.x-app .adm-stack{display:grid;gap:16px;align-content:start}
+.x-app .adm-cols{display:grid;gap:16px;align-items:start}@container xapp (min-width:1100px){.x-app .adm-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.x-app .adm-sticky{position:sticky;top:84px}}
+.x-app .adm-frame{width:100%;height:860px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.x-app .a-top .adm-title{font:600 14px var(--font-body);color:var(--muted)}@container xapp (max-width:1020px){.x-app .a-top .adm-title{display:none}}
+.x-app .a-tbl .adm-inline{flex-wrap:nowrap}.x-app .a-tbl td.num{white-space:nowrap}
+.x-app .a-grid.adm-top{align-items:start}
+`;
+    function shell(o) {
+      const a = pages.assets();
+      const nav = (cls, tag) => NAV.map(([g, items], gi) => (tag === "strip" ? gi ? '<span class="a-strip-sep" aria-hidden="true"></span>' : "" : '<div class="a-grp"><p>' + esc(g) + "</p>") + items.map(([k, href, ic, label]) => '<a class="' + cls + '" href="' + href + '"' + (k === o.active ? ' aria-current="page"' : "") + ">" + icon(ic) + "<span>" + esc(label) + "</span>" + (k === "leads" && o.waiting ? '<i class="a-badge num">' + o.waiting + "</i>" : "") + "</a>").join("") + (tag === "strip" ? "" : "</div>")).join("");
+      const who = String(o.email || ""), initials = (who.split("@")[0].replace(/[^a-z]/gi, " ").trim().split(/\s+/).map((x) => x[0]).join("").slice(0, 2) || "BB").toUpperCase();
+      const note = (o.note ? '<div class="adm-note" role="status">' + icon("check") + esc(o.note) + "</div>" : "") + (o.err ? '<div class="adm-note bad" role="alert">' + icon("x") + esc(o.err) + "</div>" : "");
+      const head = o.heading === false ? "" : '<div class="a-vh"><div>' + (o.back ? '<p style="margin:0 0 6px"><a href="' + o.back[0] + '" class="adm-help" style="text-decoration:none">\u2190 ' + esc(o.back[1]) + "</a></p>" : "") + '<h2 class="disp">' + esc(o.heading || o.title) + "</h2>" + (o.sub ? "<p>" + o.sub + "</p>" : "") + "</div>" + (o.actions ? '<div class="a-acts">' + o.actions + "</div>" : "") + "</div>";
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + ' \xB7 Bookingbooster team</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + pages.FONTS + '<link rel="stylesheet" href="/assets/app.' + a.hash.css + '.css"><style>body{margin:0}' + CSS + '</style></head><body class="prod prod-host"><main class="surface s-app"><div class="surface-root" style="--a-top:0px"><div class="x-app"><div class="a-frame"><aside class="a-side" aria-label="Team navigation"><div class="a-side-top"><a href="/admin" style="color:inherit;text-decoration:none"><span class="lockup">' + MARK + 'bookingbooster</span></a></div><a class="a-biz" href="/admin"><i></i><span><b>Bookingbooster team</b><em>Team admin</em></span></a><nav class="a-navs">' + nav("a-nav") + '</nav><a class="a-side-foot" href="/app"><span class="a-pulse"></span><span><b>Open the host console</b><em>' + esc(who) + '</em></span></a></aside><div class="a-main"><header class="a-top"><a class="a-mbrand" href="/admin" style="text-decoration:none">' + MARK + '<span>Team</span></a><span class="adm-title">Team admin</span><div class="a-tools">' + (o.tools || "") + '<a class="btn sm" href="/app">' + icon("out") + '<span>Host console</span></a><span class="a-me" title="' + esc(who) + '"><span class="avatar sm" style="--h:226">' + esc(initials) + '</span></span></div></header><nav class="a-strip" aria-label="Team navigation">' + nav("a-tab", "strip") + '</nav><main class="a-body"><div class="a-view a-v-admin">' + head + note + o.body + "</div></main></div></div></div></div></main></body></html>";
+    }
+    var field = (name, value, label, o) => {
+      o = o || {};
+      const attrs = (o.type ? ' type="' + o.type + '"' : "") + (o.ph ? ' placeholder="' + esc(o.ph) + '"' : "") + (o.req ? " required" : "") + (o.extra || "");
+      const ctl = o.area ? '<textarea name="' + name + '" class="' + (o.tall ? "tall" : "") + '"' + attrs + ">" + esc(value || "") + "</textarea>" : o.options ? '<select name="' + name + '">' + o.options.map(([v, l]) => '<option value="' + esc(v) + '"' + (v === value ? " selected" : "") + ">" + esc(l) + "</option>").join("") + "</select>" : '<input name="' + name + '" value="' + esc(value == null ? "" : value) + '"' + attrs + ">";
+      return '<label class="field"><span>' + esc(label) + "</span>" + ctl + (o.help ? '<small class="adm-help">' + o.help + "</small>" : "") + "</label>";
+    };
+    var kpi = (label, value, em, small, hi) => '<div class="a-kpi' + (hi ? " hi" : "") + '"><span>' + esc(label) + '</span><b class="num">' + value + "</b>" + (em ? '<em class="up">' + em + "</em>" : "<em></em>") + (small ? "<small>" + small + "</small>" : "") + "</div>";
+    var card = (title, meta, body, cls) => '<section class="a-card ' + (cls || "") + '"><div class="a-card-h"><h3>' + esc(title) + "</h3>" + (meta ? '<div class="a-card-m">' + meta + "</div>" : "") + "</div>" + body + "</section>";
+    var table = (heads, rows, empty) => '<div class="tblwrap"><table class="tbl a-tbl"><thead><tr>' + heads.map((h) => "<th" + (h[0] === ">" ? ' class="r">' + esc(h.slice(1)) : ">" + esc(h)) + "</th>").join("") + "</tr></thead><tbody>" + (rows.length ? rows.join("") : '<tr><td colspan="' + heads.length + '"><div class="a-empty"><p>' + esc(empty || "Nothing here yet.") + "</p></div></td></tr>") + "</tbody></table></div>";
+    var pill = (cls, text) => '<span class="pill ' + cls + '">' + esc(text) + "</span>";
+    module.exports = { shell, icon, field, kpi, card, table, pill };
   }
 });
 
@@ -18307,6 +18398,7 @@ var require_server = __commonJS({
     var hostMail = require_host_emails()({ db, cfg, msg, auth, ws, urls, leads, log });
     var campaigns = require_campaigns()({ db, cfg, msg, auth, leads, hostMail, log });
     var campaignsAdmin = require_campaigns_admin();
+    var adminUi = require_admin_shell();
     var stripeAuto = require_stripe_auto().auto({ cfg, stripe, db, log });
     var effects = require_effects()({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
     ws.onEffects((w, fx) => effects(w, fx).catch((e) => log("effects", e.message)));
@@ -19043,13 +19135,14 @@ var require_server = __commonJS({
       if (p === "/llms.txt") return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), "text/plain; charset=utf-8");
       if (p === "/api/signup" && m === "POST") return await signup(req, res);
       if (p === "/admin") return await adminPage(req, res);
+      if (m === "GET" && (p === "/admin/leads" || p === "/admin/hosts" || p === "/admin/settings")) return await adminPage(req, res, "", p.slice(7));
       if (p === "/admin/campaigns/run" && m === "POST" && cfg.testClock && await isAdmin(req)) {
         const b = await jsonBody(req, 1e3);
         return json(res, { sent: await campaigns.run(+b.at || Date.now()) });
       }
       if (p === "/admin/campaigns" || p.startsWith("/admin/campaigns/")) {
         if (!await isAdmin(req)) return notFound(res);
-        return await campaignsAdmin({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me })(req, res, p, m, u);
+        return await campaignsAdmin({ campaigns, leads, cfg, E, ui: adminUi, email: async () => (await me(req) || {}).email, send, redirect, formBody, me })(req, res, p, m, u);
       }
       if (p === "/admin/backup") {
         if (!await isAdmin(req)) return notFound(res);
@@ -19367,43 +19460,90 @@ var require_server = __commonJS({
       const u = await me(req);
       return isAdminEmail(u && u.email);
     };
-    var stripeKeyForm = (st) => st.canSave ? '<details class="card"' + (st.on ? "" : " open") + "><summary><b>" + (st.on ? "Change the Stripe key" : "Connect Stripe") + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off"><p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p><label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : "";
-    var stripeLine = (st) => stripeKeyForm(st) + "<p><small>Stripe: " + (!st.on ? "off" : st.mode + " mode (key ending " + E(st.last4) + ", from " + E(st.keyName) + ") \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
-    async function adminPage(req, res, note) {
+    async function adminPage(req, res, note, section, err2) {
       if (!await isAdmin(req)) return notFound(res);
+      section = section || "overview";
+      const A = adminUi, who = (await me(req)).email;
+      const d = (t) => new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const leadRows = await db.prepare("SELECT * FROM leads ORDER BY created_at DESC LIMIT 300").all();
+      const info = new Map(await Promise.all(leadRows.map(async (l) => [l.id, await leads.info(l.id)])));
+      const waiting = leadRows.filter((l) => {
+        const f = info.get(l.id);
+        return f && f.status === "waiting";
+      });
       const accts = await db.prepare("SELECT w.id, w.slug, w.plan, w.billing_status, w.created_at, c.allowance_left, c.topup_left, (SELECT coalesce(sum(l.amount), 0) FROM ai_ledger l WHERE l.workspace_id = w.id AND l.kind = 'use' AND l.created_at > ?) AS ai_used FROM workspaces w LEFT JOIN ai_credit c ON c.workspace_id = w.id WHERE w.kind = 'live' ORDER BY w.created_at DESC LIMIT 300").all(Date.now() - 30 * 864e5);
       const aiTotal = accts.reduce((a, x) => a + Number(x.ai_used || 0), 0) / credits.UNIT;
-      const d = (t) => new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const st = await leads.loadSettings();
-      const wd = st.webinar_at ? new Date(st.webinar_at) : null;
-      const ukParts = (ms) => {
-        const f = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date(ms));
-        const g = (k) => (f.find((x) => x.type === k) || {}).value;
-        return [g("year") + "-" + g("month") + "-" + g("day"), g("hour") + ":" + g("minute")];
-      };
-      const [wDay, wTime] = wd ? ukParts(st.webinar_at) : ["", "12:30"];
-      const inp = (n, v, ph, type) => '<input name="' + n + '" value="' + E(v || "") + '" placeholder="' + E(ph || "") + '"' + (type ? ' type="' + type + '"' : "") + ' style="width:100%">';
+      const field = (n, v, ph, type, label) => A.field(n, v, label || ph, { ph: label ? ph : "", type });
       const status = { active: "Sending", waiting: "Waiting for you", done: "Finished", stopped: "Stopped", unsubscribed: "Unsubscribed", converted: "Signed up" };
-      const rows = (await Promise.all(leadRows.map(async (l) => {
+      const statusPill = { active: "info", waiting: "warn", done: "muted", stopped: "muted", unsubscribed: "bad", converted: "good" };
+      const billing = { trial: ["warn", "Not paid yet"], active: ["good", "Paying"], past_due: ["bad", "Payment failed"], cancelled: ["muted", "Cancelled"] };
+      const leadActions = (l) => {
+        const f = info.get(l.id);
+        let act = "";
+        if (f && f.status === "waiting" && f.seq === "audit" && f.next === "E2") act = '<details class="adm-x"><summary>Audit is ready</summary><form class="adm-form" method="post" action="/admin/leads/' + l.id + '/audit">' + field("audit_url", "", "Link to the audit report") + field("score", "", "Score out of 100", "number") + field("mentions", "", "Mentioned in how many of 8 questions", "number") + field("top_fix", "", "Top fix, e.g. add a dog policy page") + '<small class="adm-help">Optional, for the follow-up a week later:</small>' + field("top_question", "", "Top question you re-ran on ChatGPT") + field("competitor_count", "", "How many places the answer named", "number") + '<button class="btn primary sm">Send the audit email</button></form></details>';
+        if (f && f.seq === "call" && f.next === "E4A") act = '<details class="adm-x"><summary>Call done, send proposal</summary><form class="adm-form" method="post" action="/admin/leads/' + l.id + '/proposal">' + field("proposal_url", "", "Link to the proposal") + '<button class="btn primary sm">Send the proposal email</button></form></details>';
+        if (f && ["active", "waiting"].includes(f.status)) act += '<form method="post" action="/admin/leads/' + l.id + '/stop" style="margin-top:6px"><button class="btn sm ghost">Stop emails</button></form>';
+        return act;
+      };
+      const leadRow = (l) => {
         let x = {};
         try {
           x = JSON.parse(l.data || "{}");
         } catch (_) {
         }
-        const f = await leads.info(l.id);
-        let act = "";
-        if (f && f.status === "waiting" && f.seq === "audit" && f.next === "E2") act = '<details><summary>Audit is ready</summary><form method="post" action="/admin/leads/' + l.id + '/audit">' + inp("audit_url", "", "Link to the audit report") + inp("score", "", "Score out of 100", "number") + inp("mentions", "", "Mentioned in how many of 8 questions", "number") + inp("top_fix", "", "Top fix, e.g. add a dog policy page") + "<small>Optional, for the follow-up a week later:</small>" + inp("top_question", "", "Top question you re-ran on ChatGPT") + inp("competitor_count", "", "How many places the answer named", "number") + "<button>Send the audit email</button></form></details>";
-        if (f && f.seq === "call" && f.next === "E4A") act = '<details><summary>Call done, send proposal</summary><form method="post" action="/admin/leads/' + l.id + '/proposal">' + inp("proposal_url", "", "Link to the proposal") + "<button>Send the proposal email</button></form></details>";
-        if (f && ["active", "waiting"].includes(f.status)) act += '<form method="post" action="/admin/leads/' + l.id + '/stop" style="margin-top:4px"><button class="sec">Stop emails</button></form>';
-        const prog = f ? "<b>" + E(f.name) + "</b><br>" + E(status[f.status] || f.status) + " \xB7 " + f.sent.length + " of " + f.total + " sent" + (f.status === "active" && f.next_at ? "<br><small>Next " + d(f.next_at) + "</small>" : "") + (f.status === "waiting" && f.next ? "<br><small>Next: " + E(f.next) + "</small>" : "") : "<small>No emails</small>";
-        return '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td>' + d(l.created_at) + "</td><td>" + E(l.kind) + "</td><td>" + E(l.email) + "<br><small>" + E(l.name || "") + "</small></td><td><small>" + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</small></td><td>" + prog + '</td><td class="act">' + act + "</td></tr>";
-      }))).join("");
-      const settingsForm = '<details class="card"' + (st.webinar_at ? "" : " open") + '><summary><b>Live demo, call and report links</b></summary><form method="post" action="/admin/settings" style="margin-top:12px"><p style="margin:0 0 8px"><small>The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small></p><label>Next live demo date (UK)' + inp("webinar_day", wDay, "", "date") + "</label><label>Start time (UK)" + inp("webinar_time", wTime, "12:30", "time") + "</label><label>Joining link" + inp("join_url", st.join_url, "https://meet.google.com/\u2026") + "</label><label>Replay link (sent after the session)" + inp("replay_url", st.replay_url, "https://\u2026") + "</label><label>Walkthrough call joining link" + inp("meeting_url", st.meeting_url, "https://meet.google.com/\u2026") + "</label><label>Page where people book a walkthrough" + inp("book_call_url", st.book_call_url, "https://\u2026/book-call") + "</label><label>Sample audit report page" + inp("sample_report_url", st.sample_report_url, "https://\u2026/sample-report") + "</label><button>Save</button></form></details>";
-      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p>" + stripeLine(await stripeAuto.status()) + '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> \xB7 write, schedule and track emails to leads and hosts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><p style="margin:4px 0 0"><small>AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + " a month" + (cfg.credits.markup !== 1 ? ", usage charged at " + cfg.credits.markup + "\xD7 cost" : ", usage charged at cost") + ". AI used by all hosts in the last 30 days: " + credits.money(aiTotal) + '.</small></p><table style="width:100%;font-size:13px"><tr><th align="left">Joined</th><th align="left">Site</th><th align="left">Plan</th><th align="left">Billing</th><th align="left">AI credit left</th><th align="left">AI used, 30 days</th><th align="left"></th></tr>' + accts.map((a) => {
-        const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT;
-        return '<tr style="vertical-align:top"><td>' + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td><td>" + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + "</td><td>" + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td><td class="act"><details><summary>Add credit</summary><form method="post" action="/admin/credits/' + E(a.id) + '">' + inp("pounds", "", "Pounds to add, e.g. 20", "number") + "<button>Add AI credit</button></form></details></td></tr>";
-      }).join("") + "</table></div>", true), "text/html; charset=utf-8");
+        const f = info.get(l.id);
+        const prog = f ? "<b>" + E(f.name) + '</b><div style="margin:4px 0">' + A.pill(statusPill[f.status] || "muted", status[f.status] || f.status) + "</div><small>" + f.sent.length + " of " + f.total + " sent" + (f.status === "active" && f.next_at ? " \xB7 next " + d(f.next_at) : "") + (f.status === "waiting" && f.next ? " \xB7 next: " + E(f.next) : "") + "</small>" : "<small>No emails</small>";
+        return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + "</td><td>" + A.pill("muted", l.kind) + "</td><td><b>" + E(l.email) + "</b><small>" + E(l.name || "") + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</td><td>" + prog + '</td><td style="min-width:240px">' + leadActions(l) + "</td></tr>";
+      };
+      const LEAD_HEADS = ["When", "Form", "Who", "Answers", "Emails", ""];
+      const hostRow = (a) => {
+        const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT, b = billing[a.billing_status] || ["muted", a.billing_status || "Not paid yet"];
+        return '<tr><td class="num" style="white-space:nowrap">' + d(a.created_at) + "</td><td><b>" + E(a.slug) + "</b></td><td>" + E(a.plan || "") + "</td><td>" + A.pill(b[0], b[1]) + '</td><td class="num">' + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + '</td><td class="num">' + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td><td><details class="adm-x"><summary>' + adminUi.icon("plus") + 'Add credit</summary><form class="adm-form" method="post" action="/admin/credits/' + E(a.id) + '">' + field("pounds", "", "Pounds to add, e.g. 20", "number") + '<button class="btn primary sm">Add AI credit</button></form></details></td></tr>';
+      };
+      const HOST_HEADS = ["Joined", "Site", "Plan", "Billing", "AI credit left", "AI used, 30 days", ""];
+      const sp = await stripeAuto.status();
+      const stripeCard = A.card(
+        "Stripe",
+        sp.on ? A.pill("good", sp.mode + " mode") : A.pill("warn", "Off"),
+        '<div class="adm-list"><div><span><b>Key</b><small>' + (sp.on ? "Ending " + E(sp.last4) + ", from " + E(sp.keyName) : "Not connected") + "</small></span></div><div><span><b>Plan prices</b></span>" + A.pill(sp.prices ? "good" : "muted", sp.prices ? "Ready" : "Not yet") + "</div><div><span><b>Webhooks</b></span>" + A.pill(sp.webhooks ? "good" : "muted", sp.webhooks ? "Ready" : "Not yet") + "</div>" + (sp.error ? "<div><span><b>Last setup error</b><small>" + E(sp.error) + "</small></span></div>" : "") + "</div>" + (sp.canSave ? '<details class="adm-x" style="margin-top:12px"' + (sp.on ? "" : " open") + "><summary>" + (sp.on ? "Change the Stripe key" : "Connect Stripe") + '</summary><form class="adm-form" method="post" action="/admin/stripe/key" autocomplete="off"><small class="adm-help">Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small>' + A.field("key", "", "Stripe secret key", { type: "password", ph: "sk_live_...", req: true, extra: ' autocomplete="off" spellcheck="false"' }) + '<div class="row"><button class="btn primary sm">Save and connect</button></div></form></details>' : "")
+      );
+      const shell = (o) => send(res, 200, A.shell(Object.assign({ email: who, waiting: waiting.length, note, err: err2 }, o)), "text/html; charset=utf-8", { "cache-control": "no-store" });
+      if (section === "leads") return shell({
+        title: "Leads",
+        active: "leads",
+        sub: leadRows.length + " leads from the website forms. Their follow-up emails go out by themselves; anything marked \u201CWaiting for you\u201D needs a person.",
+        body: '<section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), "No leads yet. They arrive here from the forms on the website.") + "</section>"
+      });
+      if (section === "hosts") return shell({
+        title: "Host accounts",
+        active: "hosts",
+        sub: accts.length + " host accounts \xB7 AI credit: each plan includes " + credits.money(cfg.credits.monthly) + " a month" + (cfg.credits.markup !== 1 ? ", usage charged at " + cfg.credits.markup + "\xD7 cost" : ", usage charged at cost") + ".",
+        body: '<div class="adm-kpis">' + A.kpi("Host accounts", accts.length) + A.kpi("Paying", accts.filter((a) => a.billing_status === "active").length) + A.kpi("Not paid yet", accts.filter((a) => !a.billing_status || a.billing_status === "trial").length) + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + '</div><section class="a-card a-flush">' + A.table(HOST_HEADS, accts.map(hostRow), "No host accounts yet.") + "</section>"
+      });
+      if (section === "settings") {
+        const wd = st.webinar_at ? new Date(st.webinar_at) : null;
+        const ukParts = (ms) => {
+          const f = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date(ms));
+          const g = (k) => (f.find((x) => x.type === k) || {}).value;
+          return [g("year") + "-" + g("month") + "-" + g("day"), g("hour") + ":" + g("minute")];
+        };
+        const [wDay, wTime] = wd ? ukParts(st.webinar_at) : ["", "12:30"];
+        const links = A.card("Live demo, call and report links", st.webinar_at ? "Next demo " + E(d(st.webinar_at)) : "No demo date set", '<form class="adm-form" method="post" action="/admin/settings"><small class="adm-help">The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small><div class="adm-two">' + A.field("webinar_day", wDay, "Next live demo date (UK)", { type: "date" }) + A.field("webinar_time", wTime, "Start time (UK)", { type: "time" }) + '</div><div class="adm-two">' + field("join_url", st.join_url, "https://meet.google.com/\u2026", "", "Joining link") + field("replay_url", st.replay_url, "https://\u2026", "", "Replay link (sent after the session)") + '</div><div class="adm-two">' + field("meeting_url", st.meeting_url, "https://meet.google.com/\u2026", "", "Walkthrough call joining link") + field("book_call_url", st.book_call_url, "https://\u2026/book-call", "", "Page where people book a walkthrough") + "</div>" + field("sample_report_url", st.sample_report_url, "https://\u2026/sample-report", "", "Sample audit report page") + '<div class="row"><button class="btn primary">Save</button></div></form>');
+        const bk = A.card("Backups", backup.list().length + " kept", '<p class="adm-help" style="margin:0 0 12px">' + backup.list().length + ' daily database backups kept on the server.</p><a class="btn sm" href="/admin/backup">' + A.icon("down") + "Download the latest</a>");
+        return shell({ title: "Settings", heading: "Stripe, links and backups", active: "settings", sub: "Payments, the links the lead emails use, and backups.", body: '<div class="adm-cols"><div class="adm-stack">' + stripeCard + bk + "</div>" + links + "</div>" });
+      }
+      const since = Date.now() - 30 * 864e5;
+      const hour = +(/* @__PURE__ */ new Date()).toLocaleString("en-GB", { timeZone: "Europe/London", hour: "2-digit", hour12: false });
+      const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + "</section>" : '<div class="a-empty">' + A.icon("check") + "<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>";
+      return shell({
+        title: "Overview",
+        heading: (hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening") + ", team",
+        active: "overview",
+        sub: "Leads and accounts \xB7 " + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.",
+        actions: '<a class="btn sm" href="/admin/leads">' + A.icon("users") + 'All leads</a><a class="btn primary sm" href="/admin/campaigns">' + A.icon("mail") + "Email campaigns</a>",
+        body: '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + '</div><div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email) + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
+      });
     }
     async function adminPost(req, res, p) {
       if (!await isAdmin(req)) return notFound(res);
@@ -19415,27 +19555,27 @@ var require_server = __commonJS({
       };
       if (p === "/admin/stripe/key") {
         const r = await stripeAuto.saveKey(f.key);
-        return await adminPage(req, res, r.error || "Stripe is connected in " + r.mode + " mode." + (r.setup && r.setup.error ? " Prices and webhooks could not be set up yet: " + r.setup.error : " Plan prices and webhooks are ready."));
+        return r.error ? await adminPage(req, res, "", "settings", r.error) : await adminPage(req, res, "Stripe is connected in " + r.mode + " mode." + (r.setup && r.setup.error ? " Prices and webhooks could not be set up yet: " + r.setup.error : " Plan prices and webhooks are ready."), "settings");
       }
       if (p === "/admin/settings") {
         const at = f.webinar_day ? leads.ukAt(f.webinar_day, f.webinar_time || "12:30") : 0;
         await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });
         await leads.run();
-        return await adminPage(req, res, "Saved.");
+        return await adminPage(req, res, "Saved.", "settings");
       }
       if (mm = p.match(/^\/admin\/credits\/([A-Za-z0-9_-]+)$/)) {
         const pounds = Math.round(Number(f.pounds) * 100) / 100;
         const r = await ws.row(mm[1]);
-        if (!r || !(pounds > 0) || pounds > 2e4) return await adminPage(req, res, "Enter an amount between \xA30.01 and \xA320,000.");
+        if (!r || !(pounds > 0) || pounds > 2e4) return await adminPage(req, res, "", "hosts", "Enter an amount between \xA30.01 and \xA320,000.");
         await credits.topup(mm[1], pounds, null, "grant");
         log("credits", mm[1], "team added \xA3" + pounds);
-        return await adminPage(req, res, "Added " + credits.money(pounds) + " of AI credit to " + (r.slug || mm[1]) + ".");
+        return await adminPage(req, res, "Added " + credits.money(pounds) + " of AI credit to " + (r.slug || mm[1]) + ".", "hosts");
       }
       if (mm = p.match(/^\/admin\/leads\/(\d+)\/(audit|proposal|stop)$/)) {
         const id = +mm[1];
         if (mm[2] === "stop") await leads.stop(id);
         if (mm[2] === "audit") {
-          if (!url(f.audit_url) || f.score === "" || f.mentions === "" || !String(f.top_fix || "").trim()) return await adminPage(req, res, "Add the audit link, score, mentions and top fix.");
+          if (!url(f.audit_url) || f.score === "" || f.mentions === "" || !String(f.top_fix || "").trim()) return await adminPage(req, res, "", "leads", "Add the audit link, score, mentions and top fix.");
           await leads.setVars(id, {
             audit_url: url(f.audit_url),
             score: Math.max(0, Math.min(100, Math.round(+f.score || 0))),
@@ -19447,11 +19587,11 @@ var require_server = __commonJS({
           });
         }
         if (mm[2] === "proposal") {
-          if (!url(f.proposal_url)) return await adminPage(req, res, "Add the proposal link.");
+          if (!url(f.proposal_url)) return await adminPage(req, res, "", "leads", "Add the proposal link.");
           await leads.setVars(id, { proposal_url: url(f.proposal_url), proposal_ready_at: Date.now() });
         }
         await leads.advance(id);
-        return await adminPage(req, res, mm[2] === "stop" ? "Emails stopped." : "Sent.");
+        return await adminPage(req, res, mm[2] === "stop" ? "Emails stopped." : "Sent.", "leads");
       }
       return notFound(res);
     }

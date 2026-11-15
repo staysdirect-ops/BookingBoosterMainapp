@@ -25,7 +25,7 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 | `/trip/<account>/<booking>?k=…` | The guest app for one stay (signed link) |
 | `/ical/…/<token>.ics` | Each home's calendar feed for Airbnb, Vrbo or a channel manager to read |
 | `/app/account` | The host's details, password, data download (JSON and guest list CSV) and account deletion |
-| `/admin` | Team only (`ADMIN_EMAILS`): leads, their follow-up emails, live demo settings, host accounts and the latest backup |
+| `/admin` | Team only (`ADMIN_EMAILS` or `config:admins`): overview, leads and their follow-up emails, email campaigns, host accounts and AI credit, Stripe, live demo links and backups. Same look as the host console (`server/admin-shell.js` uses the console's stylesheet) |
 | `/admin/campaigns` | Team only: email campaigns to leads and hosts (write, test, send or schedule, opens and clicks) |
 | `/guides/<name>.pdf` | The free guides that the lead forms promise |
 
