@@ -43,12 +43,32 @@ module.exports = function ({ campaigns, leads, cfg, E, ui, email, send, redirect
     const newForm = '<details class="a-card" id="new"' + (all.some(o => o.s.kind === 'custom') ? '' : ' open') + '><summary class="a-card-h"><h3>New campaign</h3></summary><form class="adm-form" method="post" action="/admin/campaigns/new"><div class="adm-two">' + field('name', '', 'Name (only the team sees this)', { ph: 'e.g. December newsletter', req: true }) + audSelect('leads:all', counts) + '</div>' +
       '<div class="row"><button class="btn primary">' + ui.icon('plus') + 'Create draft</button><span class="adm-help">Or press <b>Copy</b> on any campaign below to start from it, including the five designed ones.</span></div></form></details>';
     return page(res, { title: 'Email campaigns', note, err, sub: 'Write an email, pick who gets it, send yourself a test, then send it now or schedule it. Nothing goes out until you confirm the number of people, and anyone who unsubscribed is always left out.',
-      actions: '<a class="btn primary sm" href="#new">' + ui.icon('plus') + 'New campaign</a>',
+      actions: '<a class="btn sm" href="/admin/emails">' + ui.icon('doc') + 'All email templates</a>',
       body: tiles([[done.length, 'Campaigns sent'], [totSent.toLocaleString('en-GB'), 'Emails delivered'], [pct(totOpen, totSent), 'Opened (unique)'], [pct(totClick, totSent), 'Clicked a link', true], [totUnsub, 'Unsubscribed from a campaign']]) +
         newForm + (active.length ? table('Scheduled and sending', active, '') : '') + table('Drafts', drafts, 'No drafts.') + table('Sent', sent, 'Nothing sent yet.') +
         '<div class="adm-cols" style="margin-top:16px">' + '<section class="a-card a-flush"><div class="a-card-h" style="padding:18px 20px 0"><h3>Audiences</h3><div class="a-card-m">can get emails now</div></div>' + ui.table(['Audience', 'Who', '>People'], Object.entries(campaigns.AUDIENCES).map(([k, a]) => '<tr><td><b>' + E(a.label) + '</b></td><td class="wrap">' + E(a.about) + '</td><td class="r num"><b>' + counts[k] + '</b></td></tr>')) +
         '<p class="adm-help" style="padding:12px 20px 16px;margin:0">Leads come from the website forms. Contact-form enquiries are never included, because they did not ask for emails. Hosts can turn off “News and offers” in their account page or with the link in each email.</p></section>' +
         ui.card('Automatic emails already running', 'send by themselves', '<p class="adm-help" style="margin:0 0 6px">From each lead form (see Leads), and to hosts after sign-up: welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed.</p><div class="adm-list">' + auto + '</div>') + '</div>' });
+  }
+
+  /* ---------- write a new email: the one-page start ---------- */
+  async function writePage(res, f, err) {
+    f = f || {}; const counts = await campaigns.audienceCounts(), designs = (await campaigns.overview()).filter(o => o.s.kind === 'designed');
+    const form = ui.card('Your email', 'step 1 of 3', '<form class="adm-form" method="post" action="/admin/campaigns/new">' +
+      '<div class="adm-two">' + audSelect(f.audience || 'leads:all', counts) + field('name', f.name || '', 'Name (only the team sees this)', { ph: 'e.g. December newsletter' }) + '</div>' +
+      field('subject', f.subject || '', 'Subject', { req: true, ph: 'Fill your January gaps, {{first_name}}', help: 'Personal fields work here too, like <code>{{first_name}}</code>.' }) +
+      field('preview', f.preview || '', 'Preview line (shown after the subject in the inbox)', { ph: 'Three quick wins for quiet weeks' }) +
+      field('heading', f.heading || '', 'Heading (optional)', { ph: 'Fill January without the Airbnb discount' }) +
+      field('body', f.body || 'Hi {{first_name}},\n\n', 'Email', { area: true, tall: true, help: 'Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you.' }) +
+      '<div class="adm-two">' + field('button_label', f.button_label || '', 'Button text (optional)', { ph: 'Try the demo' }) + field('button_url', f.button_url || '', 'Button link', { ph: 'https://booking-booster.co.uk/demo' }) + '</div>' +
+      '<div class="row"><button class="btn primary" name="then" value="test">' + ui.icon('mail') + 'Save and send me a test</button><button class="btn" name="then" value="save">Save and preview</button><span class="adm-help">Nothing goes to anyone else yet.</span></div></form>');
+    const steps = ui.card('How it works', '', '<div class="adm-list"><div><span><b>1. Write it</b><small>Pick who gets it, then write the subject and the email.</small></span></div>' +
+      '<div><span><b>2. Check it</b><small>A test goes to you only, and the preview shows it with a real person’s details.</small></span></div>' +
+      '<div><span><b>3. Send or schedule</b><small>Type the number of people to confirm. Anyone who unsubscribed is always left out, and opens, clicks and unsubscribes are counted.</small></span></div></div>');
+    const start = ui.card('Or start from a designed email', designs.length + '', '<div class="adm-list">' + designs.map(o => '<div><span><b>' + E(o.s.name) + '</b><small>' + E(o.audienceLabel) + ' · ' + o.count + ' can get it</small></span><span class="adm-inline" style="flex:none;flex-wrap:nowrap"><a class="btn sm ghost" href="/admin/emails?t=camp.' + E(o.s.id) + '#preview">Preview</a><a class="btn sm" href="/admin/campaigns/' + E(o.s.id) + '">Use it</a></span></div>').join('') + '</div>');
+    return page(res, { title: 'Write a marketing email', active: 'write', err, back: ['/admin/campaigns', 'Email campaigns'],
+      sub: 'Write it, send yourself a test, then send it now or schedule it.',
+      body: '<div class="adm-cols"><div class="adm-stack">' + form + '</div><div class="adm-stack adm-sticky">' + steps + start + '</div></div>' });
   }
 
   /* ---------- one campaign ---------- */
@@ -95,7 +115,17 @@ module.exports = function ({ campaigns, leads, cfg, E, ui, email, send, redirect
 
   return async function (req, res, p, m, u) {
     if (p === '/admin/campaigns') return await listPage(res, u.searchParams.get('note'), u.searchParams.get('err'));
-    if (p === '/admin/campaigns/new' && m === 'POST') { const f = await formBody(req); const s = await campaigns.create(f); return redirect(res, '/admin/campaigns/' + s.id + '?note=' + encodeURIComponent('Draft created. Write it, send yourself a test, then send or schedule it.')); }
+    if (p === '/admin/campaigns/write') return await writePage(res);
+    if (p === '/admin/campaigns/new' && m === 'POST') {
+      const f = await formBody(req);
+      if (!f.then) { const s = await campaigns.create(f); return redirect(res, '/admin/campaigns/' + s.id + '?note=' + encodeURIComponent('Draft created. Write it, send yourself a test, then send or schedule it.')); }
+      if (!String(f.subject || '').trim()) return await writePage(res, f, 'Add a subject.');
+      if (!f.name || !String(f.name).trim()) f.name = String(f.subject).replace(/\{\{[^}]*\}\}/g, '').replace(/[\s,]+$/, '').trim().slice(0, 80);
+      const s = await campaigns.create(f); await campaigns.update(s.id, f);
+      let note = 'Draft saved. Check the preview, send yourself a test, then send or schedule it.', err = '';
+      if (f.then === 'test') { const who = await me(req); const r = await campaigns.sendTest(s.id, who.email); r.ok ? note = 'Draft saved and a test sent to ' + who.email + '. Nobody else got it. When it looks right, send or schedule it below.' : err = r.error; }
+      return redirect(res, '/admin/campaigns/' + s.id + '?' + (err ? 'err=' + encodeURIComponent(err) : 'note=' + encodeURIComponent(note)));
+    }
     const mm = p.match(/^\/admin\/campaigns\/([a-z0-9-]+)(?:\/(preview|save|test|send|schedule|cancel|retry|duplicate|delete))?$/);
     const s = mm && await campaigns.load(mm[1]); if (!s) return send(res, 404, ui.shell({ email: await email(), active: 'campaigns', title: 'Not found', sub: 'That campaign does not exist. <a href="/admin/campaigns">Back to email campaigns</a>', body: '' }), 'text/html; charset=utf-8');
     const id = s.id, act = mm[2];

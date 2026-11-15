@@ -27,6 +27,9 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 | `/app/account` | The host's details, password, data download (JSON and guest list CSV) and account deletion |
 | `/admin` | Team only (`ADMIN_EMAILS` or `config:admins`): overview, leads and their follow-up emails, email campaigns, host accounts and AI credit, Stripe, live demo links and backups. Same look as the host console (`server/admin-shell.js` uses the console's stylesheet) |
 | `/admin/campaigns` | Team only: email campaigns to leads and hosts (write, test, send or schedule, opens and clicks) |
+| `/admin/campaigns/write` | Team only: write a marketing email on one page, send yourself a test, then send or schedule it. Every admin page has a "Write an email" button |
+| `/admin/emails` | Team only: every email the system sends (lead follow-ups, designed campaigns, host onboarding and reports, guest booking emails), rendered by the code that sends it with sample details (`server/admin-content.js`) |
+| `/admin/social` | Team only: Bookingbooster's own social posts from Metricool, as a month calendar and a list (coming up, published, failed). Live when `METRICOOL_TOKEN`, `METRICOOL_USER_ID` and `METRICOOL_BLOG_ID` are set; otherwise the copy in kv `social:snapshot` or `server/social-snapshot.json` (`server/social.js`) |
 | `/guides/<name>.pdf` | The free guides that the lead forms promise |
 
 ## What works in a real account

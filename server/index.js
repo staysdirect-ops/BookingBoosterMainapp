@@ -64,6 +64,8 @@ const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads,
 const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
 const campaignsAdmin = require('./campaigns-admin');
 const adminUi = require('./admin-shell');
+const social = require('./social')({ db });
+const adminContent = require('./admin-content');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
@@ -562,6 +564,7 @@ async function route(req, res) {
   if (m === 'GET' && (p === '/admin/leads' || p === '/admin/hosts' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
   if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
   if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) { if (!await isAdmin(req)) return notFound(res); return await campaignsAdmin({ campaigns, leads, cfg, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody, me })(req, res, p, m, u); }
+  if (p === '/admin/emails' || p.startsWith('/admin/emails/') || p === '/admin/social') { if (!await isAdmin(req)) return notFound(res); return await adminContent({ cfg, msg, leads, campaigns, social, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email })(req, res, p, m, u); }
   if (p === '/admin/backup') {
     if (!await isAdmin(req)) return notFound(res);
     const name = 'bookingbooster-' + new Date().toISOString().slice(0, 10) + '.json';
@@ -828,11 +831,23 @@ async function adminPage(req, res, note, section, err) {
   const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + '</section>' : '<div class="a-empty">' + A.icon('check') + '<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>';
   return shell({ title: 'Overview', heading: (hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening') + ', team', active: 'overview',
     sub: 'Leads and accounts · ' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.',
-    actions: '<a class="btn sm" href="/admin/leads">' + A.icon('users') + 'All leads</a><a class="btn primary sm" href="/admin/campaigns">' + A.icon('mail') + 'Email campaigns</a>',
+    actions: '<a class="btn sm" href="/admin/leads">' + A.icon('users') + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon('mail') + 'Email campaigns</a>',
     body: '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
-      A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' +
+      A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' + await marketingRow(A) +
       '<div class="a-grid adm-top"><div class="a-s8">' + A.card('Waiting for you', waiting.length + ' lead' + (waiting.length === 1 ? '' : 's'), needs, waiting.length ? 'a-flush' : '').replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div>' +
       '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email) + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
+}
+// the overview's marketing row: write an email, what is going out on social, and the email library
+async function marketingRow(A) {
+  const sp = await social.posts().catch(() => ({ posts: [] })), now = Date.now(), at = x => Date.parse(x.at + 'Z');
+  const soon = sp.posts.filter(x => at(x) >= now && x.kind !== 'story'), week = sp.posts.filter(x => at(x) >= now && at(x) < now + 7 * 864e5).length, failed = sp.posts.filter(x => x.nets.some(n => n[1] === 'error')).length;
+  const when = t => new Date(t).toLocaleString('en-GB', { timeZone: 'Europe/London', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const camps = await campaigns.overview(), sentC = camps.filter(o => o.s.status === 'sent').length, drafts = camps.filter(o => o.s.kind === 'custom' && o.s.status === 'draft').length;
+  return '<div class="a-grid adm-top" style="margin-bottom:16px">' +
+    '<div class="a-s4">' + A.card('Write a marketing email', drafts ? drafts + ' draft' + (drafts === 1 ? '' : 's') : '', '<p class="adm-help" style="margin:0 0 14px">To leads, hosts or both. Write it, send yourself a test, then send it now or schedule it. ' + sentC + ' campaign' + (sentC === 1 ? '' : 's') + ' sent so far.</p><div class="adm-inline"><a class="btn primary" href="/admin/campaigns/write">' + A.icon('pen') + 'Write an email</a><a class="btn ghost" href="/admin/campaigns">All campaigns</a></div>') + '</div>' +
+    '<div class="a-s4">' + A.card('Social this week', '<a href="/admin/social">Calendar</a>', '<p class="adm-help" style="margin:0 0 8px"><b>' + week + '</b> posts and stories scheduled in the next 7 days' + (failed ? ' · <a href="/admin/social?show=problems#list">' + failed + ' failed on a network</a>' : '') + '.</p><div class="adm-list">' +
+      (soon.slice(0, 3).map(x => '<div><span><b>' + E((x.text || x.title || x.kind).split('\n')[0].slice(0, 70)) + '</b><small>' + when(at(x)) + ' · ' + E(x.kind) + ' · ' + E(x.nets.map(n => n[0]).join(', ')) + '</small></span></div>').join('') || '<div><span><small>Nothing scheduled.</small></span></div>') + '</div>') + '</div>' +
+    '<div class="a-s4">' + A.card('Email templates', '<a href="/admin/emails">See them all</a>', '<p class="adm-help" style="margin:0 0 8px">Every email the system sends, as it goes out: lead follow-ups, host onboarding and reports, guest booking emails and the designed campaigns.</p><a class="btn" href="/admin/emails">' + A.icon('doc') + 'Open the email templates</a>') + '</div></div>';
 }
 async function adminPost(req, res, p) {
   if (!await isAdmin(req)) return notFound(res);
