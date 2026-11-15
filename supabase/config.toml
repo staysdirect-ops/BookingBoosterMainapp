@@ -21,3 +21,9 @@ static_files = ["./functions/guides-b/files/*.pdf"]
 # Guests' ID photos and hosts' home photos. Private: the back end serves them.
 public = false
 file_size_limit = "10MiB"
+
+[functions.media]
+# The explainer video and demo site screenshots shown on the marketing site; "bb" serves them at /media/<name>.
+verify_jwt = false
+entrypoint = "./functions/media/index.ts"
+static_files = ["./functions/media/files/*.mp4", "./functions/media/files/*.jpg"]
