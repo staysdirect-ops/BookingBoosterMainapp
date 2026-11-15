@@ -14,6 +14,7 @@ if (typeof Deno === 'undefined' && fs.existsSync(envFile)) {
   }
 }
 const E = process.env;
+const num = (v, d) => { const n = Number(v); return v !== undefined && v !== '' && Number.isFinite(n) && n >= 0 ? n : d; };
 // The Stripe key under another name (for example a secret added as PAYMENT_GATEWAY_API): any setting holding a Stripe secret key.
 const stripeKeyName = E.STRIPE_SECRET_KEY ? 'STRIPE_SECRET_KEY' : (Object.keys(E).find(k => /^(sk|rk)_(live|test)_\S{10,}$/.test(String(E[k] || '').trim())) || '');
 // On Supabase (an Edge Function) there is no disk to keep things on: the database and Storage hold everything.
@@ -63,6 +64,8 @@ module.exports = {
   stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : undefined, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: { Growth: E.STRIPE_PRICE_GROWTH, addon: E.STRIPE_PRICE_CALENDAR_SYNC,
     GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL, addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
   ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || 'gpt-4o-mini', gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || 'gemini-2.0-flash', perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || 'sonar', anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || 'claude-sonnet-5-5', serpapi: E.SERPAPI_KEY },
+  // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
+  credits: { enabled: E.AI_CREDITS !== 'off', monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
   nuki: { token: E.NUKI_API_TOKEN },
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
   icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15),

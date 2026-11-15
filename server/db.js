@@ -6,7 +6,7 @@ const SCHEMA = require('./schema');
 
 // Primary keys for INSERT OR REPLACE (SQLite) -> ON CONFLICT ... DO UPDATE (Postgres)
 const PK = { payments: ['id'], kv: ['k'], secrets: ['workspace_id', 'name'], lead_seq: ['lead_id'], lead_optout: ['email'], domains: ['host'] };
-const SERIAL = new Set(['outbox', 'leads']);
+const SERIAL = new Set(['outbox', 'leads', 'ai_ledger']);
 
 function translate(sql) {
   let s = sql.trim();

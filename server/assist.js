@@ -2,7 +2,7 @@
 'use strict';
 module.exports = function (cfg) {
   const enabled = !!cfg.ai.anthropic;
-  async function draft(s, thread) {
+  async function draft(s, thread, onUsage) { // onUsage(model, usage) is told what the call used, for AI credit
     if (!enabled) return null;
     const b = s.bookings.find(x => x.id === thread.bookingId);
     const p = s.properties.find(x => x.id === (b ? b.propertyId : thread.propertyId)) || s.properties[0];
@@ -26,7 +26,7 @@ module.exports = function (cfg) {
       headers: { 'x-api-key': cfg.ai.anthropic, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
       body: JSON.stringify({ model: cfg.ai.anthropicModel, max_tokens: 400, system, messages: [{ role: 'user', content: 'Facts:\n' + facts + '\n\nConversation so far:\n' + convo + '\n\nDraft the host\'s next reply to ' + String(g.name).split(' ')[0] + '.' }] }) });
     if (!r.ok) throw new Error('Claude answered ' + r.status);
-    const j = await r.json(); const text = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
+    const j = await r.json(); if (onUsage) await onUsage(j.model || cfg.ai.anthropicModel, j.usage); const text = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
     return text.slice(0, 1200) || null;
   }
   return { enabled, draft };

@@ -72,6 +72,13 @@ module.exports = function (cfg) {
       const s = await api('POST', '/checkout/sessions', { mode: 'subscription', customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
       return { id: s.id, url: s.url };
     },
+    // AI credit top-up: a one-off card payment to Bookingbooster (not to the host's own Stripe account).
+    async checkoutCredit({ customer, email, pounds, successUrl, cancelUrl, meta }) {
+      const s = await api('POST', '/checkout/sessions', { mode: 'payment', customer: customer || undefined, customer_email: customer ? undefined : email, success_url: successUrl, cancel_url: cancelUrl,
+        line_items: [{ quantity: 1, price_data: { currency: 'gbp', unit_amount: pence(pounds), tax_behavior: 'inclusive', product_data: { name: 'Bookingbooster AI credit top-up', description: '£' + pounds + ' of AI credit for the site builder, funnels and reply drafts. Never expires.', tax_code: 'txcd_10103001' } } }],
+        payment_intent_data: { metadata: meta, description: 'AI credit top-up £' + pounds }, invoice_creation: { enabled: true }, metadata: meta });
+      return { id: s.id, url: s.url };
+    },
     // Account deletion: end every live subscription for this customer straight away.
     async cancelSubscriptions(customer) {
       const list = await api('GET', '/subscriptions', { customer, status: 'all', limit: 100 });
