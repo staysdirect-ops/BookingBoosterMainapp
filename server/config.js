@@ -14,6 +14,8 @@ if (typeof Deno === 'undefined' && fs.existsSync(envFile)) {
   }
 }
 const E = process.env;
+// The Stripe key under another name (for example a secret added as PAYMENT_GATEWAY_API): any setting holding a Stripe secret key.
+const stripeKeyName = E.STRIPE_SECRET_KEY ? 'STRIPE_SECRET_KEY' : (Object.keys(E).find(k => /^(sk|rk)_(live|test)_\S{10,}$/.test(String(E[k] || '').trim())) || '');
 // On Supabase (an Edge Function) there is no disk to keep things on: the database and Storage hold everything.
 const SERVERLESS = typeof Deno !== 'undefined' || E.SERVERLESS === '1';
 const SB_URL = E.SUPABASE_URL || '';
@@ -58,7 +60,7 @@ module.exports = {
   company: { name: E.COMPANY_NAME || 'Bookingbooster Ltd', address: E.COMPANY_ADDRESS || 'Registered address to be confirmed', number: E.COMPANY_NUMBER || '', vat: E.VAT_NUMBER || '', support: E.SUPPORT_EMAIL || 'help@booking-booster.co.uk' },
   email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? 'resend' : E.POSTMARK_TOKEN ? 'postmark' : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || 'Bookingbooster <hello@booking-booster.co.uk>', guestFromDomain: E.GUEST_EMAIL_DOMAIN || 'mail.booking-booster.co.uk' },
   sms: { apiBase: E.SMS_API_BASE, sid: E.TWILIO_ACCOUNT_SID, token: E.TWILIO_AUTH_TOKEN, from: E.TWILIO_FROM },
-  stripe: { apiBase: E.STRIPE_API_BASE, key: E.STRIPE_SECRET_KEY, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: { Growth: E.STRIPE_PRICE_GROWTH, addon: E.STRIPE_PRICE_CALENDAR_SYNC, setup: E.STRIPE_PRICE_SETUP,
+  stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : undefined, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: { Growth: E.STRIPE_PRICE_GROWTH, addon: E.STRIPE_PRICE_CALENDAR_SYNC, setup: E.STRIPE_PRICE_SETUP,
     GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL, addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
   ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || 'gpt-4o-mini', gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || 'gemini-2.0-flash', perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || 'sonar', anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || 'claude-sonnet-5-5', serpapi: E.SERPAPI_KEY },
   nuki: { token: E.NUKI_API_TOKEN },

@@ -35,7 +35,7 @@ const mk = (key, db) => {
 test('creates prices and webhooks on the tick, keeps them, and the plan checkout uses them', async () => {
   const db = fakeDb();
   const { cfg, stripe, a } = mk('sk_live_one', db);
-  assert.deepEqual(await a.status(), { on: true, mode: 'live', prices: false, webhooks: false, error: '', at: undefined, canSave: false, last4: '_one' });
+  assert.deepEqual(await a.status(), { on: true, mode: 'live', prices: false, webhooks: false, error: '', at: undefined, canSave: false, last4: '_one', keyName: 'team page' });
   await a.ensure();
   assert.equal(hooks.length, 2); assert.ok(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret);
   assert.ok(cfg.stripe.prices.Growth && cfg.stripe.prices.setup && cfg.stripe.prices.addon && cfg.stripe.prices.GrowthAnnual);

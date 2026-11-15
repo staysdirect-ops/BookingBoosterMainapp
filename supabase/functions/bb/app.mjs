@@ -11681,6 +11681,7 @@ var require_config = __commonJS({
       }
     }
     var E = process.env;
+    var stripeKeyName = E.STRIPE_SECRET_KEY ? "STRIPE_SECRET_KEY" : Object.keys(E).find((k) => /^(sk|rk)_(live|test)_\S{10,}$/.test(String(E[k] || "").trim())) || "";
     var SERVERLESS = typeof Deno !== "undefined" || E.SERVERLESS === "1";
     var SB_URL = E.SUPABASE_URL || "";
     var SB_KEY = E.SUPABASE_SERVICE_ROLE_KEY || (() => {
@@ -11742,7 +11743,7 @@ var require_config = __commonJS({
       company: { name: E.COMPANY_NAME || "Bookingbooster Ltd", address: E.COMPANY_ADDRESS || "Registered address to be confirmed", number: E.COMPANY_NUMBER || "", vat: E.VAT_NUMBER || "", support: E.SUPPORT_EMAIL || "help@booking-booster.co.uk" },
       email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? "resend" : E.POSTMARK_TOKEN ? "postmark" : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || "Bookingbooster <hello@booking-booster.co.uk>", guestFromDomain: E.GUEST_EMAIL_DOMAIN || "mail.booking-booster.co.uk" },
       sms: { apiBase: E.SMS_API_BASE, sid: E.TWILIO_ACCOUNT_SID, token: E.TWILIO_AUTH_TOKEN, from: E.TWILIO_FROM },
-      stripe: { apiBase: E.STRIPE_API_BASE, key: E.STRIPE_SECRET_KEY, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: {
+      stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : void 0, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: {
         Growth: E.STRIPE_PRICE_GROWTH,
         addon: E.STRIPE_PRICE_CALENDAR_SYNC,
         setup: E.STRIPE_PRICE_SETUP,
@@ -15268,7 +15269,7 @@ var require_stripe_auto = __commonJS({
           const saved = { fp: fp(), mode: mode(), at: t, prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
           await set.run(KEY, JSON.stringify(saved));
           apply(saved);
-          log("stripe", "Prices and webhooks set up in " + mode() + " mode");
+          log("stripe", "Prices and webhooks set up in " + mode() + " mode" + (cfg.stripe.keyName ? ", key from " + cfg.stripe.keyName : ""));
           return saved;
         } catch (e) {
           log("stripe setup", e.message);
@@ -15282,7 +15283,7 @@ var require_stripe_auto = __commonJS({
         const s = await read();
         apply(s);
         const p = cfg.stripe.prices;
-        return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4) };
+        return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4), keyName: cfg.stripe.keyName || "team page" };
       }
       return { load, ensure, status, saveKey };
     }
@@ -16699,7 +16700,7 @@ var require_server = __commonJS({
       return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email);
     };
     var stripeKeyForm = (st) => st.canSave ? '<details class="card"' + (st.on ? "" : " open") + "><summary><b>" + (st.on ? "Change the Stripe key" : "Connect Stripe") + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off"><p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p><label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : "";
-    var stripeLine = (st) => stripeKeyForm(st) + "<p><small>Stripe: " + (!st.on ? "off" : st.mode + " mode (key ending " + E(st.last4) + ") \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
+    var stripeLine = (st) => stripeKeyForm(st) + "<p><small>Stripe: " + (!st.on ? "off" : st.mode + " mode (key ending " + E(st.last4) + ", from " + E(st.keyName) + ") \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
     async function adminPage(req, res, note) {
       if (!await isAdmin(req)) return notFound(res);
       const leadRows = await db.prepare("SELECT * FROM leads ORDER BY created_at DESC LIMIT 300").all();
