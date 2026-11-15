@@ -99,10 +99,10 @@ async function hook(t, obj) {
 }
 
 test('a host who has not paid gets no allowance; paying the plan brings the full £50', async () => {
-  let c = (await b.call('/api/credits')).body; assert.equal(c.included, 0); assert.equal(c.empty, true);
+  assert.match((await b.call('/app/billing')).body, /AI credit · £0.00 left/);
   const wid = (await b.sql("SELECT id FROM workspaces WHERE kind = 'live'"))[0].id;
   await hook(b, { id: 'cs_plan', customer: 'cus_1', payment_status: 'paid', metadata: { workspace: wid, kind: 'plan', plan: 'Growth' } });
-  c = (await b.call('/api/credits')).body; assert.equal(c.included, 50); assert.equal(c.balance, 50);
+  const c = (await b.call('/api/credits')).body; assert.equal(c.included, 50); assert.equal(c.balance, 50);
 });
 
 test('top-ups from £10 to £20,000 go through Stripe Checkout and are added once', async () => {
