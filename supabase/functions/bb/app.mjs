@@ -13864,6 +13864,118 @@ var require_host_emails = __commonJS({
   }
 });
 
+// server/stripe-auto.js
+var require_stripe_auto = __commonJS({
+  "server/stripe-auto.js"(exports, module) {
+    var crypto = __require("crypto");
+    var PLANS = [
+      ["GROWTH", "Bookingbooster Growth", 200],
+      ["CALENDAR_SYNC", "Bookingbooster calendar sync add-on", 15]
+    ];
+    var SETUP_FEE = 997;
+    var PLATFORM_EVENTS = ["checkout.session.completed", "checkout.session.expired", "customer.subscription.deleted", "invoice.payment_failed", "invoice.paid"];
+    var CONNECT_EVENTS = ["account.updated"];
+    async function setup(stripe, baseUrl, { recreate } = {}) {
+      async function price(env, product2, amount, interval) {
+        const lookup = "bb_" + env.toLowerCase() + "_" + interval + "_" + amount;
+        const found = await stripe.api("GET", "/prices", { lookup_keys: [lookup], active: true, limit: 1 });
+        if (found.data && found.data[0]) return found.data[0].id;
+        return (await stripe.api("POST", "/prices", Object.assign({ product: product2, currency: "gbp", unit_amount: amount * 100, tax_behavior: "inclusive", lookup_key: lookup, nickname: lookup }, interval === "once" ? {} : { recurring: { interval } }))).id;
+      }
+      async function product(env, name) {
+        const prods = await stripe.api("GET", "/products", { active: true, limit: 100 });
+        const prod = (prods.data || []).find((p) => p.metadata && p.metadata.bb_plan === env);
+        return prod || stripe.api("POST", "/products", { name, tax_code: "txcd_10103001", metadata: { bb_plan: env } });
+      }
+      async function endpoint(url2, events, connect) {
+        const description = connect ? "Bookingbooster Connect events" : "Bookingbooster platform events";
+        const all = await stripe.api("GET", "/webhook_endpoints", { limit: 100 });
+        const ex = (all.data || []).find((e2) => e2.url === url2 && e2.description === description);
+        if (ex && !recreate) {
+          await stripe.api("POST", "/webhook_endpoints/" + ex.id, { enabled_events: events });
+          return { id: ex.id, secret: null };
+        }
+        if (ex) await stripe.api("DELETE", "/webhook_endpoints/" + ex.id);
+        const e = await stripe.api("POST", "/webhook_endpoints", Object.assign({ url: url2, enabled_events: events, description }, connect ? { connect: true } : {}));
+        return { id: e.id, secret: e.secret };
+      }
+      const prices = {};
+      for (const [env, name, monthly] of PLANS) {
+        const prod = await product(env, name);
+        prices["STRIPE_PRICE_" + env] = await price(env, prod.id, monthly, "month");
+        prices["STRIPE_PRICE_" + env + "_ANNUAL"] = await price(env, prod.id, env === "CALENDAR_SYNC" ? monthly * 12 : monthly * 10, "year");
+      }
+      prices.STRIPE_PRICE_SETUP = await price("SETUP", (await product("SETUP", "Bookingbooster setup")).id, SETUP_FEE, "once");
+      const url = baseUrl + "/webhooks/stripe";
+      const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
+      return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
+    }
+    function auto({ cfg, stripe, db, log }) {
+      const get = db.prepare("SELECT v FROM kv WHERE k = ?"), set = db.prepare("INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)");
+      const KEY = "config:stripe";
+      const fp = () => crypto.createHash("sha256").update(String(cfg.stripe.key || "")).digest("hex").slice(0, 16);
+      const mode = () => /^(sk|rk)_live_/.test(cfg.stripe.key || "") ? "live" : "test";
+      const P = { STRIPE_PRICE_GROWTH: "Growth", STRIPE_PRICE_GROWTH_ANNUAL: "GrowthAnnual", STRIPE_PRICE_CALENDAR_SYNC: "addon", STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: "addonAnnual", STRIPE_PRICE_SETUP: "setup" };
+      const read = async () => {
+        const r = await get.get(KEY);
+        try {
+          return r ? JSON.parse(r.v) : null;
+        } catch (_) {
+          return null;
+        }
+      };
+      const complete = (s) => !!(s && s.fp === fp() && s.prices && s.webhookSecret && s.connectWebhookSecret);
+      function apply(s) {
+        if (!s || s.fp !== fp()) return;
+        for (const [k, name] of Object.entries(P)) if (!cfg.stripe.prices[name] && s.prices && s.prices[k]) cfg.stripe.prices[name] = s.prices[k];
+        if (!cfg.stripe.webhookSecret && s.webhookSecret) cfg.stripe.webhookSecret = s.webhookSecret;
+        if (!cfg.stripe.connectWebhookSecret && s.connectWebhookSecret) cfg.stripe.connectWebhookSecret = s.connectWebhookSecret;
+      }
+      let loaded = null;
+      function load() {
+        if (!stripe.enabled) return Promise.resolve();
+        if (!loaded) loaded = read().then(apply).catch((e) => {
+          loaded = null;
+          log("stripe config", e.message);
+        });
+        return loaded;
+      }
+      async function ensure(t = Date.now()) {
+        if (!stripe.enabled) return null;
+        const s = await read();
+        if (complete(s)) {
+          apply(s);
+          return s;
+        }
+        if (s && s.fp === fp() && s.error && t - (s.at || 0) < 30 * 6e4) return s;
+        const envDone = cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret && Object.values(P).every((n) => cfg.stripe.prices[n]);
+        if (envDone) return null;
+        try {
+          const r = await setup(stripe, cfg.baseUrl, { recreate: true });
+          const saved = { fp: fp(), mode: mode(), at: t, prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
+          await set.run(KEY, JSON.stringify(saved));
+          apply(saved);
+          log("stripe", "Prices and webhooks set up in " + mode() + " mode");
+          return saved;
+        } catch (e) {
+          log("stripe setup", e.message);
+          await set.run(KEY, JSON.stringify({ fp: fp(), mode: mode(), at: t, error: e.message }));
+          return { error: e.message };
+        }
+      }
+      async function status() {
+        if (!stripe.enabled) return { on: false };
+        const s = await read();
+        apply(s);
+        const p = cfg.stripe.prices;
+        return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at };
+      }
+      return { load, ensure, status };
+    }
+    module.exports = { setup, auto, PLATFORM_EVENTS, CONNECT_EVENTS };
+  }
+});
+
 // server/effects.js
 var require_effects = __commonJS({
   "server/effects.js"(exports, module) {
@@ -14352,6 +14464,7 @@ var require_server = __commonJS({
     var domains = require_domains()({ cfg, auth, log });
     var backup = require_backup()({ db, cfg, log });
     var hostMail = require_host_emails()({ db, cfg, msg, auth, ws, urls, leads, log });
+    var stripeAuto = require_stripe_auto().auto({ cfg, stripe, db, log });
     var effects = require_effects()({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
     ws.onEffects((w, fx) => effects(w, fx).catch((e) => log("effects", e.message)));
     var SEC = Object.assign(
@@ -14738,6 +14851,7 @@ var require_server = __commonJS({
     var GUIDES_A = ["direct-booking-playbook.pdf", "direct-booking-launch-checklist.pdf", "ai-search-self-audit.pdf", "fee-leak-worksheet.pdf"];
     async function route(req, res) {
       await db.ready;
+      await stripeAuto.load();
       const u = new URL(req.url, "http://x");
       const p = u.pathname;
       const m = req.method;
@@ -15250,6 +15364,7 @@ var require_server = __commonJS({
       const email = String(u && u.email || "").toLowerCase();
       return !!email && cfg.admins.includes(email);
     };
+    var stripeLine = (st) => "<p><small>Stripe: " + (!st.on ? "off (add STRIPE_SECRET_KEY to the server secrets)" : st.mode + " mode \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
     async function adminPage(req, res, note) {
       if (!await isAdmin(req)) return notFound(res);
       const leadRows = await db.prepare("SELECT * FROM leads ORDER BY created_at DESC LIMIT 300").all();
@@ -15280,7 +15395,7 @@ var require_server = __commonJS({
         return '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td>' + d(l.created_at) + "</td><td>" + E(l.kind) + "</td><td>" + E(l.email) + "<br><small>" + E(l.name || "") + "</small></td><td><small>" + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</small></td><td>" + prog + '</td><td class="act">' + act + "</td></tr>";
       }))).join("");
       const settingsForm = '<details class="card"' + (st.webinar_at ? "" : " open") + '><summary><b>Live demo, call and report links</b></summary><form method="post" action="/admin/settings" style="margin-top:12px"><p style="margin:0 0 8px"><small>The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small></p><label>Next live demo date (UK)' + inp("webinar_day", wDay, "", "date") + "</label><label>Start time (UK)" + inp("webinar_time", wTime, "12:30", "time") + "</label><label>Joining link" + inp("join_url", st.join_url, "https://meet.google.com/\u2026") + "</label><label>Replay link (sent after the session)" + inp("replay_url", st.replay_url, "https://\u2026") + "</label><label>Walkthrough call joining link" + inp("meeting_url", st.meeting_url, "https://meet.google.com/\u2026") + "</label><label>Page where people book a walkthrough" + inp("book_call_url", st.book_call_url, "https://\u2026/book-call") + "</label><label>Sample audit report page" + inp("sample_report_url", st.sample_report_url, "https://\u2026/sample-report") + "</label><button>Save</button></form></details>";
-      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p><p><small>" + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map((a) => "<tr><td>" + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td></tr>").join("") + "</table></div>", true), "text/html; charset=utf-8");
+      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p>" + stripeLine(await stripeAuto.status()) + "<p><small>" + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map((a) => "<tr><td>" + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td></tr>").join("") + "</table></div>", true), "text/html; charset=utf-8");
     }
     async function adminPost(req, res, p) {
       if (!await isAdmin(req)) return notFound(res);
@@ -15450,6 +15565,7 @@ var require_server = __commonJS({
       }
       bg("leads", leads.run(t));
       bg("host email", hostMail.run(t));
+      bg("stripe", stripeAuto.ensure(t));
       for (const id of await ws.liveIds()) {
         try {
           const w = await ws.open(id);

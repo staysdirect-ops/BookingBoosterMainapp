@@ -58,6 +58,7 @@ const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
 const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
+const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
 
@@ -277,6 +278,7 @@ const GUIDES_A = ['direct-booking-playbook.pdf', 'direct-booking-launch-checklis
 /* ---------------- router ---------------- */
 async function route(req, res) {
   await db.ready;
+  await stripeAuto.load(); // Stripe prices and webhook secrets kept in the database
   const u = new URL(req.url, 'http://x'); const p = u.pathname; const m = req.method;
   const host = String(req.headers.host || '').toLowerCase();
   if (m === 'POST' && !p.startsWith('/webhooks/') && !p.startsWith('/u/') && p !== '/api/leads' && !sameOrigin(req)) return json(res, { error: 'Cross-site request blocked' }, 403);
@@ -630,6 +632,7 @@ async function route(req, res) {
 const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)');
 // Team view of leads and accounts, for the emails listed in ADMIN_EMAILS.
 const isAdmin = async req => { const u = await me(req); const email = String((u && u.email) || '').toLowerCase(); return !!email && cfg.admins.includes(email); };
+const stripeLine = st => '<p><small>Stripe: ' + (!st.on ? 'off (add STRIPE_SECRET_KEY to the server secrets)' : st.mode + ' mode · plan prices ' + (st.prices ? 'ready' : 'not yet') + ' · webhooks ' + (st.webhooks ? 'ready' : 'not yet') + (st.error ? ' · last setup error: ' + E(st.error) : '')) + '</small></p>';
 async function adminPage(req, res, note) {
   if (!await isAdmin(req)) return notFound(res);
   const leadRows = await db.prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT 300').all();
@@ -658,7 +661,7 @@ async function adminPage(req, res, note) {
     '<label>Walkthrough call joining link' + inp('meeting_url', st.meeting_url, 'https://meet.google.com/…') + '</label><label>Page where people book a walkthrough' + inp('book_call_url', st.book_call_url, 'https://…/book-call') + '</label>' +
     '<label>Sample audit report page' + inp('sample_report_url', st.sample_report_url, 'https://…/sample-report') + '</label><button>Save</button></form></details>';
   send(res, 200, authPage('Team', '<h1>Leads and accounts</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + '<p>' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.</p>' +
-    '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
+    stripeLine(await stripeAuto.status()) + '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
     '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div>' +
     '<div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map(a => '<tr><td>' + d(a.created_at) + '</td><td>' + E(a.slug) + '</td><td>' + E(a.plan || '') + '</td><td>' + E(a.billing_status || '') + '</td></tr>').join('') + '</table></div>', true), 'text/html; charset=utf-8');
 }
@@ -790,6 +793,7 @@ async function runTick(t) {
   try { await visits.flush(ws); } catch (e) { log('visits', e.message); }
   bg('leads', leads.run(t));
   bg('host email', hostMail.run(t));
+  bg('stripe', stripeAuto.ensure(t)); // creates the Stripe prices and webhooks once a key is set
   for (const id of await ws.liveIds()) {
     try {
       const w = await ws.open(id); if (!w) continue;
