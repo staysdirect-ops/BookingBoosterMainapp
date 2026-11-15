@@ -5,7 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const S = path.join(__dirname, 'src');
 const rd = f => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), 'utf8') : '';
-const MODS = ['site', 'app', 'app-grow', 'mobile', 'property', 'guest'];
+const MODS = ['site', 'app', 'app-grow', 'app-studio', 'mobile', 'property', 'guest'];
 function build() {
   const css = [rd('core.css'), rd('shell.css'), rd('shell-prod.css')].concat(MODS.map(m => rd(m + '.css')), [rd('site-calm.css')]).join('\n');
   const core = [rd('store.js'), rd('store-ext.js'), rd('ui.js')].concat(MODS.map(m => rd(m + '.js')));

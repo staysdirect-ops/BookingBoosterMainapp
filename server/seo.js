@@ -93,4 +93,4 @@ function robots(sitemapUrl) {
 function sitemap(urls) {
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map(u => '  <url><loc>' + esc(u.loc) + '</loc>' + (u.lastmod ? '<lastmod>' + u.lastmod + '</lastmod>' : '') + '</url>').join('\n') + '\n</urlset>\n';
 }
-module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf };
+module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf, reviewsOf };
