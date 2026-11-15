@@ -1,5 +1,5 @@
-// Host plan billing: new hosts pay before they set up. A yearly sign-up gets the yearly Stripe prices, add-on included, plus the one-off
-// setup fee and a free first month. Until it is paid the console shows only the payment page and the booking site stays offline.
+// Host plan billing: new hosts pay before they set up. A yearly sign-up gets the yearly Stripe prices, add-on included, with no setup fee
+// and no free month. Until it is paid the console shows only the payment page and the booking site stays offline.
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');
@@ -13,7 +13,7 @@ test.before(async () => {
     if (q.url.startsWith('/v1/checkout/sessions/')) return s.end(JSON.stringify(sessions[q.url.split('/').pop()] || { status: 'open', metadata: {} }));
     if (q.url === '/v1/checkout/sessions') bodies.push(new URLSearchParams(raw)); s.end('{"id":"cs_1","url":"https://checkout.stripe.test/cs_1"}'); }); }).listen(0);
   t = await start({ STRIPE_SECRET_KEY: 'sk_test_fake', STRIPE_API_BASE: 'http://localhost:' + mock.address().port,
-    STRIPE_PRICE_GROWTH: 'price_g_m', STRIPE_PRICE_GROWTH_ANNUAL: 'price_g_y', STRIPE_PRICE_CALENDAR_SYNC: 'price_a_m', STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: 'price_a_y', STRIPE_PRICE_SETUP: 'price_setup', STRIPE_WEBHOOK_SECRET: 'whsec_b' });
+    STRIPE_PRICE_GROWTH: 'price_g_m', STRIPE_PRICE_GROWTH_ANNUAL: 'price_g_y', STRIPE_PRICE_CALENDAR_SYNC: 'price_a_m', STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: 'price_a_y', STRIPE_PRICE_SETUP: 'price_setup_ignored', STRIPE_WEBHOOK_SECRET: 'whsec_b' });
   signedUp = await t.signup({ annual: true, addon: true });
 });
 const wsId = () => bodies[0].get('metadata[workspace]');
@@ -27,7 +27,7 @@ test('sign-up goes straight to Stripe Checkout, and setup stays locked until it 
   const app = await t.call('/app'); assert.equal(app.status, 302); assert.equal(app.headers.get('location'), '/app/pay');
   assert.equal((await t.call('/api/state')).status, 402);
   assert.equal((await t.call('/api/act', { body: { name: 'addProperty', args: [{ name: 'Sneaky' }] } })).status, 402);
-  const pay = await t.call('/app/pay'); assert.equal(pay.status, 200); assert.match(pay.body, /One step left/); assert.match(pay.body, /£997 setup fee/);
+  const pay = await t.call('/app/pay'); assert.equal(pay.status, 200); assert.match(pay.body, /One step left/); assert.match(pay.body, /£2000 for your first year/); assert.doesNotMatch(pay.body, /997|setup fee today/);
   assert.equal((await t.call('/app/account')).status, 200, 'the account page stays open, so they can delete it');
   // back from Checkout before the webhook: an unfinished session keeps the lock
   const early = await t.call('/app/pay/done?session=cs_open'); assert.equal(early.headers.get('location'), '/app/pay?msg=pending');
@@ -38,8 +38,8 @@ test('a yearly sign-up is billed yearly', async () => {
   assert.match((await t.call('/app/billing')).body, /£2000 a year/);
   const r = await t.call('/app/billing/start', { body: '', headers: { 'content-type': 'application/x-www-form-urlencoded' } });
   assert.equal(r.status, 302); assert.equal(r.headers.get('location'), 'https://checkout.stripe.test/cs_1');
-  const b = bodies[1]; assert.equal(b.get('line_items[0][price]'), 'price_g_y'); assert.equal(b.get('line_items[1][price]'), 'price_a_y'); assert.equal(b.get('line_items[2][price]'), 'price_setup'); assert.equal(b.get('subscription_data[trial_period_days]'), '30');
-  assert.match((await t.call('/app/billing')).body, /setup fee of £997/);
+  const b = bodies[1]; assert.equal(b.get('line_items[0][price]'), 'price_g_y'); assert.equal(b.get('line_items[1][price]'), 'price_a_y'); assert.equal(b.get('line_items[2][price]'), null, 'no setup fee'); assert.equal(b.get('subscription_data[trial_period_days]'), null, 'no free month');
+  assert.match((await t.call('/app/billing')).body, /No setup fee/); assert.doesNotMatch((await t.call('/app/billing')).body, /997/);
 });
 
 test('the booking site stays offline to guests until the first payment', async () => {

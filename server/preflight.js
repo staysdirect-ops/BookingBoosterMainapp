@@ -15,7 +15,7 @@ function check(cfg, E) {
   add('Stripe', cfg.stripe.key && /^sk_live_/.test(cfg.stripe.key), 'STRIPE_SECRET_KEY (a live sk_live_ key)');
   add('Stripe webhooks', cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret, 'STRIPE_WEBHOOK_SECRET and STRIPE_CONNECT_WEBHOOK_SECRET (npm run stripe-setup prints both)');
   const p = cfg.stripe.prices;
-  add('Plan prices', p.Growth && p.setup && p.addon, 'STRIPE_PRICE_GROWTH, STRIPE_PRICE_SETUP and STRIPE_PRICE_CALENDAR_SYNC (npm run stripe-setup creates them)');
+  add('Plan prices', p.Growth && p.addon, 'STRIPE_PRICE_GROWTH and STRIPE_PRICE_CALENDAR_SYNC (npm run stripe-setup creates them)');
   add('Annual prices', p.GrowthAnnual && p.addonAnnual, 'STRIPE_PRICE_*_ANNUAL for the yearly option the pricing page offers (npm run stripe-setup creates them)');
   add('No commission', !cfg.stripe.feePct, 'STRIPE_APPLICATION_FEE_PCT left at 0, because the site and billing page promise no commission');
   add('Texts', cfg.sms.sid && cfg.sms.token && cfg.sms.from, 'TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM, for text messages to guests', false);

@@ -124,7 +124,7 @@ function publicBoot(w, mode, extra) {
 }
 
 /* ---------------- property site & trip pages ---------------- */
-// A live host's sites stay offline to guests until the setup fee is paid (only when Stripe is on).
+// A live host's sites stay offline to guests until the first payment (only when Stripe is on).
 // The signed-in host can still preview their own site on the main domain.
 function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
@@ -237,7 +237,7 @@ async function signup(req, res) {
   if (name.length < 2) throw err(400, 'Enter your name.');
   if (pw.length < 10) throw err(400, 'Use a password of at least 10 characters.');
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
-  const plan = 'Growth'; // one plan: £997 setup, first month free, then £200 a month
+  const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
   const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
@@ -260,7 +260,7 @@ async function signup(req, res) {
   ws.defer(welcome(wid), 'welcome');
   json(res, { ok: true, redirect: '/app?welcome=1' }, 200, set);
 }
-// Plan checkout: the setup fee today, first month free. Back to /app/pay/done, which confirms it without waiting for the webhook.
+// Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
 async function planCheckout(w) {
   const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
   return stripe.subscribe({ customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
@@ -280,10 +280,10 @@ async function mustPay(req, w) {
   return !await isAdmin(req);
 }
 function payPage(w, note) {
-  const s = w.state, setup = 997, price = 200;
-  return authPage('Start your plan', '<h1>One step left</h1><p>Pay the one-off £' + setup + ' setup fee to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>' +
+  const s = w.state, price = 200, due = s.account.annual ? '£' + price * 10 + ' for your first year' : '£' + price + ' for your first month';
+  return authPage('Start your plan', '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>' +
     (note ? '<p class="ok" role="status">' + E(note) + '</p>' : '') +
-    '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">£' + setup + ' setup fee today. Your first month is free, so the plan is first billed a month from now. No commission on any booking. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '</div>' +
+    '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? 'the year' : 'the first month') + ' today, then it renews automatically. No commission on any booking. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '</div>' +
     '<form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form>' +
     '<div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div>' +
     '<form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
@@ -557,7 +557,7 @@ async function route(req, res) {
     const s = await me(req);
     if (!s) return p.startsWith('/api/') ? json(res, { error: 'Sign in again' }, 401) : redirect(res, '/login?next=' + encodeURIComponent(p));
     const w = await ws.open(s.workspace_id); if (!w) return json(res, { error: 'Workspace missing' }, 500);
-    if (!PAY_OPEN.includes(p) && !p.startsWith('/app/account/') && await mustPay(req, w)) return p.startsWith('/api/') ? json(res, { error: 'Pay the setup fee to start setting up.', redirect: '/app/pay' }, 402) : redirect(res, '/app/pay');
+    if (!PAY_OPEN.includes(p) && !p.startsWith('/app/account/') && await mustPay(req, w)) return p.startsWith('/api/') ? json(res, { error: 'Start your plan to begin setting up.', redirect: '/app/pay' }, 402) : redirect(res, '/app/pay');
     if (p === '/app/pay') { if (!await mustPay(req, w)) return redirect(res, '/app'); return send(res, 200, payPage(w, u.searchParams.get('msg') === 'pending' ? 'We are still confirming your payment with Stripe. Refresh this page in a minute.' : '')); }
     if (p === '/app/pay/done') {
       const sid = String(u.searchParams.get('session') || '');
@@ -804,10 +804,10 @@ async function deleteWorkspace(wid) {
   for (const dir of ['uploads', 'media']) await files.delPrefix(dir + '/' + wid);
 }
 async function billingPage(w) {
-  const r = await ws.row(w.id); const s = w.state; const price = 200, setup = 997;
-  const status = { trial: 'Not paid yet. The £' + setup + ' setup fee is due. Your booking site goes live to guests once it is paid, and your first month is free', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
-  return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">Plus a one-off setup fee of £' + setup + ', paid today. Your first month is free, and the plan is billed from a month after you start.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
-    (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Pay the £' + setup + ' setup fee and start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
+  const r = await ws.row(w.id); const s = w.state; const price = 200;
+  const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
+  return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
+    (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
     '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
 }
 const LEGAL = require('./legal')(cfg, E);

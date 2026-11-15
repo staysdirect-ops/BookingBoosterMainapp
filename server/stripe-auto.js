@@ -6,12 +6,11 @@
 'use strict';
 const crypto = require('crypto');
 
-// One plan: a one-off £997 setup fee, first month free, then £200 a month. The calendar sync add-on is £15 a month on top.
+// One plan: £200 a month, paid from the first month (no setup fee). The calendar sync add-on is £15 a month on top.
 const PLANS = [
   ['GROWTH', 'Bookingbooster Growth', 200],
   ['CALENDAR_SYNC', 'Bookingbooster calendar sync add-on', 15],
 ];
-const SETUP_FEE = 997;
 const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid'];
 const CONNECT_EVENTS = ['account.updated'];
 
@@ -47,8 +46,6 @@ async function setup(stripe, baseUrl, { recreate } = {}) {
     // yearly: plans are 10 months' price (2 months free); the add-on is 12 × £15
     prices['STRIPE_PRICE_' + env + '_ANNUAL'] = await price(env, prod.id, env === 'CALENDAR_SYNC' ? monthly * 12 : monthly * 10, 'year');
   }
-  // The setup fee is a one-off price, charged at checkout; the plan itself starts after a free month.
-  prices.STRIPE_PRICE_SETUP = await price('SETUP', (await product('SETUP', 'Bookingbooster setup')).id, SETUP_FEE, 'once');
   const url = baseUrl + '/webhooks/stripe';
   const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
   return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
@@ -61,7 +58,7 @@ function auto({ cfg, stripe, db, log }) {
   // Which Stripe key this was made with (a hash, never the key): a new key means a new setup.
   const fp = () => crypto.createHash('sha256').update(String(cfg.stripe.key || '')).digest('hex').slice(0, 16);
   const mode = () => /^(sk|rk)_live_/.test(cfg.stripe.key || '') ? 'live' : 'test';
-  const P = { STRIPE_PRICE_GROWTH: 'Growth', STRIPE_PRICE_GROWTH_ANNUAL: 'GrowthAnnual', STRIPE_PRICE_CALENDAR_SYNC: 'addon', STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: 'addonAnnual', STRIPE_PRICE_SETUP: 'setup' };
+  const P = { STRIPE_PRICE_GROWTH: 'Growth', STRIPE_PRICE_GROWTH_ANNUAL: 'GrowthAnnual', STRIPE_PRICE_CALENDAR_SYNC: 'addon', STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: 'addonAnnual' };
   const read = async () => { const r = await get.get(KEY); try { return r ? JSON.parse(r.v) : null; } catch (_) { return null; } };
   const complete = s => !!(s && s.fp === fp() && s.prices && s.webhookSecret && s.connectWebhookSecret);
   // Only fills what the environment left empty.
@@ -107,7 +104,14 @@ function auto({ cfg, stripe, db, log }) {
     await load();
     if (!stripe.enabled) return null;
     const s = await read();
-    if (complete(s)) { apply(s); return s; }
+    if (complete(s)) {
+      // The £997 setup fee was dropped: archive its old Stripe price once (kept in Stripe for past payments, never deleted).
+      if (s.prices.STRIPE_PRICE_SETUP) {
+        try { await stripe.api('POST', '/prices/' + s.prices.STRIPE_PRICE_SETUP, { active: false }); log('stripe', 'Archived the old setup fee price'); delete s.prices.STRIPE_PRICE_SETUP; await set.run(KEY, JSON.stringify(s)); }
+        catch (e) { log('stripe archive', e.message); }
+      }
+      apply(s); return s;
+    }
     if (s && s.fp === fp() && s.error && t - (s.at || 0) < 30 * 60e3) return s;
     const envDone = cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret && Object.values(P).every(n => cfg.stripe.prices[n]);
     if (envDone) return null; // set by hand in the environment: nothing to do
@@ -128,7 +132,7 @@ function auto({ cfg, stripe, db, log }) {
     if (!stripe.enabled) return { on: false, canSave: !envKey };
     const s = await read(); apply(s);
     const p = cfg.stripe.prices;
-    return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || '' : '', at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4), keyName: cfg.stripe.keyName || 'team page' };
+    return { on: true, mode: mode(), prices: !!(p.Growth && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || '' : '', at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4), keyName: cfg.stripe.keyName || 'team page' };
   }
   return { load, ensure, status, saveKey };
 }

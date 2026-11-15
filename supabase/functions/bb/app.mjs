@@ -8014,7 +8014,7 @@ body.p-lock { overflow: hidden; }
   function acctFields(inst) {
     const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', terms: false }), u = inst.uid;
     const f = (k, label, type, ac, ph) => '<label class="s-f"><span>' + label + '</span><input id="s-ac-' + k + '-' + u + '" data-ac="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(a[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
-    return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay the \xA3997 setup fee securely with Stripe, and your console opens straight after. Your first month is free.' : 'Your first month is free.') + '</p>' +
+    return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
       '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
       (inst.st.ob.acctErr ? '<p class="s-err" role="alert">' + esc(inst.st.ob.acctErr) + '</p>' : '') + '</div>';
@@ -11221,7 +11221,6 @@ var require_config = __commonJS({
       stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : void 0, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: {
         Growth: E.STRIPE_PRICE_GROWTH,
         addon: E.STRIPE_PRICE_CALENDAR_SYNC,
-        setup: E.STRIPE_PRICE_SETUP,
         GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL,
         addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
       }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
@@ -12578,8 +12577,7 @@ var require_stripe = __commonJS({
           const add = yearly ? P.addonAnnual : P.addon;
           const items = [{ price, quantity: 1 }];
           if (addon && add) items.push({ price: add, quantity: 1 });
-          if (P.setup) items.push({ price: P.setup, quantity: 1 });
-          const s = await api("POST", "/checkout/sessions", { mode: "subscription", customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { trial_period_days: 30, metadata: meta }, metadata: meta, allow_promotion_codes: true });
+          const s = await api("POST", "/checkout/sessions", { mode: "subscription", customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
           return { id: s.id, url: s.url };
         },
         // Account deletion: end every live subscription for this customer straight away.
@@ -13874,7 +13872,6 @@ var require_stripe_auto = __commonJS({
       ["GROWTH", "Bookingbooster Growth", 200],
       ["CALENDAR_SYNC", "Bookingbooster calendar sync add-on", 15]
     ];
-    var SETUP_FEE = 997;
     var PLATFORM_EVENTS = ["checkout.session.completed", "checkout.session.expired", "customer.subscription.deleted", "invoice.payment_failed", "invoice.paid"];
     var CONNECT_EVENTS = ["account.updated"];
     async function setup(stripe, baseUrl, { recreate } = {}) {
@@ -13907,7 +13904,6 @@ var require_stripe_auto = __commonJS({
         prices["STRIPE_PRICE_" + env] = await price(env, prod.id, monthly, "month");
         prices["STRIPE_PRICE_" + env + "_ANNUAL"] = await price(env, prod.id, env === "CALENDAR_SYNC" ? monthly * 12 : monthly * 10, "year");
       }
-      prices.STRIPE_PRICE_SETUP = await price("SETUP", (await product("SETUP", "Bookingbooster setup")).id, SETUP_FEE, "once");
       const url = baseUrl + "/webhooks/stripe";
       const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
       return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
@@ -13917,7 +13913,7 @@ var require_stripe_auto = __commonJS({
       const KEY = "config:stripe";
       const fp = () => crypto.createHash("sha256").update(String(cfg.stripe.key || "")).digest("hex").slice(0, 16);
       const mode = () => /^(sk|rk)_live_/.test(cfg.stripe.key || "") ? "live" : "test";
-      const P = { STRIPE_PRICE_GROWTH: "Growth", STRIPE_PRICE_GROWTH_ANNUAL: "GrowthAnnual", STRIPE_PRICE_CALENDAR_SYNC: "addon", STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: "addonAnnual", STRIPE_PRICE_SETUP: "setup" };
+      const P = { STRIPE_PRICE_GROWTH: "Growth", STRIPE_PRICE_GROWTH_ANNUAL: "GrowthAnnual", STRIPE_PRICE_CALENDAR_SYNC: "addon", STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: "addonAnnual" };
       const read = async () => {
         const r = await get.get(KEY);
         try {
@@ -13992,6 +13988,16 @@ var require_stripe_auto = __commonJS({
         if (!stripe.enabled) return null;
         const s = await read();
         if (complete(s)) {
+          if (s.prices.STRIPE_PRICE_SETUP) {
+            try {
+              await stripe.api("POST", "/prices/" + s.prices.STRIPE_PRICE_SETUP, { active: false });
+              log("stripe", "Archived the old setup fee price");
+              delete s.prices.STRIPE_PRICE_SETUP;
+              await set.run(KEY, JSON.stringify(s));
+            } catch (e) {
+              log("stripe archive", e.message);
+            }
+          }
           apply(s);
           return s;
         }
@@ -14017,7 +14023,7 @@ var require_stripe_auto = __commonJS({
         const s = await read();
         apply(s);
         const p = cfg.stripe.prices;
-        return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4), keyName: cfg.stripe.keyName || "team page" };
+        return { on: true, mode: mode(), prices: !!(p.Growth && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4), keyName: cfg.stripe.keyName || "team page" };
       }
       return { load, ensure, status, saveKey };
     }
@@ -14362,8 +14368,8 @@ var require_legal = __commonJS({
         "Bookingbooster is not a channel manager. The only sync is the optional calendar sync add-on, which reads calendar links (iCal) from your channel manager, Airbnb, Vrbo or Booking.com to block dates. It moves dates only. Those sites can be slow to update their own calendar links, so you remain responsible for avoiding double bookings."
       ) + sec(
         "Plans and payment",
-        "Bookingbooster costs a one-off setup fee of \xA3997. Your first month is free, then it is \xA3200 a month. The calendar sync add-on is \xA315 a month. All prices include VAT. There is no minimum term.",
-        "The setup fee is taken when you start your plan, and the plan is first billed a month later. The setup fee is not refundable once we have started building your site.",
+        "Bookingbooster costs \xA3200 a month, or \xA32,000 a year. There is no setup fee. The calendar sync add-on is \xA315 a month (\xA3180 a year). All prices include VAT. There is no minimum term.",
+        "Your first month (or year) is paid when you sign up, before you start setting up your account.",
         "We take payment monthly in advance through Stripe. If a payment fails, we will email you and may pause your account until it is paid. We will give you at least 30 days' notice of any price change.",
         "You can cancel at any time from your console. Your plan runs to the end of the month you have paid for. We do not refund part periods, except where the law says we must."
       ) + sec(
@@ -14422,7 +14428,7 @@ var require_preflight = __commonJS({
       add("Stripe", cfg.stripe.key && /^sk_live_/.test(cfg.stripe.key), "STRIPE_SECRET_KEY (a live sk_live_ key)");
       add("Stripe webhooks", cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret, "STRIPE_WEBHOOK_SECRET and STRIPE_CONNECT_WEBHOOK_SECRET (npm run stripe-setup prints both)");
       const p = cfg.stripe.prices;
-      add("Plan prices", p.Growth && p.setup && p.addon, "STRIPE_PRICE_GROWTH, STRIPE_PRICE_SETUP and STRIPE_PRICE_CALENDAR_SYNC (npm run stripe-setup creates them)");
+      add("Plan prices", p.Growth && p.addon, "STRIPE_PRICE_GROWTH and STRIPE_PRICE_CALENDAR_SYNC (npm run stripe-setup creates them)");
       add("Annual prices", p.GrowthAnnual && p.addonAnnual, "STRIPE_PRICE_*_ANNUAL for the yearly option the pricing page offers (npm run stripe-setup creates them)");
       add("No commission", !cfg.stripe.feePct, "STRIPE_APPLICATION_FEE_PCT left at 0, because the site and billing page promise no commission");
       add("Texts", cfg.sms.sid && cfg.sms.token && cfg.sms.from, "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM, for text messages to guests", false);
@@ -14905,8 +14911,8 @@ var require_server = __commonJS({
       return !await isAdmin(req);
     }
     function payPage(w, note) {
-      const s = w.state, setup = 997, price = 200;
-      return authPage("Start your plan", "<h1>One step left</h1><p>Pay the one-off \xA3" + setup + " setup fee to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>" + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">\xA3' + setup + " setup fee today. Your first month is free, so the plan is first billed a month from now. No commission on any booking. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
+      const s = w.state, price = 200, due = s.account.annual ? "\xA3" + price * 10 + " for your first year" : "\xA3" + price + " for your first month";
+      return authPage("Start your plan", "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>" + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
     }
     async function welcome(wid) {
       const w = await ws.open(wid);
@@ -15269,7 +15275,7 @@ var require_server = __commonJS({
         if (!s) return p.startsWith("/api/") ? json(res, { error: "Sign in again" }, 401) : redirect(res, "/login?next=" + encodeURIComponent(p));
         const w = await ws.open(s.workspace_id);
         if (!w) return json(res, { error: "Workspace missing" }, 500);
-        if (!PAY_OPEN.includes(p) && !p.startsWith("/app/account/") && await mustPay(req, w)) return p.startsWith("/api/") ? json(res, { error: "Pay the setup fee to start setting up.", redirect: "/app/pay" }, 402) : redirect(res, "/app/pay");
+        if (!PAY_OPEN.includes(p) && !p.startsWith("/app/account/") && await mustPay(req, w)) return p.startsWith("/api/") ? json(res, { error: "Start your plan to begin setting up.", redirect: "/app/pay" }, 402) : redirect(res, "/app/pay");
         if (p === "/app/pay") {
           if (!await mustPay(req, w)) return redirect(res, "/app");
           return send(res, 200, payPage(w, u.searchParams.get("msg") === "pending" ? "We are still confirming your payment with Stripe. Refresh this page in a minute." : ""));
@@ -15614,9 +15620,9 @@ var require_server = __commonJS({
     async function billingPage(w) {
       const r = await ws.row(w.id);
       const s = w.state;
-      const price = 200, setup = 997;
-      const status = { trial: "Not paid yet. The \xA3" + setup + " setup fee is due. Your booking site goes live to guests once it is paid, and your first month is free", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
-      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">Plus a one-off setup fee of \xA3' + setup + ", paid today. Your first month is free, and the plan is billed from a month after you start.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Pay the \xA3' + setup + " setup fee and start your plan</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+      const price = 200;
+      const status = { trial: "Not paid yet. Your booking site goes live to guests once your plan is paid", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
+      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>' : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
     }
     var LEGAL = require_legal()(cfg, E);
     function staticPage(p) {

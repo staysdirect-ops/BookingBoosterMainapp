@@ -23,14 +23,14 @@ test.after(() => mock.close());
 
 const run = () => new Promise(res => execFile(process.execPath, [path.join(__dirname, '..', 'scripts', 'stripe-setup.js')], { env: Object.assign({}, process.env, { STRIPE_SECRET_KEY: 'sk_test_x', STRIPE_API_BASE: 'http://localhost:' + mock.address().port, BASE_URL: 'https://app.example.co.uk', DATA_DIR: require('node:os').tmpdir() + '/bb-setup' }) }, (e, out, err) => res({ code: e ? e.code : 0, out, err })));
 
-test('creates monthly and yearly prices and the setup fee with VAT included, and both webhooks', async () => {
+test('creates monthly and yearly prices with VAT included (no setup fee), and both webhooks', async () => {
   const r = await run(); assert.equal(r.code, 0, r.err);
-  assert.equal(prices.length, 5); assert.ok(prices.every(p => p.tax === 'inclusive'));
+  assert.equal(prices.length, 4); assert.ok(prices.every(p => p.tax === 'inclusive'));
   const amt = k => prices.find(p => p.lookup_key === k).unit_amount;
   assert.equal(amt('bb_growth_month_200'), 20000); assert.equal(amt('bb_growth_year_2000'), 200000); assert.equal(amt('bb_calendar_sync_year_180'), 18000);
-  const setup = prices.find(p => p.lookup_key === 'bb_setup_once_997'); assert.equal(setup.unit_amount, 99700); assert.equal(setup.interval, null); assert.match(r.out, /STRIPE_PRICE_SETUP=price_\d/);
+  assert.ok(!prices.some(p => /setup/.test(p.lookup_key))); assert.doesNotMatch(r.out, /STRIPE_PRICE_SETUP/);
   assert.equal(hooks.length, 2); assert.ok(hooks.some(h => h.connect)); assert.ok(hooks.every(h => h.url === 'https://app.example.co.uk/webhooks/stripe'));
   assert.match(r.out, /STRIPE_PRICE_GROWTH_ANNUAL=price_\d/); assert.match(r.out, /STRIPE_CONNECT_WEBHOOK_SECRET=whsec_/);
-  const again = await run(); assert.equal(again.code, 0); assert.equal(prices.length, 5); assert.equal(products.length, 3); assert.equal(hooks.length, 2);
+  const again = await run(); assert.equal(again.code, 0); assert.equal(prices.length, 4); assert.equal(products.length, 2); assert.equal(hooks.length, 2);
   assert.match(again.out, /already existed/);
 });

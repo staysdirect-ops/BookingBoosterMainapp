@@ -1,4 +1,4 @@
-// One-off Stripe setup: creates the plan prices (monthly and yearly, GBP, VAT included), the one-off setup fee and the two webhook
+// One-off Stripe setup: creates the plan prices (monthly and yearly, GBP, VAT included) and the two webhook
 // endpoints, then prints the lines to add to your secrets. Safe to run again: it reuses what already exists.
 //   STRIPE_SECRET_KEY=sk_live_... BASE_URL=https://booking-booster.co.uk npm run stripe-setup
 // On the live Supabase server you do not need this: once STRIPE_SECRET_KEY is set, the server does the same by itself
