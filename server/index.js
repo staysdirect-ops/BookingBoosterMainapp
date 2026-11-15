@@ -205,9 +205,9 @@ async function stripeWebhook(req, res) {
       if (m.kind === 'deposit') { await payIns.run(o.id, w.id, m.booking, 'deposit', 20000, 'card-saved', o.setup_intent, Date.now(), Date.now()); await ws.act(w.id, 'checkin', [m.booking, { deposit: true }]); }
       if (m.kind === 'extra') { await payIns.run(o.id, w.id, m.booking, 'extra', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); }
       if (m.kind === 'plan') { await ws.setMeta(w.id, { billing_status: 'active', stripe_customer: o.customer, plan: m.plan }); await ws.withWs(w.id, BB => { BB.store.get().account.plan = m.plan; BB.store.get().account.billing = 'active'; BB.store.commit({}); }); }
-      if (m.kind === 'credit' && o.payment_status === 'paid') { const pounds = (o.amount_total || 0) / 100; if (await credits.topup(w.id, pounds, o.id)) log('credits', w.id, 'topped up £' + pounds); }
     }
     if (ev.type === 'checkout.session.expired' && w && m.kind === 'booking') { await payUpd.run('expired', null, Date.now(), o.id); await ws.act(w.id, 'expirePending', [m.booking]); }
+    if (ev.type === 'checkout.session.completed' && w && m.kind === 'credit' && o.payment_status === 'paid') { const pounds = (o.amount_total || 0) / 100; if (await credits.topup(w.id, pounds, o.id)) log('credits', w.id, 'topped up £' + pounds); }
     if (ev.type === 'account.updated' && o.id) { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_account = ?').get(o.id); if (r) await markStripe(r.id, !!o.charges_enabled); }
     if (ev.type === 'invoice.payment_failed' || ev.type === 'invoice.paid') {
       const r = o.customer && await db.prepare('SELECT id, billing_status FROM workspaces WHERE stripe_customer = ?').get(o.customer);
