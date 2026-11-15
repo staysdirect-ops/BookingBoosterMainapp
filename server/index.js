@@ -100,7 +100,7 @@ async function stream(res, u, wid, headers) {
 }
 const err = (status, message) => Object.assign(new Error(message), { status });
 // The AI site builder and funnel creator (server/studio)
-const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
+const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, credits, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
 
 /* ---------------- static assets ---------------- */
 const MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.html': 'text/html; charset=utf-8', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8' };
@@ -595,7 +595,7 @@ async function route(req, res) {
     if (!auth.limit('login:' + ip(req), 10, 900e3)) return send(res, 429, loginForm({ err: 'Too many attempts. Wait 15 minutes.', email: f.email }));
     const user = await auth.login(f.email, f.password);
     if (!user) return send(res, 401, loginForm({ err: 'That email and password do not match.', email: f.email, next: f.next }));
-    const next = /^\/app(\/|$|\?)/.test(f.next || '') ? f.next : '/app';
+    const next = /^\/app(\/|$|\?)/.test(f.next || '') && f.next !== '/app' ? f.next : (await isAdminEmail(user.email) ? '/admin' : '/app');
     return redirect(res, next, { 'set-cookie': cookie('bb_s', await auth.startSession(user.id), 30 * 86400) });
   }
   if (p === '/logout' && m === 'POST') { await auth.endSession(cookies(req).bb_s); return redirect(res, '/login', { 'set-cookie': cookie('bb_s', '', 0) }); }
@@ -630,7 +630,7 @@ async function route(req, res) {
       return redirect(res, await mustPay(req, w) ? '/app/pay?msg=pending' : '/app?welcome=1');
     }
     if (w.catchUp()) ws.persist(w, { rollover: true });
-    if (p === '/app' || p === '/app/phone') return send(res, 200, pages.page({ title: w.state.account.business + ' · Bookingbooster', robots: 'noindex', app: true, boot: await hostBoot(w, p === '/app/phone' ? 'mobile' : 'app'), banner: testNotes().length && u.searchParams.get('welcome') ? '<b>Test mode</b> ' + E(testNotes().join(', ')) + ' are not switched on for this server yet.' : null }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
+    if (p === '/app' || p === '/app/phone') return send(res, 200, pages.page({ title: w.state.account.business + ' · Bookingbooster', robots: 'noindex', app: true, boot: await hostBoot(w, p === '/app/phone' ? 'mobile' : 'app'), banner: testNotes().length && u.searchParams.get('welcome') ? '<b>Test mode</b> ' + E(testNotes().join(', ')) + ' are not switched on for this server yet.' : (await isAdmin(req) ? '<b>Team</b> <a href="/admin">Open the team admin</a>: leads and outreach, email campaigns and templates, host accounts, Stripe.' : null) }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
     if (p === '/app/billing') return send(res, 200, await billingPage(w, u.searchParams));
     if (p === '/app/account' && m === 'GET') return send(res, 200, await accountPage(w, s, u.searchParams.get('msg')));
     if (p === '/app/account/export') { // everything in the account, as one JSON file (UK GDPR data portability)
@@ -752,8 +752,9 @@ async function route(req, res) {
 const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)');
 // Team view of leads and accounts, for the emails listed in ADMIN_EMAILS.
 // Also config:admins in the kv table (comma separated), so team members can be added without changing the server's settings.
-const isAdmin = async req => { const u = await me(req); const email = String((u && u.email) || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
+const isAdminEmail = async email => { email = String(email || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
   const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email); };
+const isAdmin = async req => { const u = await me(req); return isAdminEmail(u && u.email); };
 const stripeKeyForm = st => st.canSave ? '<details class="card"' + (st.on ? '' : ' open') + '><summary><b>' + (st.on ? 'Change the Stripe key' : 'Connect Stripe') + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off">' +
   '<p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p>' +
   '<label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : '';

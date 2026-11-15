@@ -81,7 +81,7 @@ test('with a key, Claude art-directs the site and is sent back once when a desig
     copy: { wordmark: 'Gull', tagline: 'Whitby · harbour', headline: n === 1 ? 'A stunning cottage that is nestled right by the harbour wall in Whitby' : 'Gulls at *breakfast*', subhead: 'Two streets from the harbour.', cta: 'Check dates',
       storyEyebrow: '', storyTitle: '', story: ['Para one.', 'Para two.'], pull: 'Fish and chips on the pier.', highlightsEyebrow: '', highlightsTitle: '', highlights: [{ eyebrow: 'a', title: 'Sea view', text: 'From the bedroom.' }, { eyebrow: 'b', title: 'Wood burner', text: 'For cold nights.' }, { eyebrow: 'c', title: 'Fast Wi-Fi', text: 'Good enough to work.' }],
       galleryEyebrow: '', galleryTitle: '', amenitiesEyebrow: '', amenitiesTitle: '', reviewsEyebrow: '', reviewsTitle: '', areaEyebrow: '', areaTitle: '', areaIntro: '', hostEyebrow: '', hostNote: 'Invented note', bookEyebrow: '', bookTitle: '', bookText: '', faqEyebrow: '', faqTitle: '', closing: '', footerLine: '', seoTitle: 'Gull Cottage · Whitby harbour cottage', seoDescription: 'Sleeps 4 two streets from Whitby harbour. Book direct from £140 a night with no platform fees, and talk to your host directly.' } });
-  const mock = http.createServer((q, s) => { let raw = ''; q.on('data', c => raw += c); q.on('end', () => { calls.push(JSON.parse(raw)); s.writeHead(200, { 'content-type': 'application/json' }); s.end(JSON.stringify({ stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify(reply(calls.length)) }] })); }); }).listen(0);
+  const mock = http.createServer((q, s) => { let raw = ''; q.on('data', c => raw += c); q.on('end', () => { calls.push(JSON.parse(raw)); s.writeHead(200, { 'content-type': 'application/json' }); s.end(JSON.stringify({ stop_reason: 'end_turn', model: 'claude-opus-5-5', usage: { input_tokens: 20000, output_tokens: 8000 }, content: [{ type: 'text', text: JSON.stringify(reply(calls.length)) }] })); }); }).listen(0);
   const t2 = await start({ ANTHROPIC_API_KEY: 'sk-ant-test', ANTHROPIC_API_BASE: 'http://localhost:' + mock.address().port });
   try {
     await t2.signup(); const { p } = await t2.home();
@@ -95,6 +95,9 @@ test('with a key, Claude art-directs the site and is sent back once when a desig
     assert.equal(spec.copy.hostNote, '', 'the AI never invents a host note');
     const types = spec.sections.map(s => s.type); assert.ok(types.indexOf('book') < types.indexOf('faq'), 'booking before FAQ'); assert.equal(types[types.length - 1], 'closing');
     assert.ok(spec.qa.every(x => x.ok || /photo/i.test(x.label)), JSON.stringify(spec.qa.filter(x => !x.ok)));
+    // both calls are charged to the host's AI credit, as Site builder use
+    const cr = (await t2.call('/api/credits')).body; const used = cr.recent.filter(x => x.feature === 'studio');
+    assert.equal(used.length, 2, JSON.stringify(cr.recent));
   } finally { t2.stop(); mock.close(); }
 });
 

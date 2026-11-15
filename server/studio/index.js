@@ -12,6 +12,8 @@ const Gen = require('./generate');
 module.exports = function (o) {
   const { cfg, ws, auth, pub, urls, stripeReady, log, json, jsonBody, send, err, ip } = o;
   const gen = Gen(cfg);
+  // AI credit (server/credits.js): checked before each AI design or funnel, and charged for what Claude used.
+  const credits = o.credits || { check: async () => {}, meter: () => null };
   const HTML = 'text/html; charset=utf-8';
   const st = s => (s.studio = s.studio || { sites: {}, funnels: [] });
   const today = s => s.today;
@@ -58,7 +60,8 @@ module.exports = function (o) {
       const prev = j.mode === 'revise' ? cur.draft : null;
       const avoid = j.mode === 'another' && cur.draft ? [cur.draft.direction].concat(cur.tried || []).slice(0, 7) : null;
       let spec;
-      try { spec = await gen.design(s, prop, b, { previous: prev, avoid }); }
+      if (gen.enabled) await credits.check(w.id);
+      try { spec = await gen.design(s, prop, b, { previous: prev, avoid, onUsage: credits.meter(w.id, 'studio') }); }
       catch (e) { log('studio', e.message); spec = await Gen({ ai: {} }).design(s, prop, b, { previous: prev, avoid }); spec.note = 'The AI designer was not available, so this version was laid out by the design rules. Try again in a minute for an AI design.'; }
       spec.at = new Date().toISOString();
       await save(w.id, (S, BB) => { const sx = st(S); const x = sx.sites[prop.id] = sx.sites[prop.id] || {};
@@ -106,7 +109,8 @@ module.exports = function (o) {
       const f = render.facts(s, prop); const steps = FN.TEMPLATES[tpl].steps.concat(FN.TEMPLATES[tpl].steps.includes('optin') && !FN.TEMPLATES[tpl].steps.includes('thanks') ? ['thanks'] : []);
       let copy = FN.rulesCopy(tpl, f, opt), name = FN.TEMPLATES[tpl].name + ' · ' + prop.short, by = 'rules';
       if (gen.enabled) {
-        try { const r = await gen.ask('You write high-converting, honest landing pages for UK holiday lets, at the standard of a top design studio.\n' + D.PRINCIPLES.join('\n'), [{ type: 'text', text: FN.aiPrompt(tpl, f, opt) }], FN.schema(steps));
+        await credits.check(w.id);
+        try { const r = await gen.ask('You write high-converting, honest landing pages for UK holiday lets, at the standard of a top design studio.\n' + D.PRINCIPLES.join('\n'), [{ type: 'text', text: FN.aiPrompt(tpl, f, opt) }], FN.schema(steps), credits.meter(w.id, 'funnel'));
           const clean = (x, n) => String(x || '').replace(/[<>]/g, '').trim().slice(0, n);
           steps.forEach(k => { const a = r[k] || {}, b = copy[k] || {}; copy[k] = { eyebrow: clean(a.eyebrow, 60) || b.eyebrow, headline: clean(a.headline, 90) || b.headline, subhead: clean(a.subhead, 260) || b.subhead, points: (Array.isArray(a.points) && a.points.length ? a.points : b.points || []).map(x => clean(x, 110)).slice(0, 4), button: clean(a.button, 32) || b.button, fine: clean(a.fine, 160) || b.fine || '', urgency: clean(a.urgency, 60) || b.urgency || '', text: clean(a.text, 300) || b.text || '' }; });
           if (r.name) name = clean(r.name, 60); by = 'ai';

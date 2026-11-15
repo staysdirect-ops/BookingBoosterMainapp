@@ -160,12 +160,14 @@ module.exports = function (cfg) {
   const key = cfg.ai.anthropic, base = cfg.ai.anthropicBase || 'https://api.anthropic.com', model = cfg.ai.studioModel || 'claude-opus-5-5';
   const enabled = !!key;
 
-  async function ask(system, content, sch) {
+  // onUsage(model, usage) is told what each call used, so it can be charged to the host's AI credit.
+  async function ask(system, content, sch, onUsage) {
     const body = { model, max_tokens: 16000, system, messages: [{ role: 'user', content }], output_config: { effort: cfg.ai.studioEffort || 'medium', format: { type: 'json_schema', schema: sch || schema() } }, fallbacks: 'default' };
     const r = await fetch(base + '/v1/messages', { method: 'POST', signal: AbortSignal.timeout(140000),
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-beta': 'server-side-fallback-2026-07-01', 'content-type': 'application/json' }, body: JSON.stringify(body) });
     if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error('Claude answered ' + r.status + ' ' + t.slice(0, 160)); }
     const j = await r.json();
+    if (onUsage) await onUsage(j.model || model, j.usage);
     if (j.stop_reason === 'refusal') throw new Error('Claude declined this request');
     const text = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
     try { return JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch (e) { throw new Error('Claude did not return a usable design'); }
@@ -186,12 +188,12 @@ module.exports = function (cfg) {
     // Claude looks at up to four of the host's photos (public addresses only) to choose the direction and accent
     f.photos.filter(x => /^https:\/\//.test(x.url)).slice(0, 4).forEach(x => content.push({ type: 'image', source: { type: 'url', url: x.url } }));
     content.push({ type: 'text', text: userPrompt(f, brief, opts.previous, opts.avoid) });
-    let spec = normalize(await ask(SYSTEM(), content), f, fallback);
+    let spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
     let checks = D.qa(spec, f);
     const fixable = checks.filter(x => !x.ok && x.fix && !/photo/i.test(x.label));
     if (fixable.length) { // one review round: send the failed checks back and ask for a corrected spec
       content[content.length - 1] = { type: 'text', text: userPrompt(f, brief, spec, opts.avoid) + '\n\nYour last version failed these design checks. Fix them and keep everything else: ' + fixable.map(x => x.label + ' (' + x.fix + ')').join('; ') };
-      try { spec = normalize(await ask(SYSTEM(), content), f, fallback); checks = D.qa(spec, f); } catch (_) { /* keep the first version */ }
+      try { spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback); checks = D.qa(spec, f); } catch (_) { /* keep the first version */ }
     }
     spec.by = 'ai'; spec.qa = checks; return spec;
   }

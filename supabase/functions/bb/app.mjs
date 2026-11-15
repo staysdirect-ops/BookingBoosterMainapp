@@ -6786,21 +6786,24 @@ body.p-lock { overflow: hidden; }
   }
 
   /* ---------- host ---------- */
+  const money = n => '\xA3' + (Number(n) || 0).toFixed(2);
   let drawerInst = null, drawerOpen = false, seen = BB.store.get().events.length, menu = false;
   function hostBar() {
-    const s = BB.store.get(); const unread = s.events.length - seen;
+    const s = BB.store.get(); const unread = s.events.length - seen; const cr = BOOT.aiCredit;
     const tab = (k, t, i, href) => '<a href="' + href + '" data-surface="' + k + '" aria-current="' + (current === k ? 'page' : 'false') + '">' + BB.icon(i) + '<span>' + t + '</span></a>';
     return '<div class="pbar-in hbar">' +
       '<a class="pbar-brand" href="/app">' + BB.MARK + '<span><b>bookingbooster</b><em>' + esc(s.account.business) + '</em></span></a>' +
       '<nav class="pbar-tabs" aria-label="Your workspace">' + tab('app', 'Console', 'dash', '/app') + tab('mobile', 'Phone view', 'phone', '/app/phone') +
         (s.properties.length ? '<button data-act="sites" aria-expanded="' + (menu === 'sites') + '">' + BB.icon('home') + '<span>My sites</span></button>' : '') + '</nav>' +
       '<div class="pbar-tools">' +
+        (cr && (cr.empty || cr.low) ? '<a class="pbtn" href="/app/billing#ai-credit" title="' + (cr.empty ? 'AI credit used up. Top up to keep using the AI tools' : 'AI credit running low') + '">' + BB.icon('bolt') + '<span>' + (cr.empty ? 'Top up AI credit' : 'AI credit ' + money(cr.balance)) + '</span></a>' : '') +
         '<button class="pbtn" data-act="activity" aria-expanded="' + drawerOpen + '">' + BB.icon('bolt') + '<span>Activity</span>' + (unread > 0 && !drawerOpen ? '<i class="badge num">' + Math.min(unread, 99) + '</i>' : '') + '</button>' +
         '<button class="pbtn" data-act="me" aria-expanded="' + (menu === 'me') + '">' + BB.avatar(s.account.owner || 'You', 'sm') + '<span>' + esc(String(s.account.owner || '').split(' ')[0] || 'Account') + '</span></button>' +
       '</div>' +
       (menu === 'sites' ? '<div class="hmenu hm-sites" role="menu">' + s.properties.map(p => '<a role="menuitem" href="' + esc((BOOT.siteUrls || {})[p.id] || '#') + '" target="_blank" rel="noopener">' + BB.icon('web') + '<span><b>' + esc(p.name) + '</b><em>' + esc(p.domain) + '</em></span></a>').join('') + '</div>' : '') +
       (menu === 'me' ? '<div class="hmenu hm-me" role="menu"><p><b>' + esc(s.account.owner) + '</b><em>' + esc(s.account.email) + '</em><em>' + esc(s.account.plan) + ' plan</em></p>' +
         '<a role="menuitem" href="/app/billing">' + BB.icon('card') + '<span>Plan and billing</span></a>' +
+        (cr ? '<a role="menuitem" href="/app/billing#ai-credit">' + BB.icon('bolt') + '<span>AI credit \xB7 ' + money(cr.balance) + ' left</span></a>' : '') +
         '<a role="menuitem" href="/app/account">' + BB.icon('user') + '<span>Account and data</span></a>' +
         '<a role="menuitem" href="/help" target="_blank">' + BB.icon('list') + '<span>Help</span></a>' +
         '<form method="post" action="/logout"><button role="menuitem" type="submit">' + BB.icon('out') + '<span>Sign out</span></button></form></div>' : '') +
@@ -7026,7 +7029,7 @@ body.p-lock { overflow: hidden; }
 .x-site .btn.s-glow { box-shadow: none; }
 .x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--ink); border-color: var(--ink); color: #fff; }
 .x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: #1E2750; }
-.x-site .btn.ghost, .x-site .btn.lg:not(.primary):not(.accent):not(.ink) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
+.x-site .btn.ghost, .x-site .btn.lg:where(:not(.primary):not(.accent):not(.ink)) { background: transparent; border-color: var(--hair-2); color: var(--ink); }
 .x-site .s-anim .s-rise { animation-duration: .6s; }
 
 /* type: calmer display scale */
@@ -7165,6 +7168,445 @@ body.p-lock { overflow: hidden; }
 .x-site .s-foot-brand em, .x-site .s-foot-fine { color: var(--soft); }
 .x-site .s-foot nav b { font: 600 12px var(--font-body); letter-spacing: .08em; color: var(--soft); }
 .x-site .s-foot nav button, .x-site .s-foot nav a { color: var(--ink); }
+
+/* demo site screenshot in a browser frame */
+.x-site .s-shot { display: flex; flex-direction: column; background: #fff; }
+.x-site .s-shot-vp { flex: 1; min-height: 0; overflow: hidden; background: #E9ECE7; }
+.x-site .s-shot-vp img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.x-site .s-collage .s-hero-browser.s-shot { height: 100%; }
+
+/* explainer video */
+.x-site .s-film { background: var(--paper); padding-top: clamp(56px, 7vw, 88px); }
+.x-site .s-film .s-head { margin-inline: auto; display: grid; justify-items: center; }
+.x-site .s-film .s-h2 { margin-inline: auto; }
+.x-site .s-film-frame { max-width: 960px; margin: 0 auto; border-radius: 18px; overflow: hidden; border: 1px solid var(--hair); box-shadow: 0 40px 80px -50px rgba(15,22,48,.45); background: var(--ink); aspect-ratio: 16 / 9; }
+.x-site .s-film-frame video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* hero shows the real demo screenshot only, no sample stats */
+.x-site .s-collage .s-fc { display: none; }
+.x-site .s-collage { min-height: 460px; }
+.x-site .s-collage > .s-rise:first-child { inset: 24px 0 24px 0; }
+@media (max-width: 600px) { .x-site .s-collage { display: block; } .x-site .s-collage > .s-rise:first-child { height: 240px; } }
+
+/* ---------- AI search, explained ---------- */
+.x-site .s-ai2 { --nv-line: rgba(255,255,255,.12); --nv-soft: #A9B0C8; }
+.x-site .s-ai2-head { max-width: 760px; }
+.x-site .s-ai2-head .s-h2 { max-width: 22ch; color: #fff; }
+.x-site .s-ai2-head .s-sub { color: var(--nv-soft); max-width: 62ch; }
+.x-site .s-ai2-logos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.x-site .s-ai2-logos > span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--nv-line); border-radius: 999px; font-size: 14px; font-weight: 500; color: #fff; background: rgba(255,255,255,.03); }
+.x-site .s-ai2-logos img, .x-site .s-ai2 .ai-ic { width: 18px; height: 18px; }
+
+.x-site .s-ai2-steps { list-style: none; margin: clamp(40px, 6vw, 64px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: none; }
+.x-site .s-ai2-steps > li { display: flex; flex-direction: column; border: 1px solid var(--nv-line); border-radius: 18px; padding: 26px 24px 24px; background: rgba(255,255,255,.025); min-width: 0; }
+.x-site .s-ai2-n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 600 14px var(--font-body); color: var(--ink); background: #fff; }
+.x-site .s-ai2-steps h3 { font: 600 21px/1.2 var(--font-display); letter-spacing: -.02em; color: #fff; margin: 18px 0 8px; }
+.x-site .s-ai2-steps p { color: var(--nv-soft); font-size: 15px; margin: 0 0 22px; }
+.x-site .s-ai2-viz { margin-top: auto; background: #fff; color: var(--ink); border-radius: 14px; padding: 16px; min-height: 168px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 24px 50px -30px rgba(0,0,0,.6); }
+.x-site .s-ai2-bubble { align-self: flex-end; background: var(--cream); border: 1px solid var(--hair); border-radius: 16px 16px 4px 16px; padding: 12px 14px; font-size: 15px; max-width: 92%; }
+.x-site .s-ai2-src { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 14px; }
+.x-site .s-ai2-src li { display: flex; align-items: center; gap: 9px; }
+.x-site .s-ai2-src .ic { width: 16px; height: 16px; flex: none; color: #fff; background: var(--good); border-radius: 50%; padding: 3px; stroke-width: 3; }
+.x-site .s-ai2-ans small { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--soft); }
+.x-site .s-ai2-ans p { margin: 8px 0 12px; font-size: 14.5px; line-height: 1.5; }
+.x-site .s-ai2-link { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--soft); border: 1px solid var(--hair); border-radius: 10px; padding: 8px 10px; }
+.x-site .s-ai2-link .ic { width: 13px; height: 13px; color: var(--good); }
+.x-site .s-ai2-link em { margin-left: auto; font-style: normal; font-weight: 600; color: #fff; background: var(--ink); border-radius: 7px; padding: 4px 10px; }
+
+.x-site .s-ai2-weekly { margin-top: clamp(40px, 6vw, 64px); padding-top: 32px; border-top: 1px solid var(--nv-line); }
+.x-site .s-ai2-weekly h3 { font: 600 13px var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--nv-soft); margin: 0 0 22px; }
+.x-site .s-ai2-weekly ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.x-site .s-ai2-weekly b { display: block; color: #fff; font-weight: 600; margin-bottom: 6px; }
+.x-site .s-ai2-weekly span { color: var(--nv-soft); font-size: 14.5px; }
+
+/* the checker: one white card */
+.x-site .s-ai2-check { margin-top: clamp(40px, 6vw, 64px); display: grid; grid-template-columns: 1fr 1.2fr; background: #fff; color: var(--ink); border-radius: 22px; overflow: hidden; box-shadow: 0 50px 100px -50px rgba(0,0,0,.7); }
+.x-site .s-ai2-form { padding: clamp(24px, 3.4vw, 44px); }
+.x-site .s-ai2-form h3 { font: 600 28px/1.1 var(--font-display); letter-spacing: -.025em; margin: 0 0 8px; }
+.x-site .s-ai2-form > p { color: var(--soft); margin: 0; }
+.x-site .s-ai2-check .s-f > span:first-child { color: var(--soft); }
+.x-site .s-ai2-check .s-f input, .x-site .s-ai2-check .s-f select { background: #fff; border-color: var(--hair-2); color: var(--ink); }
+.x-site .s-ai2-check .s-fine, .x-site .s-ai2-check .s-tm, .x-site .s-ai2-check .ai-tm { color: var(--soft); }
+.x-site .s-ai2-check .btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .s-ai2-check .s-err { color: var(--bad); }
+.x-site .s-ai2-check .s-ai-r { background: var(--cream); border: 0; border-left: 1px solid var(--hair); border-radius: 0; padding: 0; min-height: 440px; box-shadow: none; display: flex; flex-direction: column; color: var(--ink); }
+.x-site .s-ai2-win { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid var(--hair); background: #fff; font-size: 12.5px; color: var(--soft); }
+.x-site .s-ai2-win i { width: 9px; height: 9px; border-radius: 50%; background: var(--hair-2); }
+.x-site .s-ai2-win span { margin-left: 10px; font-weight: 600; }
+.x-site .s-ai2-body { padding: clamp(18px, 2.4vw, 28px); flex: 1; }
+.x-site .s-ai2-check .s-q { background: var(--ink); color: #fff; }
+.x-site .s-ai2-check .s-ai-idle span { border: 1px solid var(--hair); color: var(--ink); background: #fff; }
+.x-site .s-ai2-check .s-ai-hint { color: var(--soft); }
+.x-site .s-ai2-check .s-ai-hint b { color: var(--ink); }
+.x-site .s-ai2-check .s-scan li { background: #fff; color: var(--soft); border: 1px solid var(--hair); }
+.x-site .s-ai2-check .s-scan li.on, .x-site .s-ai2-check .s-scan li.done { color: var(--ink); background: #fff; }
+.x-site .s-ai2-check .s-scan li.done .s-scan-ic { background: var(--good); color: #fff; }
+.x-site .s-ai2-check .s-scan-ic { background: var(--cream); }
+.x-site .s-ai2-check .s-scan em { color: var(--soft); }
+.x-site .s-ai2-check .s-prog { background: var(--hair); }
+.x-site .s-ai2-check .s-prog i { background: var(--ink); }
+.x-site .s-ai2-check .s-ring { background: radial-gradient(closest-side, var(--cream) 78%, transparent 79%), conic-gradient(#C2453A calc(var(--v) * 1%), var(--hair) 0); }
+.x-site .s-ai2-check .s-ring span { color: var(--soft); }
+.x-site .s-ai2-check .s-ai-verdict { color: var(--ink); }
+.x-site .s-ai2-check .s-eng li { color: var(--ink); }
+.x-site .s-ai2-check .s-eng .bad { color: #B4362B; } .x-site .s-ai2-check .s-eng .warn { color: #8A5A00; }
+.x-site .s-ai2-check .s-a { background: #fff; color: var(--ink); border: 1px solid var(--hair); }
+.x-site .s-ai2-check .s-a small { color: var(--soft); }
+.x-site .s-ai2-check .s-a small .ic { color: var(--soft); }
+.x-site .s-ai2-check .s-a b { color: var(--ink); }
+.x-site .s-ai2-check .s-src { background: var(--cream); color: var(--soft); }
+.x-site .s-ai2-check .s-miss { color: #B4362B !important; border-top-color: var(--hair); }
+.x-site .s-ai2-check .s-ai-cta .btn.accent { background: var(--ink); border-color: var(--ink); color: #fff; }
+.x-site .s-ai2-check .s-ai-cta .s-ghost-inv { color: var(--ink); border-color: var(--hair-2); }
+
+@media (max-width: 960px) {
+  .x-site .s-ai2-steps { grid-template-columns: 1fr; }
+  .x-site .s-ai2-weekly ul { grid-template-columns: 1fr 1fr; }
+  .x-site .s-ai2-check { grid-template-columns: 1fr; }
+  .x-site .s-ai2-check .s-ai-r { border-left: 0; border-top: 1px solid var(--hair); min-height: 0; }
+}
+@media (max-width: 520px) { .x-site .s-ai2-weekly ul { grid-template-columns: 1fr; gap: 18px; } }
+
+.x-site .s-ai2-viz, .x-site .s-ai2-check { --ai-chatgpt: #000; }
+.x-site .s-ai2-viz p { color: var(--ink); margin: 8px 0 12px; }
+.x-site .s-ai2-viz p b { color: var(--ink); }
+.x-site .s-ai2-check .s-ai-idle > span { border: 1px solid var(--hair); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; }
+.x-site .s-ai2-check .s-ai-idle span span { border: 0; padding: 0; background: none; }
+.x-site .s-ai2-form .s-fine { margin-top: 14px; }
+
+/* ---------- hero, v2: copy + a composed product scene + what you get ---------- */
+.x-site .s-hero2 { background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%); border-bottom: 1px solid var(--hair); }
+.x-site .s-hero2-in { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 5vw, 72px); align-items: center; padding-block: clamp(48px, 7vw, 96px) clamp(40px, 5vw, 64px); }
+.x-site .s-hero2 .s-h1 { font-size: clamp(42px, 5.4vw, 72px); max-width: 11ch; margin: 18px 0 22px; }
+.x-site .s-hero2 .s-hl { color: var(--blue); }
+.x-site .s-hero2-kick { margin: 0; font: 600 13px var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+.x-site .s-hero2 .s-lead { max-width: 48ch; }
+.x-site .s-hero2-price { margin: 22px 0 0; font-size: 14.5px; color: var(--soft); }
+.x-site .s-hero2-price b { color: var(--ink); font-weight: 600; }
+
+.x-site .s-hero2-stage { position: relative; padding: 28px 0 56px 36px; min-width: 0; }
+.x-site .s-hero2-browser { height: 440px; border-radius: 16px; box-shadow: 0 50px 90px -50px rgba(15,22,48,.55), 0 0 0 1px var(--hair); }
+.x-site .s-hero2-card { position: absolute; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px; box-shadow: 0 24px 48px -26px rgba(15,22,48,.5), 0 0 0 1px var(--hair); font-size: 13.5px; line-height: 1.45; --ai-chatgpt: #000; }
+.x-site .s-hero2-card small { display: flex; font-size: 12.5px; font-weight: 600; color: var(--soft); margin-bottom: 6px; }
+.x-site .s-hero2-card p { margin: 0; }
+.x-site .s-hc-ai { left: 0; bottom: 0; width: 290px; }
+.x-site .s-hc-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12.5px; color: var(--good); font-weight: 600; }
+.x-site .s-hc-link .ic { width: 12px; height: 12px; }
+.x-site .s-hc-g { right: -16px; top: 0; width: 270px; }
+.x-site .s-hc-g b { display: block; color: #1A3EC8; font-weight: 600; font-size: 14.5px; }
+.x-site .s-hc-g span { color: var(--soft); font-size: 13px; }
+.x-site .s-hc-app { right: 20px; bottom: 18px; display: flex; gap: 12px; align-items: center; max-width: 290px; }
+.x-site .s-hc-app b { display: block; }
+.x-site .s-hc-app em { font-style: normal; color: var(--soft); font-size: 12.5px; }
+.x-site .s-hc-ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--ink); color: #fff; flex: none; }
+.x-site .s-hc-ic .ic { width: 18px; height: 18px; }
+
+.x-site .s-hero2-pillars { list-style: none; margin: 0; padding: 22px 0 30px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; border-top: 1px solid var(--hair); }
+.x-site .s-hero2-pillars li { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+.x-site .s-h2-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: #fff; border: 1px solid var(--hair); color: var(--blue); flex: none; }
+.x-site .s-h2-ic .ic { width: 18px; height: 18px; }
+.x-site .s-hero2-pillars b { display: block; font-size: 15px; font-weight: 600; }
+.x-site .s-hero2-pillars em { font-style: normal; font-size: 13px; color: var(--soft); }
+
+@media (max-width: 1080px) {
+  .x-site .s-hero2-in { grid-template-columns: 1fr; }
+  .x-site .s-hero2-stage { max-width: 680px; }
+  .x-site .s-hero2-pillars { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .x-site .s-hero2-stage { padding: 0; display: grid; gap: 10px; }
+  .x-site .s-hero2-browser { height: 260px; }
+  .x-site .s-hero2-card { position: static; width: auto; max-width: none; }
+  .x-site .s-hc-app { display: none; }
+  .x-site .s-hero2-pillars { grid-template-columns: 1fr 1fr; }
+}
+.x-site .s-hc-ai { left: auto; right: -16px; bottom: 0; }
+.x-site .s-hc-app { left: 0; right: auto; top: 210px; bottom: auto; }
+@media (max-width: 640px) { .x-site .s-hc-ai { right: auto; } }
+` }, "/app/web/src/site-social.css": { "t": `/* Social style for the marketing site, matching the BookingBooster social posts.
+   Loaded last. Cobalt, ink, sky and yellow panels; heavy Bricolage headlines with a yellow highlight;
+   mono pill labels with a yellow dot; big soft chevrons; real product screens in browser and phone frames. */
+.x-site {
+  --cobalt: #2747F5; --cobalt-d: #1B34C8; --yel: #FFC42E; --ink: #0F1630; --sky: #E4E9FF; --skybg: #F5F7FF; --soft: #5A6386; --good: #12A26B;
+  --blue: var(--cobalt); --primary: var(--cobalt); --accent: var(--yel); --cream: var(--skybg); --hair: rgba(15,22,48,.1); --hair-2: rgba(15,22,48,.16);
+  --font-body: 'Geist', 'DM Sans', system-ui, sans-serif; --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --disp: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-family: var(--font-body); -webkit-font-smoothing: antialiased;
+}
+
+/* panel themes, as on the posts */
+.x-site .t-cobalt { background: var(--cobalt); color: #fff; --fg: #fff; --sub: rgba(255,255,255,.84); --hl: var(--yel); --chip: rgba(255,255,255,.14); --chipfg: #fff; --deco: rgba(255,255,255,.09); --dot: var(--yel); --tick: var(--yel); --tickfg: var(--ink); --btn: var(--yel); --btnfg: var(--ink); }
+.x-site .t-ink { background: var(--ink); color: #fff; --fg: #fff; --sub: rgba(228,233,255,.78); --hl: var(--yel); --chip: rgba(255,255,255,.1); --chipfg: #E4E9FF; --deco: rgba(110,134,255,.13); --dot: var(--yel); --tick: var(--yel); --tickfg: var(--ink); --btn: var(--cobalt); --btnfg: #fff; }
+.x-site .t-sky { background: var(--skybg); color: var(--ink); --fg: var(--ink); --sub: var(--soft); --hl: var(--ink); --chip: #fff; --chipfg: var(--cobalt); --deco: rgba(39,71,245,.07); --dot: var(--yel); --tick: var(--cobalt); --tickfg: #fff; --btn: var(--cobalt); --btnfg: #fff; }
+.x-site .t-white { background: #fff; color: var(--ink); --fg: var(--ink); --sub: var(--soft); --hl: var(--ink); --chip: var(--sky); --chipfg: var(--cobalt); --deco: rgba(39,71,245,.06); --dot: var(--yel); --tick: var(--cobalt); --tickfg: #fff; --btn: var(--cobalt); --btnfg: #fff; }
+.x-site .t-yellow { background: var(--yel); color: var(--ink); --fg: var(--ink); --sub: rgba(15,22,48,.8); --hl: var(--cobalt); --chip: rgba(15,22,48,.08); --chipfg: var(--ink); --deco: rgba(15,22,48,.07); --dot: var(--cobalt); --tick: var(--ink); --tickfg: var(--yel); --btn: var(--ink); --btnfg: #fff; }
+
+/* type */
+.x-site .s-h1, .x-site .s-h2, .x-site .s-final-h { font-family: var(--disp); font-weight: 800; letter-spacing: -.04em; font-variation-settings: 'opsz' 96; }
+.x-site .s-h1 { font-size: clamp(44px, 6.4vw, 84px); line-height: .96; max-width: 12ch; margin: 22px 0 22px; }
+.x-site .s-h2 { font-size: clamp(34px, 4.4vw, 58px); line-height: .98; max-width: 16ch; color: var(--fg, var(--ink)); }
+.x-site .s-sub, .x-site .s-lead { color: var(--sub, var(--soft)); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.45; letter-spacing: -.01em; }
+.x-site .s-hl { color: var(--hl, var(--ink)); background: none; padding: 0; }
+.x-site .t-white .s-hl, .x-site .t-sky .s-hl, .x-site .s-sec:not([class*="t-"]) .s-hl { background: linear-gradient(transparent 58%, var(--yel) 58%, var(--yel) 92%, transparent 92%); padding: 0 .06em; margin: 0 -.06em; -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--ink); }
+.x-site .s-pill { display: inline-flex; align-items: center; gap: .55em; font: 500 13px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .14em; background: var(--chip, var(--sky)); color: var(--chipfg, var(--cobalt)); border-radius: 999px; padding: 10px 16px 9px; }
+.x-site .s-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--yel)); display: block; flex: none; }
+.x-site .eyebrow { font: 500 13px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .14em; color: var(--cobalt); }
+.x-site .s-ink .eyebrow { color: var(--yel); }
+
+/* chevrons and dots */
+.x-site .s-chev { position: absolute; pointer-events: none; width: min(620px, 60vw); height: min(620px, 60vw); right: -140px; top: -80px; z-index: 0; }
+.x-site .s-chev path { fill: none; stroke: var(--deco); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+.x-site .flip .s-chev { right: auto; left: -160px; top: auto; bottom: -160px; }
+.x-site .s-dots { position: absolute; inset: 0; background-image: radial-gradient(var(--deco) 2px, transparent 2.5px); background-size: 32px 32px; pointer-events: none; }
+
+/* buttons: pills */
+.x-site .btn { border-radius: 999px; font-weight: 700; letter-spacing: -.01em; }
+.x-site .btn.lg { padding: 14px 24px; font-size: 16.5px; }
+.x-site .btn.primary, .x-site .btn.accent, .x-site .btn.ink { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+.x-site .btn.primary:hover, .x-site .btn.accent:hover, .x-site .btn.ink:hover { background: var(--cobalt-d); border-color: var(--cobalt-d); }
+.x-site .btn.s-yel { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .btn.s-yel:hover { background: #FFD25C; }
+.x-site .btn.s-out { background: transparent; border-color: rgba(255,255,255,.4); color: #fff; }
+.x-site .btn.s-out:hover { background: rgba(255,255,255,.1); }
+.x-site .btn.s-b { background: var(--btn); border-color: var(--btn); color: var(--btnfg); }
+.x-site .btn.s-b:hover { filter: brightness(1.08); }
+.x-site .btn:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
+.x-site .t-yellow .btn:focus-visible, .x-site .t-white .btn:focus-visible, .x-site .t-sky .btn:focus-visible { outline-color: var(--cobalt); }
+
+/* nav */
+.x-site .s-nav { background: rgba(255,255,255,.92); backdrop-filter: saturate(1.4) blur(10px); }
+.x-site .s-nav .lockup { font-family: var(--disp); font-weight: 800; letter-spacing: -.035em; }
+.x-site .s-links button { font-weight: 600; color: var(--ink); }
+.x-site .s-links button:hover { color: var(--cobalt); }
+.x-site .s-nav .btn.ink { background: var(--cobalt); border-color: var(--cobalt); }
+
+/* frames */
+.x-site .s-frame { background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid rgba(15,22,48,.08); box-shadow: 0 2px 6px rgba(15,22,48,.12), 0 40px 90px -30px rgba(15,22,48,.55); }
+.x-site .s-frame-bar { height: 38px; background: #F1F3FA; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 1px solid #E3E7F3; }
+.x-site .s-frame-bar b { width: 10px; height: 10px; border-radius: 50%; background: #D5DAE8; display: block; flex: none; }
+.x-site .s-frame-bar span { margin-left: 12px; flex: 1; max-width: 62%; height: 24px; border-radius: 7px; background: #fff; font: 500 12.5px var(--font-mono); color: var(--soft); display: flex; align-items: center; gap: 6px; padding: 0 10px; white-space: nowrap; overflow: hidden; }
+.x-site .s-frame-bar .ic { width: 12px; height: 12px; flex: none; }
+.x-site .s-frame img { display: block; width: 100%; height: auto; }
+.x-site .s-phone { background: #0B1024; border-radius: 40px; padding: 10px; box-shadow: 0 50px 100px -30px rgba(10,15,40,.6), inset 0 0 0 2px rgba(255,255,255,.08); }
+.x-site .s-phone-scr { border-radius: 31px; overflow: hidden; background: #fff; position: relative; padding-top: 26px; }
+.x-site .s-phone-scr::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 84px; height: 22px; background: #0B1024; border-radius: 14px; }
+.x-site .s-phone img { display: block; width: 100%; height: auto; }
+
+/* notification cards */
+.x-site .s-nc { position: absolute; display: flex; align-items: center; gap: 12px; background: #fff; color: var(--ink); border-radius: 18px; padding: 14px 20px 14px 14px; box-shadow: 0 24px 60px -18px rgba(10,15,40,.5), 0 2px 4px rgba(10,15,40,.08); z-index: 3; max-width: 330px; }
+.x-site .s-nc small { display: block; font: 600 11.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); margin-bottom: 3px; }
+.x-site .s-nc b { display: block; font: 750 19px/1.15 var(--font-body); letter-spacing: -.02em; }
+.x-site .s-nc.dark { background: var(--ink); color: #fff; }
+.x-site .s-nc.dark small { color: var(--yel); }
+.x-site .s-nc-ic { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; background: var(--sky); color: var(--cobalt); --ai-chatgpt: #000; }
+.x-site .s-nc-ic .ic, .x-site .s-nc-ic svg { width: 22px; height: 22px; stroke-width: 2.6; }
+.x-site .s-nc-ic.good { background: #DDF6EA; color: var(--good); }
+.x-site .s-nc-ic.up, .x-site .s-nc-ic.key { background: #FFF1CC; color: #B37A00; }
+.x-site .s-nc-ic.up svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.x-site .s-nc-ic.gpt { background: #F1F3FA; }
+
+/* ---------- hero ---------- */
+.x-site .s-hero3 { position: relative; overflow: hidden; border: 0; }
+.x-site .s-hero3::before { display: none; }
+.x-site .s-hero3-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 4vw, 56px); align-items: center; padding-block: clamp(48px, 7vw, 96px) clamp(56px, 7vw, 104px); }
+.x-site .s-hero3 .s-h1 { color: #fff; }
+.x-site .s-hero3 .s-lead { max-width: 46ch; }
+.x-site .s-hero3 .s-cta { margin-top: 30px; }
+.x-site .s-hero3-price { margin: 22px 0 0; font-size: 15px; color: rgba(255,255,255,.8); }
+.x-site .s-hero3-price b { color: #fff; }
+.x-site .s-hero3-stage { position: relative; min-height: 520px; }
+.x-site .s-hero3-browser { position: absolute; left: 0; right: -18%; top: 24px; transform: rotate(-2.5deg); transform-origin: left top; }
+.x-site .s-hero3-phone { position: absolute; width: 214px; right: 2%; top: 150px; transform: rotate(4deg); z-index: 2; }
+.x-site .s-hn1 { left: -6%; bottom: 18px; }
+.x-site .s-hn2 { left: 30%; top: -6px; }
+
+/* ---------- proof band ---------- */
+.x-site .s-proof3 { position: relative; overflow: hidden; padding-block: clamp(36px, 5vw, 56px); }
+.x-site .s-proof3 ul { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.x-site .s-proof3 b { display: block; font: 800 clamp(40px, 4.6vw, 64px)/.9 var(--disp); letter-spacing: -.05em; color: var(--yel); margin-bottom: 12px; white-space: nowrap; }
+.x-site .s-proof3 span { color: var(--sub); font-size: 15.5px; line-height: 1.4; display: block; max-width: 26ch; }
+
+/* ---------- feature rows ---------- */
+.x-site .s-feat { position: relative; overflow: hidden; padding-block: clamp(64px, 9vw, 128px); }
+.x-site .s-feat-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+.x-site .s-feat.flip .s-feat-copy { order: 2; }
+.x-site .s-feat .s-h2 { margin: 22px 0 18px; }
+.x-site .s-feat .s-sub { max-width: 48ch; margin: 0; }
+.x-site .s-ticks3 { list-style: none; margin: 26px 0 30px; padding: 0; display: grid; gap: 14px; }
+.x-site .s-ticks3 li { display: flex; gap: 12px; align-items: flex-start; font-weight: 600; font-size: 17px; line-height: 1.35; letter-spacing: -.01em; color: var(--fg); }
+.x-site .s-ticks3 li > span { flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--tick); color: var(--tickfg); display: grid; place-items: center; margin-top: -1px; }
+.x-site .s-ticks3 .ic { width: 16px; height: 16px; stroke-width: 3; }
+.x-site .s-feat-vis { position: relative; min-height: 420px; display: flex; align-items: center; }
+.x-site .s-fv-main { width: 100%; }
+.x-site .s-fv-phone { position: absolute; width: 190px; right: -14px; bottom: -36px; transform: rotate(3deg); z-index: 2; }
+.x-site .s-fv-nc { left: -18px; bottom: -24px; }
+.x-site .s-fv-p1, .x-site .s-fv-p2 { position: absolute; width: min(250px, 44%); }
+.x-site .s-fv-p1 { left: 8%; top: 0; transform: rotate(-4deg); }
+.x-site .s-fv-p2 { right: 8%; top: 46px; transform: rotate(4deg); }
+.x-site .t-yellow .s-feat-vis { min-height: 560px; }
+.x-site .t-yellow .s-fv-nc { left: 50%; bottom: 0; transform: translateX(-50%); }
+
+/* ---------- film ---------- */
+.x-site .s-film { background: #fff; }
+.x-site .s-film-frame { border-radius: 22px; border: 0; box-shadow: 0 2px 6px rgba(15,22,48,.12), 0 50px 100px -40px rgba(15,22,48,.55); }
+
+/* ---------- calculator on ink, numbers in yellow ---------- */
+.x-site .s-calc-sec { background: var(--skybg); }
+.x-site .s-calc-r { background: var(--ink); color: #fff; border: 0; border-radius: 26px; box-shadow: 0 50px 100px -40px rgba(15,22,48,.6); }
+.x-site .s-calc-k { font: 500 12.5px var(--font-mono); letter-spacing: .12em; color: var(--yel); }
+.x-site .s-calc-big { color: var(--yel); font-family: var(--disp); font-weight: 800; letter-spacing: -.05em; }
+.x-site .s-calc-sm, .x-site .s-calc-pay, .x-site .s-cmp > div, .x-site .s-calc-r .s-fine { color: rgba(228,233,255,.78); }
+.x-site .s-calc-sm b, .x-site .s-calc-pay b, .x-site .s-cmp b, .x-site .s-calc-net b { color: #fff; }
+.x-site .s-cmp { border-color: rgba(255,255,255,.14); }
+.x-site .s-cmp-bar { background: rgba(255,255,255,.1); height: 8px; }
+.x-site .s-cmp-bar .kept { background: var(--yel); } .x-site .s-cmp-bar .plan { background: #6E86FF; }
+.x-site .s-calc-net { border-color: rgba(255,255,255,.14); }
+.x-site .s-calc-net span { color: rgba(228,233,255,.78); }
+.x-site .s-calc-r .btn.accent { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .s-slider label b { color: var(--cobalt); font-weight: 800; font-family: var(--disp); font-size: 22px; letter-spacing: -.03em; }
+.x-site .s-slider input[type=range] { height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--cobalt) var(--p, 50%), #D7DDF3 var(--p, 50%)); }
+.x-site .s-slider input[type=range]::-webkit-slider-thumb { border-color: var(--cobalt); background: #fff; border-width: 4px; }
+.x-site .s-slider input[type=range]::-moz-range-thumb { border-color: var(--cobalt); background: #fff; border-width: 4px; }
+.x-site .s-ticks { font-family: var(--font-mono); font-size: 12px; }
+
+/* ---------- AI search on ink ---------- */
+.x-site .s-ink { background: var(--ink); position: relative; overflow: hidden; }
+.x-site .s-ai2 .s-chev path { stroke: rgba(110,134,255,.13); }
+.x-site .s-ai2-head .s-h2 { color: #fff; max-width: 15ch; }
+.x-site .s-ai2-head .s-hl { color: var(--yel); }
+.x-site .s-ai2-head .s-sub { color: rgba(228,233,255,.78); }
+.x-site .s-ai2-head .s-pill { background: rgba(255,255,255,.1); color: #E4E9FF; }
+.x-site .s-ai2-logos > span { border: 0; background: none; padding: 0; font-weight: 600; font-size: 17px; gap: 9px; }
+.x-site .s-ai2-logos { gap: 14px 26px; }
+.x-site .s-ai2-logos img, .x-site .s-ai2-logos .ai-logo { width: 24px; height: 24px; }
+.x-site .s-ai2-steps > li { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); border-radius: 24px; }
+.x-site .s-ai2-n { background: var(--yel); color: var(--ink); font: 800 16px var(--disp); width: 36px; height: 36px; }
+.x-site .s-ai2-steps h3 { font-weight: 800; font-size: 24px; letter-spacing: -.03em; }
+.x-site .s-ai2-viz { border-radius: 18px; }
+.x-site .s-ai2-bubble { background: var(--sky); border: 0; border-radius: 18px 18px 6px 18px; }
+.x-site .s-ai2-src .ic { background: var(--good); }
+.x-site .s-ai2-link { border: 1.5px solid #D7DDF3; border-radius: 12px; color: var(--cobalt); font-family: var(--font-mono); }
+.x-site .s-ai2-link em { background: var(--yel); color: var(--ink); font-family: var(--font-body); }
+.x-site .s-ai2-weekly h3 { font-family: var(--font-mono); font-weight: 500; letter-spacing: .14em; color: var(--yel); }
+.x-site .s-ai2-weekly b { font-size: 17px; }
+.x-site .s-ai2-shot { margin-top: clamp(40px, 6vw, 64px); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 4vw, 56px); align-items: center; }
+.x-site .s-ai2-shot h3 { font: 800 clamp(28px, 3vw, 40px)/1 var(--disp); letter-spacing: -.04em; margin: 18px 0 12px; color: #fff; }
+.x-site .s-ai2-shot h3 span { color: var(--yel); }
+.x-site .s-ai2-shot p { color: rgba(228,233,255,.78); margin: 0; font-size: 17px; }
+.x-site .s-ai2-shot .s-pill { background: rgba(255,255,255,.1); color: #E4E9FF; }
+.x-site .s-ai2-check { border-radius: 26px; }
+.x-site .s-ai2-form h3 { font-weight: 800; letter-spacing: -.035em; font-size: 30px; }
+.x-site .s-ai2-check .btn.primary, .x-site .s-ai2-check .s-ai-cta .btn.accent { background: var(--cobalt); border-color: var(--cobalt); }
+.x-site .s-ai2-check .s-q { background: var(--sky); color: var(--ink); border-radius: 18px 18px 6px 18px; }
+.x-site .s-ai2-check .s-ai-r { background: var(--skybg); }
+.x-site .s-ai2-check .s-prog i { background: var(--cobalt); }
+
+/* ---------- how it works ---------- */
+.x-site .s-steps { border-top: 0; }
+.x-site .s-step-n { font: 800 64px/.85 var(--disp); color: var(--yel); -webkit-text-stroke: 0; letter-spacing: -.05em; }
+.x-site .s-step-n::before { content: '0'; }
+.x-site .s-steps h3 { font: 800 26px/1.1 var(--disp); letter-spacing: -.03em; }
+.x-site .s-chk span { background: var(--sky); color: var(--ink); border: 0; border-radius: 999px; }
+.x-site .s-url-demo, .x-site .s-bk-demo { font-family: var(--font-mono); border-radius: 12px; border: 1.5px solid #D7DDF3; }
+
+/* ---------- myths ---------- */
+.x-site .s-myths .s-head .s-h2 { margin-top: 20px; max-width: 18ch; }
+.x-site .s-myth-grid { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.x-site .s-myth-grid li { background: var(--skybg); border-radius: 22px; padding: 26px 24px; display: grid; gap: 16px; align-content: start; }
+.x-site .s-myth-grid p { margin: 0; }
+.x-site .s-myth-grid span { display: inline-block; font: 700 11.5px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; padding: 6px 10px; border-radius: 8px; margin-bottom: 10px; }
+.x-site .s-myth span { background: #FDE3E4; color: #B4232A; }
+.x-site .s-myth s { display: block; font: 800 22px/1.15 var(--disp); letter-spacing: -.03em; color: var(--ink); text-decoration-color: #E5484D; text-decoration-thickness: 3px; }
+.x-site .s-fact span { background: #DDF6EA; color: #0C7A50; }
+.x-site .s-fact { color: var(--soft); font-size: 16px; line-height: 1.45; }
+
+/* ---------- pricing ---------- */
+.x-site .s-pricing { background: var(--skybg); }
+.x-site .s-plan, .x-site .s-plan.hot { background: var(--ink); color: #fff; border: 0; border-radius: 26px; box-shadow: 0 50px 100px -40px rgba(15,22,48,.6); }
+.x-site .s-plan h3 { font: 800 28px var(--disp); letter-spacing: -.03em; }
+.x-site .s-plan.hot .s-plan-tag, .x-site .s-plan.hot .s-plan-bill, .x-site .s-plan.hot .s-amt span, .x-site .s-plan .s-plan-tag, .x-site .s-plan .s-plan-bill, .x-site .s-plan .s-amt span { color: rgba(228,233,255,.78); }
+.x-site .s-amt b { font-family: var(--disp); font-weight: 800; color: var(--yel); }
+.x-site .s-plan li { color: #fff; }
+.x-site .s-plan li .ic, .x-site .s-plan.hot li .ic { color: var(--yel); }
+.x-site .s-plan .btn { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .s-addon { border-radius: 22px; }
+
+/* ---------- faq ---------- */
+.x-site .s-qa h3 button { font: 700 18px var(--font-body); letter-spacing: -.015em; }
+
+/* ---------- closing band: cobalt, as on the posts ---------- */
+.x-site .s-final { background: var(--cobalt); color: #fff; border-top: 0; position: relative; overflow: hidden; }
+.x-site .s-final-h { font-size: clamp(44px, 6.4vw, 88px); line-height: .95; }
+.x-site .s-final-h span { color: var(--yel); }
+.x-site .s-final .btn.accent { background: var(--yel); border-color: var(--yel); color: var(--ink); }
+.x-site .s-final .s-ghost-inv { color: #fff; border-color: rgba(255,255,255,.4); }
+.x-site .s-final .s-ghost-inv:hover { background: rgba(255,255,255,.1); }
+.x-site .s-foot { border-top-color: rgba(255,255,255,.18); }
+.x-site .s-foot-brand .lockup { color: #fff; }
+.x-site .s-foot-brand .mark rect { fill: #fff; }
+.x-site .s-foot-brand .mark path:first-of-type { stroke: var(--cobalt); }
+.x-site .s-foot-brand em, .x-site .s-foot-fine, .x-site .s-foot nav b { color: rgba(255,255,255,.75); }
+.x-site .s-foot nav b { font-family: var(--font-mono); font-weight: 500; letter-spacing: .12em; }
+.x-site .s-foot nav button, .x-site .s-foot nav a, .x-site .s-foot-fine a { color: #fff; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px) {
+  .x-site .s-hero3-in { grid-template-columns: 1fr; }
+  .x-site .s-hero3-stage { min-height: 0; aspect-ratio: 16 / 11; max-width: 720px; }
+  .x-site .s-hero3-browser { right: 6%; }
+  .x-site .s-feat-in { grid-template-columns: 1fr; }
+  .x-site .s-feat.flip .s-feat-copy { order: 0; }
+  .x-site .s-feat-vis { max-width: 720px; }
+  .x-site .s-proof3 ul { grid-template-columns: 1fr 1fr; }
+  .x-site .s-myth-grid { grid-template-columns: 1fr 1fr; }
+  .x-site .s-ai2-shot { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .x-site .s-h1 { font-size: clamp(40px, 11vw, 54px); }
+  .x-site .s-h2 { font-size: clamp(32px, 9vw, 42px); }
+  .x-site .s-hero3-stage { aspect-ratio: auto; height: 360px; }
+  .x-site .s-hero3-browser { right: -30%; top: 10px; }
+  .x-site .s-hero3-phone { width: 132px; top: 96px; right: 0; border-radius: 26px; padding: 6px; }
+  .x-site .s-hero3-phone .s-phone-scr { border-radius: 21px; padding-top: 16px; }
+  .x-site .s-hero3-phone .s-phone-scr::before { width: 50px; height: 14px; top: 5px; }
+  .x-site .s-hn1 { left: 0; bottom: 6px; }
+  .x-site .s-hn2 { display: none; }
+  .x-site .s-nc { padding: 10px 14px 10px 10px; gap: 10px; }
+  .x-site .s-nc b { font-size: 16px; }
+  .x-site .s-nc-ic { width: 34px; height: 34px; }
+  .x-site .s-cta .btn.lg { width: 100%; justify-content: center; }
+  .x-site .s-proof3 ul { gap: 22px 16px; }
+  .x-site .s-proof3 b { font-size: 34px; }
+  .x-site .s-proof3 span { font-size: 14px; }
+  .x-site .s-feat-vis { min-height: 0; padding-bottom: 40px; }
+  .x-site .s-fv-phone { width: 110px; right: -4px; bottom: 0; border-radius: 22px; padding: 5px; }
+  .x-site .s-fv-phone .s-phone-scr { border-radius: 18px; padding-top: 12px; }
+  .x-site .s-fv-phone .s-phone-scr::before { width: 40px; height: 10px; top: 4px; }
+  .x-site .s-fv-nc { left: 0; bottom: 0; }
+  .x-site .t-yellow .s-feat-vis { min-height: 460px; }
+  .x-site .s-fv-p1, .x-site .s-fv-p2 { width: 46%; }
+  .x-site .s-fv-p1 { left: 0; } .x-site .s-fv-p2 { right: 0; }
+  .x-site .t-yellow .s-fv-nc { bottom: 10px; }
+  .x-site .s-myth-grid { grid-template-columns: 1fr; }
+  .x-site .s-chev { width: 340px; height: 340px; right: -120px; top: -40px; }
+}
+@media (prefers-reduced-motion: reduce) { .x-site .s-hero3-browser, .x-site .s-hero3-phone, .x-site .s-fv-phone, .x-site .s-fv-p1, .x-site .s-fv-p2 { transition: none; } }
+
+/* social links in the footer */
+.x-site .s-social { list-style: none; display: flex; gap: 10px; margin: 18px 0 0; padding: 0; }
+.x-site .s-social a { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.14); color: #fff; transition: background .15s, color .15s; --sicon-bg: #4561F6; }
+.x-site .s-social a:hover { background: var(--yel); color: var(--ink); --sicon-bg: var(--yel); }
+.x-site .s-social a:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
+.x-site .s-social svg { width: 20px; height: 20px; display: block; }
+
+/* fixes */
+.x-site .s-myth-grid span { display: block; width: fit-content; }
+.x-site .s-head .s-pill + .s-h2 { margin-top: 20px; }
+.x-site .s-faq-sec a, .x-site .s-sub a { color: var(--cobalt); }
+.x-site .s-hero3 .s-h1 { max-width: 13ch; font-size: clamp(44px, 6vw, 80px); }
+.x-site .s-hero3-in { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); }
+.x-site .s-proof3 b { font-size: clamp(36px, 4vw, 56px); }
+@media (max-width: 640px) { .x-site .s-pill { font-size: 11px; letter-spacing: .1em; padding: 8px 12px 7px; } }
 ` }, "/app/web/src/site.css": { "t": `/* Bookingbooster marketing site and onboarding. Everything is scoped under .x-site and prefixed .s- */
 .x-site { --s-bg: var(--surface); --s-alt: var(--bg); --s-w: 1200px; --s-ease: cubic-bezier(.2,.7,.2,1); background: var(--s-bg); color: var(--fg); overflow-x: clip; font-size: 16px; }
 .x-site .s-root { min-height: 80vh; }
@@ -7834,8 +8276,8 @@ body.p-lock { overflow: hidden; }
 
   /* ---------- static content ---------- */
   const PLANS = [
-    // One plan: a one-off setup fee, first month free, then a monthly price. Both include VAT.
-    { id: 'growth', name: 'Growth', price: 200, setup: 997, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
+    // One plan: a monthly price including VAT. No setup fee.
+    { id: 'growth', name: 'Growth', price: 200, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
   ];
   const ADDON = { name: 'Calendar sync add-on', price: 15 };
   const plan = id => PLANS.find(p => p.id === id) || PLANS[0];
@@ -7855,7 +8297,7 @@ body.p-lock { overflow: hidden; }
     ['What is AI visibility?', 'How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps.'],
     ['How long does setup take?', 'Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week.'],
     ['Who owns the guest list?', 'You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR.'],
-    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. There is a one-off \xA3997 setup fee, your first month is free, then it is \xA3200 a month. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
+    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is \xA3200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
   ];
 
   /* ---------- small helpers ---------- */
@@ -7884,7 +8326,15 @@ body.p-lock { overflow: hidden; }
     if (theme === 'city') return '<div class="s-scene t-city" aria-hidden="true"><i class="hill"></i><i class="ter"></i><i class="par"></i><i class="win"></i><i class="doors"></i><i class="rail"></i><i class="street"></i></div>';
     return '<div class="s-scene t-cabin" aria-hidden="true"><i class="sun"></i><i class="mtn"></i><i class="mtn m2"></i><i class="tree t1"></i><i class="tree t3"></i><i class="cab"></i><i class="win"></i><i class="tree t2"></i><i class="tree t4"></i></div>';
   }
+  // The demo guest site, shown as a real screenshot in a browser frame (see /media in server/index.js).
+  const DEMO_SHOT = '/media/shot-site.jpg';
+  function shotSite(o) {
+    return '<div class="s-browser s-shot' + (o.cls ? ' ' + o.cls : '') + '">' +
+      '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + 'larchfellcabin.co.uk</span></div>' +
+      '<div class="s-shot-vp"><img src="' + DEMO_SHOT + '" alt="Larch Fell Cabin, a demo booking website made with Bookingbooster" loading="eager"></div></div>';
+  }
   function miniSite(o) {
+    if (o.shot) return shotSite(o);
     const th = o.theme || 'cabin';
     return '<div class="s-browser th-' + th + (o.cls ? ' ' + o.cls : '') + '">' +
       '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + esc(o.domain || 'yourhome.co.uk') + '</span></div>' +
@@ -7926,31 +8376,34 @@ body.p-lock { overflow: hidden; }
       '</header>';
   }
 
-  function hero(inst, L) {
-    const r = L.found, g = r && BB.q.guest(r.guestId), rp = r && BB.q.property(r.propertyId);
-    const gname = g ? g.name.split(' ')[0] + ' ' + (g.name.split(' ')[1] || '')[0] + '.' : '';
-    const via = r && r.source === 'ai' ? 'ChatGPT' : r && r.source === 'google' ? 'Google search' : 'your site';
-    const ret = Math.round(L.m.returningShare * 100);
-    const retNames = L.s.guests.filter(x => x.tags.includes('Repeat')).slice(0, 3).map(x => x.name);
-    return '<section class="s-hero" id="s-top-' + inst.uid + '"><div class="s-w s-hero-in">' +
-      '<div class="s-hero-copy">' +
-        '<button class="s-tagline s-rise" style="--d:0" data-scroll="ai"><b>New</b>Does AI recommend your holiday let?' + icon('arrow') + '</button>' +
-        '<h1 class="s-h1 s-rise" style="--d:1">More direct bookings. <span class="s-hl">Less platform fees.</span></h1>' +
-        '<p class="s-lead s-rise" style="--d:2">Own your bookings, your guests and your website. We get your holiday let found on Google and in AI answers, bring past guests back, and you stop paying 15% or more on every stay.</p>' +
-        '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg s-glow" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'See the live demo</button></div>' +
-        (LIVE() ? '<div class="s-proof s-rise" style="--d:4"><span><b>No commission on bookings.</b> First month free. Prices include VAT.</span></div>'
-          : '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
-          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">\u2605\u2605\u2605\u2605\u2605</span>4.9 average<small>Sample figures</small></span></div>') +
+  /* ---------- social-style building blocks: pills, chevrons, real product screens ---------- */
+  const M = n => '/media/' + n + '.jpg';
+  const CHEV = '<svg class="s-chev" viewBox="0 0 100 100" aria-hidden="true"><path d="M10 52 L50 14 L90 52"/><path d="M24 80 L50 56 L76 80"/></svg>';
+  const pill = t => '<span class="s-pill"><i></i>' + t + '</span>';
+  const frame = (img, url, cls) => '<div class="s-frame ' + (cls || '') + '"><div class="s-frame-bar"><b></b><b></b><b></b><span>' + icon('lock') + esc(url) + '</span></div><img src="' + M(img) + '" alt="" loading="lazy" decoding="async" width="1600" height="1000"></div>';
+  const phoneF = (img, cls) => '<div class="s-phone ' + (cls || '') + '"><div class="s-phone-scr"><img src="' + M(img) + '" alt="" loading="lazy" decoding="async" width="560" height="1032"></div></div>';
+  const NC_IC = { good: () => icon('check'), gpt: () => BB.aiLogo('chatgpt'), up: () => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>', spark: () => icon('spark'), key: () => icon('key') };
+  const ncard = (k, b, ic, cls) => '<div class="s-nc ' + (cls || '') + '"><span class="s-nc-ic ' + ic + '">' + NC_IC[ic]() + '</span><span><small>' + k + '</small><b>' + b + '</b></span></div>';
+
+  function hero(inst) {
+    return '<section class="s-hero s-hero3 t-cobalt" id="s-top-' + inst.uid + '">' + CHEV + '<div class="s-w s-hero3-in">' +
+      '<div class="s-hero3-copy">' +
+        '<div class="s-rise" style="--d:0">' + pill('Direct bookings for UK holiday lets') + '</div>' +
+        '<h1 class="s-h1 s-rise" style="--d:1">Fill your calendar <span class="s-hl">without the 15% fee.</span></h1>' +
+        '<p class="s-lead s-rise" style="--d:2">Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Set up for you, with no commission on bookings.</p>' +
+        '<div class="s-cta s-rise" style="--d:3"><button class="btn s-yel lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn s-out lg"' + go('live') + '>' + icon('play') + 'Try the live demo</button></div>' +
+        '<p class="s-hero3-price s-rise" style="--d:4"><b>\xA3200 a month. No setup fee.</b> No commission on bookings. Prices include VAT. Cancel anytime.</p>' +
       '</div>' +
-      '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
-        '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser' }) + '</div>' +
-        (r ? '<div class="s-fc s-fc-ai s-rise" style="--d:5"><small>' + icon(r.source === 'ai' ? 'spark' : 'search') + 'Booked via ' + via + '</small>' +
-          (r.source === 'ai' ? '<p class="s-fc-q">\u201C' + esc(L.aiQ.q.charAt(0).toUpperCase() + L.aiQ.q.slice(1)) + '?\u201D</p>' : '') +
-          '<p><b>' + esc(gname) + ' booked ' + esc(rp.short) + '</b> for ' + BB.dates(r) + '.</p><span class="s-fc-row"><b class="num">' + $(r.total) + '</b><span class="s-cite">' + icon('check') + 'You kept ' + $(Math.round(r.total * FEE())) + '</span></span></div>' : '') +
-        '<div class="s-fc s-fc-bk s-rise" style="--d:6"><span class="s-faces">' + retNames.map(n => BB.avatar(n, 'sm')).join('') + '</span><span><small>Returning guests</small><b><span class="num">' + ret + '%</span> of bookings</b><em>came from guests who stayed before</em></span></div>' +
-        '<div class="s-fc s-fc-fee s-rise" style="--d:7"><small>Fees kept this year</small><b class="num">' + $(L.m.saved) + '</b><span class="s-bars">' + [32, 44, 51, 63, 78, 100].map(h => '<i style="height:' + h + '%"></i>').join('') + '</span></div>' +
+      '<div class="s-hero3-stage s-rise" style="--d:2" role="img" aria-label="A holiday let booking website, the host app showing today\u2019s bookings, a new direct booking and a ChatGPT recommendation">' +
+        frame('shot-site', 'larchfellcabin.co.uk', 's-hero3-browser') + phoneF('phone-today', 's-hero3-phone') +
+        ncard('New direct booking', '\xA31,180 \xB7 4 nights', 'good', 'dark s-hn1') + ncard('Shows up in ChatGPT', 'Larch Fell Cabin', 'gpt', 's-hn2') +
       '</div>' +
     '</div></section>';
+  }
+
+  function proof() {
+    const it = [[(FEE() * 100).toFixed(1) + '%', 'Airbnb\u2019s host fee, kept by you on every direct booking'], ['0%', 'commission on your bookings, ever'], ['Same day', 'your booking site goes live on a free address'], ['5 in 1', 'website, SEO, AI search, guest app and outreach in one login']];
+    return '<section class="s-proof3 t-ink" aria-label="At a glance"><div class="s-dots"></div><div class="s-w"><ul>' + it.map(([b, t]) => '<li><b>' + b + '</b><span>' + t + '</span></li>').join('') + '</ul></div></section>';
   }
 
   function logos() {
@@ -7959,33 +8412,77 @@ body.p-lock { overflow: hidden; }
       names.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul></div></section>';
   }
 
-  function pillars(inst, L) {
-    const vis = Object.values(L.s.website.visitors).reduce((a, b) => a + b, 0);
-    const c1 = L.s.campaigns.find(c => c.status === 'sent') || L.s.campaigns[0];
-    const lp = L.p;
-    const cards = [
-      ['blue', '01', 'Website', 'Your own booking site', 'Your domain, instant booking, payments and deposits. Guests skip the service fee, so they pick you.', '<span class="s-viz-url">' + icon('lock') + esc(lp.domain) + '</span><span class="s-viz-row"><b class="num">' + vis.toLocaleString('en-GB') + '</b> visits this month</span>', go('property', { propertyId: lp.id }), 'See a host site'],
-      ['', '02', 'SEO', 'Found on Google', 'Local pages for the searches guests really make near you, written and published every month.', '<span class="s-viz-q">\u201Ccabin hot tub lake district\u201D</span><span class="s-viz-row"><b class="num">#4</b><em class="s-up">\u25B2 3</em> in Google</span>', go('app', { view: 'website' }), 'See website and SEO'],
-      ['dark', '03', 'AI answers', 'Recommended by AI', 'Structured so your holiday let shows up in ChatGPT, Gemini, Perplexity and Google AI answers, with a link that books direct.', '<span class="s-viz-row s-viz-ai">' + BB.aiLogos() + '</span><span class="s-viz-row">Mentioned in <b class="num s-yel">' + L.ai.mentioned + ' of ' + L.ai.total + '</b> AI answers</span><span class="s-meter"><i style="width:' + L.ai.score + '%"></i></span>', go('app', { view: 'ai' }), 'See AI visibility'],
-      ['yel', '04', 'Guests', 'Guests who return', 'Check-in app, emails and texts that turn one stay into three, sent from your own name.', '<span class="s-viz-row"><b class="num">' + pct(c1.recipients ? c1.opens / c1.recipients : 0.54) + '</b> opened \xB7 <b class="num">' + c1.bookings + '</b> rebooked</span><span class="s-viz-q">' + esc(c1.subject) + '</span>', go('app', { view: 'campaigns' }), 'See campaigns'],
-    ];
-    return '<section class="s-sec" id="s-product-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head"><p class="eyebrow">One system</p><h2 class="s-h2">Everything a host needs to go direct.</h2>' +
-      '<p class="s-sub">Four tools that share one guest list you own. The guest who finds you on Google books on your site, checks in on your app and hears from you next season. No platform in the middle.</p></div>' +
-      '<div class="s-pillars">' + cards.map(([cls, n, k, h, p, viz, link, lt]) =>
-        '<article class="s-pil ' + cls + '"><span class="s-pil-n">' + n + ' \xB7 ' + k + '</span><h3>' + h + '</h3><p>' + p + '</p><div class="s-viz">' + viz + '</div>' +
-        '<button class="s-see"' + link + '>' + lt + icon('arrow') + '</button></article>').join('') + '</div>' +
+  function film() {
+    return '<section class="s-sec s-film" id="s-film" aria-label="Explainer video"><div class="s-w">' +
+      '<div class="s-head s-center">' + pill('See it in 47 seconds') + '<h2 class="s-h2">What Bookingbooster does for your holiday let.</h2></div>' +
+      '<div class="s-film-frame"><video controls preload="none" playsinline poster="/media/explainer.jpg" src="/media/explainer.mp4" aria-label="Bookingbooster explainer video"></video></div>' +
       '</div></section>';
   }
 
+  function features(inst, L) {
+    const F = [
+      { id: 'product', t: 't-white', pill: 'Your booking website', h: 'Your cottage. Your website. <span class="s-hl">Your guests.</span>',
+        p: 'A fast, good-looking booking site on your own .co.uk domain, made from your listing. Live calendar, instant booking and card payments. Guests skip the platform\u2019s service fee, so they choose you.',
+        pts: ['Your domain, your brand, your house rules', 'Card, Apple Pay and Google Pay through Stripe', 'Security deposits held on the card, released on their own'],
+        alt: 'A holiday let booking website on a laptop and a phone',
+        vis: frame('shot-site2', 'tidewatercottage.co.uk', 's-fv-main') + phoneF('phone-site', 's-fv-phone') + ncard('Booked direct', 'No platform fee', 'good', 's-fv-nc'),
+        cta: ['See a host site', go('property', { propertyId: L.p.id })] },
+      { t: 't-sky', pill: 'Google SEO', h: 'Get found on Google for the stays <span class="s-hl">guests search.</span>',
+        p: 'Your listing can\u2019t rank on Google. Your website can. Every month we write and publish local pages for the searches guests really make near you, like \u201Ccabin with hot tub Lake District\u201D.',
+        pts: ['Local pages and area guides, written for you', 'Google Business Profile set up and kept fresh', 'Search Console connected, with a monthly report'],
+        alt: 'The website and SEO screen in the host console',
+        vis: frame('shot-seo', 'booking-booster.co.uk/app', 's-fv-main') + ncard('Example search ranking', '#4 for \u201Ccabin hot tub lake district\u201D', 'up', 'dark s-fv-nc'),
+        cta: ['See website and SEO', go('app', { view: 'website' })] },
+    ];
+    const G = [
+      { t: 't-yellow', pill: 'Guest app', h: 'Your house guide in <span class="s-hl">every guest\u2019s pocket.</span>',
+        p: 'No download. Guests open it from their booking email, check in online in about three minutes, and the door code arrives on its own when they are done.',
+        pts: ['ID check, rental agreement and deposit hold', 'Door codes for Nuki and Yale smart locks', 'House guide, local tips and messages in one place'],
+        alt: 'The guest app on two phones: the trip page and messages',
+        vis: phoneF('phone-guest', 's-fv-p1') + phoneF('phone-inbox', 's-fv-p2') + ncard('Check-in done', 'Door code sent', 'key', 's-fv-nc'),
+        cta: ['Open the guest app', go('guest', { bookingId: (BB.q.upcoming()[0] || {}).id })] },
+      { t: 't-cobalt', pill: 'Guest outreach', h: 'Quiet week? <span class="s-hl">Text your regulars.</span>',
+        p: 'Past guests are your best guests. We bring them back with emails and texts sent in your name: gap-night offers, next-season reminders and a welcome-back note that pays for itself.',
+        pts: ['Import past guests from your platform exports', 'Ready-made campaigns for gap nights and next season', 'See opens, clicks and bookings from every send'],
+        alt: 'The campaigns screen in the host console',
+        vis: frame('shot-campaigns', 'booking-booster.co.uk/app', 's-fv-main') + ncard('Example campaign', '23 rebooked from one email', 'good', 'dark s-fv-nc'),
+        cta: ['See campaigns', go('app', { view: 'campaigns' })] },
+      { t: 't-sky', pill: 'Host console and app', h: 'Every booking, message and payment. <span class="s-hl">One screen.</span>',
+        p: 'Run it all from your laptop or your phone. See who arrives today, answer guests with suggested replies, and get a buzz the moment a direct booking lands.',
+        pts: ['Calendar, bookings, payments and messages together', 'Suggested replies to guest questions', 'Fees kept and returning guests, tracked every month'],
+        alt: 'The host console dashboard and the host app on a phone',
+        vis: frame('shot-console', 'booking-booster.co.uk/app', 's-fv-main') + phoneF('phone-grow', 's-fv-phone'),
+        cta: ['Open the host console', go('app', { view: 'dashboard' })] },
+    ];
+    const row = (f, i) => '<section class="s-feat ' + f.t + (i % 2 ? ' flip' : '') + '"' + (f.id ? ' id="s-' + f.id + '-' + inst.uid + '"' : '') + '>' + CHEV + '<div class="s-w s-feat-in">' +
+      '<div class="s-feat-copy">' + pill(f.pill) + '<h2 class="s-h2">' + f.h + '</h2><p class="s-sub">' + f.p + '</p>' +
+        '<ul class="s-ticks3">' + f.pts.map(x => '<li><span>' + icon('check') + '</span>' + x + '</li>').join('') + '</ul>' +
+        '<button class="btn s-b lg"' + f.cta[1] + '>' + f.cta[0] + icon('arrow') + '</button></div>' +
+      '<div class="s-feat-vis" role="img" aria-label="' + esc(f.alt) + '">' + f.vis + '</div></div></section>';
+    return { top: F.map(row).join(''), bottom: G.map((f, i) => row(f, i + F.length + 1)).join('') };
+  }
+
+  const MYTHS = [
+    ['SEO takes years.', 'Local pages for specific searches can rank in months, especially in smaller towns.'],
+    ['I would have to leave the platforms.', 'Keep them if you like. The optional calendar sync blocks dates booked there, so you never double book.'],
+    ['Direct bookings are risky.', 'Card payments, ID checks, rental agreements and security deposits protect every direct stay.'],
+    ['My guests do not use apps.', 'No download needed. The guest app opens from a link in their booking confirmation.'],
+    ['People do not trust small websites.', 'A secure site with real reviews, clear prices and instant payment earns trust fast.'],
+    ['I need to be good with tech.', 'We set everything up. You approve it and keep hosting.'],
+  ];
+  function myths() {
+    return '<section class="s-sec s-myths t-white"><div class="s-w"><div class="s-head">' + pill('Myth vs fact') + '<h2 class="s-h2">What hosts worry about, <span class="s-hl">and what is true.</span></h2></div>' +
+      '<ul class="s-myth-grid">' + MYTHS.map(([m, f]) => '<li><p class="s-myth"><span>Myth</span><s>' + m + '</s></p><p class="s-fact"><span>Fact</span>' + f + '</p></li>').join('') + '</ul></div></section>';
+  }
+
   function calcVals(st) {
-    const direct = st.rev * st.share / 100, kept = Math.round(direct * FEE()), planYear = plan('growth').price * 11 + plan('growth').setup;
+    const direct = st.rev * st.share / 100, kept = Math.round(direct * FEE()), planYear = plan('growth').price * 12;
     return { direct, kept, planYear, net: kept - planYear, weeks: kept > 0 ? Math.ceil(planYear / (kept / 52)) : 99 };
   }
   function calc(inst) {
     const st = inst.st, v = calcVals(st), u = inst.uid, maxBar = Math.max(v.kept, v.planYear, 1);
     return '<section class="s-sec s-calc-sec"><div class="s-w s-calc">' +
-      '<div class="s-calc-l"><p class="eyebrow">Fee calculator</p><h2 class="s-h2">What would going direct be worth to you?</h2>' +
+      '<div class="s-calc-l">' + pill('Fee calculator') + '<h2 class="s-h2">What would going direct be worth to you?</h2>' +
         '<p class="s-sub">Every guest who books on your own site skips the platform and its fee. Here is the money that stays with you, in pounds.</p>' +
         '<div class="s-slider"><label for="s-rev-' + u + '"><span>Yearly booking revenue</span><b class="num" data-cv="rev">' + $(st.rev) + '</b></label>' +
           '<input type="range" id="s-rev-' + u + '" data-calc="rev" min="10000" max="250000" step="2000" value="' + st.rev + '" style="--p:' + ((st.rev - 10000) / 2400) + '%"><div class="s-ticks"><span>\xA310k</span><span>\xA3250k</span></div></div>' +
@@ -7997,11 +8494,11 @@ body.p-lock { overflow: hidden; }
         '<p class="s-calc-big num" data-cv="kept" data-v="' + v.kept + '">' + $(v.kept) + '</p>' +
         '<p class="s-calc-sm">on <b class="num" data-cv="direct" data-v="' + v.direct + '">' + $(v.direct) + '</b> of bookings moved direct, at Airbnb\u2019s ' + (FEE() * 100).toFixed(1) + '% host fee</p>' +
         '<div class="s-cmp"><div><span>Fees you keep</span><span class="s-cmp-bar"><i class="kept" data-cv="barKept" style="width:' + (100 * v.kept / maxBar) + '%"></i></span><b class="num" data-cv="kept2" data-v="' + v.kept + '">' + $(v.kept) + '</b></div>' +
-        '<div><span>Growth plan, first year</span><span class="s-cmp-bar"><i class="plan" data-cv="barPlan" style="width:' + (100 * v.planYear / maxBar) + '%"></i></span><b class="num">' + $(v.planYear) + '</b></div></div>' +
+        '<div><span>Plan, first year (12 \xD7 \xA3' + plan('growth').price + ')</span><span class="s-cmp-bar"><i class="plan" data-cv="barPlan" style="width:' + (100 * v.planYear / maxBar) + '%"></i></span><b class="num">' + $(v.planYear) + '</b></div></div>' +
         '<div class="s-calc-net"><span data-cv="netLabel">' + (v.net >= 0 ? 'Left over after the plan' : 'Short of covering the plan') + '</span><b class="num" data-cv="net" data-v="' + v.net + '">' + $(v.net) + '</b></div>' +
         '<p class="s-calc-pay" data-cv="pay">' + payLine(v) + '</p>' +
         '<button class="btn accent lg block" data-act="start">Start keeping it' + icon('arrow') + '</button>' +
-        '<p class="s-fine">Estimate only. Uses Airbnb\u2019s host-only fee of 15.5% and the Growth plan\u2019s first year billed monthly (setup fee plus 11 paid months), including VAT.</p>' +
+        '<p class="s-fine">Estimate only. Uses Airbnb\u2019s host-only fee of 15.5% and the plan\u2019s first year billed monthly (12 months at \xA3200), including VAT.</p>' +
       '</div>' +
     '</div></section>';
   }
@@ -8053,18 +8550,44 @@ body.p-lock { overflow: hidden; }
         '<div class="s-ai-cta"><button class="btn accent" data-act="start">Fix my AI visibility' + icon('arrow') + '</button><button class="btn s-ghost-inv"' + go('app', { view: 'ai' }) + '>See the weekly AI report</button></div>' +
       '</div>';
     }
-    return '<section class="s-ink" id="s-ai-' + u + '"><div class="s-w s-ai">' +
-      '<div class="s-ai-l"><p class="eyebrow">AI search</p><h2 class="s-h2">Travellers ask AI where to stay. Be the answer.</h2>' +
-        '<p class="s-sub">We track the questions guests ask about your area and shape your site so assistants recommend it, with a link that books direct.</p>' +
-        '<form class="s-ai-form" data-form="ai" novalidate>' +
-          '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
-          '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
-          '<button class="btn accent lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking\u2026' : 'Check') + '</button>' +
-          (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
-        '</form>' +
-        '<p class="s-fine">Demo: this check is simulated with sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+    const ok = icon('check');
+    return '<section class="s-ink s-ai2" id="s-ai-' + u + '">' + CHEV + '<div class="s-w">' +
+      '<div class="s-ai2-head">' +
+        pill('AI search') +
+        '<h2 class="s-h2">When guests ask ChatGPT, <span class="s-hl">be the answer.</span></h2>' +
+        '<p class="s-sub">More guests start with ChatGPT, Gemini, Perplexity or Google\u2019s AI answers instead of scrolling a listings site. Those assistants recommend the places they can read and trust. We make your booking site one of them, with a link that books direct.</p>' +
+        '<div class="s-ai2-logos">' + ENGINES.map(([k, t]) => '<span>' + BB.aiName(k, t) + '</span>').join('') + '</div>' +
       '</div>' +
-      '<div class="s-ai-r" aria-live="polite">' + panel + '</div>' +
+      '<ol class="s-ai2-steps">' +
+        '<li><span class="s-ai2-n">1</span><h3>A guest asks</h3><p>They type a real question about your area, the way they would ask a friend.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-bubble">' + esc(question) + '</div></div></li>' +
+        '<li><span class="s-ai2-n">2</span><h3>The assistant reads the web</h3><p>It looks for clear, trusted facts. We put them on your site in the format assistants read.</p>' +
+          '<div class="s-ai2-viz"><ul class="s-ai2-src">' +
+            ['Your booking site, with structured data', 'Questions and answers about your home', 'Google Business Profile and reviews', 'An open door for AI crawlers'].map(t => '<li>' + ok + esc(t) + '</li>').join('') +
+          '</ul></div></li>' +
+        '<li><span class="s-ai2-n">3</span><h3>It recommends you</h3><p>Your home appears in the answer, with a link to your own site, so the guest books without a platform fee.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-ans"><small>' + BB.aiName('chatgpt', 'ChatGPT') + '</small><p><b>Larch Fell Cabin</b> is a cosy cabin with a private hot tub and fell views, ten minutes from Windermere.</p><span class="s-ai2-link">' + icon('lock') + 'larchfellcabin.co.uk<em>Book direct</em></span></div></div></li>' +
+      '</ol>' +
+      '<div class="s-ai2-weekly"><h3>What we do for you, every week</h3><ul>' +
+        '<li><b>Ask the questions guests ask.</b><span>We put travellers\u2019 questions about your area to each assistant and read every answer.</span></li>' +
+        '<li><b>Make your site easy for AI to read.</b><span>Structured data, clear answers about your home, a sitemap and an llms.txt file.</span></li>' +
+        '<li><b>Fill the gaps.</b><span>When an assistant recommends someone else, we add the local pages and facts that were missing.</span></li>' +
+        '<li><b>Show you the score.</b><span>A weekly AI visibility report in your console, so you can see it move.</span></li>' +
+      '</ul></div>' +
+      '<div class="s-ai2-shot"><div>' + pill('Your weekly AI report') + '<h3>Mentioned in 6 of 8 <span>AI answers.</span></h3><p>See which questions name you, which name a competitor, and the fixes that win you the next one. Example report with sample data.</p></div>' +
+        '<div role="img" aria-label="The AI visibility report in the host console">' + frame('shot-ai', 'booking-booster.co.uk/app') + '</div></div>' +
+      '<div class="s-ai2-check">' +
+        '<div class="s-ai2-form"><h3>Check your area now</h3><p>See what assistants say when a traveller asks about stays near you.</p>' +
+          '<form class="s-ai-form" data-form="ai" novalidate>' +
+            '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
+            '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
+            '<button class="btn primary lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking\u2026' : 'Check my area') + '</button>' +
+            (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
+          '</form>' +
+          '<p class="s-fine">This preview uses sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+        '</div>' +
+        '<div class="s-ai-r" aria-live="polite"><div class="s-ai2-win"><i></i><i></i><i></i><span>AI answer check</span></div><div class="s-ai2-body">' + panel + '</div></div>' +
+      '</div>' +
     '</div></section>';
   }
   function runAi(inst) {
@@ -8081,50 +8604,12 @@ body.p-lock { overflow: hidden; }
       ['We build and tune it', 'Your booking site, local SEO pages, AI-ready answers and your guest list, set up and kept up for you.', 'build'],
       ['Bookings come direct', 'Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season.', 'book'],
     ];
-    return '<section class="s-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">How it works</p><h2 class="s-h2">Live the same day. You barely lift a finger.</h2></div>' +
+    return '<section class="s-sec"><div class="s-w"><div class="s-head">' + pill('How it works') + '<h2 class="s-h2">Live the same day. You barely lift a finger.</h2></div>' +
       '<ol class="s-steps">' + steps.map(([h, p, k], i) => '<li><span class="s-step-n num">' + (i + 1) + '</span><h3>' + h + '</h3><p>' + p + '</p>' +
         (k === 'link' ? '<div class="s-step-viz"><span class="s-url-demo">' + icon('globe') + 'airbnb.co.uk/rooms/48213907</span></div>' :
          k === 'build' ? '<div class="s-step-viz s-chk">' + ['Booking site', 'SEO pages', 'AI answers', 'Guest list'].map(x => '<span>' + icon('check') + x + '</span>').join('') + '</div>' :
          '<div class="s-step-viz"><span class="s-bk-demo">' + BB.chan('direct') + '<b class="num">+\xA3980</b><em>no platform fee</em></span></div>') + '</li>').join('') + '</ol>' +
       '<div class="s-how-cta"><button class="btn primary lg" data-act="start">Paste my listing link' + icon('arrow') + '</button></div></div></section>';
-  }
-
-  function tour(inst, L) {
-    const t = inst.st.tour, s = L.s, m = L.m;
-    const tabs = [['console', 'Host console', 'dash'], ['mobile', 'Host app', 'phone'], ['guest', 'Guest app', 'key'], ['property', 'Property site', 'home']];
-    let prev, info;
-    if (t === 'console') {
-      const months = m.months.slice(-6), mx = Math.max(...months.map(k => m.byMonth[k].direct + m.byMonth[k].platforms), 1);
-      prev = '<div class="s-con"><aside><span class="s-con-logo">' + BB.MARK + '</span>' + ['dash', 'cal', 'inbox', 'users', 'mail', 'spark'].map((k, i) => '<i class="' + (i ? '' : 'on') + '">' + icon(k) + '</i>').join('') + '</aside>' +
-        '<div class="s-con-main"><div class="s-con-h"><b>Good morning, ' + esc(s.account.owner.split(' ')[0]) + '</b><span>' + D.fmt(s.today, { weekday: 'long', month: 'long' }) + '</span></div>' +
-        '<div class="s-kpis"><div><span>Revenue, 30 days</span><b class="num">' + $(m.rev30) + '</b></div><div><span>Returning guests</span><b class="num">' + pct(m.returningShare) + '</b></div><div><span>Fees kept</span><b class="num">' + $(m.saved) + '</b></div></div>' +
-        '<div class="s-chart">' + months.map(k => { const x = m.byMonth[k]; return '<div><span class="s-col"><i class="pl" style="height:' + (100 * (x.returning || 0) / mx) + '%"></i><i class="di" style="height:' + (100 * (x.newGuests || 0) / mx) + '%"></i></span><em>' + BB.monthName(k).slice(0, 3) + '</em></div>'; }).join('') + '</div>' +
-        '<div class="s-legend"><span><i class="di"></i>New guests</span><span><i class="pl"></i>Returning guests</span></div></div></div>';
-      info = ['Run everything from one screen', 'Calendar, bookings, payments, messages, guests and campaigns, all on bookings you own.', go('app', { view: 'dashboard' }), 'Open the host console'];
-    } else if (t === 'mobile') {
-      const arr = BB.q.arrivals().slice(0, 3);
-      prev = '<div class="s-mini-phone"><div class="s-mp-screen"><div class="s-mp-top"><b>Today</b><span>' + D.fmt(s.today, { weekday: 'short' }) + '</span></div>' +
-        '<div class="s-mp-kpi"><span>Arriving</span><b class="num">' + BB.q.arrivals().length + '</b><span>Staying</span><b class="num">' + BB.q.inHouse().length + '</b></div>' +
-        arr.map(b => { const g = BB.q.guest(b.guestId); return '<div class="s-mp-row">' + BB.avatar(g.name, 'sm') + '<span><b>' + esc(g.name) + '</b><em>' + esc(BB.q.property(b.propertyId).short) + ' \xB7 ' + esc(BB.sourceLabel(b)) + '</em></span>' + BB.stepDots(b) + '</div>'; }).join('') +
-        '<div class="s-mp-tabs">' + ['dash', 'cal', 'inbox', 'user'].map((k, i) => '<i class="' + (i ? '' : 'on') + '">' + icon(k) + '</i>').join('') + '</div></div></div>';
-      info = ['Your business in your pocket', 'See who arrives today, reply to guests, and get a buzz the moment a direct booking lands.', go('mobile'), 'Open the host app'];
-    } else if (t === 'guest') {
-      const b = BB.q.upcoming().find(x => !x.checkin.done) || BB.q.upcoming()[0];
-      const g = BB.q.guest(b.guestId), p = BB.q.property(b.propertyId), c = b.checkin;
-      prev = '<div class="s-mini-phone"><div class="s-mp-screen"><div class="s-mp-hero">' + scene(p.theme) + '<span>' + esc(p.name) + '</span></div>' +
-        '<div class="s-mp-body"><b class="s-mp-hi">Hi ' + esc(g.name.split(' ')[0]) + ', check in before you arrive</b><em>' + BB.dates(b) + '</em>' +
-        [['ID and selfie', c.id && c.selfie], ['Rental agreement', c.agreement], ['Deposit hold', c.deposit]].map(([x, ok]) => '<div class="s-mp-step ' + (ok ? 'ok' : '') + '"><i>' + (ok ? icon('check') : '') + '</i>' + x + '</div>').join('') +
-        '<span class="s-mp-btn">Start check-in</span></div></div></div>';
-      info = ['A check-in app guests actually finish', 'ID, agreement and deposit in three minutes. The door code arrives on its own when they are done.', go('guest', { bookingId: b.id }), 'Open the guest app'];
-    } else {
-      prev = miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-tour-browser' });
-      info = ['A site that books, not just a brochure', 'Live calendar, instant booking, and a price that shows guests what they save by skipping the platform.', go('property', { propertyId: L.p.id }), 'Open a property site'];
-    }
-    return '<section class="s-sec s-tour-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">Product tour</p><h2 class="s-h2">One login. Four places it shows up.</h2>' +
-      '<p class="s-sub">Every part runs on the same data. Book a stay on the property site and it appears in the console, the host app and the guest app at once.</p></div>' +
-      '<div class="s-tabs" role="tablist" aria-label="Product tour">' + tabs.map(([k, l, i]) => '<button role="tab" id="s-tab-' + k + '-' + inst.uid + '" aria-selected="' + (t === k) + '" data-tour="' + k + '">' + icon(i) + l + '</button>').join('') + '</div>' +
-      '<div class="s-tour" role="tabpanel"><div class="s-tour-prev">' + prev + '</div><div class="s-tour-info"><h3>' + info[0] + '</h3><p>' + info[1] + '</p><button class="btn primary"' + info[2] + '>' + info[3] + icon('arrow') + '</button><p class="s-fine">Opens the working prototype with sample data.</p></div></div>' +
-      '</div></section>';
   }
 
   function customers(inst) {
@@ -8140,11 +8625,11 @@ body.p-lock { overflow: hidden; }
   function pricing(inst) {
     const an = inst.st.annual;
     return '<section class="s-sec s-pricing" id="s-pricing-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head s-head-row"><div><p class="eyebrow">Pricing</p><h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. A one-off \xA3997 setup fee, your first month free, then \xA3200 a month. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
+      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. \xA3200 a month, with no setup fee. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
         '</div>' +
       '<div class="s-plans">' + PLANS.map(p => '<article class="s-plan' + (p.hot ? ' hot' : '') + '">' + '' +
         '<h3>' + p.name + '</h3><p class="s-plan-tag">' + p.tag + '</p><div class="s-amt"><b class="num">\xA3' + perMonth(p, an) + '</b><span>/ month</span></div>' +
-        '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' Plus a one-off ' + $(p.setup) + ' setup fee. First month free.</p>' +
+        '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' No setup fee.</p>' +
         '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul>' +
         '<button class="btn ' + (p.hot ? 'accent' : '') + ' block lg" data-act="start" data-plan="' + p.id + '">' + p.cta + '</button></article>').join('') + '</div>' +
       '<div class="s-addon"><span class="s-addon-ic">' + icon('sync') + '</span><div><b>Optional: ' + ADDON.name + ' <em>+\xA3' + ADDON.price + ' a month</em></b><p>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Paste the calendar link and dates booked there are blocked on your site, so you never double book. Most hosts never need it.</p></div></div>' +
@@ -8153,15 +8638,24 @@ body.p-lock { overflow: hidden; }
 
   function faq(inst) {
     const open = inst.st.faq;
-    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
+    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head">' + pill('FAQ') + '<h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
       '<div class="s-faq">' + FAQ.map(([q, a], i) => '<div class="s-qa' + (open === i ? ' open' : '') + '"><h3><button id="s-faq-' + i + '-' + inst.uid + '" data-faq="' + i + '" aria-expanded="' + (open === i) + '" aria-controls="s-faqp-' + i + '-' + inst.uid + '">' + q + '<span class="s-pm" aria-hidden="true"></span></button></h3>' +
         '<div class="s-ans" id="s-faqp-' + i + '-' + inst.uid + '" role="region"' + (open === i ? '' : ' hidden') + '><p>' + a + '</p></div></div>').join('') + '</div></div></section>';
   }
 
+  /* the brand's live social profiles (same list as server/marketing.js) */
+  const SOCIAL = [
+    ['Instagram', 'https://www.instagram.com/bookingbooster_1/', '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/>'],
+    ['Facebook', 'https://www.facebook.com/1300137993193053', '<path fill="currentColor" d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.4V14h2.8v8z"/>'],
+    ['TikTok', 'https://www.tiktok.com/@bookingbooster', '<path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v3.1c-1.4.1-2.7-.3-3.9-1.1v6.1c0 3.4-2.5 5.6-5.6 5.6S5.4 18.2 5.4 15.1c0-3.3 2.8-5.7 6.3-5.2v3.2c-1.5-.4-3 .5-3 2.1 0 1.2 1 2.2 2.3 2.2 1.4 0 2.4-.9 2.4-2.7V3z"/>'],
+    ['YouTube', 'https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA', '<rect x="2" y="5" width="20" height="14" rx="4.5" fill="currentColor"/><path fill="var(--sicon-bg, #2747F5)" d="M10 9v6l5.2-3z"/>'],
+  ];
+  const socials = () => '<ul class="s-social" aria-label="Follow Bookingbooster">' + SOCIAL.map(([n, u, d]) => '<li><a href="' + u + '" target="_blank" rel="me noopener" aria-label="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg></a></li>').join('') + '</ul>';
+
   function footer() {
     return '<section class="s-final"><div class="s-w"><h2 class="s-final-h">Keep the 15%.<br>Get found. <span>Get booked.</span></h2>' +
       '<div class="s-cta"><button class="btn accent lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg s-ghost-inv"' + go('live') + '>See the live demo</button></div>' +
-      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em></span>' +
+      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em>' + socials() + '</span>' +
       '<nav aria-label="Footer"><div><b>Product</b><button data-scroll="product">Overview</button><button data-scroll="ai">AI search</button><button data-scroll="pricing">Pricing</button></div>' +
       '<div><b>Try it</b><button' + go('live') + '>Live demo</button><button' + go('app') + '>Host console</button><button' + go('property', { propertyId: 'laurel' }) + '>Property site</button></div>' +
       '<div><b>Company</b>' + (LIVE() ? '<a href="/help">Help</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>' : '<button data-scroll="customers">Customers</button>') + '<button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
@@ -8172,7 +8666,8 @@ body.p-lock { overflow: hidden; }
 
   function home(inst) {
     const L = liveData();
-    return nav(inst) + hero(inst, L) + logos() + pillars(inst, L) + calc(inst) + aiSection(inst) + how(inst) + tour(inst, L) + customers(inst) + pricing(inst) + faq(inst) + footer();
+    const F = features(inst, L);
+    return nav(inst) + hero(inst) + proof() + F.top + film() + calc(inst) + aiSection(inst) + F.bottom + how(inst) + myths() + customers(inst) + pricing(inst) + faq(inst) + footer();
   }
 
   /* =====================================================================
@@ -8362,10 +8857,10 @@ body.p-lock { overflow: hidden; }
           (ready ? '' : '<p class="s-fine">Connect Stripe so guests can pay you. It is the one thing a booking site needs.</p>') +
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
       }
-      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">A one-off \xA3997 setup fee, your first month free, then \xA3200 a month. Cancel anytime, prices include VAT.</p>' +
+      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">\xA3200 a month, with no setup fee. Cancel anytime, prices include VAT.</p>' +
         '<div class="s-obplans" role="radiogroup" aria-label="Plan">' + PLANS.map(p => '<button class="s-obplan' + (ob.plan === p.id ? ' on' : '') + '" role="radio" aria-checked="' + (ob.plan === p.id) + '" data-pick-plan="' + p.id + '">' +
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
-          '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' Plus a one-off ' + $(p.setup) + ' setup fee. First month free.</span>' +
+          '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' No setup fee.</span>' +
           '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></button>').join('') + '</div>' +
         (ob.addon ? '<p class="s-addon-note">' + icon('sync') + 'Plus the Calendar sync add-on, \xA3' + ADDON.price + ' a month.</p>' : '') +
         '<form data-form="next" class="s-ob-form">' + navRow('Continue with ' + plan(ob.plan).name) + '</form>';
@@ -8380,7 +8875,7 @@ body.p-lock { overflow: hidden; }
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
             '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (/bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
-            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT, plus a one-off ' + $(p.setup) + ' setup fee. First month free</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
+            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
           '<form data-form="launch" class="s-ob-form" novalidate>' + (REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (REAL() && BB.BOOT.payFirst ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
       }
@@ -8457,7 +8952,7 @@ body.p-lock { overflow: hidden; }
   BB.define('site', {
     create(root, opts, inst) {
       inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = [];
-      Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 60000, share: 30, tour: 'console', annual: false, faq: 0,
+      Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
         ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
           opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
@@ -9500,7 +9995,7 @@ body.p-lock { overflow: hidden; }
 
   state = load();
 })();
-` }, "/app/web/src/sync.js": { "t": "/* Bookingbooster: browser <-> server sync.\n   Every BB.act.* call runs here first (instant feedback), then the same action runs on the server, whose saved\n   result replaces local state. Other devices get a nudge over server-sent events and refetch. */\n(function () {\n  const BB = window.BB, BOOT = BB.BOOT;\n  if (!BOOT) return; // plain prototype file: nothing to sync\n  const mode = BOOT.mode; // host | demo | site | trip | marketing\n  let version = BOOT.version || 0, inflight = 0, stale = false;\n  const fnv = str => { let h = 0x811c9dc5; for (const c of String(str)) { h ^= c.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };\n  // Homes without their own domain yet are shown by their site address (display only; the server keeps domain empty).\n  const siteHost = (s, links) => { if (!s || !s.properties || !links) return; s.properties.forEach(p => { if (!p.domain && links[p.id]) { try { const u = new URL(links[p.id]); p.domain = u.host + (u.pathname.length > 1 ? u.pathname.replace(/\\/$/, '') : ''); p._autoDomain = true; } catch (_) {} } }); };\n  function hydrate(s) {\n    if (mode === 'host') siteHost(s, BOOT.siteUrls);\n    if (s && s.promosHashed) { const map = s.promosHashed; s.promos = new Proxy({}, { get: (t, k) => typeof k === 'string' ? map[fnv(k.toUpperCase())] : undefined, set: (t, k, v) => { map[fnv(String(k).toUpperCase())] = v; return true; } }); }\n    return s;\n  }\n  hydrate(BB.store.get());\n\n  async function call(url, body, method) {\n    const r = await fetch(url, { method: method || 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-bb': '1' }, body: body ? JSON.stringify(body) : undefined });\n    let j = null; try { j = await r.json(); } catch (_) {}\n    if (r.status === 401 && mode === 'host') { location.href = '/login?next=' + encodeURIComponent(location.pathname); throw new Error('Signed out'); }\n    if (!r.ok) { const e = new Error((j && j.error) || 'Something went wrong. Try again.'); e.status = r.status; e.body = j; throw e; }\n    return j;\n  }\n  BB.api = { call, BOOT };\n  function accept(j) {\n    if (!j || !j.state) return;\n    if (j.version) version = j.version;\n    if (j.siteUrls) BOOT.siteUrls = j.siteUrls;\n    if (j.icalFeeds) BOOT.icalFeeds = j.icalFeeds;\n    if (j.soon) BOOT.soon = j.soon;\n    BB.store.replace(hydrate(j.state), { server: true });\n  }\n  async function refetch() {\n    if (inflight) { stale = true; return; }\n    try { accept(await call(BOOT.stateUrl, null, 'GET')); } catch (e) { console.warn(e); }\n  }\n  BB.api.refetch = refetch;\n  BB.api.accept = accept;\n\n  // Actions the guest-facing pages may send (the server checks each one again).\n  const PUBLIC = { trip: ['checkin', 'sendMessage', 'rateStay', 'review', 'joinList', 'buyExtra', 'openThread'], site: [] };\n  const queue = [];\n  function push(name, args) {\n    queue.push([name, args]); if (queue.length === 1) drain();\n  }\n  async function drain() {\n    while (queue.length) {\n      const [name, args] = queue[0]; inflight++;\n      try { const j = await call(BOOT.actUrl, { name, args, version }); accept(j); if (j && j.notice) BB.toast(j.notice); if (j && j.redirect) { location.href = j.redirect; return; } }\n      catch (e) { BB.toast(e.message, 'bad'); stale = true; }\n      finally { inflight--; queue.shift(); }\n    }\n    if (stale) { stale = false; refetch(); }\n  }\n\n  if (mode === 'host' || mode === 'demo' || mode === 'trip') {\n    let depth = 0;\n    Object.keys(BB.act).forEach(name => {\n      const orig = BB.act[name];\n      if (mode === 'trip' && !PUBLIC.trip.includes(name)) return;\n      BB.act[name] = function () {\n        const args = Array.prototype.slice.call(arguments);\n        depth++; let r;\n        try { r = orig.apply(this, args); } finally { depth--; }\n        if (depth === 0) push(name, JSON.parse(JSON.stringify(args)));\n        return r;\n      };\n    });\n    if (mode === 'demo') BB.store.reset = function () { call('/api/demo/reset', {}).then(accept).catch(e => BB.toast(e.message, 'bad')); };\n  }\n\n  // Claude-drafted replies for the inbox when the server has a key. The rule-based draft shows until it arrives.\n  if (mode === 'host' && BOOT.aiDrafts && BB.suggestReply) {\n    const base = BB.suggestReply, cache = {}, asked = {};\n    BB.suggestReply = function (tid) {\n      const t = BB.q.thread(tid); if (!t) return '';\n      const last = t.messages.filter(m => m.from === 'guest').pop(); if (!last) return '';\n      const key = tid + ':' + t.messages.length;\n      if (cache[key]) return cache[key];\n      if (!asked[key]) { asked[key] = 1; call('/api/suggest', { threadId: tid }).then(j => { if (j && j.text) { cache[key] = j.text; BB.store.commit({ quiet: true, type: 'draft' }); } }).catch(() => {}); }\n      return base(tid);\n    };\n  }\n\n  // Live updates from other devices and from guests.\n  if (BOOT.streamUrl && BOOT.poll) {\n    const url = BOOT.streamUrl + (BOOT.streamUrl.indexOf('?') < 0 ? '?' : '&') + 'poll=1';\n    const tick = () => { if (document.visibilityState !== 'visible' || inflight) return; fetch(url, { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).then(d => { if (d && d.v > version) refetch(); }).catch(() => {}); };\n    setInterval(tick, 15000); document.addEventListener('visibilitychange', tick);\n  } else if (BOOT.streamUrl && window.EventSource) {\n    const es = new EventSource(BOOT.streamUrl);\n    es.onmessage = ev => { try { const d = JSON.parse(ev.data); if (d.v > version) refetch(); } catch (_) {} };\n  }\n\n  // Bookings from guest pages go straight to the server (it decides between card payment, request and test mode).\n  BB.api.book = async function (input, kind) {\n    const j = await call(BOOT.bookUrl, { input, kind: kind || 'pay' });\n    if (j.state) accept(j);\n    return j; // { ok, bookingId, tripUrl, checkoutUrl?, request?, error? }\n  };\n  BB.api.deposit = async function (bookingId) { const j = await call(BOOT.depositUrl, { bookingId }); if (j.state) accept(j); return j; };\n})();\n" }, "/app/web/src/ui.js": { "t": `/* Bookingbooster prototype: shared UI kit. Rendering, mounting, icons and small components used by every surface. */
+` }, "/app/web/src/sync.js": { "t": "/* Bookingbooster: browser <-> server sync.\n   Every BB.act.* call runs here first (instant feedback), then the same action runs on the server, whose saved\n   result replaces local state. Other devices get a nudge over server-sent events and refetch. */\n(function () {\n  const BB = window.BB, BOOT = BB.BOOT;\n  if (!BOOT) return; // plain prototype file: nothing to sync\n  const mode = BOOT.mode; // host | demo | site | trip | marketing\n  let version = BOOT.version || 0, inflight = 0, stale = false;\n  const fnv = str => { let h = 0x811c9dc5; for (const c of String(str)) { h ^= c.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };\n  // Homes without their own domain yet are shown by their site address (display only; the server keeps domain empty).\n  const siteHost = (s, links) => { if (!s || !s.properties || !links) return; s.properties.forEach(p => { if (!p.domain && links[p.id]) { try { const u = new URL(links[p.id]); p.domain = u.host + (u.pathname.length > 1 ? u.pathname.replace(/\\/$/, '') : ''); p._autoDomain = true; } catch (_) {} } }); };\n  function hydrate(s) {\n    if (mode === 'host') siteHost(s, BOOT.siteUrls);\n    if (s && s.promosHashed) { const map = s.promosHashed; s.promos = new Proxy({}, { get: (t, k) => typeof k === 'string' ? map[fnv(k.toUpperCase())] : undefined, set: (t, k, v) => { map[fnv(String(k).toUpperCase())] = v; return true; } }); }\n    return s;\n  }\n  hydrate(BB.store.get());\n\n  async function call(url, body, method) {\n    const r = await fetch(url, { method: method || 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-bb': '1' }, body: body ? JSON.stringify(body) : undefined });\n    let j = null; try { j = await r.json(); } catch (_) {}\n    if (r.status === 401 && mode === 'host') { location.href = '/login?next=' + encodeURIComponent(location.pathname); throw new Error('Signed out'); }\n    if (!r.ok) { const e = new Error((j && j.error) || 'Something went wrong. Try again.'); e.status = r.status; e.body = j; throw e; }\n    return j;\n  }\n  BB.api = { call, BOOT };\n  function accept(j) {\n    if (!j || !j.state) return;\n    if (j.version) version = j.version;\n    if (j.siteUrls) BOOT.siteUrls = j.siteUrls;\n    if (j.icalFeeds) BOOT.icalFeeds = j.icalFeeds;\n    if (j.soon) BOOT.soon = j.soon;\n    BB.store.replace(hydrate(j.state), { server: true });\n  }\n  async function refetch() {\n    if (inflight) { stale = true; return; }\n    try { accept(await call(BOOT.stateUrl, null, 'GET')); } catch (e) { console.warn(e); }\n  }\n  BB.api.refetch = refetch;\n  BB.api.accept = accept;\n\n  // Actions the guest-facing pages may send (the server checks each one again).\n  const PUBLIC = { trip: ['checkin', 'sendMessage', 'rateStay', 'review', 'joinList', 'buyExtra', 'openThread'], site: [] };\n  const queue = [];\n  function push(name, args) {\n    queue.push([name, args]); if (queue.length === 1) drain();\n  }\n  async function drain() {\n    while (queue.length) {\n      const [name, args] = queue[0]; inflight++;\n      try { const j = await call(BOOT.actUrl, { name, args, version }); accept(j); if (j && j.notice) BB.toast(j.notice); if (j && j.redirect) { location.href = j.redirect; return; } }\n      catch (e) { BB.toast(e.message, 'bad'); stale = true; }\n      finally { inflight--; queue.shift(); }\n    }\n    if (stale) { stale = false; refetch(); }\n  }\n\n  if (mode === 'host' || mode === 'demo' || mode === 'trip') {\n    let depth = 0;\n    Object.keys(BB.act).forEach(name => {\n      const orig = BB.act[name];\n      if (mode === 'trip' && !PUBLIC.trip.includes(name)) return;\n      BB.act[name] = function () {\n        const args = Array.prototype.slice.call(arguments);\n        depth++; let r;\n        try { r = orig.apply(this, args); } finally { depth--; }\n        if (depth === 0) push(name, JSON.parse(JSON.stringify(args)));\n        return r;\n      };\n    });\n    if (mode === 'demo') BB.store.reset = function () { call('/api/demo/reset', {}).then(accept).catch(e => BB.toast(e.message, 'bad')); };\n  }\n\n  // Claude-drafted replies for the inbox when the server has a key. The rule-based draft shows until it arrives.\n  if (mode === 'host' && BOOT.aiDrafts && BB.suggestReply) {\n    const base = BB.suggestReply, cache = {}, asked = {}; let creditOut = !!(BOOT.aiCredit && BOOT.aiCredit.empty);\n    BB.suggestReply = function (tid) {\n      const t = BB.q.thread(tid); if (!t) return '';\n      const last = t.messages.filter(m => m.from === 'guest').pop(); if (!last) return '';\n      const key = tid + ':' + t.messages.length;\n      if (cache[key]) return cache[key];\n      if (!asked[key] && !creditOut) { asked[key] = 1; call('/api/suggest', { threadId: tid }).then(j => {\n        if (j && j.text) { cache[key] = j.text; BB.store.commit({ quiet: true, type: 'draft' }); BB.api.credits(); }\n        if (j && j.credit && j.credit.empty) { creditOut = true; BOOT.aiCredit = Object.assign({}, BOOT.aiCredit, { empty: true, balance: 0 }); BB.toast(j.credit.message, 'bad'); BB.store.commit({ quiet: true, type: 'credit' }); }\n      }).catch(() => {}); }\n      return base(tid);\n    };\n  }\n\n  // AI credit: the balance shown in the account menu. Refreshed after AI actions (other surfaces call BB.api.credits() too).\n  BB.api.credits = function () {\n    if (mode !== 'host' || !BOOT.aiCredit) return Promise.resolve(null);\n    return call('/api/credits', null, 'GET').then(c => { BOOT.aiCredit = c; BB.store.commit({ quiet: true, type: 'credit' }); return c; }).catch(() => null);\n  };\n\n  // Live updates from other devices and from guests.\n  if (BOOT.streamUrl && BOOT.poll) {\n    const url = BOOT.streamUrl + (BOOT.streamUrl.indexOf('?') < 0 ? '?' : '&') + 'poll=1';\n    const tick = () => { if (document.visibilityState !== 'visible' || inflight) return; fetch(url, { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).then(d => { if (d && d.v > version) refetch(); }).catch(() => {}); };\n    setInterval(tick, 15000); document.addEventListener('visibilitychange', tick);\n  } else if (BOOT.streamUrl && window.EventSource) {\n    const es = new EventSource(BOOT.streamUrl);\n    es.onmessage = ev => { try { const d = JSON.parse(ev.data); if (d.v > version) refetch(); } catch (_) {} };\n  }\n\n  // Bookings from guest pages go straight to the server (it decides between card payment, request and test mode).\n  BB.api.book = async function (input, kind) {\n    const j = await call(BOOT.bookUrl, { input, kind: kind || 'pay' });\n    if (j.state) accept(j);\n    return j; // { ok, bookingId, tripUrl, checkoutUrl?, request?, error? }\n  };\n  BB.api.deposit = async function (bookingId) { const j = await call(BOOT.depositUrl, { bookingId }); if (j.state) accept(j); return j; };\n})();\n" }, "/app/web/src/ui.js": { "t": `/* Bookingbooster prototype: shared UI kit. Rendering, mounting, icons and small components used by every surface. */
 (function () {
   const BB = window.BB;
 
@@ -9610,7 +10105,7 @@ body.p-lock { overflow: hidden; }
   BB.icon = (k, cls) => '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (I[k] || I.spark) + '</svg>';
 
   /* Brand mark (cobalt square) and inverse */
-  BB.MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
+  BB.MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   BB.lockup = (cls) => '<span class="lockup ' + (cls || '') + '">' + BB.MARK + 'bookingbooster</span>';
 
   /* Small components */
@@ -10840,7 +11335,7 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">We build your booking site in a week</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Your own domain, instant booking, Stripe payments in GBP and damage deposits. You send a listing link, we do the rest.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;border-bottom:1px solid #E3E7F5;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#2747F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#FFFFFF;">02</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Guests find you without the middleman</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Local SEO pages and AI search fixes so <span style="white-space:nowrap;"><img src="../assets/ai/chatgpt.png" width="16" height="16" alt="" style="display:inline-block;width:16px;height:16px;border:0;outline:none;vertical-align:-3px;">&nbsp;ChatGPT</span> and <span style="white-space:nowrap;"><img src="../assets/ai/google.png" width="16" height="16" alt="" style="display:inline-block;width:16px;height:16px;border:0;outline:none;vertical-align:-3px;">&nbsp;Google</span> recommend your home, with a link to book direct.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#2747F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#FFFFFF;">03</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Past guests come back direct</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">We email and text your guest list with return-stay offers and gap-night deals. No commission on any of it.</p></td></tr></table></td></tr></table>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#E4E9FF;border-radius:14px;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:25px;color:#0F1630;font-weight:400;text-align:left;">Growth is <strong style="color:#0F1630;">&pound;200 a month</strong> (inc VAT), after a one-off &pound;997 setup fee and a free first month. At your numbers, <span style="background-color:#FFC42E;color:#0F1630;padding:0 4px;border-radius:4px;">{{payback_share}} of bookings going direct</span> covers the monthly fee. Cancel any time.</p></td></tr></table><div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{signup_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my booking site</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See the live demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#5A6386;font-weight:400;text-align:left;">Figures are estimates from the numbers you gave us and Airbnb's published fee rates. Your own payout reports will show the exact amount.</p></td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#E4E9FF;border-radius:14px;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:25px;color:#0F1630;font-weight:400;text-align:left;">Growth is <strong style="color:#0F1630;">&pound;200 a month</strong> (inc VAT), with no setup fee. At your numbers, <span style="background-color:#FFC42E;color:#0F1630;padding:0 4px;border-radius:4px;">{{payback_share}} of bookings going direct</span> covers the monthly fee. Cancel any time.</p></td></tr></table><div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{signup_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my booking site</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See the live demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#5A6386;font-weight:400;text-align:left;">Figures are estimates from the numbers you gave us and Airbnb's published fee rates. Your own payout reports will show the exact amount.</p></td></tr></table>
 
   </td></tr>
   <tr><td class="px" style="padding:28px 32px 0 32px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5A6386;" align="center">
@@ -10944,7 +11439,7 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Answer the questions guests actually ask</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Pages on your own site for pets, parking, hot tub, walks from the door. AI tools quote pages that answer clearly.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;border-bottom:1px solid #E3E7F5;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#E4E9FF;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#2747F5;">02</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Make your facts consistent everywhere</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Same name, address and amenities on your site, Google Business Profile and listings, so assistants trust them.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#E4E9FF;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#2747F5;">03</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Give assistants a place to send people</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">A booking site on your domain, so the link in the answer goes to you, not to a platform charging 15%.</p></td></tr></table></td></tr></table>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{ai_report_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my full AI visibility report</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See it in the demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">On Growth (&pound;997 setup, first month free, then &pound;200 a month inc VAT) we track this weekly and make the fixes for you.</p></td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{ai_report_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my full AI visibility report</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See it in the demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">On Growth (&pound;200 a month inc VAT, no setup fee) we track this weekly and make the fixes for you.</p></td></tr></table>
 
   </td></tr>
   <tr><td class="px" style="padding:28px 32px 0 32px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5A6386;" align="center">
@@ -11243,7 +11738,7 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
     </tr></table>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:8px 40px 26px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#FFC42E;border-radius:18px;"><tr><td style="padding:30px 28px;"><span style="display:inline-block;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1px;text-transform:uppercase;color:#FFC42E;background-color:#0F1630;border-radius:999px;padding:5px 10px;">Ends {{offer_end_date}}</span><div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div><p class="h1xl" style="margin:0 0 12px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:60px;line-height:58px;font-weight:800;letter-spacing:-2.4px;color:#0F1630;">2 months<br>free.</p><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:17px;line-height:26px;color:#0F1630;font-weight:500;text-align:left;">Pay yearly for Bookingbooster Growth and you pay for 10 months, not 12. Same plan, same done-for-you setup, ready before the spring booking rush.</p></td></tr></table></td></tr></table>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 30px 40px;"><p style="margin:0 0 12px 0;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:16px;letter-spacing:1.4px;text-transform:uppercase;color:#5A6386;font-weight:500;">Offer closes in</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td width="33%" valign="top" style="padding:0 5px 0 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#0F1630;border-radius:12px;"><tr><td align="center" style="padding:14px 4px 12px 4px;"><p style="margin:0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:36px;line-height:38px;font-weight:800;letter-spacing:-1px;color:#FFC42E;">{{days_left}}</p><p style="margin:4px 0 0 0;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#AEB6DA;">Days</p></td></tr></table></td><td width="33%" valign="top" style="padding:0 5px 0 5px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#0F1630;border-radius:12px;"><tr><td align="center" style="padding:14px 4px 12px 4px;"><p style="margin:0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:36px;line-height:38px;font-weight:800;letter-spacing:-1px;color:#FFC42E;">{{hours_left}}</p><p style="margin:4px 0 0 0;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#AEB6DA;">Hours</p></td></tr></table></td><td width="33%" valign="top" style="padding:0 0 0 5px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#0F1630;border-radius:12px;"><tr><td align="center" style="padding:14px 4px 12px 4px;"><p style="margin:0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:36px;line-height:38px;font-weight:800;letter-spacing:-1px;color:#FFC42E;">{{mins_left}}</p><p style="margin:4px 0 0 0;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#AEB6DA;">Minutes</p></td></tr></table></td></tr></table><div style="height:10px;line-height:10px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#5A6386;font-weight:400;text-align:left;">Countdown as of sending. The offer ends at 23:59 UK time on {{offer_end_date}}.</p></td></tr></table>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 28px 40px;"><h2 class="h2" style="margin:0 0 10px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:24px;line-height:30px;font-weight:800;letter-spacing:-0.6px;color:#0F1630;">Your plan, paid yearly</h2><p style="margin:0 0 16px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#5A6386;font-weight:400;text-align:left;">Price includes VAT. The one-off &pound;997 setup fee and your free first month still apply.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" width="100%" valign="top" style="padding:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#0F1630;border:1.5px solid #0F1630;border-radius:16px;"><tr><td style="padding:18px 18px 20px 18px;"><span style="display:inline-block;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1px;text-transform:uppercase;color:#0F1630;background-color:#FFC42E;border-radius:999px;padding:5px 10px;">One plan</span>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 28px 40px;"><h2 class="h2" style="margin:0 0 10px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:24px;line-height:30px;font-weight:800;letter-spacing:-0.6px;color:#0F1630;">Your plan, paid yearly</h2><p style="margin:0 0 16px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#5A6386;font-weight:400;text-align:left;">Price includes VAT. No setup fee.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" width="100%" valign="top" style="padding:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#0F1630;border:1.5px solid #0F1630;border-radius:16px;"><tr><td style="padding:18px 18px 20px 18px;"><span style="display:inline-block;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1px;text-transform:uppercase;color:#0F1630;background-color:#FFC42E;border-radius:999px;padding:5px 10px;">One plan</span>
 <p style="margin:12px 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:20px;line-height:24px;font-weight:800;color:#FFFFFF;letter-spacing:-0.4px;">Growth</p>
 <p style="margin:0 0 10px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;color:#C9D0EE;">Done for you: your booking site, local SEO pages, AI fixes and guest campaigns.</p>
 <p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;color:#C9D0EE;"><s>&pound;2,400 a year</s></p>
@@ -12107,6 +12602,10 @@ var require_config = __commonJS({
       }
     }
     var E = process.env;
+    var num = (v, d) => {
+      const n = Number(v);
+      return v !== void 0 && v !== "" && Number.isFinite(n) && n >= 0 ? n : d;
+    };
     var stripeKeyName = E.STRIPE_SECRET_KEY ? "STRIPE_SECRET_KEY" : Object.keys(E).find((k) => /^(sk|rk)_(live|test)_\S{10,}$/.test(String(E[k] || "").trim())) || "";
     var SERVERLESS = typeof Deno !== "undefined" || E.SERVERLESS === "1";
     var SB_URL = E.SUPABASE_URL || "";
@@ -12176,6 +12675,8 @@ var require_config = __commonJS({
         addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
       }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
       ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
+      // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
+      credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
       nuki: { token: E.NUKI_API_TOKEN },
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
       icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15)
@@ -12213,6 +12714,11 @@ create table if not exists lead_seq (lead_id bigint primary key, seq text not nu
   next_at bigint, sent text not null default '{}', vars text not null default '{}', updated_at bigint not null);
 create table if not exists lead_optout (email text primary key, at bigint not null);
 create table if not exists kv (k text primary key, v text not null);
+create table if not exists ai_credit (workspace_id text primary key, anchor bigint not null, period text not null,
+  allowance bigint not null default 0, allowance_left bigint not null default 0, topup_left bigint not null default 0, updated_at bigint not null);
+create table if not exists ai_ledger (id bigserial primary key, workspace_id text not null, kind text not null, amount bigint not null,
+  feature text, model text, tokens_in integer, tokens_out integer, ref text unique, created_at bigint not null);
+create index if not exists ai_ledger_ws on ai_ledger(workspace_id, created_at);
 create index if not exists lead_seq_due on lead_seq(status, next_at);
 create index if not exists outbox_ws on outbox(workspace_id, created_at);
 create index if not exists pay_ws on payments(workspace_id, booking_id);
@@ -12225,7 +12731,7 @@ var require_db = __commonJS({
   "server/db.js"(exports, module) {
     var SCHEMA = require_schema();
     var PK = { payments: ["id"], kv: ["k"], secrets: ["workspace_id", "name"], lead_seq: ["lead_id"], lead_optout: ["email"], domains: ["host"] };
-    var SERIAL = /* @__PURE__ */ new Set(["outbox", "leads"]);
+    var SERIAL = /* @__PURE__ */ new Set(["outbox", "leads", "ai_ledger"]);
     function translate(sql) {
       let s = sql.trim();
       s = s.replace(/([a-z_]+(?:\.[a-z_]+)?)\s*=\s*\?\s+COLLATE NOCASE/gi, "lower($1) = lower(?)");
@@ -12872,7 +13378,7 @@ var require_build = __commonJS({
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
     var MODS = ["site", "app", "app-grow", "app-studio", "mobile", "property", "guest"];
     function build() {
-      const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css")]).join("\n");
+      const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css"), rd("site-social.css")]).join("\n");
       const core = [rd("store.js"), rd("store-ext.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
       const prodJs = core.concat([rd("sync.js"), rd("shell-prod.js")]).join("\n;\n");
       const demoJs = core.concat([rd("sync.js"), rd("shell.js")]).join("\n;\n");
@@ -13034,18 +13540,18 @@ var require_seo = __commonJS({
 var require_marketing = __commonJS({
   "server/marketing.js"(exports, module) {
     var { esc } = require_pages();
-    var PRICE = { setup: 997, month: 200, year: 2e3, addon: 15, homes: 3 };
+    var PRICE = { setup: 0, month: 200, year: 2e3, addon: 15, homes: 3 };
     var FAQ = [
       ["Do I have to leave Airbnb or Vrbo?", "No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there."],
       ["How do guests pay?", "By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout."],
       ["What is AI visibility?", "How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps."],
       ["How long does setup take?", "Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week."],
       ["Who owns the guest list?", "You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR."],
-      ["Do prices include VAT?", "Yes. Every price on this page includes VAT. There is a one-off \xA3997 setup fee, your first month is free, then it is \xA3200 a month. There is no contract, and you can cancel from your console at any time. Your domain stays yours."]
+      ["Do prices include VAT?", "Yes. Every price on this page includes VAT. It is \xA3200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours."]
     ];
     var MORE = [
       ["What is Bookingbooster?", "Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission."],
-      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3200 a month after a one-off \xA3997 setup fee, and your first month is free. Guests pay you directly through your own Stripe account, and you keep every booking."],
+      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking."],
       ["Is Bookingbooster a channel manager?", "No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (\xA315 a month) keeps your calendars in step so you never double book."],
       ["Who is Bookingbooster for?", "Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us."]
     ];
@@ -13062,8 +13568,9 @@ var require_marketing = __commonJS({
       ["Bookings come direct", "Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season."]
     ];
     var TITLE = "Bookingbooster \xB7 Direct booking websites for UK holiday lets";
-    var DESCRIPTION = "Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. \xA3997 setup, first month free, then \xA3200 a month. No commission.";
+    var DESCRIPTION = "Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. \xA3200 a month, with no setup fee. No commission.";
     var allFaq = () => FAQ.concat(MORE);
+    var SOCIAL = [["Instagram", "https://www.instagram.com/bookingbooster_1/"], ["Facebook", "https://www.facebook.com/1300137993193053"], ["TikTok", "https://www.tiktok.com/@bookingbooster"], ["YouTube", "https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA"]];
     function jsonLd(base, co) {
       const url = base + "/";
       const org = {
@@ -13077,6 +13584,7 @@ var require_marketing = __commonJS({
         areaServed: { "@type": "Country", name: "United Kingdom" },
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: co.support, areaServed: "GB", availableLanguage: "en-GB" }
       };
+      org.sameAs = SOCIAL.map((x) => x[1]);
       if (co.name) org.legalName = co.name;
       if (co.number) org.identifier = { "@type": "PropertyValue", propertyID: "Companies House number", value: co.number };
       if (co.vat) org.vatID = co.vat;
@@ -13103,8 +13611,7 @@ var require_marketing = __commonJS({
           audience: { "@type": "BusinessAudience", audienceType: "UK holiday let and short-term let owners" },
           description: DESCRIPTION,
           hasOfferCatalog: { "@type": "OfferCatalog", name: "Bookingbooster pricing", itemListElement: [
-            offer("One-off setup fee", PRICE.setup, null, { description: "Paid once when you start. Your first month is then free." }),
-            offer("Monthly plan", PRICE.month, "MON", { description: "Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
+            offer("Monthly plan", PRICE.month, "MON", { description: "No setup fee. Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
             offer("Calendar sync add-on", PRICE.addon, "MON", { description: "Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager." })
           ] }
         },
@@ -13118,12 +13625,12 @@ var require_marketing = __commonJS({
     var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
     function content(base, co) {
       const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
-      return '<article class="seo" id="seo"><h1>More direct bookings. Less platform fees.</h1><p>Own your bookings, your guests and your website. Bookingbooster gets your UK holiday let found on Google and in AI answers, brings past guests back, and you stop paying 15% or more on every stay.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. A one-off \xA3" + PRICE.setup + " setup fee, your first month free, then \xA3" + PRICE.month + " a month. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p></article>';
+      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.setup + " one-off setup fee, first month free, then \xA3" + PRICE.month + " a month. All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
     }
-    module.exports = { FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
+    module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
 });
 
@@ -13575,6 +14082,21 @@ var require_stripe = __commonJS({
           const s = await api("POST", "/checkout/sessions", { mode: "subscription", customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
           return { id: s.id, url: s.url };
         },
+        // AI credit top-up: a one-off card payment to Bookingbooster (not to the host's own Stripe account).
+        async checkoutCredit({ customer, email, pounds, successUrl, cancelUrl, meta }) {
+          const s = await api("POST", "/checkout/sessions", {
+            mode: "payment",
+            customer: customer || void 0,
+            customer_email: customer ? void 0 : email,
+            success_url: successUrl,
+            cancel_url: cancelUrl,
+            line_items: [{ quantity: 1, price_data: { currency: "gbp", unit_amount: pence(pounds), tax_behavior: "inclusive", product_data: { name: "Bookingbooster AI credit top-up", description: "\xA3" + pounds + " of AI credit for the site builder, funnels and reply drafts. Never expires.", tax_code: "txcd_10103001" } } }],
+            payment_intent_data: { metadata: meta, description: "AI credit top-up \xA3" + pounds },
+            invoice_creation: { enabled: true },
+            metadata: meta
+          });
+          return { id: s.id, url: s.url };
+        },
         // Account deletion: end every live subscription for this customer straight away.
         async cancelSubscriptions(customer) {
           const list = await api("GET", "/subscriptions", { customer, status: "all", limit: 100 });
@@ -13806,7 +14328,7 @@ var require_assist = __commonJS({
   "server/assist.js"(exports, module) {
     module.exports = function(cfg) {
       const enabled = !!cfg.ai.anthropic;
-      async function draft(s, thread) {
+      async function draft(s, thread, onUsage) {
         if (!enabled) return null;
         const b = s.bookings.find((x) => x.id === thread.bookingId);
         const p = s.properties.find((x) => x.id === (b ? b.propertyId : thread.propertyId)) || s.properties[0];
@@ -13838,11 +14360,179 @@ var require_assist = __commonJS({
         });
         if (!r.ok) throw new Error("Claude answered " + r.status);
         const j = await r.json();
+        if (onUsage) await onUsage(j.model || cfg.ai.anthropicModel, j.usage);
         const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
         return text.slice(0, 1200) || null;
       }
       return { enabled, draft };
     };
+  }
+});
+
+// server/credits.js
+var require_credits = __commonJS({
+  "server/credits.js"(exports, module) {
+    var UNIT = 1e4;
+    var TOPUP_MIN = 10;
+    var TOPUP_MAX = 2e4;
+    var TOPUP_PRESETS = [10, 25, 50, 100, 250, 500, 1e3];
+    var PRICES = {
+      "claude-fable-5-2": [8, 40, 0.2],
+      "claude-fable-5-1": [10, 50, 1],
+      "claude-fable-5": [10, 50, 1],
+      "claude-opus-5-5": [4, 20, 0.2],
+      "claude-opus-5": [5, 25, 0.5],
+      "claude-opus-4-8": [5, 25, 0.5],
+      "claude-opus-4-7": [5, 25, 0.5],
+      "claude-opus-4-6": [5, 25, 0.5],
+      "claude-sonnet-5-5": [2, 10, 0.1],
+      "claude-sonnet-5": [2, 10, 0.2],
+      "claude-sonnet-4-6": [3, 15, 0.3],
+      "claude-haiku-5-5": [0.1, 0.5, 0.01],
+      "claude-haiku-4-5": [1, 5, 0.1]
+    };
+    var DEAREST = [10, 50, 1];
+    var priceOf = (model) => PRICES[String(model || "").replace(/-\d{8}$/, "")] || DEAREST;
+    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", other: "AI" };
+    module.exports = function({ cfg, db, log }) {
+      const C = cfg.credits;
+      const q = {
+        get: db.prepare("SELECT * FROM ai_credit WHERE workspace_id = ?"),
+        ins: db.prepare("INSERT OR IGNORE INTO ai_credit (workspace_id, anchor, period, allowance, allowance_left, topup_left, updated_at) VALUES (?, ?, ?, ?, ?, 0, ?)"),
+        roll: db.prepare("UPDATE ai_credit SET period = ?, allowance = ?, allowance_left = ?, updated_at = ? WHERE workspace_id = ? AND period <> ?"),
+        restart: db.prepare("UPDATE ai_credit SET anchor = ?, period = ?, allowance = ?, allowance_left = ?, updated_at = ? WHERE workspace_id = ?"),
+        // The allowance pays first; whatever it cannot cover comes off the top-ups, which may dip below zero on the last action.
+        spend: db.prepare("UPDATE ai_credit SET allowance_left = allowance_left - least(greatest(allowance_left, 0), ?), topup_left = topup_left - (? - least(greatest(allowance_left, 0), ?)), updated_at = ? WHERE workspace_id = ?"),
+        ledger: db.prepare("INSERT INTO ai_ledger (workspace_id, kind, amount, feature, model, tokens_in, tokens_out, ref, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+        hasRef: db.prepare("SELECT id FROM ai_ledger WHERE ref = ?"),
+        recent: db.prepare("SELECT kind, amount, feature, model, tokens_in, tokens_out, created_at FROM ai_ledger WHERE workspace_id = ? ORDER BY created_at DESC, id DESC LIMIT ?"),
+        usedSince: db.prepare("SELECT feature, count(*) AS n, coalesce(sum(amount), 0) AS total FROM ai_ledger WHERE workspace_id = ? AND kind = 'use' AND created_at >= ? GROUP BY feature"),
+        ws: db.prepare("SELECT kind, billing_status, created_at FROM workspaces WHERE id = ?")
+      };
+      function monthStart(anchor, n) {
+        const a = /* @__PURE__ */ new Date(+anchor), y = a.getUTCFullYear(), m = a.getUTCMonth() + n;
+        const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+        return Date.UTC(y, m, Math.min(a.getUTCDate(), last), a.getUTCHours(), a.getUTCMinutes(), a.getUTCSeconds());
+      }
+      function periodOf(anchor, now) {
+        const a = /* @__PURE__ */ new Date(+anchor), t = new Date(now);
+        let n = (t.getUTCFullYear() - a.getUTCFullYear()) * 12 + t.getUTCMonth() - a.getUTCMonth();
+        if (monthStart(anchor, n) > now) n--;
+        n = Math.max(0, n);
+        return { n, start: monthStart(anchor, n), end: monthStart(anchor, n + 1) };
+      }
+      async function allowanceFor(wid) {
+        const r = await q.ws.get(wid);
+        if (!r) return 0;
+        if (r.kind !== "live") return C.demo;
+        if (!cfg.stripe.key) return C.monthly;
+        const st = r.billing_status;
+        if (st === "active" || st === "past_due") return C.monthly;
+        return 0;
+      }
+      const units = (pounds) => Math.round(Number(pounds) * UNIT);
+      const num = (v) => Number(v || 0);
+      async function load(wid, now) {
+        now = now || Date.now();
+        let r = await q.get.get(wid);
+        if (!r) {
+          const a = units(await allowanceFor(wid));
+          await q.ins.run(wid, now, "0", a, a, now);
+          r = await q.get.get(wid);
+        }
+        const p = periodOf(num(r.anchor), now);
+        if (String(p.n) !== String(r.period)) {
+          const a = units(await allowanceFor(wid));
+          await q.roll.run(String(p.n), a, a, now, wid, String(p.n));
+          r = await q.get.get(wid);
+        }
+        if (!num(r.allowance)) {
+          const a = units(await allowanceFor(wid));
+          if (a > 0) {
+            await q.restart.run(now, "0", a, a, now, wid);
+            r = await q.get.get(wid);
+            return { row: r, period: periodOf(now, now) };
+          }
+        }
+        return { row: r, period: p };
+      }
+      async function summary(wid, now) {
+        const { row, period } = await load(wid, now);
+        const allowance = num(row.allowance), allowanceLeft = num(row.allowance_left), topup2 = num(row.topup_left);
+        const used = await q.usedSince.all(wid, period.start);
+        const byFeature = used.map((u) => ({ feature: u.feature, name: FEATURES[u.feature] || u.feature, count: num(u.n), pounds: num(u.total) / UNIT }));
+        const balance = Math.max(0, allowanceLeft) + topup2;
+        return {
+          balance: Math.max(0, balance) / UNIT,
+          included: allowance / UNIT,
+          includedLeft: Math.max(0, allowanceLeft) / UNIT,
+          topup: topup2 / UNIT,
+          usedThisMonth: byFeature.reduce((a, x) => a + x.pounds, 0),
+          byFeature,
+          resetsAt: period.end,
+          periodStart: period.start,
+          empty: balance <= 0,
+          low: balance > 0 && balance < units(C.lowWarning),
+          markup: C.markup
+        };
+      }
+      const money = (p) => {
+        p = Number(p) || 0;
+        if (p !== 0 && Math.abs(p) < 0.01) return (p * 100).toFixed(2).replace(/0+$/, "").replace(/\.$/, "") + "p";
+        return (p < 0 ? "-\xA3" : "\xA3") + Math.abs(p).toFixed(2);
+      };
+      async function check(wid) {
+        if (!C.enabled) return;
+        const s = await summary(wid);
+        if (s.empty) {
+          const e = new Error("Your AI credit has run out. Top up from \xA3" + TOPUP_MIN + " in Plan and billing to keep using the AI tools" + (s.included ? " (your \xA3" + s.included.toFixed(0) + " monthly allowance comes back on " + new Date(s.resetsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "Europe/London" }) + ")" : "") + ".");
+          e.status = 402;
+          e.code = "ai_credit";
+          e.topupUrl = "/app/billing#ai-credit";
+          throw e;
+        }
+      }
+      function cost(model, usage) {
+        const u = usage || {}, [pin, pout, pread] = priceOf(model);
+        const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6;
+        return Math.max(0, Math.ceil(dollars * C.usdToGbp * C.markup * UNIT - 1e-6));
+      }
+      async function charge(wid, feature, model, usage) {
+        if (!C.enabled || !wid) return 0;
+        const amount = cost(model, usage);
+        if (!amount) return 0;
+        const now = Date.now();
+        await load(wid, now);
+        await q.spend.run(amount, amount, amount, now, wid);
+        const u = usage || {};
+        await q.ledger.run(wid, "use", amount, FEATURES[feature] ? feature : "other", String(model || ""), num(u.input_tokens) + num(u.cache_creation_input_tokens) + num(u.cache_read_input_tokens), num(u.output_tokens), null, now);
+        return amount / UNIT;
+      }
+      const meter = (wid, feature) => (model, usage) => charge(wid, feature, model, usage).catch((e) => log && log("credits", e.message));
+      async function topup(wid, pounds, ref, kind) {
+        const amount = units(pounds);
+        if (!(amount > 0)) return false;
+        if (ref && await q.hasRef.get(ref)) return false;
+        const now = Date.now();
+        await load(wid, now);
+        return db.tx(async (d) => {
+          if (ref && await d.prepare("SELECT id FROM ai_ledger WHERE ref = ?").get(ref)) return false;
+          await d.prepare("INSERT INTO ai_ledger (workspace_id, kind, amount, feature, model, tokens_in, tokens_out, ref, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run(wid, kind || "topup", amount, null, null, null, null, ref || null, now);
+          await d.prepare("UPDATE ai_credit SET topup_left = topup_left + ?, updated_at = ? WHERE workspace_id = ?").run(amount, now, wid);
+          return true;
+        });
+      }
+      async function recent(wid, n) {
+        return (await q.recent.all(wid, n || 20)).map((r) => ({ kind: r.kind, pounds: num(r.amount) / UNIT, feature: r.feature, name: FEATURES[r.feature] || (r.kind === "topup" ? "Top-up" : r.kind === "grant" ? "Added by our team" : "AI"), model: r.model, tokensIn: num(r.tokens_in), tokensOut: num(r.tokens_out), at: num(r.created_at) }));
+      }
+      function topupAmount(v) {
+        const n = Number(String(v == null ? "" : v).replace(/[£,\s]/g, ""));
+        if (!Number.isFinite(n) || n !== Math.floor(n)) return null;
+        return n >= TOPUP_MIN && n <= TOPUP_MAX ? n : null;
+      }
+      return { enabled: C.enabled, check, charge, meter, cost, topup, summary, recent, topupAmount, money, UNIT, TOPUP_MIN, TOPUP_MAX, TOPUP_PRESETS, FEATURES, PRICES, periodOf };
+    };
+    module.exports.PRICES = PRICES;
   }
 });
 
@@ -13930,10 +14620,10 @@ var require_lead_emails = __commonJS({
               key: "E5",
               when: (c) => t.dayAt(c.start, 7),
               subject: "Your direct booking site, live in 7 days",
-              preview: "Growth: we build it, get it found and fill it. \xA3997 setup, first month free, then \xA3200 a month.",
+              preview: "Growth: we build it, get it found and fill it. \xA3200 a month, no setup fee.",
               body: (v) => [
                 v.fee_leak ? "If your fee leak was " + v.fee_leak + " a year, here is the simplest way to win part of it back." : "Here is the simplest way to win back part of what platform fees cost you.",
-                "Growth: a one-off \xA3997 setup fee, first month free, then \xA3200 a month. We build your booking site on your own domain and set up payments, deposits and check-in. Then every month we write new local SEO pages, fix your AI visibility gaps and write and send your guest campaigns.",
+                "Growth: \xA3200 a month, no setup fee. We build your booking site on your own domain and set up payments, deposits and check-in. Then every month we write new local SEO pages, fix your AI visibility gaps and write and send your guest campaigns.",
                 { list: ["Setup done for you", "Cancel anytime", "Up to 3 homes", "Set up for you in a week"] }
               ],
               cta: () => growth
@@ -14023,7 +14713,7 @@ var require_lead_emails = __commonJS({
               preview: "Your site, Google and AI fixes, done for you. \xA3200 a month.",
               body: () => [
                 "Last note about your audit.",
-                "If you would rather not do the fixes yourself, Growth does them for you: your own booking site in 7 days, Google Business Profile, new local pages every month and AI visibility tracking. A one-off \xA3997 setup fee, first month free, then \xA3200 a month, cancel anytime."
+                "If you would rather not do the fixes yourself, Growth does them for you: your own booking site in 7 days, Google Business Profile, new local pages every month and AI visibility tracking. \xA3200 a month, no setup fee, cancel anytime."
               ],
               cta: () => growth
             }
@@ -14068,7 +14758,7 @@ var require_lead_emails = __commonJS({
               preview: "The proposal, the 90-day plan and the price. No surprises.",
               body: () => ["Thanks for your time today. As promised, here is your proposal. It covers where you are now, what we do in the first 90 days, and what it costs."],
               cta: (v) => ({ label: "Read my proposal", href: v.proposal_url }),
-              after: ["Short version: Growth is a one-off \xA3997 setup fee, first month free, then \xA3200 a month, cancel anytime. Your site goes live in 7 days and we start on your fix list in week 2.", "Any questions, just reply."]
+              after: ["Short version: Growth is \xA3200 a month with no setup fee, cancel anytime. Your site goes live in 7 days and we start on your fix list in week 2.", "Any questions, just reply."]
             }
           ]
         },
@@ -14122,7 +14812,7 @@ var require_lead_emails = __commonJS({
               cta: (v) => ({ label: "Watch the replay", href: v.replay_url }),
               after: [
                 "If you want us to do it for your home: the 7-day launch. Your site live in a week, payments and check-in on, Google and AI set up, and your first email to past guests sent.",
-                "Growth: a one-off \xA3997 setup fee, first month free, then \xA3200 a month. Cancel anytime."
+                "Growth: \xA3200 a month, no setup fee. Cancel anytime."
               ]
             },
             {
@@ -14146,7 +14836,7 @@ var require_lead_emails = __commonJS({
                 "<b>Do I keep Airbnb?</b> Yes. Use it for first-time guests. Your site is for the second booking and for Google.",
                 "<b>Can I email past guests?</b> Usually yes, under the PECR soft opt-in if they booked with you and were offered an opt-out. Every email has a one-click unsubscribe. We set it up properly.",
                 "<b>I do not have a domain.</b> We help you pick one on day 1.",
-                "<b>Is there a contract?</b> No. Cancel anytime. There is a one-off \xA3997 setup fee, first month free, then \xA3200 a month."
+                "<b>Is there a contract?</b> No. Cancel anytime. It is \xA3200 a month, with no setup fee."
               ],
               cta: () => ({ label: "See the 7-day launch", href: t.app("/pricing") })
             },
@@ -14876,7 +15566,7 @@ var require_campaigns = __commonJS({
       "leads:call": { label: "Leads: booked a call", about: "Leads who booked a walkthrough call" },
       "hosts:all": { label: "All host accounts", about: "Every host with a Bookingbooster account" },
       "hosts:active": { label: "Hosts: paying", about: "Hosts whose plan is active" },
-      "hosts:trial": { label: "Hosts: not paid yet", about: "Hosts who signed up but have not paid the setup fee" },
+      "hosts:trial": { label: "Hosts: not paid yet", about: "Hosts who signed up but have not paid for their plan yet" },
       "hosts:past_due": { label: "Hosts: payment failed", about: "Hosts whose last plan payment failed" },
       "hosts:cancelled": { label: "Hosts: cancelled", about: "Hosts who cancelled their plan" },
       everyone: { label: "Everyone", about: "All leads and all host accounts (each email once)" }
@@ -15002,7 +15692,7 @@ var require_campaigns = __commonJS({
           key: "yearly-offer",
           tpl: "host-m05-offer",
           name: "Yearly offer: 2 months free",
-          about: "Pay yearly for Growth: \xA32,000 instead of \xA32,400. The \xA3997 setup fee and free first month still apply.",
+          about: "Pay yearly for Growth: \xA32,000 instead of \xA32,400. No setup fee.",
           audience: "All leads",
           when: "About 7 days before the offer ends. Make sure the yearly Stripe price is set up first.",
           subject: "2 months free if you go yearly (ends {{offer_end_date}})",
@@ -16972,7 +17662,7 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
     module.exports = function(cfg) {
       const key = cfg.ai.anthropic, base = cfg.ai.anthropicBase || "https://api.anthropic.com", model = cfg.ai.studioModel || "claude-opus-5-5";
       const enabled = !!key;
-      async function ask(system, content, sch) {
+      async function ask(system, content, sch, onUsage) {
         const body = { model, max_tokens: 16e3, system, messages: [{ role: "user", content }], output_config: { effort: cfg.ai.studioEffort || "medium", format: { type: "json_schema", schema: sch || schema() } }, fallbacks: "default" };
         const r = await fetch(base + "/v1/messages", {
           method: "POST",
@@ -16985,6 +17675,7 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
           throw new Error("Claude answered " + r.status + " " + t.slice(0, 160));
         }
         const j = await r.json();
+        if (onUsage) await onUsage(j.model || model, j.usage);
         if (j.stop_reason === "refusal") throw new Error("Claude declined this request");
         const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
         try {
@@ -17012,13 +17703,13 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
         const content = [];
         f.photos.filter((x) => /^https:\/\//.test(x.url)).slice(0, 4).forEach((x) => content.push({ type: "image", source: { type: "url", url: x.url } }));
         content.push({ type: "text", text: userPrompt(f, brief, opts.previous, opts.avoid) });
-        let spec = normalize(await ask(SYSTEM(), content), f, fallback);
+        let spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
         let checks = D.qa(spec, f);
         const fixable = checks.filter((x) => !x.ok && x.fix && !/photo/i.test(x.label));
         if (fixable.length) {
           content[content.length - 1] = { type: "text", text: userPrompt(f, brief, spec, opts.avoid) + "\n\nYour last version failed these design checks. Fix them and keep everything else: " + fixable.map((x) => x.label + " (" + x.fix + ")").join("; ") };
           try {
-            spec = normalize(await ask(SYSTEM(), content), f, fallback);
+            spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
             checks = D.qa(spec, f);
           } catch (_) {
           }
@@ -17048,6 +17739,8 @@ var require_studio = __commonJS({
     module.exports = function(o) {
       const { cfg, ws, auth, pub, urls, stripeReady, log, json, jsonBody, send, err, ip } = o;
       const gen = Gen(cfg);
+      const credits = o.credits || { check: async () => {
+      }, meter: () => null };
       const HTML = "text/html; charset=utf-8";
       const st = (s) => s.studio = s.studio || { sites: {}, funnels: [] };
       const today = (s) => s.today;
@@ -17108,8 +17801,9 @@ var require_studio = __commonJS({
           const prev = j.mode === "revise" ? cur.draft : null;
           const avoid = j.mode === "another" && cur.draft ? [cur.draft.direction].concat(cur.tried || []).slice(0, 7) : null;
           let spec;
+          if (gen.enabled) await credits.check(w.id);
           try {
-            spec = await gen.design(s, prop, b, { previous: prev, avoid });
+            spec = await gen.design(s, prop, b, { previous: prev, avoid, onUsage: credits.meter(w.id, "studio") });
           } catch (e) {
             log("studio", e.message);
             spec = await Gen({ ai: {} }).design(s, prop, b, { previous: prev, avoid });
@@ -17196,8 +17890,9 @@ var require_studio = __commonJS({
           const steps = FN.TEMPLATES[tpl].steps.concat(FN.TEMPLATES[tpl].steps.includes("optin") && !FN.TEMPLATES[tpl].steps.includes("thanks") ? ["thanks"] : []);
           let copy = FN.rulesCopy(tpl, f, opt), name = FN.TEMPLATES[tpl].name + " \xB7 " + prop.short, by = "rules";
           if (gen.enabled) {
+            await credits.check(w.id);
             try {
-              const r = await gen.ask("You write high-converting, honest landing pages for UK holiday lets, at the standard of a top design studio.\n" + D.PRINCIPLES.join("\n"), [{ type: "text", text: FN.aiPrompt(tpl, f, opt) }], FN.schema(steps));
+              const r = await gen.ask("You write high-converting, honest landing pages for UK holiday lets, at the standard of a top design studio.\n" + D.PRINCIPLES.join("\n"), [{ type: "text", text: FN.aiPrompt(tpl, f, opt) }], FN.schema(steps), credits.meter(w.id, "funnel"));
               const clean = (x, n) => String(x || "").replace(/[<>]/g, "").trim().slice(0, n);
               steps.forEach((k) => {
                 const a = r[k] || {}, b = copy[k] || {};
@@ -17605,6 +18300,7 @@ var require_server = __commonJS({
     var secrets = require_secrets()(db, cfg);
     var visits = require_visits()(cfg.secret);
     var assist = require_assist()(cfg);
+    var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
     var backup = require_backup()({ db, cfg, log });
@@ -17681,7 +18377,7 @@ var require_server = __commonJS({
       return ws.subscribe(wid, res);
     }
     var err = (status, message) => Object.assign(new Error(message), { status });
-    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
+    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, credits, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
     var MIME = { ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".html": "text/html; charset=utf-8", ".pdf": "application/pdf", ".txt": "text/plain; charset=utf-8" };
     function file(res, base, rel, cache, extra) {
       const f = path.normalize(path.join(base, rel));
@@ -17705,9 +18401,10 @@ var require_server = __commonJS({
     var MARK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
     var marketingState = null;
     var marketing = () => marketingState || (marketingState = seedDemo());
-    function hostBoot(w, surface) {
+    async function hostBoot(w, surface) {
       const s = w.state;
       return {
+        aiCredit: credits.enabled ? await credits.summary(w.id) : null,
         mode: "host",
         surface,
         slug: w.slug,
@@ -17904,6 +18601,10 @@ var require_server = __commonJS({
           await payUpd.run("expired", null, Date.now(), o.id);
           await ws.act(w.id, "expirePending", [m.booking]);
         }
+        if (ev.type === "checkout.session.completed" && w && m.kind === "credit" && o.payment_status === "paid") {
+          const pounds = (o.amount_total || 0) / 100;
+          if (await credits.topup(w.id, pounds, o.id)) log("credits", w.id, "topped up \xA3" + pounds);
+        }
         if (ev.type === "account.updated" && o.id) {
           const r = await db.prepare("SELECT id FROM workspaces WHERE stripe_account = ?").get(o.id);
           if (r) await markStripe(r.id, !!o.charges_enabled);
@@ -18037,6 +18738,7 @@ var require_server = __commonJS({
       o = o || {};
       return authPage("Sign in", CLEAR_OFFLINE + "<h1>Sign in</h1><p>Your console, bookings and guests.</p>" + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + (o.ok ? '<p class="ok">' + E(o.ok) + "</p>" : "") + '<form method="post" action="/login"><input type="hidden" name="next" value="' + E(o.next || "/app") + '"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || "") + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button></form><div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
     }
+    var MEDIA = /* @__PURE__ */ new Map();
     var GUIDES_A = ["direct-booking-playbook.pdf", "direct-booking-launch-checklist.pdf", "ai-search-self-audit.pdf", "fee-leak-worksheet.pdf"];
     async function route(req, res) {
       await db.ready;
@@ -18237,6 +18939,35 @@ var require_server = __commonJS({
         res.writeHead(200, Object.assign({}, SEC, { "content-type": "application/pdf", "cache-control": "public, max-age=86400", "content-length": fs.statSync(f).size }));
         return fs.createReadStream(f).pipe(res);
       }
+      if (mm = p.match(/^\/media\/([a-z0-9-]+\.(mp4|jpg))$/)) {
+        const type = mm[2] === "mp4" ? "video/mp4" : "image/jpeg";
+        let buf = MEDIA.get(mm[1]);
+        if (!buf) {
+          if (cfg.serverless) {
+            const r = await fetch(cfg.supabaseUrl + "/functions/v1/media/" + mm[1]);
+            if (!r.ok) return notFound(res);
+            buf = Buffer.from(await r.arrayBuffer());
+          } else {
+            const f = path.join(ROOT, "supabase", "functions", "media", "files", mm[1]);
+            if (!fs.existsSync(f)) return notFound(res);
+            buf = fs.readFileSync(f);
+          }
+          MEDIA.set(mm[1], buf);
+        }
+        const hd = { "cache-control": "public, max-age=86400", "accept-ranges": "bytes" };
+        const rg = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || ""));
+        if (rg && (rg[1] || rg[2])) {
+          let a = rg[1] ? +rg[1] : Math.max(0, buf.length - +rg[2]), b = rg[1] && rg[2] ? Math.min(+rg[2], buf.length - 1) : buf.length - 1;
+          if (a >= buf.length || a > b) {
+            res.writeHead(416, Object.assign({}, SEC, { "content-range": "bytes */" + buf.length }));
+            return res.end();
+          }
+          res.writeHead(206, Object.assign({}, SEC, hd, { "content-type": type, "content-range": "bytes " + a + "-" + b + "/" + buf.length, "content-length": b - a + 1 }));
+          return res.end(req.method === "HEAD" ? void 0 : buf.subarray(a, b + 1));
+        }
+        res.writeHead(200, Object.assign({}, SEC, hd, { "content-type": type, "content-length": buf.length }));
+        return res.end(req.method === "HEAD" ? void 0 : buf);
+      }
       if (mm = p.match(/^\/u\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)$/)) {
         const r = await ws.bySlug(mm[1]);
         const gid = decodeURIComponent(mm[2]);
@@ -18381,7 +19112,7 @@ var require_server = __commonJS({
         if (!auth.limit("login:" + ip(req), 10, 9e5)) return send(res, 429, loginForm({ err: "Too many attempts. Wait 15 minutes.", email: f.email }));
         const user = await auth.login(f.email, f.password);
         if (!user) return send(res, 401, loginForm({ err: "That email and password do not match.", email: f.email, next: f.next }));
-        const next = /^\/app(\/|$|\?)/.test(f.next || "") ? f.next : "/app";
+        const next = /^\/app(\/|$|\?)/.test(f.next || "") && f.next !== "/app" ? f.next : await isAdminEmail(user.email) ? "/admin" : "/app";
         return redirect(res, next, { "set-cookie": cookie("bb_s", await auth.startSession(user.id), 30 * 86400) });
       }
       if (p === "/logout" && m === "POST") {
@@ -18434,8 +19165,8 @@ var require_server = __commonJS({
           return redirect(res, await mustPay(req, w) ? "/app/pay?msg=pending" : "/app?welcome=1");
         }
         if (w.catchUp()) ws.persist(w, { rollover: true });
-        if (p === "/app" || p === "/app/phone") return send(res, 200, pages.page({ title: w.state.account.business + " \xB7 Bookingbooster", robots: "noindex", app: true, boot: await hostBoot(w, p === "/app/phone" ? "mobile" : "app"), banner: testNotes().length && u.searchParams.get("welcome") ? "<b>Test mode</b> " + E(testNotes().join(", ")) + " are not switched on for this server yet." : null }), "text/html; charset=utf-8", { "cache-control": "no-store" });
-        if (p === "/app/billing") return send(res, 200, await billingPage(w));
+        if (p === "/app" || p === "/app/phone") return send(res, 200, pages.page({ title: w.state.account.business + " \xB7 Bookingbooster", robots: "noindex", app: true, boot: await hostBoot(w, p === "/app/phone" ? "mobile" : "app"), banner: testNotes().length && u.searchParams.get("welcome") ? "<b>Test mode</b> " + E(testNotes().join(", ")) + " are not switched on for this server yet." : await isAdmin(req) ? '<b>Team</b> <a href="/admin">Open the team admin</a>: leads and outreach, email campaigns and templates, host accounts, Stripe.' : null }), "text/html; charset=utf-8", { "cache-control": "no-store" });
+        if (p === "/app/billing") return send(res, 200, await billingPage(w, u.searchParams));
         if (p === "/app/account" && m === "GET") return send(res, 200, await accountPage(w, s, u.searchParams.get("msg")));
         if (p === "/app/account/export") {
           const out = { exported_at: (/* @__PURE__ */ new Date()).toISOString(), account: w.state.account, homes: w.state.properties, bookings: w.state.bookings, guests: w.state.guests, messages: w.state.threads, campaigns: w.state.campaigns, automations: w.state.automations, blocks: w.state.blocks };
@@ -18455,6 +19186,16 @@ var require_server = __commonJS({
           const r = await ws.row(w.id);
           if (r.stripe_customer && r.billing_status && r.billing_status !== "trial") return redirect(res, "/app/billing");
           return redirect(res, (await planCheckout(w)).url);
+        }
+        if (p === "/app/billing/topup" && m === "POST") {
+          const f = await formBody(req);
+          const pounds = credits.topupAmount(f.custom ? f.custom : f.amount);
+          if (!pounds) return redirect(res, "/app/billing?msg=topup#ai-credit");
+          if (!stripe.enabled) return redirect(res, "/app/billing?msg=stripe#ai-credit");
+          if (!auth.limit("topup:" + w.id, 20, 36e5)) throw err(429, "Too many tries. Try again in an hour.");
+          const r = await ws.row(w.id);
+          const sess = await stripe.checkoutCredit({ customer: r.stripe_customer, email: w.state.account.email, pounds, successUrl: cfg.baseUrl + "/app/billing?topup=" + pounds + "#ai-credit", cancelUrl: cfg.baseUrl + "/app/billing#ai-credit", meta: { workspace: w.id, kind: "credit", pounds: String(pounds) } });
+          return redirect(res, sess.url);
         }
         if (p === "/app/billing/portal" && m === "POST") {
           const r = await ws.row(w.id);
@@ -18589,12 +19330,19 @@ var require_server = __commonJS({
           const t = w.state.threads.find((x) => x.id === j.threadId);
           if (!t) throw err(404, "Conversation not found");
           try {
-            return json(res, { text: await assist.draft(w.state, t) });
+            await credits.check(w.id);
+          } catch (e) {
+            if (e.code === "ai_credit") return json(res, { text: null, credit: { empty: true, message: e.message, url: e.topupUrl } });
+            throw e;
+          }
+          try {
+            return json(res, { text: await assist.draft(w.state, t, credits.meter(w.id, "reply")) });
           } catch (e) {
             log("assist", e.message);
             return json(res, { text: null });
           }
         }
+        if (p === "/api/credits") return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
         if (p === "/api/trip-link" && m === "POST") {
           const j = await jsonBody(req);
           const b = w.state.bookings.find((x) => x.id === j.bookingId);
@@ -18608,20 +19356,24 @@ var require_server = __commonJS({
       return notFound(res);
     }
     var leadIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)");
-    var isAdmin = async (req) => {
-      const u = await me(req);
-      const email = String(u && u.email || "").toLowerCase();
+    var isAdminEmail = async (email) => {
+      email = String(email || "").toLowerCase();
       if (!email) return false;
       if (cfg.admins.includes(email)) return true;
       const r = await db.prepare("SELECT v FROM kv WHERE k = ?").get("config:admins");
       return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email);
+    };
+    var isAdmin = async (req) => {
+      const u = await me(req);
+      return isAdminEmail(u && u.email);
     };
     var stripeKeyForm = (st) => st.canSave ? '<details class="card"' + (st.on ? "" : " open") + "><summary><b>" + (st.on ? "Change the Stripe key" : "Connect Stripe") + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off"><p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p><label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : "";
     var stripeLine = (st) => stripeKeyForm(st) + "<p><small>Stripe: " + (!st.on ? "off" : st.mode + " mode (key ending " + E(st.last4) + ", from " + E(st.keyName) + ") \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
     async function adminPage(req, res, note) {
       if (!await isAdmin(req)) return notFound(res);
       const leadRows = await db.prepare("SELECT * FROM leads ORDER BY created_at DESC LIMIT 300").all();
-      const accts = await db.prepare("SELECT id, slug, plan, billing_status, created_at FROM workspaces WHERE kind = 'live' ORDER BY created_at DESC LIMIT 300").all();
+      const accts = await db.prepare("SELECT w.id, w.slug, w.plan, w.billing_status, w.created_at, c.allowance_left, c.topup_left, (SELECT coalesce(sum(l.amount), 0) FROM ai_ledger l WHERE l.workspace_id = w.id AND l.kind = 'use' AND l.created_at > ?) AS ai_used FROM workspaces w LEFT JOIN ai_credit c ON c.workspace_id = w.id WHERE w.kind = 'live' ORDER BY w.created_at DESC LIMIT 300").all(Date.now() - 30 * 864e5);
+      const aiTotal = accts.reduce((a, x) => a + Number(x.ai_used || 0), 0) / credits.UNIT;
       const d = (t) => new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const st = await leads.loadSettings();
       const wd = st.webinar_at ? new Date(st.webinar_at) : null;
@@ -18648,7 +19400,10 @@ var require_server = __commonJS({
         return '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td>' + d(l.created_at) + "</td><td>" + E(l.kind) + "</td><td>" + E(l.email) + "<br><small>" + E(l.name || "") + "</small></td><td><small>" + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</small></td><td>" + prog + '</td><td class="act">' + act + "</td></tr>";
       }))).join("");
       const settingsForm = '<details class="card"' + (st.webinar_at ? "" : " open") + '><summary><b>Live demo, call and report links</b></summary><form method="post" action="/admin/settings" style="margin-top:12px"><p style="margin:0 0 8px"><small>The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small></p><label>Next live demo date (UK)' + inp("webinar_day", wDay, "", "date") + "</label><label>Start time (UK)" + inp("webinar_time", wTime, "12:30", "time") + "</label><label>Joining link" + inp("join_url", st.join_url, "https://meet.google.com/\u2026") + "</label><label>Replay link (sent after the session)" + inp("replay_url", st.replay_url, "https://\u2026") + "</label><label>Walkthrough call joining link" + inp("meeting_url", st.meeting_url, "https://meet.google.com/\u2026") + "</label><label>Page where people book a walkthrough" + inp("book_call_url", st.book_call_url, "https://\u2026/book-call") + "</label><label>Sample audit report page" + inp("sample_report_url", st.sample_report_url, "https://\u2026/sample-report") + "</label><button>Save</button></form></details>";
-      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p>" + stripeLine(await stripeAuto.status()) + '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> \xB7 write, schedule and track emails to leads and hosts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map((a) => "<tr><td>" + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td></tr>").join("") + "</table></div>", true), "text/html; charset=utf-8");
+      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p>" + stripeLine(await stripeAuto.status()) + '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> \xB7 write, schedule and track emails to leads and hosts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><p style="margin:4px 0 0"><small>AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + " a month" + (cfg.credits.markup !== 1 ? ", usage charged at " + cfg.credits.markup + "\xD7 cost" : ", usage charged at cost") + ". AI used by all hosts in the last 30 days: " + credits.money(aiTotal) + '.</small></p><table style="width:100%;font-size:13px"><tr><th align="left">Joined</th><th align="left">Site</th><th align="left">Plan</th><th align="left">Billing</th><th align="left">AI credit left</th><th align="left">AI used, 30 days</th><th align="left"></th></tr>' + accts.map((a) => {
+        const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT;
+        return '<tr style="vertical-align:top"><td>' + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td><td>" + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + "</td><td>" + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td><td class="act"><details><summary>Add credit</summary><form method="post" action="/admin/credits/' + E(a.id) + '">' + inp("pounds", "", "Pounds to add, e.g. 20", "number") + "<button>Add AI credit</button></form></details></td></tr>";
+      }).join("") + "</table></div>", true), "text/html; charset=utf-8");
     }
     async function adminPost(req, res, p) {
       if (!await isAdmin(req)) return notFound(res);
@@ -18667,6 +19422,14 @@ var require_server = __commonJS({
         await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });
         await leads.run();
         return await adminPage(req, res, "Saved.");
+      }
+      if (mm = p.match(/^\/admin\/credits\/([A-Za-z0-9_-]+)$/)) {
+        const pounds = Math.round(Number(f.pounds) * 100) / 100;
+        const r = await ws.row(mm[1]);
+        if (!r || !(pounds > 0) || pounds > 2e4) return await adminPage(req, res, "Enter an amount between \xA30.01 and \xA320,000.");
+        await credits.topup(mm[1], pounds, null, "grant");
+        log("credits", mm[1], "team added \xA3" + pounds);
+        return await adminPage(req, res, "Added " + credits.money(pounds) + " of AI credit to " + (r.slug || mm[1]) + ".");
       }
       if (mm = p.match(/^\/admin\/leads\/(\d+)\/(audit|proposal|stop)$/)) {
         const id = +mm[1];
@@ -18759,17 +19522,29 @@ var require_server = __commonJS({
     }
     async function deleteWorkspace(wid) {
       for (const u of await db.prepare("SELECT id FROM users WHERE workspace_id = ?").all(wid)) await auth.deleteUser(u.id);
-      for (const t of ["secrets", "payments", "outbox", "domains"]) await db.prepare("DELETE FROM " + t + " WHERE workspace_id = ?").run(wid);
+      for (const t of ["secrets", "payments", "outbox", "domains", "ai_credit", "ai_ledger"]) await db.prepare("DELETE FROM " + t + " WHERE workspace_id = ?").run(wid);
       await db.prepare("DELETE FROM kv WHERE k IN (?, ?)").run("hostmail:" + wid, "hostprefs:" + wid);
       await ws.remove(wid);
       for (const dir of ["uploads", "media"]) await files.delPrefix(dir + "/" + wid);
     }
-    async function billingPage(w) {
+    async function billingPage(w, sp) {
       const r = await ws.row(w.id);
       const s = w.state;
       const price = 200;
       const status = { trial: "Not paid yet. Your booking site goes live to guests once your plan is paid", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
-      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>' : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>' : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+    }
+    async function creditCard(w, sp) {
+      const c = await credits.summary(w.id), rows = await credits.recent(w.id, 12), M = credits.money;
+      const day = (t) => new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "Europe/London" });
+      const msg2 = sp && sp.get("msg") === "topup" ? '<p class="err">Choose an amount in whole pounds from \xA3' + credits.TOPUP_MIN + " to \xA3" + credits.TOPUP_MAX.toLocaleString("en-GB") + ".</p>" : sp && sp.get("topup") ? '<p class="ok">Thank you. \xA3' + E(sp.get("topup")) + " of AI credit is added as soon as Stripe confirms the payment, usually within a minute.</p>" : "";
+      const pct = c.included ? Math.max(0, Math.min(100, Math.round(100 * c.includedLeft / c.included))) : 0;
+      const status = c.empty ? '<p class="err" style="margin:8px 0 0"><b>Your AI credit has run out.</b> The site builder, funnels and reply drafts are paused until you top up' + (c.included ? " or your allowance comes back on " + day(c.resetsAt) : "") + ".</p>" : c.low ? '<p class="err" style="margin:8px 0 0">Your AI credit is running low. Top up so the AI tools keep working.</p>' : "";
+      const used = c.byFeature.length ? '<p style="margin:6px 0 0"><small>Used since ' + day(c.periodStart) + ": " + c.byFeature.map((x) => E(x.name) + " " + M(x.pounds) + " (" + x.count + ")").join(" \xB7 ") + "</small></p>" : "";
+      const hist = rows.length ? '<details style="margin-top:10px"><summary>Recent activity</summary><table style="width:100%;font-size:13px;margin-top:6px">' + rows.map((x) => "<tr><td>" + new Date(x.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" }) + "</td><td>" + E(x.name) + '</td><td align="right">' + (x.kind === "use" ? "-" + M(x.pounds) : "+" + M(x.pounds)) + "</td></tr>").join("") + "</table></details>" : "";
+      const presets = credits.TOPUP_PRESETS.map((n, i) => '<label style="display:inline-flex;align-items:center;gap:4px;margin:0 10px 6px 0;font-weight:400"><input type="radio" style="padding:0;margin:0" name="amount" value="' + n + '"' + (i === 1 ? " checked" : "") + "> \xA3" + n.toLocaleString("en-GB") + "</label>").join("");
+      const form = stripe.enabled ? '<form method="post" action="/app/billing/topup" style="margin-top:12px"><b>Top up</b><div style="margin:8px 0">' + presets + "</div><label>Or another amount (\xA3" + credits.TOPUP_MIN + " to \xA3" + credits.TOPUP_MAX.toLocaleString("en-GB") + ')<input name="custom" inputmode="numeric" pattern="[0-9,]*" placeholder="e.g. 75"></label><button>Top up with card</button><p style="margin:6px 0 0"><small>Paid by card through Stripe, inc. VAT. Top-ups never expire and are used after your monthly allowance.</small></p></form>' : "<p><small>Card payments are not switched on for this server yet, so top-ups are not available.</small></p>";
+      return '<div class="card" id="ai-credit"><b>AI credit \xB7 ' + M(c.balance) + " left</b>" + msg2 + (!c.included ? '<p style="margin:6px 0 0">Your plan includes ' + M(cfg.credits.monthly) + " of AI use a month for the site builder, funnels and reply drafts while it is active." + (c.topup > 0 ? " You have " + M(c.topup) + " of top-ups." : "") + "</p>" : '<p style="margin:6px 0 0">Your plan includes ' + M(c.included) + " of AI use a month for the site builder, funnels and reply drafts. " + M(c.includedLeft) + " of it is left this month, and it resets on " + day(c.resetsAt) + "." + (c.topup > 0 ? " Plus " + M(c.topup) + " of top-ups." : "") + "</p>") + '<div style="height:8px;background:#E4E7F0;border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:#3355FF"></div></div>' + status + used + '<p style="margin:6px 0 0"><small>Each AI action is charged by how much AI work it takes' + (c.markup === 1 ? ", at the price the AI provider charges us" : "") + ". A reply draft is usually under 1p; a full site design is usually under \xA31.</small></p>" + hist + form + "</div>";
     }
     var LEGAL = require_legal()(cfg, E);
     function staticPage(p) {

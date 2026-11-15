@@ -29,15 +29,15 @@ test('the designed campaigns load as drafts, with current pricing and domain, an
   for (const key of ['fee-check', 'ai-search', 'demo-invite', 'digest', 'yearly-offer']) {
     const p = await t.call('/admin/campaigns/' + key + '/preview');
     assert.equal(p.status, 200, key);
-    assert.doesNotMatch(p.body.replace(/&pound;/g, '£'), /£119|£790|£1,190|No setup fee|Starter|Portfolio|bookingbooster\.co\.uk|app\.bookingbooster/, key + ': no old pricing or domain');
+    assert.doesNotMatch(p.body.replace(/&pound;/g, '£'), /£119|£790|£1,190|£997|first month free|Starter|Portfolio|bookingbooster\.co\.uk|app\.bookingbooster/, key + ': no old pricing or domain');
     assert.doesNotMatch(p.body.replace(/<!--[\s\S]*?-->/g, ''), /\{\{[a-z0-9_]+\}\}|undefined|NaN/, key + ': no unfilled fields');
     assert.match(p.body, /\/email-img\/brand\/logo\.png/, key + ': images point at the app');
   }
   const fee = await t.call('/admin/campaigns/fee-check/preview'); fee.body = fee.body.replace(/&pound;/g, '£');
   assert.match(fee.body, /£9,523/, 'uses the lead’s own calculator numbers');
-  assert.match(fee.body, /£200 a month/); assert.match(fee.body, /£997/);
+  assert.match(fee.body, /£200 a month/); assert.doesNotMatch(fee.body, /£997/);
   const offer = await t.call('/admin/campaigns/yearly-offer/preview'); offer.body = offer.body.replace(/&pound;/g, '£');
-  assert.match(offer.body, /£2,000 a year/); assert.match(offer.body, /£997 setup fee/);
+  assert.match(offer.body, /£2,000 a year/); assert.doesNotMatch(offer.body, /£997/); assert.match(offer.body, /No setup fee/);
   assert.equal(mails.length, before, 'loading and previewing sends nothing');
 });
 
