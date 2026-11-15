@@ -71,14 +71,40 @@ function auto({ cfg, stripe, db, log }) {
     if (!cfg.stripe.webhookSecret && s.webhookSecret) cfg.stripe.webhookSecret = s.webhookSecret;
     if (!cfg.stripe.connectWebhookSecret && s.connectWebhookSecret) cfg.stripe.connectWebhookSecret = s.connectWebhookSecret;
   }
+  // The key itself can be saved from the team page when it cannot go into the server's environment. It is kept encrypted
+  // with a key derived from the server secret; the environment's STRIPE_SECRET_KEY, when set, always wins.
+  const envKey = !!cfg.stripe.key;
+  const box = crypto.createHash('sha256').update('bb-stripe-key:' + cfg.secret).digest();
+  const seal = t => { const iv = crypto.randomBytes(12), c = crypto.createCipheriv('aes-256-gcm', box, iv); const e = Buffer.concat([c.update(t, 'utf8'), c.final()]); return Buffer.concat([iv, c.getAuthTag(), e]).toString('base64'); };
+  const unseal = b64 => { const b = Buffer.from(b64, 'base64'), d = crypto.createDecipheriv('aes-256-gcm', box, b.subarray(0, 12)); d.setAuthTag(b.subarray(12, 28)); return Buffer.concat([d.update(b.subarray(28)), d.final()]).toString('utf8'); };
+  async function loadKey() {
+    if (envKey) return;
+    const r = await get.get('config:stripe_key'); let k = '';
+    try { k = r ? unseal(r.v) : ''; } catch (_) { log('stripe config', 'saved Stripe key could not be read'); }
+    cfg.stripe.key = k || undefined;
+  }
   let loaded = null;
   function load() {
-    if (!stripe.enabled) return Promise.resolve();
-    if (!loaded) loaded = read().then(apply).catch(e => { loaded = null; log('stripe config', e.message); });
+    if (!loaded) loaded = loadKey().then(() => stripe.enabled ? read().then(apply) : null).catch(e => { loaded = null; log('stripe config', e.message); });
     return loaded;
+  }
+  // From the team page. Checks the key with Stripe before keeping it, then sets up prices and webhooks straight away.
+  async function saveKey(k) {
+    k = String(k || '').trim();
+    if (envKey) return { error: 'This server already has STRIPE_SECRET_KEY in its settings, which wins over a saved key.' };
+    if (!/^(sk|rk)_(live|test)_[A-Za-z0-9]{10,}$/.test(k)) return { error: 'That does not look like a Stripe secret key. It starts with sk_live_.' };
+    const was = cfg.stripe.key; cfg.stripe.key = k;
+    try { await stripe.api('GET', '/balance'); } catch (e) { cfg.stripe.key = was; return { error: 'Stripe did not accept that key: ' + e.message }; }
+    await set.run('config:stripe_key', seal(k));
+    // the prices and webhooks are made again for a new key; clear any plain values loaded for the old one
+    if (was !== k) { const p = cfg.stripe.prices; for (const n of Object.values(P)) delete p[n]; delete cfg.stripe.webhookSecret; delete cfg.stripe.connectWebhookSecret; }
+    loaded = Promise.resolve();
+    const r = await ensure();
+    return { ok: true, mode: mode(), setup: r || null };
   }
   // Run from the tick. Retries a failed setup at most every 30 minutes.
   async function ensure(t = Date.now()) {
+    await load();
     if (!stripe.enabled) return null;
     const s = await read();
     if (complete(s)) { apply(s); return s; }
@@ -98,12 +124,13 @@ function auto({ cfg, stripe, db, log }) {
   }
   // For the team page: what is on, without any secret.
   async function status() {
-    if (!stripe.enabled) return { on: false };
+    await load();
+    if (!stripe.enabled) return { on: false, canSave: !envKey };
     const s = await read(); apply(s);
     const p = cfg.stripe.prices;
-    return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || '' : '', at: s && s.at };
+    return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || '' : '', at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4) };
   }
-  return { load, ensure, status };
+  return { load, ensure, status, saveKey };
 }
 
 module.exports = { setup, auto, PLATFORM_EVENTS, CONNECT_EVENTS };

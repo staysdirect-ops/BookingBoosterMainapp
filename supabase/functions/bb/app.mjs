@@ -13014,8 +13014,7 @@ var require_stripe = __commonJS({
   "server/stripe.js"(exports, module) {
     var crypto = __require("crypto");
     module.exports = function(cfg) {
-      const key = cfg.stripe.key;
-      const enabled = !!key;
+      const keyOf = () => cfg.stripe.key;
       function form(obj, prefix, out) {
         out = out || [];
         for (const [k, v] of Object.entries(obj)) {
@@ -13028,8 +13027,8 @@ var require_stripe = __commonJS({
         return out;
       }
       async function api(method, path, params, opts) {
-        if (!enabled) throw new Error("Stripe is not set up on this server.");
-        const headers = { authorization: "Bearer " + key };
+        if (!keyOf()) throw new Error("Stripe is not set up on this server.");
+        const headers = { authorization: "Bearer " + keyOf() };
         if (opts && opts.account) headers["Stripe-Account"] = opts.account;
         if (opts && opts.idem) headers["Idempotency-Key"] = opts.idem;
         let url = (cfg.stripe.apiBase || "https://api.stripe.com") + "/v1" + path, body;
@@ -13049,7 +13048,9 @@ var require_stripe = __commonJS({
       }
       const pence = (n) => Math.round(Number(n) * 100);
       return {
-        enabled,
+        get enabled() {
+          return !!keyOf();
+        },
         api,
         async connect({ email, business, accountId, returnUrl, refreshUrl }) {
           const acct = accountId || (await api("POST", "/accounts", { type: "express", country: "GB", email, business_profile: { name: business, mcc: "7011", product_description: "Holiday let bookings" }, capabilities: { card_payments: { requested: true }, transfers: { requested: true } } })).id;
@@ -15197,16 +15198,62 @@ var require_stripe_auto = __commonJS({
         if (!cfg.stripe.webhookSecret && s.webhookSecret) cfg.stripe.webhookSecret = s.webhookSecret;
         if (!cfg.stripe.connectWebhookSecret && s.connectWebhookSecret) cfg.stripe.connectWebhookSecret = s.connectWebhookSecret;
       }
+      const envKey = !!cfg.stripe.key;
+      const box = crypto.createHash("sha256").update("bb-stripe-key:" + cfg.secret).digest();
+      const seal = (t) => {
+        const iv = crypto.randomBytes(12), c = crypto.createCipheriv("aes-256-gcm", box, iv);
+        const e = Buffer.concat([c.update(t, "utf8"), c.final()]);
+        return Buffer.concat([iv, c.getAuthTag(), e]).toString("base64");
+      };
+      const unseal = (b64) => {
+        const b = Buffer.from(b64, "base64"), d = crypto.createDecipheriv("aes-256-gcm", box, b.subarray(0, 12));
+        d.setAuthTag(b.subarray(12, 28));
+        return Buffer.concat([d.update(b.subarray(28)), d.final()]).toString("utf8");
+      };
+      async function loadKey() {
+        if (envKey) return;
+        const r = await get.get("config:stripe_key");
+        let k = "";
+        try {
+          k = r ? unseal(r.v) : "";
+        } catch (_) {
+          log("stripe config", "saved Stripe key could not be read");
+        }
+        cfg.stripe.key = k || void 0;
+      }
       let loaded = null;
       function load() {
-        if (!stripe.enabled) return Promise.resolve();
-        if (!loaded) loaded = read().then(apply).catch((e) => {
+        if (!loaded) loaded = loadKey().then(() => stripe.enabled ? read().then(apply) : null).catch((e) => {
           loaded = null;
           log("stripe config", e.message);
         });
         return loaded;
       }
+      async function saveKey(k) {
+        k = String(k || "").trim();
+        if (envKey) return { error: "This server already has STRIPE_SECRET_KEY in its settings, which wins over a saved key." };
+        if (!/^(sk|rk)_(live|test)_[A-Za-z0-9]{10,}$/.test(k)) return { error: "That does not look like a Stripe secret key. It starts with sk_live_." };
+        const was = cfg.stripe.key;
+        cfg.stripe.key = k;
+        try {
+          await stripe.api("GET", "/balance");
+        } catch (e) {
+          cfg.stripe.key = was;
+          return { error: "Stripe did not accept that key: " + e.message };
+        }
+        await set.run("config:stripe_key", seal(k));
+        if (was !== k) {
+          const p = cfg.stripe.prices;
+          for (const n of Object.values(P)) delete p[n];
+          delete cfg.stripe.webhookSecret;
+          delete cfg.stripe.connectWebhookSecret;
+        }
+        loaded = Promise.resolve();
+        const r = await ensure();
+        return { ok: true, mode: mode(), setup: r || null };
+      }
       async function ensure(t = Date.now()) {
+        await load();
         if (!stripe.enabled) return null;
         const s = await read();
         if (complete(s)) {
@@ -15230,13 +15277,14 @@ var require_stripe_auto = __commonJS({
         }
       }
       async function status() {
-        if (!stripe.enabled) return { on: false };
+        await load();
+        if (!stripe.enabled) return { on: false, canSave: !envKey };
         const s = await read();
         apply(s);
         const p = cfg.stripe.prices;
-        return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at };
+        return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || "" : "", at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4) };
       }
-      return { load, ensure, status };
+      return { load, ensure, status, saveKey };
     }
     module.exports = { setup, auto, PLATFORM_EVENTS, CONNECT_EVENTS };
   }
@@ -16645,9 +16693,13 @@ var require_server = __commonJS({
     var isAdmin = async (req) => {
       const u = await me(req);
       const email = String(u && u.email || "").toLowerCase();
-      return !!email && cfg.admins.includes(email);
+      if (!email) return false;
+      if (cfg.admins.includes(email)) return true;
+      const r = await db.prepare("SELECT v FROM kv WHERE k = ?").get("config:admins");
+      return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email);
     };
-    var stripeLine = (st) => "<p><small>Stripe: " + (!st.on ? "off (add STRIPE_SECRET_KEY to the server secrets)" : st.mode + " mode \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
+    var stripeKeyForm = (st) => st.canSave ? '<details class="card"' + (st.on ? "" : " open") + "><summary><b>" + (st.on ? "Change the Stripe key" : "Connect Stripe") + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off"><p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p><label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : "";
+    var stripeLine = (st) => stripeKeyForm(st) + "<p><small>Stripe: " + (!st.on ? "off" : st.mode + " mode (key ending " + E(st.last4) + ") \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
     async function adminPage(req, res, note) {
       if (!await isAdmin(req)) return notFound(res);
       const leadRows = await db.prepare("SELECT * FROM leads ORDER BY created_at DESC LIMIT 300").all();
@@ -16688,6 +16740,10 @@ var require_server = __commonJS({
         v = String(v || "").trim();
         return /^https?:\/\/[^\s"<>]+$/i.test(v) ? v.slice(0, 500) : "";
       };
+      if (p === "/admin/stripe/key") {
+        const r = await stripeAuto.saveKey(f.key);
+        return await adminPage(req, res, r.error || "Stripe is connected in " + r.mode + " mode." + (r.setup && r.setup.error ? " Prices and webhooks could not be set up yet: " + r.setup.error : " Plan prices and webhooks are ready."));
+      }
       if (p === "/admin/settings") {
         const at = f.webinar_day ? leads.ukAt(f.webinar_day, f.webinar_time || "12:30") : 0;
         await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });

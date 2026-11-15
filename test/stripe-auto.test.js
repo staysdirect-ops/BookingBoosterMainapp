@@ -16,6 +16,7 @@ test.before(() => new Promise(r => { mock = http.createServer((q, s) => { let ra
   if (u.pathname === '/v1/webhook_endpoints' && q.method === 'GET') return send({ data: hooks });
   if (u.pathname.startsWith('/v1/webhook_endpoints/') && q.method === 'DELETE') { const id = u.pathname.split('/').pop(); deleted.push(id); hooks.splice(hooks.findIndex(h => h.id === id), 1); return send({ id, deleted: true }); }
   if (u.pathname === '/v1/webhook_endpoints') { const h = { id: 'we_' + (hooks.length + deleted.length), url: f.get('url'), description: f.get('description'), secret: 'whsec_' + (hooks.length + deleted.length) }; hooks.push(h); return send(h); }
+  if (u.pathname === '/v1/balance') { if (/bad/.test(q.headers.authorization)) { s.writeHead(401, { 'content-type': 'application/json' }); return s.end(JSON.stringify({ error: { message: 'Invalid API Key provided' } })); } return send({ object: 'balance' }); }
   if (u.pathname === '/v1/checkout/sessions') { sessions.push(raw); return send({ id: 'cs_1', url: 'https://checkout.stripe.test/cs_1' }); }
   send({});
 }); }).listen(0, r); }));
@@ -26,7 +27,7 @@ function fakeDb() {
   return { kv, prepare: sql => ({ get: async k => kv.has(k) ? { v: kv.get(k) } : undefined, run: async (k, v) => { kv.set(k, v); } }) };
 }
 const mk = (key, db) => {
-  const cfg = { baseUrl: 'https://app.example.co.uk', stripe: { key, apiBase: 'http://localhost:' + mock.address().port, prices: {}, feePct: 0 } };
+  const cfg = { secret: 'test-secret', baseUrl: 'https://app.example.co.uk', stripe: { key, apiBase: 'http://localhost:' + mock.address().port, prices: {}, feePct: 0 } };
   const stripe = require('../server/stripe')(cfg);
   return { cfg, stripe, a: require('../server/stripe-auto').auto({ cfg, stripe, db, log: () => {} }) };
 };
@@ -34,7 +35,7 @@ const mk = (key, db) => {
 test('creates prices and webhooks on the tick, keeps them, and the plan checkout uses them', async () => {
   const db = fakeDb();
   const { cfg, stripe, a } = mk('sk_live_one', db);
-  assert.deepEqual(await a.status(), { on: true, mode: 'live', prices: false, webhooks: false, error: '', at: undefined });
+  assert.deepEqual(await a.status(), { on: true, mode: 'live', prices: false, webhooks: false, error: '', at: undefined, canSave: false, last4: '_one' });
   await a.ensure();
   assert.equal(hooks.length, 2); assert.ok(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret);
   assert.ok(cfg.stripe.prices.Growth && cfg.stripe.prices.setup && cfg.stripe.prices.addon && cfg.stripe.prices.GrowthAnnual);
@@ -52,5 +53,21 @@ test('creates prices and webhooks on the tick, keeps them, and the plan checkout
 
 test('without a key nothing happens', async () => {
   const { a } = mk('', fakeDb());
-  assert.equal(await a.ensure(), null); assert.deepEqual(await a.status(), { on: false });
+  assert.equal(await a.ensure(), null); assert.deepEqual(await a.status(), { on: false, canSave: true });
+});
+
+test('a key saved from the team page is checked, kept encrypted, survives a cold start, and sets Stripe up', async () => {
+  const db = fakeDb();
+  const { cfg, stripe, a } = mk('', db);
+  assert.equal(stripe.enabled, false); assert.equal((await a.status()).canSave, true);
+  assert.match((await a.saveKey('hello')).error, /does not look like/);
+  assert.match((await a.saveKey('sk_live_bad0000000000000')).error, /did not accept/); assert.equal(stripe.enabled, false);
+  const before = hooks.length + deleted.length;
+  const r = await a.saveKey('sk_live_good000000000000'); assert.equal(r.ok, true); assert.equal(r.mode, 'live');
+  assert.ok(stripe.enabled && cfg.stripe.webhookSecret && cfg.stripe.prices.Growth); assert.ok(hooks.length + deleted.length > before);
+  assert.ok(![...db.kv.values()].some(v => v.includes('sk_live_good')), 'the key is not stored in plain text');
+  const cold = mk('', db); await cold.a.load(); assert.equal(cold.cfg.stripe.key, 'sk_live_good000000000000'); assert.equal(cold.cfg.stripe.webhookSecret, cfg.stripe.webhookSecret);
+  const st = await cold.a.status(); assert.equal(st.last4, '0000'); assert.ok(st.prices && st.webhooks);
+  // the environment's key wins and cannot be replaced from the page
+  const env = mk('sk_live_env', db); assert.match((await env.a.saveKey('sk_live_other0000000000')).error, /already has/);
 });
