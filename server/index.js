@@ -99,6 +99,8 @@ async function stream(res, u, wid, headers) {
   res.writeHead(200, Object.assign({ 'content-type': 'text/event-stream', 'cache-control': 'no-store', connection: 'keep-alive' }, headers || {})); res.write('retry: 5000\n\n'); return ws.subscribe(wid, res);
 }
 const err = (status, message) => Object.assign(new Error(message), { status });
+// The AI site builder and funnel creator (server/studio)
+const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
 
 /* ---------------- static assets ---------------- */
 const MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.html': 'text/html; charset=utf-8', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8' };
@@ -117,7 +119,7 @@ let marketingState = null;
 const marketing = () => marketingState || (marketingState = seedDemo());
 async function hostBoot(w, surface) {
   const s = w.state;
-  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain,
+  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain,
     ...hostLinks(w), aiEngines: ai.available(), test: testNotes() };
 }
 const SOON = ['cleaner', 'google', 'gsc', 'analytics', 'pricelabs']; // shown in live accounts as coming soon
@@ -135,7 +137,10 @@ function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; con
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
 function sitePage(res, w, p, canonical, host, req) {
-  const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today); const st = pub.siteState(s, p.id);
+  const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today);
+  const built = studio.publishedSite(w, p, canonical); // a site designed and published in the Site builder
+  if (built) return send(res, 200, built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+  const st = pub.siteState(s, p.id);
   send(res, 200, pages.page({
     title: seo.titleOf(p), description: seo.descOf(p), head: seo.head(s, p, canonical), content: seo.content(s, p, canonical),
     boot: publicBoot(w, 'site', { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
@@ -472,6 +477,9 @@ async function route(req, res) {
     return send(res, 200, pages.plain({ title: 'Unsubscribe', body: '<h1>Stop emails from ' + E(w.state.account.business) + '?</h1><p>You will still get emails about any stay you have booked.</p><form method="post"><button type="submit">Unsubscribe</button></form>' }));
   }
 
+  /* funnels made in the funnel creator: /f/<host>/<funnel>[/<step>] */
+  if (p.startsWith('/f/') && await studio.funnel(req, res, p, m, u)) return;
+
   /* custom domains and site subdomains: the host's own booking site */
   const dom = host && host !== MAIN_HOST && await ws.domain(host);
   if (dom) {
@@ -540,7 +548,7 @@ async function route(req, res) {
   if (p === '/api/leads' && (m === 'POST' || m === 'OPTIONS')) return lead(req, res);
 
   /* demo */
-  if (p === '/demo' || p.startsWith('/api/demo/')) {
+  if (p === '/demo' || p.startsWith('/api/demo/') || p.startsWith('/demo/')) {
     const c = cookies(req); let wid = c.bb_demo; let r = wid && await ws.row(wid);
     const headers = {};
     if (!r || r.kind !== 'demo') { wid = await ws.createDemo(); headers['set-cookie'] = cookie('bb_demo', wid, 7 * 86400); }
@@ -549,6 +557,8 @@ async function route(req, res) {
     if (p === '/api/demo/state') return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers);
     if (p === '/api/demo/stream') return await stream(res, u, wid, headers);
     if (p === '/api/demo/act' && m === 'POST') { const j = await jsonBody(req, 2e6); const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []); return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers); }
+    if (p.startsWith('/api/demo/studio/') || p.startsWith('/api/demo/funnels/')) { const w = await ws.open(wid); if (await studio.host(req, res, p, m, w, headers)) return; }
+    if (p.startsWith('/demo/studio/') || p.startsWith('/demo/funnel/')) { const w = await ws.open(wid); if (studio.preview(res, w, p, u.searchParams, true)) return; }
     if (p === '/api/demo/reset' && m === 'POST') { await ws.resetDemo(wid); return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers); }
     return notFound(res);
   }
@@ -632,6 +642,8 @@ async function route(req, res) {
     if (p === '/app/stripe/return') { const r = await ws.row(w.id); if (r.stripe_account) { const a = await stripe.account(r.stripe_account); await markStripe(w.id, a.charges, a.bank); } return redirect(res, '/app#connections'); }
     if (p === '/api/state') return json(res, Object.assign({ state: w.state, version: await ws.version(w.id) }, hostLinks(w)));
     if (p === '/api/stream') return await stream(res, u, w.id);
+    if ((p.startsWith('/api/studio/') || p.startsWith('/api/funnels/')) && await studio.host(req, res, p, m, w)) return;
+    if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');
       if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyAiResults', 'paymentConfirmed', 'expirePending'].includes(name)) throw err(403, 'That action is not available in a live account.');

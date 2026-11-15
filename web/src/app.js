@@ -256,6 +256,7 @@
       if (inst._scrollMsgs) { const el = inst.root.querySelector('#amsgs-' + inst.uid); if (el) { el.scrollTop = el.scrollHeight; inst._scrollMsgs = false; } }
       const tab = inst.root.querySelector('.a-strip [aria-current="page"]'), sw = inst.root.querySelector('.a-strip');
       if (tab && sw && inst._stripView !== inst.st.view) { inst._stripView = inst.st.view; const l = tab.offsetLeft - 16; if (l < sw.scrollLeft || tab.offsetLeft + tab.offsetWidth > sw.scrollLeft + sw.clientWidth) sw.scrollLeft = Math.max(0, l); }
+      { const v = V[inst.st.view]; if (v && v.after) v.after(inst); else if (BB.studioAfter) BB.studioAfter(inst); }
       if (inst._focus) { const el = inst.root.querySelector(inst._focus); inst._focus = null; if (el) { el.focus({ preventScroll: true }); try { const n = (el.value || '').length; el.setSelectionRange(n, n); } catch (_) {} } }
     },
   });

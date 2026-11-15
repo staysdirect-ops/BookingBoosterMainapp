@@ -1440,6 +1440,278 @@ var require_bb_embedded_files = __commonJS({
     },
   }, hooks);
 })();
+` }, "/app/web/src/app-studio.css": { "t": "/* Host console: Site builder and Funnels (app-studio.js). Lives inside .ag, so it reflows with the container. */\n.sb .sb-cols { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }\n@container ag (max-width: 860px) { .sb .sb-cols { grid-template-columns: minmax(0, 1fr); } .sb .sb-stage { order: -1; } }\n.sb .eyebrow { display: block; font: 600 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }\n.sb .eyebrow em { font: 500 11px var(--font, inherit); text-transform: none; letter-spacing: 0; font-style: normal; }\n.sb .sb-q { display: grid; gap: 2px; margin: 0 0 18px; }\n.sb .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }\n.sb .field { display: grid; gap: 6px; margin-bottom: 14px; }\n.sb .field > span { font-size: 13px; font-weight: 600; }\n.sb .field em { font-style: normal; font-weight: 500; font-size: 12px; }\n.sb .field input, .sb .field textarea, .sb .field select { width: 100%; }\n\n/* brief */\n.sb .sb-brief { padding: 18px 20px 20px; }\n.sb .sb-brief .a-card-h { padding: 0 0 14px; }\n.sb .sb-ph { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 0 0 16px; }\n.sb .sb-ph .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; }\n.sb .sb-gobtn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 15px; }\n\n/* art direction cards */\n.sb .sb-dirs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }\n.sb .sb-dir { display: grid; gap: 2px; text-align: left; padding: 8px 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }\n.sb .sb-dir:hover { border-color: var(--line-2); transform: translateY(-1px); }\n.sb .sb-dir.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-dir b { font-size: 13px; line-height: 1.2; margin-top: 6px; }\n.sb .sb-dir small { font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dir-sw { display: flex; align-items: flex-end; justify-content: space-between; height: 58px; padding: 8px 10px; border-radius: 8px; background: var(--b); color: var(--i); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }\n.sb .sb-aa { font-size: 30px; line-height: 1; }\n.sb .sb-dots { display: flex; gap: 3px; }\n.sb .sb-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }\n.sb .sb-dirs.sm { grid-template-columns: repeat(4, minmax(0, 1fr)); }\n.sb .sb-dirs.sm .sb-dir-sw { height: 40px; padding: 6px; }\n.sb .sb-dirs.sm .sb-aa { font-size: 20px; }\n.sb .sb-dirs.sm .sb-dots, .sb .sb-dirs.sm small { display: none; }\n.sb .sb-dirs.sm b { font-size: 11.5px; }\n\n/* busy */\n.sb .sb-busy { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 24px; display: grid; gap: 6px; justify-items: start; }\n.sb .sb-busy p { margin: 0 0 10px; font-size: 13.5px; }\n.sb .sb-orb { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 30%, white), var(--primary)); color: #fff; animation: sbPulse 1.8s ease-in-out infinite; margin-bottom: 8px; }\n.sb .sb-orb .ic { width: 22px; height: 22px; }\n@keyframes sbPulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 12%, transparent); } }\n.sb .sb-busy ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; width: 100%; }\n.sb .sb-busy li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }\n.sb .sb-busy li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }\n.sb .sb-busy li .ic { width: 16px; height: 16px; color: var(--good); flex: none; }\n.sb .sb-busy li.done { color: var(--fg); }\n.sb .sb-busy li.now { color: var(--fg); font-weight: 600; }\n.sb .sb-busy li.now i { border-color: var(--primary); border-top-color: transparent; animation: sbSpin .8s linear infinite; }\n@keyframes sbSpin { to { transform: rotate(360deg); } }\n@media (prefers-reduced-motion: reduce) { .sb .sb-orb, .sb .sb-busy li.now i { animation: none; } }\n\n/* edit panel */\n.sb .sb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 14px; min-width: 0; }\n.sb .sb-ask { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--primary-soft); }\n.sb .sb-ask > div { display: flex; gap: 8px; align-items: flex-end; }\n.sb .sb-ask textarea { flex: 1; min-width: 0; resize: vertical; background: var(--surface); }\n.sb .sb-tabs { display: flex; width: 100%; }\n.sb .sb-tabs button { flex: 1; white-space: nowrap; }\n.sb .sb-tabbody { min-width: 0; }\n.sb .sb-why { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 13.5px; line-height: 1.5; }\n.sb .sb-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }\n.sb .sb-hero { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-hero.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-hero b { font-size: 12.5px; } .sb .sb-hero small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-hi { display: block; height: 44px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); position: relative; overflow: hidden; }\n.sb .sb-hi::before, .sb .sb-hi::after { content: ''; position: absolute; background: var(--line-2); border-radius: 2px; }\n.sb .h-cinematic { background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-cinematic::before { left: 8px; bottom: 9px; width: 50%; height: 5px; background: #fff; } .sb .h-cinematic::after { left: 8px; bottom: 18px; width: 30%; height: 3px; background: rgba(255,255,255,.7); }\n.sb .h-split::before { right: 6px; top: 6px; bottom: 6px; width: 42%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-split::after { left: 6px; top: 16px; width: 36%; height: 5px; background: var(--fg); }\n.sb .h-editorial::before { left: 6px; top: 6px; width: 70%; height: 9px; background: var(--fg); } .sb .h-editorial::after { left: 6px; right: 6px; bottom: 5px; height: 18px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-mosaic::before { left: 6px; top: 6px; bottom: 6px; width: 46%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-mosaic::after { right: 6px; top: 6px; bottom: 6px; width: 40%; background: repeating-linear-gradient(180deg, #b9c6d3 0 15px, transparent 15px 18px); }\n.sb .h-type::before { left: 8px; top: 9px; width: 66%; height: 9px; background: var(--fg); } .sb .h-type::after { left: 8px; top: 23px; width: 40%; height: 9px; background: var(--primary); }\n.sb .sb-accrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }\n.sb .sb-accrow input[type=color] { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); cursor: pointer; }\n.sb .sb-acc > small { font-size: 12px; }\n.sb .sb-hl { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }\n.sb .sb-hl .eyebrow { margin: 0; }\n.sb .sb-sticky { position: sticky; bottom: 0; display: grid; gap: 6px; padding: 12px 0 2px; background: linear-gradient(transparent, var(--surface) 30%); margin-bottom: 14px; }\n.sb .sb-sticky small { font-size: 12px; }\n.sb .sb-secs { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 6px; }\n.sb .sb-secs li { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.sb .sb-secs li > div { flex: 1; min-width: 0; display: grid; }\n.sb .sb-secs b { font-size: 13.5px; } .sb .sb-secs small { font-size: 11.5px; color: var(--muted); }\n.sb .sb-sn { font: 600 11px var(--mono); color: var(--muted); }\n.sb .sb-sa { display: flex; gap: 2px; }\n.sb .sb-sa .iconbtn { width: 30px; height: 30px; font-size: 14px; }\n.sb .sb-qa { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }\n.sb .sb-qa li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }\n.sb .sb-qa li > .ic { width: 18px; height: 18px; flex: none; padding: 2px; border-radius: 50%; }\n.sb .sb-qa li.ok > .ic { color: var(--good); background: var(--good-soft); }\n.sb .sb-qa li.no > .ic { color: var(--bad); background: var(--bad-soft); }\n.sb .sb-qa small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }\n.sb .sb-rules { font-size: 13px; } .sb .sb-rules summary { cursor: pointer; font-weight: 600; }\n.sb .sb-rules ol { padding-left: 20px; display: grid; gap: 6px; color: var(--muted); }\n\n/* stage */\n.sb .sb-stage { position: sticky; top: calc(var(--a-top, 0px) + 12px); display: grid; gap: 10px; min-width: 0; }\n.sb .sb-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }\n.sb .sb-meta { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; min-width: 0; }\n.sb .sb-meta small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-tools { display: flex; gap: 4px; }\n.sb .sb-dev { border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); margin-inline: auto; width: 100%; }\n.sb .sb-dev.phone { width: min(100%, 390px); border-radius: 34px; border: 10px solid #0d0f17; box-shadow: var(--shadow), 0 0 0 1px var(--line-2); }\n.sb .sb-chrome { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }\n.sb .sb-chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }\n.sb .sb-chrome span { margin-left: 10px; font-size: 11.5px; color: var(--muted); padding: 3px 12px; border-radius: 999px; background: var(--surface); flex: 1; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dev.phone .sb-chrome { justify-content: center; } .sb .sb-dev.phone .sb-chrome i { display: none; } .sb .sb-dev.phone .sb-chrome span { margin: 0; text-align: center; }\n.sb .sb-slot { height: min(74vh, 860px); min-height: 420px; background: var(--surface-2); }\n.sb .sb-dev.phone .sb-slot { height: min(72vh, 760px); }\n.sb-float { position: fixed; z-index: 40; overflow: hidden; pointer-events: auto; }\n.sb-float[hidden] { display: none; }\n.sb-float iframe { border: 0; display: block; transform-origin: 0 0; background: #fff; }\n.sb-float.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) var(--surface-2); background-size: 200% 100%; animation: sbShimmer 1.2s linear infinite; }\n@keyframes sbShimmer { to { background-position: -200% 0; } }\n\n/* empty state */\n.sb .sb-empty { min-height: 520px; display: grid; place-items: center; border-radius: var(--r-lg); background: radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%), var(--surface); border: 1px solid var(--line); padding: 40px; position: static; }\n.sb .sb-hero-ill { max-width: 520px; }\n.sb .sb-hero-ill .disp { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; display: block; margin-bottom: 14px; }\n.sb .sb-hero-ill em, .sb .sb-fempty em { font-style: italic; color: var(--primary); }\n.sb .sb-hero-ill p { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }\n.sb .sb-hero-ill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 13.5px; }\n.sb .sb-hero-ill li { display: flex; gap: 8px; align-items: flex-start; } .sb .sb-hero-ill li .ic { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 2px; }\n.sb .sb-load { min-height: 300px; }\n\n/* funnels */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 0 20px 20px; }\n.sb .sb-tpl { display: grid; gap: 4px; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .15s, transform .15s; }\n.sb .sb-tpl:hover { border-color: var(--primary); transform: translateY(-1px); }\n.sb .sb-tpl b { font-size: 15px; margin-top: 6px; } .sb .sb-tpl small { color: var(--muted); font-size: 13px; line-height: 1.45; }\n.sb .sb-tpl em { font-style: normal; font: 500 11px var(--mono); color: var(--muted); margin-top: 6px; }\n.sb .sb-tpl-i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; }\n.sb .sb-tpl-i .ic { width: 18px; height: 18px; }\n.sb .sb-fform { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 14px; padding: 0 20px; }\n.sb .sb-fform .sb-wide { grid-column: 1 / -1; }\n.sb section > .ag-acts-row, .sb section > p.muted { padding: 0 20px 20px; }\n.sb section > p.muted { padding-bottom: 0; }\n.sb .sb-flist { display: grid; gap: 8px; }\n.sb .sb-frow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--line); }\n.sb .sb-frow:hover { border-color: var(--line-2); }\n.sb .sb-fn { flex: 1; min-width: 0; display: grid; } .sb .sb-fn small { color: var(--muted); font-size: 12.5px; }\n.sb .sb-fs { display: flex; gap: 18px; } .sb .sb-fs > span { display: grid; text-align: right; } .sb .sb-fs small { font-size: 11px; color: var(--muted); }\n@container ag (max-width: 620px) { .sb .sb-fs { display: none; } }\n.sb .sb-fempty { padding: 36px; display: grid; gap: 10px; justify-items: start; }\n.sb .sb-fempty .disp { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; } .sb .sb-fempty p { max-width: 560px; margin: 0 0 6px; line-height: 1.6; }\n.sb .sb-fdetail { display: grid; gap: 16px; min-width: 0; }\n.sb .sb-fh { margin: 0; }\n.sb .sb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }\n.sb .sb-kpis > div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }\n.sb .sb-kpis small { font-size: 12px; color: var(--muted); } .sb .sb-kpis b { font-size: 22px; }\n" }, "/app/web/src/app-studio.js": { "t": `/* Bookingbooster: the Site builder and Funnels views in the host console.
+   Site builder: Claude designs a premium booking site for each home from the Studio design system; the host
+   tweaks direction, words and sections, checks the design, previews on desktop and phone, then publishes.
+   Funnels: focused opt-in and offer pages in the same style, with sign-ups going into the guest list. */
+(function () {
+  const BB = window.BB; BB.appViews = BB.appViews || {};
+  const V = BB.appViews, esc = BB.esc, I = BB.icon, D = BB.D;
+  const S = () => BB.store.get();
+  const demo = () => !!(BB.BOOT && BB.BOOT.mode === 'demo');
+  const API = () => (demo() ? '/api/demo/' : '/api/');
+  const PRE = () => (demo() ? '/demo/' : '/app/');
+  const live = () => !!(BB.api && BB.BOOT && (BB.BOOT.mode === 'host' || BB.BOOT.mode === 'demo'));
+  const ago = t => { if (!t) return ''; const m = Math.round((Date.now() - new Date(t).getTime()) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); };
+  const em = t => esc(t || '').replace(/\\*([^*]{1,40})\\*/, '<em>$1</em>').replace(/\\*/g, '');
+  const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
+
+  /* ---------- design system metadata (fonts, directions, vibes) ---------- */
+  let META = null, metaP = null;
+  function meta(inst) {
+    if (META || !live()) return META;
+    if (!metaP) metaP = BB.api.call(API() + 'studio/meta', null, 'GET').then(j => {
+      META = j;
+      const l = document.createElement('link'); l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?' + Object.values(j.directions).map(d => d.href).join('&') + '&display=swap'; document.head.appendChild(l);
+      inst.render();
+    }).catch(() => { metaP = null; });
+    return null;
+  }
+  async function call(inst, path, body, okMsg) {
+    try { const j = await BB.api.call(API() + path, body); BB.api.accept(j); if (okMsg) BB.toast(okMsg, 'good'); return j; }
+    catch (e) { BB.toast(e.message, 'bad'); return null; }
+    finally { inst.render(); }
+  }
+
+  /* ---------- the live preview: one persistent iframe that floats over its slot, so repaints never reload it ---------- */
+  const PV = { el: null, frame: null, src: '', slot: null, raf: 0 };
+  function previewAfter(inst) {
+    const slot = inst.root.querySelector('[data-sb-slot]');
+    if (!slot) { if (PV.el) PV.el.hidden = true; PV.slot = null; return; }
+    if (!PV.el) {
+      PV.el = document.createElement('div'); PV.el.className = 'sb-float';
+      PV.el.innerHTML = '<iframe title="Site preview" loading="eager"></iframe>'; document.body.appendChild(PV.el); PV.frame = PV.el.firstChild;
+      const loop = () => { if (PV.slot && PV.slot.isConnected) { const r = PV.slot.getBoundingClientRect(); const s = PV.el.style; s.top = r.top + 'px'; s.left = r.left + 'px'; s.width = r.width + 'px'; s.height = r.height + 'px'; PV.el.hidden = r.height < 2; const w = +PV.slot.dataset.w || r.width; const k = r.width / w; PV.frame.style.width = w + 'px'; PV.frame.style.height = (r.height / k) + 'px'; PV.frame.style.transform = 'scale(' + k + ')'; const box = PV.slot.closest('.a-body') || document.body; const b = box.getBoundingClientRect(); const top = Math.max(0, b.top - r.top), bot = Math.max(0, r.bottom - Math.min(b.bottom, innerHeight)); s.clipPath = top || bot ? 'inset(' + top + 'px 0 ' + bot + 'px 0)' : ''; PV.el.hidden = r.height < 2 || top + bot >= r.height || !!document.querySelector('.a-modal-back'); } else if (PV.el) PV.el.hidden = true; PV.raf = requestAnimationFrame(loop); };
+      loop();
+    }
+    PV.slot = slot; PV.el.hidden = false;
+    const src = slot.dataset.src; if (src && src !== PV.src) { PV.src = src; PV.frame.src = src; PV.el.classList.add('loading'); PV.frame.onload = () => PV.el.classList.remove('loading'); }
+  }
+  BB.studioAfter = previewAfter;
+
+  /* =====================================================================
+     SITE BUILDER
+     ===================================================================== */
+  const STEPS = ['Reading your home\u2019s details', 'Looking at your photos', 'Choosing an art direction', 'Pairing the typefaces', 'Laying out the sections', 'Writing the words', 'Running the design checks'];
+  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['type', 'Type-led', 'No photo needed']];
+  const SEC_NAME = { hero: 'Hero', facts: 'At a glance', story: 'The stay', highlights: 'Highlights', gallery: 'Gallery', amenities: 'Details and rules', reviews: 'Reviews', area: 'Area guide', host: 'Your host', book: 'Booking', faq: 'Questions', closing: 'Closing banner' };
+  const WORDS = [['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.'], ['subhead', 'Subheading', '', 1], ['tagline', 'Small line above the headline'], ['storyTitle', 'Story title'], ['pull', 'Pull quote', '', 1], ['bookTitle', 'Booking title'], ['bookText', 'Booking text', '', 1], ['closing', 'Closing line'], ['seoTitle', 'Google title', 'Up to 62 characters'], ['seoDescription', 'Google description', 'Up to 160 characters', 1]];
+
+  function siteOf(pid) { return (((S().studio || {}).sites) || {})[pid] || null; }
+  function busy(inst) {
+    const n = inst.st.sb_step || 0;
+    return '<div class="sb-busy" role="status"><div class="sb-orb">' + I('spark') + '</div><b>Claude is designing your site</b><p class="muted">This takes about a minute. Every layout and word is checked against the design rules before you see it.</p><ol>' +
+      STEPS.map((x, i) => '<li class="' + (i < n ? 'done' : i === n ? 'now' : '') + '">' + (i < n ? I('check') : '<i></i>') + x + '</li>').join('') + '</ol></div>';
+  }
+  function dirCard(k, d, on, act) {
+    const p = d.pal;
+    return '<button type="button" class="sb-dir' + (on ? ' on' : '') + '" data-ag="' + act + '" data-v="' + k + '" aria-pressed="' + on + '" style="--b:' + p.bg + ';--i:' + p.ink + ';--a:' + p.accent + ';--d:' + p.deep + '">' +
+      '<span class="sb-dir-sw"><span class="sb-aa" style="font-family:\\'' + esc(d.fonts.split(' & ')[0]) + '\\',serif">Aa</span><span class="sb-dots"><i style="background:' + p.accent + '"></i><i style="background:' + p.deep + '"></i><i style="background:' + p.bg2 + '"></i></span></span>' +
+      '<b>' + esc(d.name) + '</b><small>' + esc(d.fonts) + '</small></button>';
+  }
+  async function generate(inst, pid, mode, extra) {
+    const st = inst.st; if (st.sb_busy) return;
+    st.sb_busy = true; st.sb_step = 0; inst.render();
+    const tick = setInterval(() => { if (st.sb_step < STEPS.length - 1) { st.sb_step++; inst.render(); } }, mode === 'new' ? 6500 : 4000);
+    const b = Object.assign({}, st.sb_brief || {}, extra || {});
+    const j = await call(inst, 'studio/generate', { propertyId: pid, brief: b, mode });
+    clearInterval(tick); st.sb_busy = false; st.sb_ask = '';
+    if (j && j.spec) { st.sb_tab = 'design'; BB.toast(j.spec.note ? 'Designed by the rules' : 'New design ready: ' + ((META && META.directions[j.spec.direction]) || {}).name, j.spec.note ? '' : 'good'); }
+    inst.render();
+  }
+
+  const H = {}; // click handlers
+  H['sb-pid'] = (inst, v) => inst.set({ sb_pid: v, sb_dev: inst.st.sb_dev });
+  H['sb-vibe'] = (inst, v) => { const b = inst.st.sb_brief = inst.st.sb_brief || {}; b.vibe = b.vibe === v ? '' : v; inst.render(); };
+  H['sb-bdir'] = (inst, v) => { const b = inst.st.sb_brief = inst.st.sb_brief || {}; b.direction = b.direction === v ? '' : v; inst.render(); };
+  H['sb-go'] = inst => generate(inst, pidOf(inst), 'new');
+  H['sb-another'] = inst => generate(inst, pidOf(inst), 'another');
+  H['sb-revise'] = inst => { const t = (inst.st.sb_ask || '').trim(); if (!t) { BB.toast('Tell Claude what to change', 'bad'); return; } generate(inst, pidOf(inst), 'revise', { instruction: t }); };
+  H['sb-new'] = inst => inst.set({ sb_rebrief: true });
+  H['sb-cancel-brief'] = inst => inst.set({ sb_rebrief: false });
+  H['sb-tab'] = (inst, v) => inst.set({ sb_tab: v });
+  H['sb-dev'] = (inst, v) => inst.set({ sb_dev: v });
+  H['sb-dir'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { direction: v, accent: '' } });
+  H['sb-hero'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { heroVariant: v } });
+  H['sb-accent-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: '' } });
+  H['sb-undo'] = inst => call(inst, 'studio/undo', { propertyId: pidOf(inst) }, 'Went back one step');
+  H['sb-publish'] = inst => call(inst, 'studio/publish', { propertyId: pidOf(inst) }, 'Published. Guests see the new site now.');
+  H['sb-unpublish'] = inst => call(inst, 'studio/publish', { propertyId: pidOf(inst), off: true }, 'Switched back to the standard site');
+  H['sb-words'] = inst => { const d = inst.st.sb_wd || {}; const copy = Object.assign({}, d); if (d.story != null) copy.story = String(d.story).split(/\\n\\s*\\n/).map(x => x.trim()).filter(Boolean); ['h0', 'h1', 'h2'].forEach((k, i) => { delete copy[k + 't']; delete copy[k + 'x']; });
+    const sp = siteOf(pidOf(inst)).draft; if (['h0', 'h1', 'h2'].some(k => d[k + 't'] != null || d[k + 'x'] != null)) copy.highlights = sp.copy.highlights.map((h, i) => ({ eyebrow: h.eyebrow, title: d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title, text: d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text }));
+    inst.st.sb_wd = {}; call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { copy } }, 'Words saved to the draft'); };
+  const secEdit = (inst, fn) => { const sp = siteOf(pidOf(inst)).draft; const secs = sp.sections.map(x => Object.assign({}, x)); fn(secs); call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { sections: secs } }); };
+  H['sb-up'] = (inst, v) => secEdit(inst, a => { const i = +v; if (i > 1) a.splice(i - 1, 0, a.splice(i, 1)[0]); });
+  H['sb-down'] = (inst, v) => secEdit(inst, a => { const i = +v; if (i > 0 && i < a.length - 1) a.splice(i + 1, 0, a.splice(i, 1)[0]); });
+  H['sb-del'] = (inst, v) => secEdit(inst, a => { a.splice(+v, 1); });
+  H['sb-add'] = (inst, v) => secEdit(inst, a => { const c = a.findIndex(x => x.type === 'closing'); a.splice(c < 0 ? a.length : c, 0, { type: v, variant: META.sections[v][0] }); });
+  const pidOf = inst => { const s = S(); const p = s.properties.find(x => x.id === inst.st.sb_pid) || s.properties[0]; return p && p.id; };
+
+  function briefCard(inst, p, again) {
+    const st = inst.st, b = st.sb_brief = st.sb_brief || {}, M = META;
+    const n = (p.photos || []).length;
+    return '<section class="a-card ag-card sb-brief"><div class="a-card-h"><h3>' + (again ? 'Start a new design' : 'Brief your designer') + '</h3>' + (again ? '<button class="btn sm ghost" data-ag="sb-cancel-brief">' + I('x') + 'Cancel</button>' : '<span class="ag-meta">' + (M.ai ? 'Claude art-directs it' : 'Design rules') + '</span>') + '</div>' +
+      '<div class="sb-q"><span class="eyebrow">How should it feel?</span><div class="sb-chips">' + Object.entries(M.vibes).map(([k, v]) => '<button type="button" class="chip" aria-pressed="' + (b.vibe === k) + '" data-ag="sb-vibe" data-v="' + k + '">' + esc(v.split(',')[0].replace(/^./, c => c.toUpperCase())) + '</button>').join('') + '</div></div>' +
+      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
+      '<label class="field"><span>Who are your guests?</span><input data-agf="sb.audience" id="sb-aud" placeholder="Couples from London, walkers with dogs, families at half-term" value="' + esc(b.audience || '') + '"></label>' +
+      '<label class="field"><span>Anything Claude should know?</span><textarea data-agf="sb.notes" id="sb-notes" rows="3" placeholder="The view from the bath is the thing everyone talks about. Avoid anything too twee.">' + esc(b.notes || '') + '</textarea></label>' +
+      '<p class="ag-note sb-ph">' + I('camera') + '<span>' + (n ? n + ' photo' + (n === 1 ? '' : 's') + ' on this home.' + (n < 6 ? ' Add ' + (6 - n) + ' more for a gallery.' : '') : 'No photos yet, so Claude will design a type-led site. Add photos for image-led layouts.') + (S().live ? ' <a href="#" data-ag-nav="website">Add photos</a>' : '') + '</span></p>' +
+      '<button class="btn primary sb-gobtn" data-ag="sb-go">' + I('spark') + 'Design my site</button></section>';
+  }
+
+  function panel(inst, p, site) {
+    const st = inst.st, M = META, sp = site.draft, tab = st.sb_tab || 'design';
+    const qaBad = (sp.qa || []).filter(x => !x.ok).length;
+    const tabs = [['design', 'Design'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' \xB7 ' + qaBad : ' \u2713')]];
+    let body = '';
+    if (tab === 'design') {
+      body = (sp.rationale ? '<blockquote class="sb-why"><span class="eyebrow">Why this design</span>' + esc(sp.rationale) + '</blockquote>' : '') +
+        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Hero layout</span><div class="sb-heroes">' + HERO.map(([k, t, d]) => '<button type="button" class="sb-hero' + ((sp.sections[0] || {}).variant === k ? ' on' : '') + '" data-ag="sb-hero" data-v="' + k + '"><i class="sb-hi h-' + k + '"></i><b>' + t + '</b><small>' + d + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q sb-acc"><span class="eyebrow">Accent colour</span><div class="sb-accrow"><input type="color" data-sbacc value="' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '" aria-label="Accent colour"><span class="mono">' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '</span>' + (sp.accent ? '<button class="btn sm ghost" data-ag="sb-accent-reset">Reset</button>' : '<small class="muted">Direction default</small>') + '</div><small class="muted">Colours that fail contrast checks are refused, so buttons always stay readable.</small></div>' +
+        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('sync') + 'Try a different direction</button>' : '');
+    } else if (tab === 'words') {
+      const d = st.sb_wd = st.sb_wd || {}; const val = k => d[k] != null ? d[k] : (sp.copy[k] || '');
+      body = WORDS.map(([k, l, hint, area]) => '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>').join('') +
+        '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\\n\\n')) + '</textarea></label>' +
+        (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') +
+        '<div class="sb-sticky"><button class="btn primary" data-ag="sb-words"' + (Object.keys(d).length ? '' : ' disabled') + '>' + I('check') + 'Save words</button><small class="muted">Facts like prices, photos, amenities and reviews come from Website & SEO and stay up to date by themselves.</small></div>';
+    } else if (tab === 'sections') {
+      const have = sp.sections.map(x => x.type);
+      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><b>' + SEC_NAME[x.type] + '</b><small>' + esc(x.variant) + '</small></div>' +
+        (i ? '<span class="sb-sa"><button class="iconbtn" data-ag="sb-up" data-v="' + i + '" aria-label="Move up"' + (i < 2 ? ' disabled' : '') + '>\u2191</button><button class="iconbtn" data-ag="sb-down" data-v="' + i + '" aria-label="Move down"' + (i === sp.sections.length - 1 ? ' disabled' : '') + '>\u2193</button>' + (['book', 'faq'].includes(x.type) ? '' : '<button class="iconbtn" data-ag="sb-del" data-v="' + i + '" aria-label="Remove">' + I('x') + '</button>') + '</span>' : '<span class="sb-sa muted"><small>Always first</small></span>') + '</li>').join('') + '</ol>' +
+        (Object.keys(SEC_NAME).filter(k => !have.includes(k)).length ? '<div class="sb-q"><span class="eyebrow">Add a section</span><div class="sb-chips">' + Object.keys(SEC_NAME).filter(k => !have.includes(k)).map(k => '<button type="button" class="chip" data-ag="sb-add" data-v="' + k + '">+ ' + SEC_NAME[k] + '</button>').join('') + '</div><small class="muted">Sections with nothing to show (a gallery without photos, an area guide you have not written) stay hidden.</small></div>' : '');
+    } else {
+      body = '<ul class="sb-qa">' + (sp.qa || []).map(x => '<li class="' + (x.ok ? 'ok' : 'no') + '">' + I(x.ok ? 'check' : 'x') + '<span>' + esc(x.label) + (!x.ok && x.fix ? '<small>' + esc(x.fix) + '</small>' : '') + '</span></li>').join('') + '</ul>' +
+        '<details class="sb-rules"><summary>The design rules every site follows</summary><ol>' + M.principles.map(x => '<li>' + esc(x) + '</li>').join('') + '</ol></details>';
+    }
+    return '<div class="sb-panel">' +
+      (M.ai ? '<form class="sb-ask" data-agform="sb-ask"><label for="sb-ask" class="eyebrow">Ask Claude for changes</label><div><textarea id="sb-ask" data-agf="sb.ask" rows="2" placeholder="Make it feel warmer, lead with the hot tub, more space between sections">' + esc(st.sb_ask || '') + '</textarea><button class="btn primary sm" data-ag="sb-revise">' + I('send') + 'Revise</button></div></form>' : '') +
+      '<div class="seg sb-tabs" role="group" aria-label="Edit">' + tabs.map(([k, l]) => '<button type="button" aria-pressed="' + (tab === k) + '" data-ag="sb-tab" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
+      '<div class="sb-tabbody">' + body + '</div></div>';
+  }
+
+  V.builder = {
+    label: 'Site builder', group: 'Get found', icon: 'spark', order: 5,
+    render(inst) {
+      const s = S(), st = inst.st, M = meta(inst);
+      const p = s.properties.find(x => x.id === st.sb_pid) || s.properties[0];
+      if (!p) return '<div class="ag sb">' + vh('Site builder', 'Add a home first.') + '</div>';
+      if (!live()) return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium booking site for each home.') + '<p class="muted">Available in the live console and the demo.</p></div>';
+      if (!M) return '<div class="ag sb">' + vh('Site builder', 'Loading the design system\u2026') + '<div class="a-card ag-card sb-load"></div></div>';
+      const site = siteOf(p.id), sp = site && site.draft, pubd = site && site.published;
+      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.sections, pubd.copy]);
+      const dev = st.sb_dev || 'desk';
+      const status = !sp ? '' : pubd ? (dirty ? BB.pill('warn', 'Unpublished changes') : BB.pill('good', 'Live')) : BB.pill('muted', 'Draft');
+      const acts = sp ? (pubd ? '<button class="btn" data-ag="sb-unpublish">Use standard site</button>' : '') + '<a class="btn" href="' + PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=" target="_blank" rel="noopener">' + I('out') + 'Open preview</a>' +
+        '<button class="btn primary" data-ag="sb-publish"' + (pubd && !dirty ? ' disabled' : '') + '>' + I('send') + (pubd ? (dirty ? 'Publish changes' : 'Published') : 'Publish site') + '</button>' : '';
+      const tabsH = s.properties.length > 1 ? '<div class="ag-ptabs" role="tablist" aria-label="Homes">' + s.properties.map(x => { const sx = siteOf(x.id); return '<button type="button" role="tab" aria-selected="' + (x.id === p.id) + '" data-ag="sb-pid" data-v="' + x.id + '"><span><b>' + esc(x.name) + '</b><small>' + (sx && sx.published ? 'Live \xB7 ' + esc((M.directions[sx.published.direction] || {}).name) : sx && sx.draft ? 'Draft' : 'Not designed yet') + '</small></span></button>'; }).join('') + '</div>' : '';
+      const showBrief = !sp || st.sb_rebrief;
+      const left = st.sb_busy ? busy(inst) : showBrief ? briefCard(inst, p, !!sp) : panel(inst, p, site);
+      const src = sp ? PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=1&t=' + encodeURIComponent(sp.at || '') + (sp.direction + (sp.accent || '')) : '';
+      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
+          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + ' \xB7 ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
+          '<span class="sb-tools">' + ((site.history || []).length ? '<button class="btn sm ghost" data-ag="sb-undo">' + I('back') + 'Undo</button>' : '') + (!st.sb_rebrief ? '<button class="btn sm ghost" data-ag="sb-new">' + I('plus') + 'New design</button>' : '') + '</span></div>' +
+          (sp.note ? '<div class="ag-banner warn">' + I('bolt') + '<p>' + esc(sp.note) + '</p></div>' : '') +
+          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : 1360) + '"></div></div></div>'
+        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>Eight art directions, each with a tested type pairing and palette. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
+          '<ul>' + M.principles.slice(0, 4).map(x => '<li>' + I('check') + esc(x.split('. ')[0]) + '</li>').join('') + '</ul></div></div>';
+      return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium, direct-booking website for each home. Every page follows a tested design system, so it never looks like a template or like AI.', acts) + tabsH +
+        (pubd && !dirty ? '<div class="ag-banner good">' + I('check') + '<p>Live on <b class="mono">' + esc(p.domain || '') + '</b> since ' + ago(site.publishedAt) + '. Search engines see the same structured data as before.</p></div>' : '') +
+        '<div class="sb-cols">' + left + right + '</div></div>';
+    },
+    after: previewAfter,
+    click(ev, inst) { const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
+    input(ev, inst) {
+      const el = ev.target, f = el.dataset && el.dataset.agf; if (!f) return; const [sc, k] = f.split('.');
+      if (sc === 'sb' && k === 'ask') inst.st.sb_ask = el.value;
+      else if (sc === 'sb') { (inst.st.sb_brief = inst.st.sb_brief || {})[k] = el.value; }
+      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; if (!was) inst.render(); }
+    },
+    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
+    submit(ev, inst) { if (ev.target.dataset.agform === 'sb-ask') { ev.preventDefault(); H['sb-revise'](inst); } },
+  };
+
+  /* =====================================================================
+     FUNNELS
+     ===================================================================== */
+  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart' };
+  const STEP_NAME = { optin: 'Sign-up page', offer: 'Offer page', thanks: 'Thank-you page' };
+  const FH = {};
+  const fns = () => ((S().studio || {}).funnels) || [];
+  const linkOf = f => location.origin + (demo() ? '/demo/funnel/' + f.id + '/' + f.steps[0] : '/f/' + (BB.BOOT.slug || slugGuess()) + '/' + f.id);
+  function slugGuess() { const u = Object.values((BB.BOOT && BB.BOOT.siteUrls) || {})[0] || ''; const m = u.match(/\\/s\\/([^/]+)/); return m ? m[1] : 'host'; }
+  FH['fn-new'] = inst => inst.set({ fn_new: true, fn_tpl: null, fn_open: null });
+  FH['fn-cancel'] = inst => inst.set({ fn_new: false, fn_tpl: null });
+  FH['fn-tpl'] = (inst, v) => inst.set({ fn_tpl: v, fn_form: { pct: v === 'lastminute' ? 15 : 10, propertyId: S().properties[0].id, season: '', notes: '', code: '' } });
+  FH['fn-create'] = async inst => { const st = inst.st; if (st.fn_busy) return; st.fn_busy = true; inst.render(); const j = await call(inst, 'funnels/create', Object.assign({ template: st.fn_tpl }, st.fn_form)); st.fn_busy = false; if (j && j.funnel) { st.fn_new = false; st.fn_open = j.funnel.id; st.fn_step = j.funnel.steps[0]; BB.toast('Funnel ready. Preview it, then make it live.', 'good'); } inst.render(); };
+  FH['fn-open'] = (inst, v) => { const f = fns().find(x => x.id === v); inst.set({ fn_open: v, fn_step: f ? f.steps[0] : null, fn_new: false, fn_wd: null }); };
+  FH['fn-close'] = inst => inst.set({ fn_open: null });
+  FH['fn-step'] = (inst, v) => inst.set({ fn_step: v, fn_wd: null });
+  FH['fn-live'] = (inst, v, a) => call(inst, 'funnels/edit', { id: v, patch: { status: a.dataset.s } }, a.dataset.s === 'live' ? 'Live. Copy the link and share it anywhere.' : 'Paused');
+  FH['fn-del'] = (inst, v) => { if (inst.st.fn_del !== v) { inst.set({ fn_del: v }); return; } inst.st.fn_del = null; inst.st.fn_open = null; call(inst, 'funnels/delete', { id: v }, 'Funnel deleted'); };
+  FH['fn-copy'] = (inst, v) => { const f = fns().find(x => x.id === v); if (f) BB.copy(linkOf(f)); };
+  FH['fn-save'] = inst => { const st = inst.st, d = st.fn_wd || {}; const copy = Object.assign({}, d); if (d.points != null) copy.points = String(d.points).split('\\n').map(x => x.trim()).filter(Boolean); st.fn_wd = null; call(inst, 'funnels/edit', { id: st.fn_open, patch: { step: st.fn_step, copy } }, 'Saved'); };
+  FH['fn-dir'] = (inst, v) => call(inst, 'funnels/edit', { id: inst.st.fn_open, patch: { direction: v } });
+
+  function stats(f) {
+    const bk = S().bookings.filter(b => b.promo && f.code && b.promo === f.code && b.status !== 'cancelled');
+    const views = Object.values((f.stats || {}).views || {}).reduce((a, b) => a + b, 0), first = ((f.stats || {}).views || {})[f.steps[0]] || 0, leads = (f.stats || {}).leads || 0;
+    return { views, first, leads, bookings: bk.length, revenue: bk.reduce((a, b) => a + (b.total || 0), 0), rate: first ? Math.round(100 * (f.steps[0] === 'optin' ? leads : bk.length) / first) : 0 };
+  }
+  V.funnels = {
+    label: 'Funnels', group: 'Grow', icon: 'bolt', order: 25,
+    render(inst) {
+      const s = S(), st = inst.st, M = meta(inst);
+      if (!live()) return '<div class="ag sb">' + vh('Funnels', 'Focused pages that grow your guest list and fill dates.') + '</div>';
+      if (!M) return '<div class="ag sb">' + vh('Funnels', 'Loading\u2026') + '</div>';
+      const list = fns();
+      const head = vh('Funnels', 'Focused pages that grow your guest list and fill empty dates. Claude writes them in your site\u2019s style, and every sign-up lands in Guests.', st.fn_new || st.fn_open ? '' : '<button class="btn primary" data-ag="fn-new">' + I('plus') + 'New funnel</button>');
+      let main = '';
+      if (st.fn_new) {
+        const t = st.fn_tpl, f = st.fn_form || {};
+        main = '<section class="a-card ag-card"><div class="a-card-h"><h3>' + (t ? M.templates[t].name : 'What should this funnel do?') + '</h3><button class="btn sm ghost" data-ag="fn-cancel">' + I('x') + 'Cancel</button></div>' +
+          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' \xB7 ' + x.steps.map(z => STEP_NAME[z]).join(' \u2192 ') + '</em></button>').join('') + '</div>'
+            : '<p class="muted" style="margin:0 0 14px">' + esc(M.templates[t].blurb) + '</p><div class="sb-fform">' +
+              (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-agf="fn.propertyId">' + s.properties.map(p => '<option value="' + p.id + '"' + (f.propertyId === p.id ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
+              '<label class="field"><span>Discount for guests who book</span><select data-agf="fn.pct">' + [5, 10, 15, 20, 25].map(x => '<option' + (+f.pct === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></label>' +
+              '<label class="field"><span>Promo code <em class="muted">optional, we make one</em></span><input data-agf="fn.code" id="fn-code" class="mono" maxlength="14" value="' + esc(f.code || '') + '"></label>' +
+              (t === 'waitlist' ? '<label class="field"><span>Which season or event?</span><input data-agf="fn.season" id="fn-season" placeholder="Summer 2027, Christmas week, the Great North Run" value="' + esc(f.season || '') + '"></label>' : '') +
+              '<label class="field sb-wide"><span>Anything Claude should know?</span><textarea data-agf="fn.notes" id="fn-notes" rows="2" placeholder="Aim it at dog owners. Mention the new sauna.">' + esc(f.notes || '') + '</textarea></label></div>' +
+              '<div class="ag-acts-row"><button class="btn primary" data-ag="fn-create"' + (st.fn_busy ? ' disabled' : '') + '>' + I('spark') + (st.fn_busy ? 'Claude is writing your pages\u2026' : 'Create funnel') + '</button><button class="btn ghost" data-ag="fn-tpl" data-v="">Back</button></div>') + '</section>';
+      }
+      const open = list.find(x => x.id === st.fn_open);
+      if (open) {
+        const x = stats(open), step = open.steps.includes(st.fn_step) ? st.fn_step : open.steps[0], c = open.copy[step] || {}, d = st.fn_wd = st.fn_wd || {}; const val = k => d[k] != null ? d[k] : (k === 'points' ? (c.points || []).join('\\n') : c[k] || '');
+        const fld = (k, l, area) => '<label class="field"><span>' + l + '</span>' + (area ? '<textarea rows="' + (k === 'points' ? 3 : 2) + '" data-agf="fnw.' + k + '" id="fnw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input data-agf="fnw.' + k + '" id="fnw-' + k + '" value="' + esc(val(k)) + '">') + '</label>';
+        const fields = step === 'thanks' ? fld('headline', 'Headline') + fld('text', 'What happens next', 1) + fld('button', 'Button') : fld('eyebrow', 'Small line') + fld('headline', 'Headline') + fld('subhead', 'Subheading', 1) + fld('points', 'Benefits, one per line', 1) + fld('button', 'Button') + (step === 'optin' ? fld('fine', 'Consent line', 1) : fld('urgency', 'Why now'));
+        main += '<div class="sb-fdetail"><button type="button" class="ag-back" data-ag="fn-close">' + I('back') + 'All funnels</button>' +
+          '<div class="a-vh sb-fh"><div><h2 class="disp">' + esc(open.name) + '</h2><p>' + esc(M.templates[open.template].name) + (open.code ? ' \xB7 code <b class="mono">' + esc(open.code) + '</b> (' + open.pct + '% off)' : '') + '</p></div><div class="a-acts">' +
+          (open.status === 'live' ? '<button class="btn" data-ag="fn-copy" data-v="' + open.id + '">' + I('out') + 'Copy link</button><button class="btn" data-ag="fn-live" data-v="' + open.id + '" data-s="paused">Pause</button>' : '<button class="btn primary" data-ag="fn-live" data-v="' + open.id + '" data-s="live">' + I('send') + 'Make it live</button>') + '</div></div>' +
+          '<div class="sb-kpis"><div><small>Visitors</small><b class="num">' + x.first + '</b></div><div><small>Sign-ups</small><b class="num">' + x.leads + '</b></div><div><small>Bookings</small><b class="num">' + x.bookings + '</b></div><div><small>Revenue</small><b class="num">' + BB.money(x.revenue) + '</b></div><div><small>Conversion</small><b class="num">' + x.rate + '%</b></div></div>' +
+          '<div class="sb-cols"><div class="sb-panel"><div class="seg sb-tabs" role="group" aria-label="Pages">' + open.steps.map(k => '<button type="button" aria-pressed="' + (k === step) + '" data-ag="fn-step" data-v="' + k + '">' + STEP_NAME[k] + '</button>').join('') + '</div><div class="sb-tabbody">' + fields +
+          '<div class="sb-sticky"><button class="btn primary" data-ag="fn-save"' + (Object.keys(d).length ? '' : ' disabled') + '>' + I('check') + 'Save words</button></div>' +
+          '<div class="sb-q"><span class="eyebrow">Style</span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, dd]) => dirCard(k, dd, open.direction === k, 'fn-dir')).join('') + '</div></div>' +
+          '<button class="btn ghost danger" data-ag="fn-del" data-v="' + open.id + '">' + (st.fn_del === open.id ? 'Tap again to delete' : 'Delete funnel') + '</button></div></div>' +
+          '<div class="sb-stage"><div class="sb-dev desk"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(open.status === 'live' ? linkOf(open).replace(/^https?:\\/\\//, '') : 'Preview \xB7 draft') + '</span></div><div class="sb-slot" data-sb-slot data-w="1280" data-src="' + PRE() + 'funnel/' + open.id + '/' + step + '?bare=1&t=' + encodeURIComponent(JSON.stringify(c).length + open.direction) + '"></div></div></div></div></div>';
+      } else if (!st.fn_new) {
+        main += list.length ? '<div class="sb-flist">' + list.map(f => { const x = stats(f); return '<button type="button" class="a-card sb-frow" data-ag="fn-open" data-v="' + f.id + '"><span class="sb-tpl-i">' + I(TPL_ICON[f.template] || 'bolt') + '</span><span class="sb-fn"><b>' + esc(f.name) + '</b><small>' + esc(M.templates[f.template].name) + (f.code ? ' \xB7 ' + esc(f.code) : '') + '</small></span>' +
+          '<span class="sb-fs"><span><b class="num">' + x.first + '</b><small>visitors</small></span><span><b class="num">' + x.leads + '</b><small>sign-ups</small></span><span><b class="num">' + x.bookings + '</b><small>bookings</small></span></span>' + BB.pill(f.status === 'live' ? 'good' : f.status === 'paused' ? 'warn' : 'muted', f.status === 'live' ? 'Live' : f.status === 'paused' ? 'Paused' : 'Draft') + '</button>'; }).join('') + '</div>'
+          : '<div class="a-card ag-card sb-fempty"><span class="disp">Turn visitors into <em>guests</em></span><p class="muted">Most people who find you are not ready to book today. A funnel catches them: a free local guide, first pick of next summer, or a code for last-minute dates. Each sign-up joins your guest list, so your next campaign has someone to go to.</p><button class="btn primary" data-ag="fn-new">' + I('plus') + 'Create your first funnel</button></div>';
+      }
+      return '<div class="ag sb">' + head + main + '</div>';
+    },
+    after: previewAfter,
+    click(ev, inst) { const a = ev.target.closest('[data-ag]'); if (a && FH[a.dataset.ag]) { ev.preventDefault(); if (a.dataset.ag === 'fn-tpl' && !a.dataset.v) { inst.set({ fn_tpl: null }); return; } FH[a.dataset.ag](inst, a.dataset.v, a); } },
+    input(ev, inst) {
+      const el = ev.target, f = el.dataset && el.dataset.agf; if (!f) return; const [sc, k] = f.split('.');
+      if (sc === 'fn') { inst.st.fn_form[k] = el.value; if (el.tagName === 'SELECT') inst.render(); }
+      if (sc === 'fnw') { const was = Object.keys(inst.st.fn_wd || {}).length; (inst.st.fn_wd = inst.st.fn_wd || {})[k] = el.value; if (!was) inst.render(); }
+    },
+    change(ev, inst) { if (ev.target.tagName === 'SELECT') V.funnels.input(ev, inst); },
+  };
+})();
 ` }, "/app/web/src/app.css": { "t": `/* ========== Host console (app.js): frame, shared console classes and Run views ========== */
 .x-app { container: xapp / inline-size; --a-dim: 0%; --a-new: color-mix(in oklab, var(--primary) 30%, var(--surface)); --a-plat: #B3B9CC; --a-cal-l: 176px; --a-r: 16px; background: var(--bg); color: var(--fg); position: relative; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .x-app { --a-plat: #3B4579; --a-dim: 24%; } }
@@ -2295,6 +2567,7 @@ var require_bb_embedded_files = __commonJS({
       if (inst._scrollMsgs) { const el = inst.root.querySelector('#amsgs-' + inst.uid); if (el) { el.scrollTop = el.scrollHeight; inst._scrollMsgs = false; } }
       const tab = inst.root.querySelector('.a-strip [aria-current="page"]'), sw = inst.root.querySelector('.a-strip');
       if (tab && sw && inst._stripView !== inst.st.view) { inst._stripView = inst.st.view; const l = tab.offsetLeft - 16; if (l < sw.scrollLeft || tab.offsetLeft + tab.offsetWidth > sw.scrollLeft + sw.clientWidth) sw.scrollLeft = Math.max(0, l); }
+      { const v = V[inst.st.view]; if (v && v.after) v.after(inst); else if (BB.studioAfter) BB.studioAfter(inst); }
       if (inst._focus) { const el = inst.root.querySelector(inst._focus); inst._focus = null; if (el) { el.focus({ preventScroll: true }); try { const n = (el.value || '').length; el.setSelectionRange(n, n); } catch (_) {} } }
     },
   });
@@ -11902,7 +12175,7 @@ var require_config = __commonJS({
         GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL,
         addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
       }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
-      ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", serpapi: E.SERPAPI_KEY },
+      ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
       nuki: { token: E.NUKI_API_TOKEN },
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
       icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15)
@@ -12597,7 +12870,7 @@ var require_build = __commonJS({
     var crypto = __require("crypto");
     var S = path.join(__dirname, "src");
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
-    var MODS = ["site", "app", "app-grow", "mobile", "property", "guest"];
+    var MODS = ["site", "app", "app-grow", "app-studio", "mobile", "property", "guest"];
     function build() {
       const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css")]).join("\n");
       const core = [rd("store.js"), rd("store-ext.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
@@ -12753,7 +13026,7 @@ var require_seo = __commonJS({
     function sitemap(urls) {
       return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => "  <url><loc>" + esc(u.loc) + "</loc>" + (u.lastmod ? "<lastmod>" + u.lastmod + "</lastmod>" : "") + "</url>").join("\n") + "\n</urlset>\n";
     }
-    module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf };
+    module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf, reviewsOf };
   }
 });
 
@@ -15783,6 +16056,1340 @@ var require_effects = __commonJS({
   }
 });
 
+// server/studio/design.js
+var require_design = __commonJS({
+  "server/studio/design.js"(exports, module) {
+    var PRINCIPLES = [
+      "Commit to one clear aesthetic direction and carry it through every section. A site should feel designed for this home, not assembled from a template.",
+      "Typography leads. A characterful display face for headlines, a calm, readable text face for everything else, with strong contrast in size between them.",
+      "One dominant colour with a single sharp accent beats an even spread of colours. Accent is for actions and small moments, never for big blocks of text.",
+      "Generous negative space. Let photographs and headlines breathe; never crowd the first screen with badges, banners and buttons.",
+      "Vary the rhythm: alternate wide and narrow, light and deep, image-led and type-led sections so the page has pace.",
+      "Write like a person who knows the place: concrete, sensory, specific. No clich\xE9s (nestled, hidden gem, boasts, oasis, perfect getaway, home away from home).",
+      "Short headlines (under nine words) that make one promise. Body copy in short paragraphs. Every section earns its place.",
+      "One clear action everywhere: check dates and book direct. Remind guests that booking here skips the platform fee.",
+      "Motion is restrained and purposeful: one orchestrated reveal on load and gentle reveals as sections arrive. Nothing bounces, and reduced-motion is respected.",
+      "Accessible by default: real text contrast (WCAG AA), visible focus, readable sizes on phones, alt text on every photo.",
+      "Only state facts the host gave. Never invent prices, distances, awards, reviews or amenities."
+    ];
+    var CLICHES = ["nestled", "hidden gem", "boasts", "oasis", "perfect getaway", "home away from home", "look no further", "unwind and relax", "tranquil haven", "something for everyone", "whether you", "ideal base", "stunning", "breathtaking", "idyllic", "escape the hustle", "hustle and bustle", "elevate", "unparalleled", "world-class", "luxurious retreat", "a true haven", "in the heart of"];
+    var DIRECTIONS = {
+      linen: {
+        name: "Linen & Ink",
+        mood: "Quiet editorial. Big light serif headlines, bone paper, terracotta accent. Like a good travel magazine.",
+        suits: ["cottage", "townhouse", "barn", "any"],
+        fonts: { display: "Cormorant Garamond", text: "Jost", href: "family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500;600" },
+        disp: { weight: 500, track: "-0.015em", lead: 0.98, italic: true, case: "none", scale: 1.08 },
+        pal: { bg: "#F4EFE6", bg2: "#EBE4D7", ink: "#1E1B16", muted: "#5E574C", line: "#D8CFBF", accent: "#A4502E", accentInk: "#FFFFFF", deep: "#2A251F", deepInk: "#F4EFE6" },
+        shape: { radius: 0, button: 0, image: 0 },
+        heroes: ["editorial", "split", "cinematic"],
+        texture: "paper"
+      },
+      fell: {
+        name: "Fell & Slate",
+        mood: "Northern and grounded. Soft modern serif, moss and slate, warm wood accent. For cabins, lodges and fells.",
+        suits: ["cabin", "lodge", "hut", "any"],
+        fonts: { display: "Fraunces", text: "Hanken Grotesk", href: "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Hanken+Grotesk:wght@400;500;600" },
+        disp: { weight: 380, track: "-0.03em", lead: 0.96, italic: true, case: "none", scale: 1 },
+        pal: { bg: "#EEF0EA", bg2: "#E2E6DD", ink: "#17201A", muted: "#4F5A52", line: "#CDD3C8", accent: "#9C5B2E", accentInk: "#FFFFFF", deep: "#1D2A22", deepInk: "#EEF0EA" },
+        shape: { radius: 4, button: 999, image: 4 },
+        heroes: ["cinematic", "mosaic", "split"],
+        texture: "grain"
+      },
+      harbour: {
+        name: "Harbour Light",
+        mood: "Coastal and bright. Confident serif, whitewash and deep sea blue, a sand note. For seaside cottages and harbour flats.",
+        suits: ["beach", "cottage", "apartment", "any"],
+        fonts: { display: "DM Serif Display", text: "DM Sans", href: "family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400..600" },
+        disp: { weight: 400, track: "-0.02em", lead: 1, italic: true, case: "none", scale: 0.96 },
+        pal: { bg: "#F7F6F2", bg2: "#E9EEF0", ink: "#0D2836", muted: "#4A5E69", line: "#D3DDE1", accent: "#0F6E8C", accentInk: "#FFFFFF", deep: "#0D2836", deepInk: "#F7F6F2" },
+        shape: { radius: 14, button: 999, image: 14 },
+        heroes: ["split", "cinematic", "mosaic"],
+        texture: "none"
+      },
+      georgian: {
+        name: "Bath Stone",
+        mood: "Elegant and urban. High-contrast didone headlines, honey stone and ink, a bronze accent. For townhouses and city stays.",
+        suits: ["townhouse", "apartment", "any"],
+        fonts: { display: "Bodoni Moda", text: "Karla", href: "family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Karla:wght@400;500;600" },
+        disp: { weight: 500, track: "-0.02em", lead: 1, italic: true, case: "none", scale: 0.95 },
+        pal: { bg: "#F3ECE0", bg2: "#E8DECD", ink: "#241C14", muted: "#5F5345", line: "#D6C8B2", accent: "#8A5A2B", accentInk: "#FFFFFF", deep: "#241C14", deepInk: "#F3ECE0" },
+        shape: { radius: 0, button: 0, image: 0 },
+        heroes: ["editorial", "split", "cinematic"],
+        texture: "paper"
+      },
+      nocturne: {
+        name: "Nocturne",
+        mood: "Dark and luxurious. Thin, wide display type on near-black, brass accent, photographs that glow. For design-led and luxury stays.",
+        suits: ["luxury", "cabin", "apartment", "any"],
+        fonts: { display: "Italiana", text: "Manrope", href: "family=Italiana&family=Manrope:wght@400;500;600" },
+        disp: { weight: 400, track: "0.02em", lead: 1.02, italic: false, case: "uppercase", scale: 0.9 },
+        pal: { bg: "#121110", bg2: "#1B1A18", ink: "#EDE6DA", muted: "#A39B8E", line: "#33302B", accent: "#C9A46B", accentInk: "#121110", deep: "#EDE6DA", deepInk: "#121110" },
+        shape: { radius: 0, button: 0, image: 0 },
+        heroes: ["cinematic", "editorial", "mosaic"],
+        texture: "grain",
+        dark: true
+      },
+      modernist: {
+        name: "Modernist",
+        mood: "Architectural and graphic. Wide grotesque headlines, concrete grey, one hot accent. For contemporary builds and design homes.",
+        suits: ["modern", "apartment", "any"],
+        fonts: { display: "Syne", text: "Figtree", href: "family=Syne:wght@500..800&family=Figtree:wght@400;500;600" },
+        disp: { weight: 700, track: "-0.04em", lead: 0.92, italic: false, case: "none", scale: 0.92 },
+        pal: { bg: "#F1F1EE", bg2: "#E4E4E0", ink: "#111111", muted: "#55554F", line: "#CFCFC9", accent: "#C03A12", accentInk: "#FFFFFF", deep: "#111111", deepInk: "#F1F1EE" },
+        shape: { radius: 0, button: 0, image: 0 },
+        heroes: ["mosaic", "editorial", "cinematic"],
+        texture: "none"
+      },
+      meadow: {
+        name: "Meadow",
+        mood: "Warm and rustic. Rounded old-style serif, oat and olive, honest and generous. For barns, farm stays and shepherd\u2019s huts.",
+        suits: ["barn", "farm", "hut", "cottage", "any"],
+        fonts: { display: "Young Serif", text: "Work Sans", href: "family=Young+Serif&family=Work+Sans:wght@400;500;600" },
+        disp: { weight: 400, track: "-0.02em", lead: 1.02, italic: false, case: "none", scale: 0.92 },
+        pal: { bg: "#F5F0E4", bg2: "#EAE3D2", ink: "#2B281D", muted: "#5E5948", line: "#D9D0BB", accent: "#5E6E2E", accentInk: "#FFFFFF", deep: "#2F3322", deepInk: "#F5F0E4" },
+        shape: { radius: 10, button: 999, image: 10 },
+        heroes: ["split", "mosaic", "cinematic"],
+        texture: "paper"
+      },
+      sunlit: {
+        name: "Sunlit",
+        mood: "Bright and joyful. Chunky editorial serif, cream and tomato with a teal counterpoint. For family stays, seaside and summer.",
+        suits: ["beach", "family", "cottage", "any"],
+        fonts: { display: "Gloock", text: "Outfit", href: "family=Gloock&family=Outfit:wght@400;500;600" },
+        disp: { weight: 400, track: "-0.025em", lead: 0.98, italic: false, case: "none", scale: 0.98 },
+        pal: { bg: "#FFF8EE", bg2: "#FBEBD7", ink: "#221E1A", muted: "#5D554C", line: "#EAD9C2", accent: "#C2461C", accentInk: "#FFFFFF", deep: "#1F4F52", deepInk: "#FFF8EE" },
+        shape: { radius: 18, button: 999, image: 18 },
+        heroes: ["split", "mosaic", "cinematic"],
+        texture: "none"
+      }
+    };
+    var SECTIONS = {
+      hero: ["cinematic", "split", "editorial", "mosaic", "type"],
+      facts: ["ruled"],
+      story: ["lede", "pull"],
+      highlights: ["numbered", "panels"],
+      gallery: ["grid", "strip"],
+      amenities: ["columns"],
+      reviews: ["wall", "feature"],
+      area: ["itinerary"],
+      host: ["note"],
+      book: ["panel"],
+      faq: ["accordion"],
+      closing: ["banner"]
+    };
+    var ORDER = ["hero", "facts", "story", "highlights", "gallery", "amenities", "reviews", "area", "host", "book", "faq", "closing"];
+    var REQUIRED = ["hero", "book", "faq"];
+    var hexOk = (h) => /^#[0-9a-f]{6}$/i.test(String(h || ""));
+    function rgb(h) {
+      const n = parseInt(h.slice(1), 16);
+      return [n >> 16 & 255, n >> 8 & 255, n & 255];
+    }
+    function lum(h) {
+      return rgb(h).map((v) => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      }).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+    }
+    function contrast(a, b) {
+      const x = lum(a), y = lum(b);
+      return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+    }
+    function mix(a, b, t) {
+      const x = rgb(a), y = rgb(b);
+      return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("");
+    }
+    function palette(dir, accent) {
+      const d = DIRECTIONS[dir] || DIRECTIONS.linen;
+      const p = Object.assign({}, d.pal);
+      if (hexOk(accent) && contrast(accent, p.bg) >= 3.2) {
+        p.accent = accent.toUpperCase();
+        p.accentInk = contrast("#FFFFFF", accent) >= 4.5 ? "#FFFFFF" : contrast("#111111", accent) >= 4.5 ? "#111111" : null;
+        if (!p.accentInk) Object.assign(p, { accent: d.pal.accent, accentInk: d.pal.accentInk });
+      }
+      let at = p.accent, guard = 0;
+      while (contrast(at, p.bg) < 4.5 && guard++ < 20) at = mix(at, d.dark ? "#FFFFFF" : "#000000", 0.08);
+      p.accentText = at;
+      let ad = p.accent;
+      guard = 0;
+      while (contrast(ad, p.deep) < 4.5 && guard++ < 30) ad = mix(ad, p.deepInk, 0.08);
+      p.accentDeep = ad;
+      const strong = contrast(p.accent, p.deep) >= 3;
+      p.deepBtn = strong ? p.accent : p.deepInk;
+      p.deepBtnInk = strong ? p.accentInk : p.deep;
+      return p;
+    }
+    function qa(spec, facts) {
+      const p = palette(spec.direction, spec.accent);
+      const c = spec.copy || {};
+      const words = (s) => String(s || "").trim().split(/\s+/).filter(Boolean).length;
+      const all = JSON.stringify(c).toLowerCase();
+      const found = CLICHES.filter((x) => all.includes(x));
+      const types = (spec.sections || []).map((s) => s.type);
+      const imgHero = ["cinematic", "split", "mosaic", "editorial"].includes((spec.sections.find((s) => s.type === "hero") || {}).variant);
+      return [
+        { ok: contrast(p.ink, p.bg) >= 7, label: "Body text contrast is AAA (" + contrast(p.ink, p.bg).toFixed(1) + ":1)" },
+        { ok: contrast(p.accentInk, p.accent) >= 4.5, label: "Buttons pass WCAG AA contrast (" + contrast(p.accentInk, p.accent).toFixed(1) + ":1)" },
+        { ok: contrast(p.muted, p.bg) >= 4.5, label: "Secondary text passes WCAG AA" },
+        { ok: words(c.headline) > 0 && words(c.headline) <= 9, label: "Headline makes one promise in under nine words", fix: "Shorten the headline" },
+        { ok: !found.length, label: found.length ? "Clich\xE9 words found: " + found.join(", ") : "No clich\xE9s or filler words", fix: "Rewrite without them" },
+        { ok: REQUIRED.every((t) => types.includes(t)), label: "Has a hero, a booking section and answers to guest questions" },
+        { ok: new Set(types).size === types.length, label: "Every section appears once" },
+        { ok: types.length >= 6 && types.length <= 12, label: "Page has pace: " + types.length + " sections" },
+        { ok: !imgHero || (facts.photos || []).length > 0, label: imgHero ? "Hero has a real photograph" : "Type-led hero (add photos for an image-led design)", fix: "Add photos in Website & SEO" },
+        { ok: (facts.photos || []).length >= 6 || !types.includes("gallery"), label: types.includes("gallery") ? "Gallery has at least 6 photos (" + (facts.photos || []).length + ")" : "No gallery until there are enough photos", fix: "Add more photos" },
+        { ok: (facts.photos || []).every((x) => x.alt || x.cap) || !(facts.photos || []).length, label: "Every photo has alt text" },
+        { ok: !!(c.seoTitle && c.seoTitle.length <= 62 && c.seoDescription && c.seoDescription.length <= 160), label: "Search title and description fit Google\u2019s limits" }
+      ];
+    }
+    module.exports = { PRINCIPLES, CLICHES, DIRECTIONS, SECTIONS, ORDER, REQUIRED, palette, contrast, mix, hexOk, qa };
+  }
+});
+
+// server/studio/render.js
+var require_render = __commonJS({
+  "server/studio/render.js"(exports, module) {
+    var D = require_design();
+    var { esc } = require_pages();
+    var seo = require_seo();
+    var money = (n) => "\xA3" + Number(n || 0).toLocaleString("en-GB");
+    var plural = (n, w, pl) => n + " " + (n === 1 ? w : pl || w + "s");
+    var town = (p) => String(p.area || "").split(",")[0].trim();
+    var KIND = { cabin: "cabin", lake: "cottage", city: "townhouse" };
+    function facts(s, p, o) {
+      o = o || {};
+      const guide = (p.guide || []).map((l) => String(l).split("|").map((x) => x.trim())).filter((x) => x[0]).map((x) => ({ place: x[0], far: x[1] || "", tip: x[2] || "" }));
+      let photos = (p.photos || []).filter((x) => x && x.url).map((x, i) => ({ url: x.url, cap: x.cap || "", alt: x.cap || p.name + ", photo " + (i + 1) }));
+      if (!photos.length && o.samplePhotos) photos = o.samplePhotos;
+      const reviews = seo.reviewsOf ? seo.reviewsOf(s, p) : [];
+      return {
+        id: p.id,
+        name: p.name,
+        short: p.short || p.name,
+        area: p.area || "",
+        town: town(p),
+        kind: KIND[p.theme] || "holiday let",
+        theme: p.theme,
+        headline: p.headline || "",
+        sub: p.sub || "",
+        about: p.about || "",
+        hostNote: p.hostNote || "",
+        nightly: +p.nightly || 0,
+        weekend: +p.weekend || 0,
+        cleaning: +p.cleaning || 0,
+        minNights: +p.minNights || 1,
+        maxGuests: +p.maxGuests || 2,
+        bedrooms: +p.bedrooms || 1,
+        baths: +p.baths || 1,
+        pets: !!p.petsAllowed,
+        petFee: +p.petFee || 0,
+        checkin: p.checkinTime || "4pm",
+        checkout: p.checkoutTime || "10am",
+        parking: p.parking || "",
+        amenities: (p.amenities || []).slice(0, 30),
+        rules: (p.rules || []).slice(0, 12),
+        guide,
+        photos,
+        rating: p.rating || 0,
+        reviewCount: p.reviews || 0,
+        reviews,
+        business: s.account.business,
+        owner: String(s.account.owner || "").split(" ")[0],
+        live: !!s.live,
+        faqs: seo.faqsOf(s, p)
+      };
+    }
+    var GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+    function css(dir, pal) {
+      const d = D.DIRECTIONS[dir] || D.DIRECTIONS.linen;
+      const v = "--bg:" + pal.bg + ";--bg2:" + pal.bg2 + ";--ink:" + pal.ink + ";--mut:" + pal.muted + ";--line:" + pal.line + ";--ac:" + pal.accent + ";--acInk:" + pal.accentInk + ";--acT:" + pal.accentText + ";--acD:" + pal.accentDeep + ";--dBtn:" + pal.deepBtn + ";--dBtnI:" + pal.deepBtnInk + ";--deep:" + pal.deep + ";--deepInk:" + pal.deepInk + ";--fd:'" + d.fonts.display + "',Georgia,serif;--ft:'" + d.fonts.text + "',system-ui,sans-serif;--dw:" + d.disp.weight + ";--dt:" + d.disp.track + ";--dl:" + d.disp.lead + ";--dc:" + d.disp.case + ";--ds:" + d.disp.scale + ";--r:" + d.shape.radius + "px;--rb:" + d.shape.button + "px;--ri:" + d.shape.image + "px;--deepMut:" + D.mix(pal.deepInk, pal.deep, 0.32) + ";--deepLine:" + D.mix(pal.deepInk, pal.deep, 0.78);
+      return ":root{" + v + ";color-scheme:" + (d.dark ? "dark" : "light") + "}" + BASE + (d.texture === "grain" ? "body::after{opacity:.06}" : d.texture === "paper" ? "body::after{opacity:.045}" : "body::after{display:none}");
+    }
+    var BASE = `
+*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--ft);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;background-image:${GRAIN};mix-blend-mode:multiply}
+img{display:block;max-width:100%}a{color:inherit}button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--bg);padding:10px 14px;z-index:100}.skip:focus{left:8px}
+.w{width:100%;max-width:1320px;margin:0 auto;padding-inline:clamp(20px,5vw,64px)}
+.disp{font-family:var(--fd);font-weight:var(--dw);letter-spacing:var(--dt);line-height:var(--dl);text-transform:var(--dc);font-optical-sizing:auto;margin:0;text-wrap:balance}
+.disp em{font-style:italic;color:var(--acT)}
+.h1{font-size:calc(clamp(3rem,7.6vw,7.4rem) * var(--ds))}.h2{font-size:calc(clamp(2.3rem,4.8vw,4.4rem) * var(--ds))}.h3{font-size:calc(clamp(1.45rem,2.2vw,1.9rem) * var(--ds));line-height:1.12}
+.eb{display:inline-flex;align-items:center;gap:12px;font:600 12px/1 var(--ft);letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin:0 0 22px}
+.eb::before{content:"";width:28px;height:1px;background:currentColor;opacity:.7}
+.lede{font-size:clamp(1.12rem,1.5vw,1.3rem);line-height:1.6;color:var(--mut);max-width:38em;margin:0}
+p{margin:0 0 1.1em}.mut{color:var(--mut)}.num{font-variant-numeric:tabular-nums lining-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border-radius:var(--rb);background:var(--ac);color:var(--acInk);font-weight:600;font-size:15px;letter-spacing:.02em;text-decoration:none;border:1px solid var(--ac);cursor:pointer;transition:transform .35s cubic-bezier(.2,.7,.1,1),background .3s,box-shadow .35s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -14px color-mix(in srgb,var(--ac) 80%,transparent)}
+.btn.gh{background:transparent;color:inherit;border-color:currentColor}.btn.gh:hover{background:color-mix(in srgb,currentColor 8%,transparent);box-shadow:none}
+.btn svg{width:18px;height:18px}
+.sec{padding-block:clamp(84px,11vw,168px);position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,color .4s}
+.nav .w{display:flex;align-items:center;justify-content:space-between;gap:24px;height:78px}
+.nav .wm{font-family:var(--fd);font-weight:var(--dw);font-size:calc(1.55rem * var(--ds));letter-spacing:var(--dt);text-transform:var(--dc);text-decoration:none;white-space:nowrap}
+.nav ul{display:flex;gap:30px;list-style:none;margin:0;padding:0}.nav li a{text-decoration:none;font-size:14px;font-weight:500;letter-spacing:.04em;opacity:.82}.nav li a:hover{opacity:1}
+.nav .btn{min-height:42px;padding:0 20px;font-size:14px}
+.nav.ov{color:#fff}.nav.ov .btn{background:#fff;color:#111;border-color:#fff}
+.nav.solid{background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px);color:var(--ink);box-shadow:0 1px 0 var(--line)}
+.nav.solid .btn{background:var(--ac);color:var(--acInk);border-color:var(--ac)}
+@media(max-width:900px){.nav ul{display:none}}
+/* hero */
+.hero{position:relative}.hero .ln{display:block;overflow:hidden;padding-bottom:.06em}.hero .ln>span{display:block}
+.js .hero .ln>span{animation:rise 1.25s cubic-bezier(.16,.84,.2,1) both}.js .hero .ln:nth-child(2)>span{animation-delay:.12s}.js .hero .ln:nth-child(3)>span{animation-delay:.24s}
+.js .hero .fade{animation:fade 1.4s .45s cubic-bezier(.2,.7,.1,1) both}.js .hero .zoom{animation:zoom 2.6s cubic-bezier(.2,.7,.1,1) both}
+@keyframes rise{from{transform:translateY(105%)}to{transform:none}}@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}@keyframes zoom{from{transform:scale(1.08)}to{transform:scale(1)}}
+.h-cin{min-height:max(640px,100svh);display:flex;align-items:flex-end;color:#fff;overflow:hidden;isolation:isolate}
+.h-cin .bgimg{position:absolute;inset:0;z-index:-2}.h-cin .bgimg img{width:100%;height:100%;object-fit:cover}
+.h-cin::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 46%,rgba(0,0,0,.62) 100%)}
+.h-cin .w{display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px;padding-bottom:clamp(44px,7vw,92px)}
+.h-cin .eb{color:rgba(255,255,255,.86)}.h-cin .lede{color:rgba(255,255,255,.86);margin-top:26px}.h-cin .disp em{color:inherit}
+.pill{display:flex;align-items:center;gap:22px;padding:14px 14px 14px 26px;border-radius:var(--rb);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#fff;white-space:nowrap}
+.pill small{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}.pill b{font:var(--dw) 1.7rem/1 var(--fd)}.pill .btn{background:#fff;color:#111;border-color:#fff}
+@media(max-width:820px){.h-cin .w{grid-template-columns:1fr}.pill{justify-self:start}}
+.h-split{padding-top:132px;padding-bottom:clamp(60px,8vw,110px)}.h-split .w{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(36px,6vw,96px);align-items:center}
+.h-split .lede{margin-top:28px}.h-split .acts{margin-top:40px}
+.frame{position:relative}.frame img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--ri)}
+.frame::before{content:"";position:absolute;inset:22px -22px -22px 22px;border:1px solid var(--ac);border-radius:var(--ri);z-index:-1;opacity:.55}
+.frame figcaption{position:absolute;left:-1px;bottom:28px;background:var(--bg);padding:10px 16px;font-size:13px;color:var(--mut);letter-spacing:.02em}
+@media(max-width:900px){.h-split .w{grid-template-columns:1fr}.h-split{padding-top:110px}.frame::before{inset:14px -10px -14px 10px}}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}.acts .note{font-size:14px;color:var(--mut)}
+.h-ed{padding-top:150px}.h-ed .top{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;align-items:end}
+.h-ed .disp{grid-column:1/-1;font-size:calc(clamp(3.2rem,9.4vw,9.6rem) * var(--ds))}.h-ed .meta{grid-column:1/6;margin-top:40px}.h-ed .meta .acts{margin-top:30px}
+.h-ed .img{grid-column:6/-1;margin-top:40px}.h-ed .img img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:var(--ri)}
+.h-ed figcaption{display:flex;justify-content:space-between;gap:16px;font-size:13px;color:var(--mut);padding-top:12px;border-top:1px solid var(--line);margin-top:14px}
+@media(max-width:900px){.h-ed .meta,.h-ed .img{grid-column:1/-1}}
+.h-mos{padding-top:128px;padding-bottom:clamp(50px,7vw,100px)}.h-mos .w{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(30px,5vw,80px);align-items:center}
+.mos{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1fr 1fr;gap:14px;height:min(78vh,720px)}.mos img{width:100%;height:100%;object-fit:cover;border-radius:var(--ri)}.mos img:first-child{grid-row:1/3}
+.h-mos .lede{margin-top:26px}.h-mos .acts{margin-top:36px}
+@media(max-width:900px){.h-mos .w{grid-template-columns:1fr}.mos{height:auto;grid-template-rows:auto}.mos img{aspect-ratio:1}.mos img:first-child{grid-row:auto;grid-column:1/-1;aspect-ratio:4/3}}
+.h-type{min-height:max(620px,94svh);display:flex;align-items:flex-end;background:var(--deep);color:var(--deepInk);overflow:hidden;isolation:isolate}
+.h-type .art{position:absolute;inset:auto 0 0 0;z-index:-1;color:var(--acD);opacity:.9}.h-type .art svg{width:100%;height:auto;display:block}
+.h-type .w{padding-bottom:clamp(170px,22vw,300px);padding-top:150px}.h-type .eb{color:var(--deepMut)}.h-type .lede{color:var(--deepMut);margin-top:26px}.h-type .disp em{color:var(--acD)}
+.h-type .acts{margin-top:36px}.h-type .btn:not(.gh),.sec.dk .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}.h-type .btn.gh{color:var(--deepInk)}
+/* facts */
+.facts{border-block:1px solid var(--line)}.facts ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.facts li{padding:30px 24px 28px;border-left:1px solid var(--line)}.facts li:first-child{border-left:0;padding-left:0}
+.facts b{display:block;font:var(--dw) calc(2.4rem * var(--ds))/1 var(--fd);letter-spacing:var(--dt);text-transform:var(--dc)}.facts span{display:block;margin-top:10px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+@media(max-width:700px){.facts li{border-left:0;border-top:1px solid var(--line);padding-left:0}.facts li:first-child{border-top:0}}
+/* story */
+.st-lede .w{display:grid;grid-template-columns:5fr 7fr;gap:clamp(30px,6vw,110px)}.st-lede .txt{column-gap:48px}.st-pull .txt.cols{columns:2 300px}.st-pull .txt:not(.cols){max-width:34em;text-align:center}
+.st-lede .txt p:first-child::first-letter{float:left;font:var(--dw) 4.6em/.82 var(--fd);padding:.06em .1em 0 0;color:var(--acT)}
+.st-pull{text-align:center}.st-pull blockquote{margin:0 auto;max-width:18em;font-size:calc(clamp(2rem,4.2vw,3.8rem) * var(--ds))}.st-pull .txt{max-width:720px;margin:56px auto 0;text-align:left;columns:2 300px;column-gap:48px}
+@media(max-width:900px){.st-lede .w{grid-template-columns:1fr}}
+/* highlights */
+.hl-num .hd{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:64px}.hl-num ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border-top:1px solid var(--line)}
+.hl-num li{padding:34px 34px 10px 0;border-right:1px solid var(--line);margin-right:34px}.hl-num li:last-child{border-right:0}
+.hl-num .n{font:var(--dw) 3.4rem/1 var(--fd);color:var(--acT);display:block;margin-bottom:28px;font-variant-numeric:lining-nums}
+.hl-num h3{margin-bottom:12px}
+@media(max-width:700px){.hl-num li{border-right:0;border-bottom:1px solid var(--line);margin-right:0}}
+.hl-pan .row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,100px);align-items:center}.hl-pan .row+.row{margin-top:clamp(70px,9vw,140px)}
+.hl-pan .row:nth-child(even) .pic{order:2}.hl-pan .pic img{width:100%;aspect-ratio:5/4;object-fit:cover;border-radius:var(--ri)}.hl-pan .n{font-size:13px;letter-spacing:.18em;color:var(--acT);font-weight:600;display:block;margin-bottom:22px}
+.hl-pan h3{font-size:calc(clamp(1.9rem,3.4vw,3rem) * var(--ds));margin-bottom:20px}
+@media(max-width:900px){.hl-pan .row{grid-template-columns:1fr}.hl-pan .row:nth-child(even) .pic{order:0}}
+/* gallery */
+.gal .hd{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:48px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(130px,13vw,200px);gap:14px}
+.grid button{padding:0;border:0;background:none;cursor:zoom-in;overflow:hidden;border-radius:var(--ri)}.grid img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}.grid button:hover img{transform:scale(1.04)}
+.grid button:nth-child(7n+1){grid-column:span 4;grid-row:span 3}.grid button:nth-child(7n+2){grid-column:span 2;grid-row:span 2}.grid button:nth-child(7n+3){grid-column:span 2;grid-row:span 1}
+.grid button:nth-child(7n+4),.grid button:nth-child(7n+5),.grid button:nth-child(7n+6){grid-column:span 2;grid-row:span 2}.grid button:nth-child(7n+7){grid-column:span 6;grid-row:span 3}
+@media(max-width:760px){.grid{grid-template-columns:1fr 1fr;grid-auto-rows:150px}.grid button:nth-child(n){grid-column:span 1;grid-row:span 1}.grid button:nth-child(3n+1){grid-column:span 2;grid-row:span 2}}
+.strip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:clamp(20px,5vw,64px);scrollbar-width:none}.strip::-webkit-scrollbar{display:none}
+.strip figure{margin:0;flex:0 0 min(78vw,760px);scroll-snap-align:center}.strip img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:var(--ri)}.strip figcaption{font-size:13px;color:var(--mut);padding-top:12px}
+dialog.lb{border:0;padding:0;background:transparent;max-width:min(94vw,1500px);max-height:92vh}dialog.lb::backdrop{background:rgba(10,10,10,.9)}dialog.lb img{max-height:88vh;width:auto;margin:auto}
+dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
+/* amenities */
+.am .w{display:grid;grid-template-columns:4fr 8fr;gap:clamp(30px,6vw,110px)}.am ul{list-style:none;margin:0;padding:0;columns:2 220px;column-gap:40px}
+.am li{break-inside:avoid;padding:15px 0;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:baseline}.am li::before{content:"";flex:0 0 7px;height:7px;border-radius:50%;background:var(--ac);transform:translateY(-2px)}
+.am .tm{margin-top:42px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}.am .tm div{padding:20px;border:1px solid var(--line);border-radius:var(--r)}.am .tm b{display:block;font:var(--dw) 1.5rem/1.1 var(--fd)}.am .tm span{font-size:13px;color:var(--mut)}
+.am .rules{margin-top:34px;font-size:15px;color:var(--mut)}.am .rules li{border:0;padding:6px 0}.am .rules li::before{background:var(--line)}
+@media(max-width:900px){.am .w{grid-template-columns:1fr}}
+/* reviews */
+.rv .score{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap;margin-bottom:64px}.rv .score b{font:var(--dw) calc(clamp(4rem,9vw,8rem) * var(--ds))/.9 var(--fd);letter-spacing:var(--dt)}
+.stars{color:var(--acT);letter-spacing:.12em;font-size:15px}
+.wall{columns:3 300px;column-gap:24px}.wall figure{break-inside:avoid;margin:0 0 24px;padding:34px;border:1px solid var(--line);border-radius:var(--r);background:color-mix(in srgb,var(--bg) 70%,var(--bg2))}
+.wall blockquote{margin:16px 0 20px;font-size:17px;line-height:1.6}.wall figcaption{font-size:14px;color:var(--mut)}
+.feat blockquote{margin:0;font-size:calc(clamp(1.9rem,3.6vw,3.3rem) * var(--ds));max-width:22em}.feat figcaption{margin-top:30px;color:var(--mut)}.feat .more{margin-top:70px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:40px;border-top:1px solid var(--line);padding-top:40px}
+.feat .more blockquote{font:400 16px/1.6 var(--ft);margin:10px 0}
+/* area */
+.ar .w{display:grid;grid-template-columns:4fr 8fr;gap:clamp(30px,6vw,110px)}.ar ol{list-style:none;margin:0;padding:0;counter-reset:a}
+.ar li{display:grid;grid-template-columns:1fr auto;gap:6px 30px;padding:26px 0;border-bottom:1px solid var(--line)}.ar li:first-child{border-top:1px solid var(--line)}
+.ar li b{font:var(--dw) calc(1.65rem * var(--ds))/1.15 var(--fd);letter-spacing:var(--dt);text-transform:var(--dc)}.ar li .far{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--acT);font-weight:600;align-self:center}
+.ar li p{grid-column:1/-1;margin:0;color:var(--mut)}
+@media(max-width:900px){.ar .w{grid-template-columns:1fr}}
+/* host */
+.ho .w{display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,5vw,70px);align-items:center;max-width:1040px}
+.mono{width:clamp(96px,12vw,150px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:var(--ac);color:var(--acInk);font:var(--dw) calc(clamp(2.4rem,4vw,3.6rem) * var(--ds))/1 var(--fd)}
+.ho blockquote{margin:0 0 18px;font-size:calc(clamp(1.6rem,2.8vw,2.5rem) * var(--ds))}
+@media(max-width:640px){.ho .w{grid-template-columns:1fr}}
+/* booking */
+.bk .w{display:grid;grid-template-columns:5fr 6fr;gap:clamp(30px,6vw,100px);align-items:start}
+.bk .save{margin-top:34px;padding:22px 24px;border:1px solid var(--deepLine);border-radius:var(--r);font-size:15px}.bk .save b{color:var(--deepInk)}
+.card{background:var(--bg);color:var(--ink);border-radius:max(var(--r),6px);padding:clamp(20px,3vw,34px);box-shadow:0 40px 80px -40px rgba(0,0,0,.45)}
+.card h3{font:600 15px/1.3 var(--ft);margin:0 0 14px;display:flex;justify-content:space-between;align-items:center}
+.cal{display:grid;grid-template-columns:1fr 1fr;gap:26px}.cal .mo b{display:block;text-align:center;font-weight:600;font-size:14px;margin-bottom:10px}
+.cal .dw,.cal .dd{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}.cal .dw span{font-size:11px;color:var(--mut);letter-spacing:.08em;padding-bottom:6px}
+.cal .dd button{aspect-ratio:1;border:0;background:none;font-size:14px;border-radius:999px;cursor:pointer;position:relative;font-variant-numeric:tabular-nums}
+.cal .dd button:hover:not(:disabled):not(.a):not(.b){background:var(--bg2)}.cal .dd button:disabled{color:color-mix(in srgb,var(--mut) 55%,transparent);text-decoration:line-through;cursor:not-allowed}
+.cal .dd button.in{background:color-mix(in srgb,var(--ac) 16%,transparent);border-radius:0}.cal .dd button.a,.cal .dd button.b{background:var(--ac);color:var(--acInk)}
+.cal .nv{display:flex;gap:8px}.cal-btn{width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:none;cursor:pointer}
+@media(max-width:560px){.cal{grid-template-columns:1fr}.cal .mo+.mo{display:none}}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.fr label{display:grid;gap:6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.fr input,.fr select{min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:max(var(--r),6px);background:var(--bg);font-size:16px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)}
+.fr .full{grid-column:1/-1}.chk{display:flex!important;gap:10px;align-items:flex-start;text-transform:none!important;letter-spacing:0!important;font-weight:400!important;font-size:14px!important;color:var(--mut)}.chk input{min-height:0;margin-top:3px}
+.qt{margin-top:18px;border-top:1px solid var(--line);padding-top:14px;font-size:15px}.qt div{display:flex;justify-content:space-between;padding:4px 0}.qt .tot{font-weight:600;font-size:17px;border-top:1px solid var(--line);margin-top:8px;padding-top:12px}
+.qt .err{color:#B3261E}.card .btn{width:100%;margin-top:18px}.card .btn+.btn{margin-top:10px}.card .fine{font-size:13px;color:var(--mut);margin:12px 0 0;text-align:center}
+.ok{padding:30px 6px;text-align:center}.ok b{display:block;font:var(--dw) 2rem/1.1 var(--fd);margin-bottom:10px}
+@media(max-width:900px){.bk .w{grid-template-columns:1fr}}
+/* faq */
+.fq .w{display:grid;grid-template-columns:4fr 8fr;gap:clamp(30px,6vw,110px)}.fq details{border-bottom:1px solid var(--line)}.fq details:first-child{border-top:1px solid var(--line)}
+.fq summary{list-style:none;cursor:pointer;padding:24px 44px 24px 0;position:relative;font:var(--dw) calc(1.3rem * var(--ds))/1.3 var(--fd);letter-spacing:var(--dt)}.fq summary::-webkit-details-marker{display:none}
+.fq summary::after{content:"";position:absolute;right:6px;top:50%;width:14px;height:14px;margin-top:-7px;background:linear-gradient(currentColor,currentColor) center/14px 1.5px no-repeat,linear-gradient(currentColor,currentColor) center/1.5px 14px no-repeat;transition:transform .35s}
+.fq details[open] summary::after{transform:rotate(45deg)}.fq details p{color:var(--mut);padding-bottom:22px;margin:0;max-width:44em}
+@media(max-width:900px){.fq .w{grid-template-columns:1fr}}
+/* closing + footer */
+.cl{position:relative;min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;overflow:hidden;isolation:isolate}.cl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.cl::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:-1}.cl.np{background:var(--ac);color:var(--acInk)}.cl.np::before{display:none}.cl .disp{max-width:14em;margin:0 auto 34px}.cl .btn{background:#fff;color:#111;border-color:#fff}
+.ft{background:var(--deep);color:var(--deepInk);padding:clamp(70px,9vw,120px) 0 40px}.ft .big{font-size:calc(clamp(3rem,10vw,10rem) * var(--ds));margin-bottom:60px}
+.ft .cols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;border-top:1px solid var(--deepLine);padding-top:26px;font-size:14px;color:var(--deepMut)}.ft a{text-decoration:none}.ft a:hover{text-decoration:underline}
+.mbar{display:none}
+@media(max-width:820px){.mbar{display:flex;position:fixed;left:12px;right:12px;bottom:12px;z-index:60;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 20px;border-radius:max(var(--rb),12px);background:var(--ink);color:var(--bg);box-shadow:0 18px 40px -16px rgba(0,0,0,.5);transform:translateY(140%);transition:transform .5s cubic-bezier(.2,.7,.1,1)}.mbar.on{transform:none}.mbar b{font:var(--dw) 1.3rem/1 var(--fd)}.mbar small{display:block;font-size:12px;opacity:.75}.mbar .btn{min-height:44px}body{padding-bottom:0}}
+/* funnel pages */
+.fn-hero{padding-top:130px;padding-bottom:clamp(60px,8vw,110px)}.fn-hero .w{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,6vw,90px);align-items:center}
+.fn-hero .lede{margin-top:26px}.fn-form{margin-top:34px;display:grid;gap:12px;max-width:520px}.fn-form .fr{margin:0}
+.fn-pts{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:12px}.fn-pts li{display:flex;gap:14px;align-items:baseline}.fn-pts li::before{content:"";flex:0 0 8px;height:8px;border-radius:50%;background:var(--ac)}
+.code{display:inline-block;margin:18px 0 6px;padding:14px 22px;border:1.5px dashed var(--ac);border-radius:var(--r);font:600 1.6rem/1 var(--ft);letter-spacing:.14em;color:var(--acT)}
+.urg{display:inline-flex;gap:10px;align-items:center;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--acT)}
+@media(max-width:900px){.fn-hero .w{grid-template-columns:1fr}}
+/* reveal */
+.js [data-rv]{opacity:0;transform:translateY(26px);transition:opacity 1.1s cubic-bezier(.2,.7,.1,1),transform 1.1s cubic-bezier(.2,.7,.1,1)}.js [data-rv].in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js [data-rv]{opacity:1;transform:none}html{scroll-behavior:auto}}
+`;
+    function art(kind) {
+      const s = 'fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"';
+      if (/beach|lake|harbour|cottage/.test(kind) && kind !== "cottage") return '<svg viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true"><path ' + s + ' d="M0 150 C120 130 240 170 360 150 S600 130 720 150 960 170 1080 150 1320 130 1440 150"/><path ' + s + ' opacity=".6" d="M0 195 C140 178 260 210 400 195 S660 178 800 195 1060 210 1200 195 1360 182 1440 190"/><path ' + s + ' opacity=".35" d="M0 240 C160 226 300 252 460 240 S760 226 920 240 1220 252 1440 236"/><circle ' + s + ' cx="1110" cy="70" r="34"/></svg>';
+      if (/town|apartment|city/.test(kind)) return '<svg viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true"><path ' + s + ' d="M0 300 V210 H90 V150 L130 120 L170 150 V210 H250 V130 H330 V210 H420 V90 L470 60 L520 90 V210 H610 V160 H700 V100 H760 V160 H850 V210 H960 V120 L1010 80 L1060 120 V210 H1150 V150 H1240 V200 H1330 V140 L1385 110 L1440 140 V300"/><path ' + s + ' opacity=".4" d="M0 250 H1440"/></svg>';
+      return '<svg viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true"><path ' + s + ' d="M0 260 L180 120 L300 200 L470 60 L640 210 L760 140 L930 250 L1080 110 L1250 220 L1440 130"/><path ' + s + ' opacity=".55" d="M0 290 L220 190 L380 250 L560 160 L760 270 L980 180 L1180 270 L1440 200"/><circle ' + s + ' opacity=".8" cx="1180" cy="64" r="30"/></svg>';
+    }
+    var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    function headline(c, cls) {
+      const raw = String(c || "").trim();
+      const parts = raw.includes("\n") ? raw.split("\n") : [raw];
+      const fmt = (t) => esc(t).replace(/\*([^*]{1,40})\*/, "<em>$1</em>").replace(/\*/g, "");
+      return '<h1 class="disp ' + (cls || "h1") + '">' + parts.slice(0, 3).map((x) => '<span class="ln"><span>' + fmt(x) + "</span></span>").join("") + "</h1>";
+    }
+    var fmtInline = (t) => esc(t).replace(/\*([^*]{1,40})\*/, "<em>$1</em>").replace(/\*/g, "");
+    var img = (ph, attrs) => ph ? '<img src="' + esc(ph.url) + '" alt="' + esc(ph.alt || ph.cap || "") + '" ' + (attrs || 'loading="lazy" decoding="async"') + ">" : "";
+    var ctaBtn = (c, ghost) => '<a class="btn' + (ghost ? " gh" : "") + '" href="#book">' + esc(c || "Check dates") + ARROW + "</a>";
+    var R = {
+      hero(sec, f, c, ctx) {
+        const v = sec.variant, ph = f.photos, eb = '<p class="eb fade">' + esc(c.tagline || f.town + " \xB7 " + f.kind) + "</p>";
+        const from = '<span class="note">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 no booking fees</span>";
+        if (v === "cinematic" && ph[0]) return '<header class="hero h-cin" id="top"><div class="bgimg zoom">' + img(ph[0], 'fetchpriority="high" decoding="async"') + '</div><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p></div><div class="pill fade"><div><small>From</small><b class="num">' + money(f.nightly) + '</b> <small style="display:inline">/ night</small></div>' + ctaBtn(c.cta) + "</div></div></header>";
+        if (v === "split" && ph[0]) return '<header class="hero h-split" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><figure class="frame fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + (ph[0].cap ? "<figcaption>" + esc(ph[0].cap) + "</figcaption>" : "") + "</figure></div></header>";
+        if (v === "editorial" && ph[0]) return '<header class="hero h-ed" id="top"><div class="w"><div class="top"><div style="grid-column:1/-1">' + eb + "</div>" + headline(c.headline) + '<div class="meta fade"><p class="lede">' + esc(c.subhead) + '</p><div class="acts">' + ctaBtn(c.cta) + '</div><p class="note mut" style="margin-top:18px;font-size:14px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + '</p></div><figure class="img fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + "<figcaption><span>" + esc(ph[0].cap || f.name) + "</span><span>" + esc(f.town) + "</span></figcaption></figure></div></div></header>";
+        if (v === "mosaic" && ph.length >= 3) return '<header class="hero h-mos" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><div class="mos fade">' + ph.slice(0, 3).map((x, i) => img(x, i ? 'loading="lazy"' : 'fetchpriority="high"')).join("") + "</div></div></header>";
+        return '<header class="hero h-type" id="top"><div class="art fade">' + art(ctx.kindHint || f.kind) + '</div><div class="w">' + eb.replace('class="eb', 'class="eb') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + '<span class="note" style="color:var(--deepMut)">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 no booking fees</span></div></div></header>";
+      },
+      facts(sec, f) {
+        const cells = [[f.maxGuests, "Guests"], [f.bedrooms, f.bedrooms === 1 ? "Bedroom" : "Bedrooms"], [f.baths, f.baths === 1 ? "Bathroom" : "Bathrooms"], [money(f.nightly), "From, a night"], [f.pets ? "Yes" : "No", "Dogs welcome"], [f.minNights, "Night minimum"]];
+        return '<section class="facts" aria-label="At a glance"><div class="w"><ul>' + cells.map((x) => '<li data-rv><b class="num">' + esc(x[0]) + "</b><span>" + x[1] + "</span></li>").join("") + "</ul></div></section>";
+      },
+      story(sec, f, c) {
+        const paras = (c.story && c.story.length ? c.story : [f.about]).filter(Boolean).map((x) => "<p>" + esc(x) + "</p>").join("");
+        if (sec.variant === "pull") return '<section class="sec st-pull" id="stay"><div class="w"><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><blockquote class="disp" data-rv>' + fmtInline(c.pull || c.storyTitle || f.headline) + '</blockquote><div class="txt' + ((c.story || []).join(" ").length > 520 ? " cols" : "") + '" data-rv>' + paras + "</div></div></section>";
+        return '<section class="sec st-lede" id="stay"><div class="w"><div><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2></div><div class="txt lede" style="max-width:none;color:var(--ink)" data-rv>' + paras + "</div></div></section>";
+      },
+      highlights(sec, f, c) {
+        const items = (c.highlights || []).slice(0, 4);
+        if (!items.length) return "";
+        if (sec.variant === "panels" && f.photos.length >= 3) {
+          const pics = f.photos.slice(1).concat(f.photos);
+          return '<section class="sec hl-pan alt"><div class="w">' + items.slice(0, 3).map((h, i) => '<div class="row"><div class="pic" data-rv>' + img(pics[i]) + '</div><div data-rv><span class="n">' + String(i + 1).padStart(2, "0") + " \u2014 " + esc(h.eyebrow || "") + '</span><h3 class="disp">' + fmtInline(h.title) + '</h3><p class="lede">' + esc(h.text) + "</p></div></div>").join("") + "</div></section>";
+        }
+        return '<section class="sec hl-num"><div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.highlightsEyebrow || "Why guests come back") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.highlightsTitle || "What makes it") + "</h2></div></div><ol>" + items.map((h, i) => '<li data-rv><span class="n">' + String(i + 1).padStart(2, "0") + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut">' + esc(h.text) + "</p></li>").join("") + "</ol></div></section>";
+      },
+      gallery(sec, f, c) {
+        if (f.photos.length < 4) return "";
+        const hd = '<div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.galleryEyebrow || "Look around") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.galleryTitle || "Inside and out") + '</h2></div><span class="mut num" data-rv>' + plural(f.photos.length, "photo") + "</span></div></div>";
+        if (sec.variant === "strip") return '<section class="sec gal" id="gallery">' + hd + '<div class="strip" data-rv>' + f.photos.map((x) => "<figure>" + img(x) + (x.cap ? "<figcaption>" + esc(x.cap) + "</figcaption>" : "") + "</figure>").join("") + "</div></section>";
+        return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="grid" data-rv>' + f.photos.slice(0, 14).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + "</button>").join("") + '</div></div><dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
+      },
+      amenities(sec, f, c) {
+        if (!f.amenities.length) return "";
+        const tm = [[f.checkin, "Check-in from"], [f.checkout, "Checkout by"], [plural(f.minNights, "night"), "Minimum stay"]];
+        return '<section class="sec am alt" id="details"><div class="w"><div><p class="eb" data-rv>' + esc(c.amenitiesEyebrow || "The details") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.amenitiesTitle || "Everything you need") + "</h2></div><div data-rv><ul>" + f.amenities.map((a) => "<li>" + esc(a) + "</li>").join("") + '</ul><div class="tm">' + tm.map((x) => "<div><b>" + esc(x[0]) + "</b><span>" + x[1] + "</span></div>").join("") + "</div>" + (f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? "<li>Parking: " + esc(f.parking) + "</li>" : "") + f.rules.map((r) => "<li>" + esc(r) + "</li>").join("") + "</ul>" : "") + "</div></div></section>";
+      },
+      reviews(sec, f, c) {
+        const rv = f.reviews;
+        if (!rv.length && !(f.rating && f.reviewCount)) return "";
+        const score = f.rating && f.reviewCount ? '<div class="score" data-rv><b class="num">' + Number(f.rating).toFixed(2) + '</b><div><span class="stars" aria-hidden="true">\u2605\u2605\u2605\u2605\u2605</span><p class="mut" style="margin:6px 0 0">' + plural(f.reviewCount, "review") + " from guests who stayed</p></div></div>" : "";
+        const hd = '<p class="eb" data-rv>' + esc(c.reviewsEyebrow || "Guests say") + "</p>" + (score ? "" : '<h2 class="disp h2" data-rv style="margin-bottom:56px">' + fmtInline(c.reviewsTitle || "In their words") + "</h2>");
+        const fig = (r) => '<figure data-rv><span class="stars" aria-label="' + r.stars + ' out of 5">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + "</blockquote><figcaption>" + esc(r.name) + "</figcaption></figure>";
+        const note = f.live && rv.length ? '<p class="mut" style="font-size:13px;margin-top:20px">Every review is from a guest who stayed and chose to share it, whatever their rating.</p>' : "";
+        if (sec.variant === "feature" && rv.length) return '<section class="sec rv feat" id="reviews"><div class="w">' + hd + score + '<figure style="margin:0" data-rv><blockquote class="disp">\u201C' + esc(rv[0].text) + "\u201D</blockquote><figcaption>" + esc(rv[0].name) + ' \xB7 <span class="stars">' + "\u2605".repeat(rv[0].stars) + "</span></figcaption></figure>" + (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map((r) => '<figure style="margin:0" data-rv><span class="stars">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + '</blockquote><figcaption class="mut">' + esc(r.name) + "</figcaption></figure>").join("") + "</div>" : "") + note + "</div></section>";
+        return '<section class="sec rv" id="reviews"><div class="w">' + hd + score + (rv.length ? '<div class="wall">' + rv.slice(0, 9).map(fig).join("") + "</div>" : "") + note + "</div></section>";
+      },
+      area(sec, f, c) {
+        if (!f.guide.length) return "";
+        return '<section class="sec ar" id="area"><div class="w"><div><p class="eb" data-rv>' + esc(c.areaEyebrow || "Around " + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || "Days out, picked by your host") + "</h2>" + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + "</p>" : "") + "</div><ol>" + f.guide.map((g) => "<li data-rv><b>" + esc(g.place) + "</b>" + (g.far ? '<span class="far">' + esc(g.far) + "</span>" : "<span></span>") + (g.tip ? "<p>" + esc(g.tip) + "</p>" : "") + "</li>").join("") + "</ol></div></section>";
+      },
+      host(sec, f, c) {
+        const note = c.hostNote || f.hostNote;
+        if (!note && !f.owner) return "";
+        return '<section class="sec ho alt"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || "H")[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || "Your host") + '</p><blockquote class="disp">\u201C' + esc(note || "Message me any time before or during your stay.") + '\u201D</blockquote><p class="mut">' + esc((f.owner ? f.owner + ", " : "") + f.business) + "</p></div></div></section>";
+      },
+      book(sec, f, c, ctx) {
+        const save = Math.round((f.nightly * 3 + f.cleaning) * 0.142);
+        return '<section class="sec bk dk" id="book"><div class="w"><div><p class="eb" data-rv>' + esc(c.bookEyebrow || "Book direct") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || "Pick your dates") + '</h2><p class="lede" style="margin-top:24px;color:var(--deepMut)" data-rv>' + esc(c.bookText || "Book here with " + (f.owner || "your host") + " and pay no platform booking fee.") + '</p><div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div><div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + ".</p></noscript></div></div></section>";
+      },
+      faq(sec, f, c) {
+        return '<section class="sec fq" id="faq"><div class="w"><div><p class="eb" data-rv>' + esc(c.faqEyebrow || "Good to know") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.faqTitle || "Questions guests ask") + "</h2></div><div data-rv>" + f.faqs.slice(0, 12).map(([q, a], i) => "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(q) + "</summary><p>" + esc(a) + "</p></details>").join("") + "</div></div></section>";
+      },
+      closing(sec, f, c) {
+        const ph = f.photos[f.photos.length - 1];
+        return '<section class="cl' + (ph ? "" : " np") + '">' + (ph ? img(ph) : "") + '<div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
+      }
+    };
+    function nav(f, c, types, overlay) {
+      const links = [["stay", "The stay", "story"], ["gallery", "Gallery", "gallery"], ["area", "Area", "area"], ["reviews", "Reviews", "reviews"], ["faq", "FAQ", "faq"]].filter((x) => types.includes(x[2]));
+      return '<nav class="nav' + (overlay ? " ov" : " solid") + '" id="nav" aria-label="Main"><div class="w"><a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + "</a><ul>" + links.map((x) => '<li><a href="#' + x[0] + '">' + x[1] + "</a></li>").join("") + '</ul><a class="btn" href="#book">Check dates</a></div></nav>';
+    }
+    function footer(f, c, url) {
+      return '<footer class="ft"><div class="w"><p class="disp big">' + esc(f.name) + '</p><div class="cols"><span>' + esc(f.area) + "</span><span>" + esc(c.footerLine || "Book direct with your host. No platform fees.") + "</span><span>" + esc(f.business) + ' \xB7 <a href="' + esc(url.replace(/\/$/, "") + "/llms.txt") + '">llms.txt</a></span></div></div></footer><div class="mbar" id="mbar"><div><small>From</small><b class="num">' + money(f.nightly) + '</b> <small style="display:inline">night</small></div><a class="btn" href="#book">Check dates</a></div>';
+    }
+    var CLIENT = `(function(){var d=document,R=d.documentElement;R.classList.add('js');var B=window.__ST__||{};
+var io='IntersectionObserver'in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px'}):null;
+d.querySelectorAll('[data-rv]').forEach(function(el,i){if(io)io.observe(el);else el.classList.add('in')});
+var nv=d.getElementById('nav'),mb=d.getElementById('mbar'),ov=nv&&nv.classList.contains('ov');function sc(){var y=scrollY;if(nv&&ov)nv.classList.toggle('solid',y>40),nv.classList.toggle('ov',y<=40);if(mb){var bk=d.getElementById('book'),r=bk&&bk.getBoundingClientRect();mb.classList.toggle('on',y>500&&!(r&&r.top<innerHeight&&r.bottom>0))}}addEventListener('scroll',sc,{passive:true});sc();
+var lb=d.querySelector('dialog.lb');if(lb)d.querySelectorAll('[data-lb]').forEach(function(b){b.addEventListener('click',function(){var im=b.querySelector('img');lb.querySelector('img').src=im.src;lb.querySelector('img').alt=im.alt;lb.querySelector('p').textContent=im.alt;lb.showModal()})}),lb.addEventListener('click',function(){lb.close()});
+var W=d.getElementById('bw');if(!W||!B.book)return;var K=B.book,qs=new URLSearchParams(location.search);
+var blocked=new Set(K.blocked||[]),st={a:null,b:null,m:null,promo:(qs.get('promo')||'').toUpperCase(),busy:false,err:'',done:null};
+function iso(x){return x.toISOString().slice(0,10)}function P(s){var p=s.split('-');return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]))}function add(s,n){var x=P(s);x.setUTCDate(x.getUTCDate()+n);return iso(x)}
+function nights(a,b){var o=[];for(var x=a;x<b;x=add(x,1))o.push(x);return o}function free(a,b){return nights(a,b).every(function(x){return!blocked.has(x)})}
+function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
+function gbp(n){return '\xA3'+Math.round(n).toLocaleString('en-GB')}var MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
+if(!st.m){st.m=K.today.slice(0,7)}
+function quote(){if(!st.a||!st.b)return null;var ns=nights(st.a,st.b),n=ns.reduce(function(s,x){var w=P(x).getUTCDay();return s+K.nightly+((w===5||w===6)?K.weekend:0)},0);var g=val('ad')+val('ch'),pet=K.pets&&chk('pt')?K.petFee:0;var pc=st.promo&&K.promos[fnv(st.promo)]||0,disc=Math.round(n*pc/100);
+var pr=[];if(ns.length<K.minNights)pr.push('The minimum stay is '+K.minNights+' nights.');if(g>K.maxGuests)pr.push('This home sleeps '+K.maxGuests+'.');if(!free(st.a,st.b))pr.push('Some of those nights are taken.');
+return{n:ns.length,nightly:n,clean:K.cleaning,pet:pet,pc:pc,disc:disc,total:n+K.cleaning+pet-disc,pr:pr}}
+function val(id){var e=d.getElementById('bw-'+id);return e?(+e.value||0):(id==='ad'?2:0)}function chk(id){var e=d.getElementById('bw-'+id);return!!(e&&e.checked)}function txt(id){var e=d.getElementById('bw-'+id);return e?e.value.trim():''}
+function month(ym){var y=+ym.slice(0,4),m=+ym.slice(5,7)-1,first=new Date(Date.UTC(y,m,1)),pad=(first.getUTCDay()+6)%7,days=new Date(Date.UTC(y,m+1,0)).getUTCDate(),h='<div class="mo"><b>'+MO[m]+' '+y+'</b><div class="dw">'+['M','T','W','T','F','S','S'].map(function(x){return'<span>'+x+'</span>'}).join('')+'</div><div class="dd">';
+for(var i=0;i<pad;i++)h+='<span></span>';for(var dd=1;dd<=days;dd++){var s=ym+'-'+(dd<10?'0':'')+dd,past=s<=K.today,bad=past||(blocked.has(s)&&s!==st.b&&!(st.a&&!st.b&&s>st.a&&free(st.a,s))),cls=s===st.a?'a':s===st.b?'b':(st.a&&st.b&&s>st.a&&s<st.b)?'in':'';h+='<button type="button" data-d="'+s+'" class="'+cls+'"'+(bad?' disabled':'')+' aria-label="'+dd+' '+MO[m]+'">'+dd+'</button>'}return h+'</div></div>'}
+function nextM(ym,k){var y=+ym.slice(0,4),m=+ym.slice(5,7)-1+k;y+=Math.floor(m/12);m=((m%12)+12)%12;return y+'-'+(m<9?'0':'')+(m+1)}
+function draw(){if(st.done){W.innerHTML='<div class="ok"><b>'+st.done.t+'</b><p class="mut">'+st.done.p+'</p>'+(st.done.u?'<a class="btn" href="'+st.done.u+'">Open your trip</a>':'')+'</div>';return}
+var q=quote(),fd=document.activeElement&&document.activeElement.id;var keep={};['ad','ch','nm','em','ph','pr'].forEach(function(k){var e=d.getElementById('bw-'+k);if(e)keep[k]=e.value});var kp=chk('pt'),ks=d.getElementById('bw-sb')?chk('sb'):true;
+var opt=function(n,a){var h='';for(var i=a;i<=n;i++)h+='<option>'+i+'</option>';return h};
+W.innerHTML='<h3><span>'+(st.a?(st.b?fmt(st.a)+' \u2013 '+fmt(st.b):'Now pick your checkout'):'Pick your arrival date')+'</span><span class="cal nv"><button type="button" class="cal-btn" data-m="-1" aria-label="Earlier months">\u2039</button><button type="button" class="cal-btn" data-m="1" aria-label="Later months">\u203A</button></span></h3><div class="cal">'+month(st.m)+month(nextM(st.m,1))+'</div>'+
+'<div class="fr"><label>Adults<select id="bw-ad">'+opt(K.maxGuests,1)+'</select></label><label>Children<select id="bw-ch">'+opt(Math.max(0,K.maxGuests-1),0)+'</select></label>'+(K.pets?'<label class="chk full"><input type="checkbox" id="bw-pt"> Bringing a dog ('+gbp(K.petFee)+' per stay)</label>':'')+'</div>'+
+(q?'<div class="qt">'+(q.pr.length?'<div class="err">'+q.pr[0]+'</div>':'<div><span>'+q.n+' nights</span><span class="num">'+gbp(q.nightly)+'</span></div><div><span>Cleaning</span><span class="num">'+gbp(q.clean)+'</span></div>'+(q.pet?'<div><span>Dog</span><span class="num">'+gbp(q.pet)+'</span></div>':'')+(q.disc?'<div><span>Code '+st.promo+' ('+q.pc+'% off)</span><span class="num">\u2212'+gbp(q.disc)+'</span></div>':'')+'<div class="tot"><span>Total</span><span class="num">'+gbp(q.total)+'</span></div>')+'</div>':'')+
+(q&&!q.pr.length?'<div class="fr"><label class="full">Your name<input id="bw-nm" autocomplete="name" required></label><label>Email<input id="bw-em" type="email" autocomplete="email" required></label><label>Phone<input id="bw-ph" type="tel" autocomplete="tel"></label><label class="full">Promo code<input id="bw-pr" autocapitalize="characters"></label><label class="chk full"><input type="checkbox" id="bw-sb" checked> Send me the odd offer from '+esc(K.business)+'. Unsubscribe any time.</label></div>'+(st.err?'<p class="qt err" role="alert">'+esc(st.err)+'</p>':'')+'<button type="button" class="btn" id="bw-go"'+(st.busy?' disabled':'')+'>'+(st.busy?'One moment\u2026':K.stripe?'Book and pay securely':'Send booking request')+'</button>'+(K.bank?'<button type="button" class="btn gh" id="bw-tr"'+(st.busy?' disabled':'')+'>Book and pay by bank transfer</button>':'')+'<p class="fine">'+(K.stripe?'Secure card payment by Stripe. ':'Your host confirms, then sends a secure payment link. ')+(K.bank?'Bank transfer: pay within '+K.bank.days+' days. ':'')+'No platform booking fee.</p>':'<p class="fine">From '+gbp(K.nightly)+' a night \xB7 minimum '+K.minNights+' nights</p>');
+if(!('ad' in keep)&&K.maxGuests>=2)d.getElementById('bw-ad').value='2';Object.keys(keep).forEach(function(k){var e=d.getElementById('bw-'+k);if(e&&keep[k]!=null)e.value=keep[k]});var pt=d.getElementById('bw-pt');if(pt)pt.checked=kp;var sb=d.getElementById('bw-sb');if(sb)sb.checked=ks;var pr=d.getElementById('bw-pr');if(pr&&!pr.value)pr.value=st.promo;if(fd&&d.getElementById(fd))d.getElementById(fd).focus()}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function fmt(s){var x=P(s);return x.getUTCDate()+' '+MO[x.getUTCMonth()].slice(0,3)}
+W.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.m){st.m=nextM(st.m,+t.dataset.m);if(st.m<K.today.slice(0,7))st.m=K.today.slice(0,7);draw();return}
+if(t.dataset.d){var s=t.dataset.d;if(!st.a||st.b||s<=st.a){st.a=s;st.b=null}else if(free(st.a,s)){st.b=s}else{st.a=s;st.b=null}st.err='';draw();return}
+if(t.id==='bw-go')go();if(t.id==='bw-tr')go('transfer')});
+W.addEventListener('change',function(e){if(e.target.id==='bw-pr'){st.promo=e.target.value.trim().toUpperCase()}if(['bw-ad','bw-ch','bw-pt','bw-pr'].indexOf(e.target.id)>=0)draw()});
+function go(kind){var q=quote();if(!q||q.pr.length)return;var nm=txt('nm'),em=txt('em');if(!nm||!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(em)){st.err='Add your name and a valid email.';draw();return}
+st.busy=true;st.err='';draw();var src=qs.get('utm_source')==='funnel'||qs.get('utm_source')==='email'?'campaign':(/google|bing|duckduckgo/.test(document.referrer)?'google':(/chatgpt|perplexity|gemini|claude|copilot/.test(document.referrer)?'ai':'website'));
+fetch(K.url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({kind:kind||undefined,input:{propertyId:K.pid,checkIn:st.a,checkOut:st.b,name:nm,email:em,phone:txt('ph'),adults:val('ad'),children:val('ch'),pets:chk('pt'),promo:st.promo,subscribe:chk('sb'),source:src}})}).then(function(r){return r.json()}).then(function(j){st.busy=false;
+if(!j.ok){st.err=j.error||'Those dates could not be booked.';draw();return}if(j.checkoutUrl){location.href=j.checkoutUrl;return}
+st.done=j.invoiceUrl?{t:'You are booked',p:'Your invoice with the bank details is on its way to '+em+'. Pay within '+K.bank.days+' days to keep the dates.',u:j.tripUrl}:j.request?{t:'Request sent',p:'Your host will confirm shortly and email you a secure payment link.',u:j.tripUrl}:{t:'You are booked',p:'Your confirmation is on its way to '+em+'.',u:j.tripUrl};draw()}).catch(function(){st.busy=false;st.err='Something went wrong. Try again.';draw()})}
+draw()})();`;
+    function head(o) {
+      const d = D.DIRECTIONS[o.dir] || D.DIRECTIONS.linen;
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + '</title><meta name="description" content="' + esc(o.description) + '">' + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + '<meta name="theme-color" content="' + esc(o.pal.bg) + '">' + (o.extra || "") + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + d.fonts.href + '&display=swap">' + (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : "") + "<style>" + css(o.dir, o.pal) + "</style></head>";
+    }
+    function site(s, p, spec, ctx) {
+      const f = facts(s, p, ctx), c = spec.copy || {}, pal = D.palette(spec.direction, spec.accent);
+      let secs = (spec.sections || []).filter((x) => R[x.type]);
+      const heroSec = secs.find((x) => x.type === "hero");
+      if (heroSec && heroSec.variant !== "type" && !f.photos.length) heroSec.variant = "type";
+      if (heroSec && heroSec.variant === "mosaic" && f.photos.length < 3) heroSec.variant = f.photos.length ? "split" : "type";
+      const body = secs.map((x) => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx))).join("");
+      const types = secs.map((x) => x.type);
+      const overlay = heroSec && heroSec.variant === "cinematic";
+      const typeHero = heroSec && heroSec.variant === "type";
+      const title = c.seoTitle || seo.titleOf(p), description = c.seoDescription || seo.descOf(p);
+      const boot = { book: { url: ctx.bookUrl, pid: p.id, nightly: f.nightly, weekend: f.weekend, cleaning: f.cleaning, pets: f.pets, petFee: f.petFee, minNights: f.minNights, maxGuests: f.maxGuests, today: ctx.today, blocked: ctx.blocked || [], promos: ctx.promos || {}, stripe: !!ctx.stripe, bank: ctx.bank && ctx.bank.on ? { days: ctx.bank.days || 7 } : null, business: f.business } };
+      return head({ dir: spec.direction, pal, title, description, robots: ctx.preview ? "noindex" : null, preload: overlay || heroSec && heroSec.variant !== "type" ? (f.photos[0] || {}).url : null, extra: ctx.preview ? "" : seo.head(s, p, ctx.url) }) + '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero) + "<main>" + body + "</main>" + footer(f, c, ctx.url) + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)">' + ctx.banner + "</div>" : "") + "<script>window.__ST__=" + JSON.stringify(boot).replace(/</g, "\\u003c") + "</script><script>" + CLIENT + "</script></body></html>";
+    }
+    module.exports = { site, facts, head, css, R, CLIENT, ARROW, fmtInline, headline, img, money, footer };
+  }
+});
+
+// server/studio/funnels.js
+var require_funnels = __commonJS({
+  "server/studio/funnels.js"(exports, module) {
+    var D = require_design();
+    var { facts, head, fmtInline, ARROW, money, img } = require_render();
+    var { esc } = require_pages();
+    var TEMPLATES = {
+      guide: { name: "Local guide opt-in", blurb: "Give away your insider guide to the area in return for an email. Every sign-up joins your guest list.", steps: ["optin", "thanks"], goal: "leads" },
+      waitlist: { name: "First dibs on dates", blurb: "Let people join a priority list for a season or event before the dates open to everyone.", steps: ["optin", "thanks"], goal: "leads" },
+      offer: { name: "Special offer", blurb: "A focused sales page for one offer, with a promo code that takes guests straight to booking.", steps: ["offer"], goal: "bookings" },
+      lastminute: { name: "Last-minute dates", blurb: "Shows your next free dates, live from your calendar, with a code to fill them.", steps: ["offer"], goal: "bookings" },
+      comeback: { name: "Welcome back", blurb: "For past guests: a returning-guest discount and first pick of next season.", steps: ["optin", "thanks"], goal: "leads" }
+    };
+    function gaps(s, p, today, D2) {
+      const blocked = /* @__PURE__ */ new Set();
+      const add = (a, n) => {
+        const x = /* @__PURE__ */ new Date(a + "T00:00:00Z");
+        x.setUTCDate(x.getUTCDate() + n);
+        return x.toISOString().slice(0, 10);
+      };
+      const nights = (a, b) => {
+        const o = [];
+        for (let x = a; x < b; x = add(x, 1)) o.push(x);
+        return o;
+      };
+      s.bookings.forEach((b) => {
+        if (b.propertyId === p.id && b.status !== "cancelled") nights(b.checkIn, b.checkOut).forEach((x) => blocked.add(x));
+      });
+      (s.blocks || []).forEach((k) => {
+        if (k.propertyId === p.id) nights(k.from, k.to).forEach((x) => blocked.add(x));
+      });
+      const out = [];
+      let run = null;
+      for (let i = 1; i <= 60; i++) {
+        const d = add(today, i);
+        if (!blocked.has(d)) {
+          if (!run) run = { from: d, n: 0 };
+          run.n++;
+        } else if (run) {
+          out.push(run);
+          run = null;
+        }
+      }
+      if (run) out.push(run);
+      return out.filter((r) => r.n >= Math.max(1, p.minNights || 1)).slice(0, 4).map((r) => ({ from: r.from, to: add(r.from, r.n), n: r.n }));
+    }
+    var fmtD = (s) => (/* @__PURE__ */ new Date(s + "T00:00:00Z")).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+    function rulesCopy(tpl, f, o) {
+      const code = o.code, pct = o.pct, season = o.season || "next summer";
+      const C = {
+        guide: {
+          optin: { eyebrow: "Free guide \xB7 " + f.town, headline: "The *" + f.town + "* our guests never find on their own", subhead: "The walks, pubs and quiet corners we send our own friends to, in one short guide. Free, straight to your inbox.", points: ["Where to walk when everywhere else is busy", "The pub, the caf\xE9 and the view worth the detour", "How to get the best out of a stay at " + f.short], button: "Send me the guide", fine: "One short guide, then the odd note about dates and offers. Unsubscribe any time." },
+          thanks: { headline: "Here is your *guide*", text: "We have added you to our list for dates and offers. Your guide is below, and when you are ready to visit, booking direct means no platform fees.", button: "See dates at " + f.short }
+        },
+        waitlist: {
+          optin: { eyebrow: "Priority list \xB7 " + season, headline: "First pick of *" + season + "*", subhead: "Our best weeks go fast. Join the list and we will email you before " + season + " opens to everyone.", points: ["Choose your dates before anyone else", "Book direct, with no platform fees", "No obligation. One email when dates open"], button: "Join the list", fine: "We only email about dates and offers at " + f.short + ". Unsubscribe any time." },
+          thanks: { headline: "You are *on the list*", text: "We will email you before " + season + " opens. If you already know your dates, you can book now.", button: "Check dates now" }
+        },
+        comeback: {
+          optin: { eyebrow: "For returning guests", headline: "Come back to *" + f.short + "*", subhead: "You have stayed before, so you get " + pct + "% off your next stay when you book direct, and first pick of next season.", points: [pct + "% off every direct stay", "First pick of the busy weeks", "Talk to us directly, no platform in the middle"], button: "Get my returning-guest code", fine: "We will email your code and the odd note about dates. Unsubscribe any time." },
+          thanks: { headline: "Welcome *back*", text: "Your code is below. Use it at checkout on our booking page. It is already applied on the link.", button: "Book with my code" }
+        },
+        offer: { offer: { eyebrow: pct + "% off \xB7 book direct", headline: o.headline || "A little *more time* at " + f.short, subhead: "Book direct with the code below and save " + pct + "% on your nights. No platform fees, and you talk to us directly.", points: [f.headline || "A stay at " + f.name, "Sleeps " + f.maxGuests + ", " + f.bedrooms + " bedroom" + (f.bedrooms === 1 ? "" : "s"), f.pets ? "Dogs welcome" : "Check-in from " + f.checkin], urgency: "While dates last", button: "Book with " + code } },
+        lastminute: { offer: { eyebrow: "Last-minute \xB7 " + pct + "% off", headline: "Free this month at *" + f.short + "*", subhead: "A few nights have opened up. Book any of these dates direct with the code below and save " + pct + "%.", points: [], urgency: "Dates update live from our calendar", button: "Book with " + code } }
+      };
+      return C[tpl];
+    }
+    function schema(steps) {
+      const s = { type: "string" };
+      const step = { type: "object", additionalProperties: false, required: ["eyebrow", "headline", "subhead", "points", "button", "fine", "urgency", "text"], properties: { eyebrow: s, headline: s, subhead: s, points: { type: "array", items: s }, button: s, fine: s, urgency: s, text: s } };
+      return { type: "object", additionalProperties: false, required: ["name"].concat(steps), properties: Object.assign({ name: s }, Object.fromEntries(steps.map((k) => [k, step]))) };
+    }
+    function aiPrompt(tpl, f, o) {
+      const t = TEMPLATES[tpl];
+      return 'Write the pages for a "' + t.name + '" funnel for this UK holiday let. ' + t.blurb + "\n\nSteps: " + t.steps.join(", ") + ". optin pages have a short form (name, email); offer pages show a promo code and send guests to book; thanks pages follow an opt-in.\nFacts: " + JSON.stringify({ name: f.name, town: f.town, area: f.area, kind: f.kind, sleeps: f.maxGuests, bedrooms: f.bedrooms, dogs: f.pets, fromPerNight: "\xA3" + f.nightly, amenities: f.amenities, about: f.about, areaGuide: f.guide.map((g) => g.place) }) + "\nOffer details: " + JSON.stringify({ promoCode: o.code, discountPercent: o.pct, season: o.season || "", hostNotes: o.notes || "" }) + '\n\nRules: UK English, sentence case, specific and sensory, facts only. headline under nine words; wrap one word in *asterisks* for italic emphasis. subhead one or two sentences. points: three short benefit lines (empty array for thanks steps). button: a first-person action under five words ("Send me the guide"). fine: one reassuring line about email consent for optin steps, otherwise empty. urgency: an honest reason to act now for offer steps (never fake scarcity or countdowns), otherwise empty. text: for thanks steps, two sentences on what happens next; otherwise empty. name: a short internal name for the funnel. Banned: ' + D.CLICHES.join(", ") + ".";
+    }
+    function page(s, p, fn, step, ctx) {
+      const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || "linen", pal = D.palette(dir, fn.accent || ctx.accent), c = (fn.copy || {})[step] || {};
+      const ph = f.photos[0];
+      const book = ctx.siteUrl + (ctx.siteUrl.includes("?") ? "&" : "?") + (fn.code ? "promo=" + encodeURIComponent(fn.code) + "&" : "") + "utm_source=funnel&utm_campaign=" + encodeURIComponent(fn.id) + "#book";
+      const h1 = '<h1 class="disp h1" style="font-size:calc(clamp(2.6rem,6vw,5.6rem) * var(--ds))">' + fmtInline(c.headline || "") + "</h1>";
+      const pts = (c.points || []).filter(Boolean).length ? '<ul class="fn-pts">' + c.points.filter(Boolean).map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
+      const pic = ph ? '<figure class="frame" style="margin:0">' + img(ph, 'fetchpriority="high"') + "</figure>" : '<div class="frame" aria-hidden="true" style="aspect-ratio:4/5;background:var(--deep);border-radius:var(--ri);display:grid;place-items:center;color:var(--deepInk)"><span class="disp" style="font-size:calc(clamp(2.4rem,5vw,4.4rem) * var(--ds));text-align:center;padding:30px">' + esc(f.name) + "</span></div>";
+      let main = "";
+      if (step === "optin") {
+        main = '<section class="fn-hero"><div class="w"><div><p class="eb">' + esc(c.eyebrow || "") + "</p>" + h1 + '<p class="lede">' + esc(c.subhead || "") + "</p>" + pts + '<form class="fn-form" method="post" action="' + esc(ctx.postUrl) + '"><div class="fr"><label>First name<input name="name" autocomplete="given-name" required maxlength="60"></label><label>Email<input name="email" type="email" autocomplete="email" required maxlength="120"></label><label class="chk full"><input type="checkbox" name="consent" value="1" checked> Email me about dates and offers from ' + esc(f.business) + '. I can unsubscribe any time.</label></div><input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">' + (ctx.error ? '<p style="color:#B3261E;margin:0">' + esc(ctx.error) + "</p>" : "") + '<button class="btn" type="submit">' + esc(c.button || "Join") + ARROW + "</button>" + (c.fine ? '<p class="mut" style="font-size:13px;margin:0">' + esc(c.fine) + "</p>" : "") + "</form></div>" + pic + "</div></section>";
+      } else if (step === "thanks") {
+        const extra = fn.template === "guide" && f.guide.length ? '<section class="sec ar"><div class="w"><div><p class="eb">Your guide</p><h2 class="disp h2">Around ' + esc(f.town) + "</h2></div><ol>" + f.guide.map((g) => "<li><b>" + esc(g.place) + "</b>" + (g.far ? '<span class="far">' + esc(g.far) + "</span>" : "<span></span>") + (g.tip ? "<p>" + esc(g.tip) + "</p>" : "") + "</li>").join("") + "</ol></div></section>" : "";
+        main = '<section class="fn-hero"><div class="w"><div>' + h1 + '<p class="lede">' + esc(c.text || c.subhead || "") + "</p>" + (fn.code && fn.template === "comeback" ? '<div class="code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px">' + fn.pct + "% off your nights when you book direct</p>" : "") + '<div class="acts" style="margin-top:34px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "See dates") + ARROW + "</a></div></div>" + pic + "</div></section>" + extra;
+      } else {
+        const gp = fn.template === "lastminute" ? gaps(s, p, ctx.today) : [];
+        const gapList = fn.template === "lastminute" ? gp.length ? '<ul class="fn-pts">' + gp.map((g) => "<li><b>" + fmtD(g.from) + " \u2013 " + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + " night" + (g.n === 1 ? "" : "s") + " free</span></li>").join("") + "</ul>" : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>' : "";
+        main = '<section class="fn-hero"><div class="w"><div><p class="eb">' + esc(c.eyebrow || "") + "</p>" + h1 + '<p class="lede">' + esc(c.subhead || "") + "</p>" + pts + gapList + (fn.code ? '<div class="code" aria-label="Promo code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px;margin:0">' + fn.pct + "% off your nights. Applied automatically on the next page.</p>" : "") + '<div class="acts" style="margin-top:30px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "Check dates") + ARROW + "</a>" + (c.urgency ? '<span class="urg">' + esc(c.urgency) + "</span>" : "") + '</div><p class="mut" style="font-size:14px;margin-top:22px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + (f.rating && f.reviewCount ? " \xB7 rated " + Number(f.rating).toFixed(2) + " by " + f.reviewCount + " guests" : "") + "</p></div>" + pic + "</div></section>";
+      }
+      const navb = '<nav class="nav solid" aria-label="Main"><div class="w"><a class="wm" href="' + esc(ctx.siteUrl) + '">' + esc(f.short) + '</a><a class="btn" href="' + esc(book) + '">Check dates</a></div></nav>';
+      return head({ dir, pal, title: (c.headline || fn.name || f.name).replace(/\*/g, "") + " \xB7 " + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === "thanks" ? "noindex" : null, preload: ph && ph.url }) + "<body>" + navb + "<main>" + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + " \xB7 " + esc(f.area) + "</span><span>" + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + "</div>" : "") + '<script>document.documentElement.classList.add("js")</script></body></html>';
+    }
+    module.exports = { TEMPLATES, rulesCopy, schema, aiPrompt, page, gaps };
+  }
+});
+
+// server/studio/generate.js
+var require_generate = __commonJS({
+  "server/studio/generate.js"(exports, module) {
+    var D = require_design();
+    var { facts } = require_render();
+    var VIBES = { calm: "calm and restful", luxe: "luxurious and design-led", family: "warm, joyful and family-friendly", rustic: "rustic, honest and cosy", coastal: "bright and coastal", urban: "elegant and urban", adventurous: "outdoorsy and adventurous", romantic: "romantic, for couples" };
+    var VIBE_DIR = { calm: "linen", luxe: "nocturne", family: "sunlit", rustic: "meadow", coastal: "harbour", urban: "georgian", adventurous: "fell", romantic: "linen" };
+    function guessDirection(f, brief) {
+      if (brief && D.DIRECTIONS[brief.direction]) return brief.direction;
+      if (brief && VIBE_DIR[brief.vibe]) return VIBE_DIR[brief.vibe];
+      const t = (f.name + " " + f.about + " " + f.area + " " + f.amenities.join(" ")).toLowerCase();
+      if (/barn|farm|shepherd|hut|meadow|orchard/.test(t)) return "meadow";
+      if (/sea|beach|harbour|coast|bay|cove|surf/.test(t)) return "harbour";
+      if (/contemporary|modern|architect|glass|concrete/.test(t)) return "modernist";
+      if (/spa|sauna|luxury|boutique/.test(t)) return "nocturne";
+      return { cabin: "fell", lake: "harbour", city: "georgian" }[f.theme] || "linen";
+    }
+    function heroFor(dir, n) {
+      const order = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes;
+      if (!n) return "type";
+      return order.find((h) => h !== "mosaic" || n >= 3) || "split";
+    }
+    var PERKS = [
+      [/hot tub|jacuzzi/i, "The hot tub", "Under the stars at the end of the day, with nobody else\u2019s timetable but yours."],
+      [/wood ?burner|log burner|fire/i, "A proper fire", "Logs in the basket, a wood burner that draws well, and long evenings in front of it."],
+      [/dog/i, "Dogs welcome", "Bring the dog. Walks start at the door and there is room for muddy paws."],
+      [/sea view|sea|beach/i, "The sea, close by", "Wake to the light on the water and be on the sand before breakfast."],
+      [/garden|terrace|deck/i, "Outdoor space", "Coffee outside in the morning, a glass of something as the light goes."],
+      [/wi-?fi/i, "Fast Wi-Fi", "Good enough for a video call, a film, or a day of working away."],
+      [/parking/i, "Easy parking", "Pull up right outside. No circling, no permits."],
+      [/self check-?in/i, "Arrive when you like", "Self check-in from the afternoon, with clear directions sent before you travel."],
+      [/kitchen/i, "A kitchen you can cook in", "Proper pans, sharp knives and space to make dinner an event."]
+    ];
+    function rulesCopy(f, dir) {
+      const words = String(f.headline || "").replace(/[.!]+$/, "").split(/\s+/).filter(Boolean);
+      let h = words.length && words.length <= 9 ? words.join(" ") : f.kind[0].toUpperCase() + f.kind.slice(1) + " stays in " + f.town;
+      const hw = h.split(" ");
+      if (hw.length > 2) hw[hw.length - 1] = "*" + hw[hw.length - 1] + "*";
+      h = hw.join(" ");
+      const about = String(f.about || "").split(/(?<=[.!?])\s+/).filter(Boolean);
+      const story = about.length > 2 ? [about.slice(0, Math.ceil(about.length / 2)).join(" "), about.slice(Math.ceil(about.length / 2)).join(" ")] : [f.about].filter(Boolean);
+      const hl = [];
+      for (const [re, t, x] of PERKS) {
+        if (hl.length >= 3) break;
+        if (f.amenities.some((a) => re.test(a))) hl.push({ eyebrow: "Included", title: t, text: x });
+      }
+      if (hl.length < 3) hl.push({ eyebrow: "Space", title: "Room for " + f.maxGuests, text: f.bedrooms + " bedroom" + (f.bedrooms === 1 ? "" : "s") + " and " + f.baths + " bathroom" + (f.baths === 1 ? "" : "s") + ", set up for sleeping well." });
+      if (hl.length < 3) hl.push({ eyebrow: "Direct", title: "Talk to the owner", text: "Questions go straight to " + (f.owner || "your host") + ", not a call centre." });
+      const trunc = (s, n) => s.length <= n ? s : s.slice(0, n - 1).replace(/\s+\S*$/, "") + "\u2026";
+      return {
+        wordmark: f.short || f.name,
+        tagline: f.town + " \xB7 " + f.kind,
+        headline: h,
+        subhead: f.sub ? f.sub.replace(/ · /g, ", ") + "." : about[0] || "",
+        cta: "Check dates",
+        storyEyebrow: "The stay",
+        storyTitle: f.name,
+        story,
+        pull: about[0] || f.headline,
+        highlightsEyebrow: "Why guests come back",
+        highlightsTitle: "The *good* bits",
+        highlights: hl.slice(0, 3),
+        galleryEyebrow: "Look around",
+        galleryTitle: "Inside and *out*",
+        amenitiesEyebrow: "The details",
+        amenitiesTitle: "Everything you need",
+        reviewsEyebrow: "Guests say",
+        reviewsTitle: "In their *words*",
+        areaEyebrow: "Around " + f.town,
+        areaTitle: "Days out, picked by your host",
+        areaIntro: "",
+        hostEyebrow: "Your host",
+        hostNote: f.hostNote,
+        bookEyebrow: "Book direct",
+        bookTitle: "Pick your *dates*",
+        bookText: "Book here with " + (f.owner || "your host") + " and pay no platform booking fee. You get an instant answer and talk to your host directly.",
+        faqEyebrow: "Good to know",
+        faqTitle: "Questions guests ask",
+        closing: "Your dates are *waiting*",
+        footerLine: "Book direct with your host. No platform fees.",
+        seoTitle: trunc(f.name + " \xB7 " + f.kind[0].toUpperCase() + f.kind.slice(1) + " in " + f.town + " \xB7 Book direct", 62),
+        seoDescription: trunc((f.headline ? f.headline + " " : "") + "Sleeps " + f.maxGuests + " in " + f.town + ". Book direct from \xA3" + f.nightly + " a night with no platform fees.", 160)
+      };
+    }
+    function layoutFor(f, dir, hero) {
+      const n = f.photos.length;
+      const secs = [{ type: "hero", variant: hero }, { type: "facts", variant: "ruled" }, { type: "story", variant: dir === "linen" || dir === "georgian" ? "pull" : "lede" }, { type: "highlights", variant: n >= 4 ? "panels" : "numbered" }];
+      if (n >= 6) secs.push({ type: "gallery", variant: dir === "nocturne" || dir === "modernist" ? "strip" : "grid" });
+      if (f.amenities.length) secs.push({ type: "amenities", variant: "columns" });
+      if (f.reviews.length || f.rating && f.reviewCount) secs.push({ type: "reviews", variant: f.reviews.length >= 3 ? "wall" : "feature" });
+      if (f.guide.length) secs.push({ type: "area", variant: "itinerary" });
+      secs.push({ type: "host", variant: "note" }, { type: "book", variant: "panel" }, { type: "faq", variant: "accordion" }, { type: "closing", variant: "banner" });
+      return secs;
+    }
+    var str = (v, n) => String(v == null ? "" : v).replace(/[<>]/g, "").trim().slice(0, n);
+    function normalize(raw, f, fallback) {
+      const r = raw || {};
+      const out = { v: 1 };
+      out.direction = D.DIRECTIONS[r.direction] ? r.direction : fallback.direction;
+      out.accent = D.hexOk(r.accent) ? r.accent.toUpperCase() : null;
+      const seen = /* @__PURE__ */ new Set();
+      let secs = [];
+      for (const s of Array.isArray(r.sections) ? r.sections : []) {
+        if (!s || !D.SECTIONS[s.type] || seen.has(s.type)) continue;
+        seen.add(s.type);
+        secs.push({ type: s.type, variant: D.SECTIONS[s.type].includes(s.variant) ? s.variant : D.SECTIONS[s.type][0] });
+      }
+      if (!secs.length) secs = fallback.sections.slice();
+      secs = secs.filter((s) => s.type !== "hero");
+      const hv = D.SECTIONS.hero.includes(r.heroVariant) ? r.heroVariant : ((r.sections || []).find((s) => s && s.type === "hero") || {}).variant;
+      secs.unshift({ type: "hero", variant: D.SECTIONS.hero.includes(hv) ? hv : fallback.sections[0].variant });
+      for (const t of D.REQUIRED) if (!secs.some((s) => s.type === t)) secs.push({ type: t, variant: D.SECTIONS[t][0] });
+      const cl = secs.findIndex((s) => s.type === "closing");
+      if (cl >= 0) secs.push(secs.splice(cl, 1)[0]);
+      const bi = secs.findIndex((s) => s.type === "book"), fi = secs.findIndex((s) => s.type === "faq");
+      if (fi >= 0 && bi > fi) secs.splice(fi, 0, secs.splice(bi, 1)[0]);
+      secs = secs.filter((s) => !(s.type === "gallery" && f.photos.length < 4) && !(s.type === "area" && !f.guide.length) && !(s.type === "amenities" && !f.amenities.length) && !(s.type === "reviews" && !f.reviews.length && !(f.rating && f.reviewCount)));
+      if (!f.photos.length) secs[0].variant = "type";
+      out.sections = secs.slice(0, 12);
+      const c = r.copy || {}, fb = fallback.copy, k = {};
+      const S = (key, n) => {
+        k[key] = str(c[key], n) || fb[key] || "";
+      };
+      [
+        ["wordmark", 40],
+        ["tagline", 60],
+        ["headline", 90],
+        ["subhead", 240],
+        ["cta", 28],
+        ["storyEyebrow", 40],
+        ["storyTitle", 90],
+        ["pull", 220],
+        ["highlightsEyebrow", 40],
+        ["highlightsTitle", 80],
+        ["galleryEyebrow", 40],
+        ["galleryTitle", 80],
+        ["amenitiesEyebrow", 40],
+        ["amenitiesTitle", 80],
+        ["reviewsEyebrow", 40],
+        ["reviewsTitle", 80],
+        ["areaEyebrow", 50],
+        ["areaTitle", 80],
+        ["areaIntro", 300],
+        ["hostEyebrow", 40],
+        ["hostNote", 260],
+        ["bookEyebrow", 40],
+        ["bookTitle", 80],
+        ["bookText", 300],
+        ["faqEyebrow", 40],
+        ["faqTitle", 80],
+        ["closing", 90],
+        ["footerLine", 120],
+        ["seoTitle", 62],
+        ["seoDescription", 160]
+      ].forEach(([key, n]) => S(key, n));
+      k.headline = k.headline.replace(/\\n/g, "\n");
+      k.story = (Array.isArray(c.story) ? c.story : []).map((x) => str(x, 900)).filter(Boolean).slice(0, 4);
+      if (!k.story.length) k.story = fb.story;
+      k.highlights = (Array.isArray(c.highlights) ? c.highlights : []).map((h) => ({ eyebrow: str(h && h.eyebrow, 30), title: str(h && h.title, 70), text: str(h && h.text, 260) })).filter((h) => h.title && h.text).slice(0, 4);
+      if (k.highlights.length < 3) k.highlights = fb.highlights;
+      if (!f.hostNote) k.hostNote = "";
+      out.copy = k;
+      out.rationale = str(r.rationale, 600);
+      return out;
+    }
+    function schema() {
+      const s = { type: "string" };
+      const copyKeys = [
+        "wordmark",
+        "tagline",
+        "headline",
+        "subhead",
+        "cta",
+        "storyEyebrow",
+        "storyTitle",
+        "pull",
+        "highlightsEyebrow",
+        "highlightsTitle",
+        "galleryEyebrow",
+        "galleryTitle",
+        "amenitiesEyebrow",
+        "amenitiesTitle",
+        "reviewsEyebrow",
+        "reviewsTitle",
+        "areaEyebrow",
+        "areaTitle",
+        "areaIntro",
+        "hostEyebrow",
+        "hostNote",
+        "bookEyebrow",
+        "bookTitle",
+        "bookText",
+        "faqEyebrow",
+        "faqTitle",
+        "closing",
+        "footerLine",
+        "seoTitle",
+        "seoDescription"
+      ];
+      const copy = { type: "object", additionalProperties: false, required: copyKeys.concat(["story", "highlights"]), properties: Object.assign(Object.fromEntries(copyKeys.map((k) => [k, s])), {
+        story: { type: "array", items: s },
+        highlights: { type: "array", items: { type: "object", additionalProperties: false, required: ["eyebrow", "title", "text"], properties: { eyebrow: s, title: s, text: s } } }
+      }) };
+      return { type: "object", additionalProperties: false, required: ["rationale", "direction", "accent", "heroVariant", "sections", "copy"], properties: {
+        rationale: s,
+        direction: { type: "string", enum: Object.keys(D.DIRECTIONS) },
+        accent: s,
+        heroVariant: { type: "string", enum: D.SECTIONS.hero },
+        sections: { type: "array", items: { type: "object", additionalProperties: false, required: ["type", "variant"], properties: { type: { type: "string", enum: Object.keys(D.SECTIONS) }, variant: s } } },
+        copy
+      } };
+    }
+    var SYSTEM = () => "You are the art director and copywriter at a small, award-winning studio that builds direct-booking websites for UK holiday lets. Clients pay \xA310,000 for a site from you, and every page must look and read like it. You do not write code. You choose from a tested design system and write the words; the studio's renderer builds the page.\n\nDesign principles you work to:\n" + D.PRINCIPLES.map((x, i) => i + 1 + ". " + x).join("\n") + "\n\nArt directions (pick exactly one, the one that fits this home and the host's brief best; do not default to the first):\n" + Object.entries(D.DIRECTIONS).map(([k, d]) => "- " + k + ": " + d.name + " \u2014 " + d.mood + " Fonts: " + d.fonts.display + " with " + d.fonts.text + ". Default accent " + d.pal.accent + " on " + d.pal.bg + ".").join("\n") + "\n\nSections and their layouts (type: variants): " + Object.entries(D.SECTIONS).map(([k, v]) => k + ": " + v.join("/")).join("; ") + `. hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".
+
+accent: a hex colour (#RRGGBB) that suits the photos and the place, or an empty string to keep the direction's accent. It must read on the direction's background.
+
+Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only. Never invent prices, distances, awards, ratings, reviews, amenities or features that are not in the facts. headline: under nine words, one promise; you may put a line break as \\n (max 3 lines) and wrap one word in *asterisks* to set it in italic accent. Titles may also use *one* emphasised word. subhead: one or two sentences. story: two or three short paragraphs about the stay. pull: one line worth quoting. highlights: exactly three, each a real feature from the facts. hostNote: only polish the host's own note if one is given, otherwise empty. seoTitle under 60 characters including the home name and town; seoDescription 140 to 155 characters with a reason to book direct. Banned words and phrases: ` + D.CLICHES.join(", ") + ".\n\nrationale: two sentences on why this direction and layout suit this home.";
+    function userPrompt(f, brief, previous, avoid) {
+      const fx = {
+        name: f.name,
+        area: f.area,
+        kind: f.kind,
+        sleeps: f.maxGuests,
+        bedrooms: f.bedrooms,
+        bathrooms: f.baths,
+        fromPerNight: "\xA3" + f.nightly,
+        cleaning: "\xA3" + f.cleaning,
+        minimumNights: f.minNights,
+        dogs: f.pets ? "welcome" + (f.petFee ? ", \xA3" + f.petFee + " per stay" : "") : "not allowed",
+        checkIn: f.checkin,
+        checkout: f.checkout,
+        parking: f.parking,
+        hostHeadline: f.headline,
+        hostSubheading: f.sub,
+        about: f.about,
+        hostNote: f.hostNote,
+        amenities: f.amenities,
+        houseRules: f.rules,
+        areaGuide: f.guide,
+        rating: f.rating && f.reviewCount ? f.rating + " from " + f.reviewCount + " reviews" : "none yet",
+        guestReviews: f.reviews.slice(0, 6).map((r) => r.stars + "\u2605 " + r.text),
+        photos: f.photos.length + " photos" + (f.photos.length ? ": " + f.photos.slice(0, 12).map((p) => p.cap || "untitled").join("; ") : ""),
+        host: f.owner + " at " + f.business
+      };
+      const b = brief || {};
+      return "The home:\n" + JSON.stringify(fx, null, 1) + "\n\nThe host's brief:\n- Feel: " + (VIBES[b.vibe] || "your call") + "\n- Guests they want: " + (str(b.audience, 200) || "not said") + "\n" + (b.direction && D.DIRECTIONS[b.direction] ? "- They chose the direction: " + b.direction + "\n" : "") + (b.notes ? "- Notes from the host: " + str(b.notes, 600) + "\n" : "") + (avoid && avoid.length ? "- Try a different direction from: " + avoid.join(", ") + "\n" : "") + (previous ? "\nTheir current site spec (revise it; keep what works):\n" + JSON.stringify({ direction: previous.direction, accent: previous.accent, sections: previous.sections, copy: previous.copy }) + "\n" : "") + (b.instruction ? "\nWhat the host asked you to change: " + str(b.instruction, 600) + "\n" : "") + "\nReturn the site spec.";
+    }
+    module.exports = function(cfg) {
+      const key = cfg.ai.anthropic, base = cfg.ai.anthropicBase || "https://api.anthropic.com", model = cfg.ai.studioModel || "claude-opus-5-5";
+      const enabled = !!key;
+      async function ask(system, content, sch) {
+        const body = { model, max_tokens: 16e3, system, messages: [{ role: "user", content }], output_config: { effort: cfg.ai.studioEffort || "medium", format: { type: "json_schema", schema: sch || schema() } }, fallbacks: "default" };
+        const r = await fetch(base + "/v1/messages", {
+          method: "POST",
+          signal: AbortSignal.timeout(14e4),
+          headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-beta": "server-side-fallback-2026-07-01", "content-type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        if (!r.ok) {
+          const t = await r.text().catch(() => "");
+          throw new Error("Claude answered " + r.status + " " + t.slice(0, 160));
+        }
+        const j = await r.json();
+        if (j.stop_reason === "refusal") throw new Error("Claude declined this request");
+        const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
+        try {
+          return JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, ""));
+        } catch (e) {
+          throw new Error("Claude did not return a usable design");
+        }
+      }
+      async function design(s, p, brief, opts) {
+        opts = opts || {};
+        const f = facts(s, p, opts);
+        const dir = guessDirection(f, brief && !brief.instruction ? brief : null);
+        const fallback = { direction: dir, sections: layoutFor(f, dir, heroFor(dir, f.photos.length)), copy: rulesCopy(f, dir) };
+        if (!enabled) {
+          const spec2 = normalize(Object.assign({}, fallback, opts.previous && brief && brief.instruction ? { direction: opts.previous.direction } : {}), f, fallback);
+          if (opts.avoid && opts.avoid.length) {
+            const keys = Object.keys(D.DIRECTIONS).filter((k) => !opts.avoid.includes(k));
+            spec2.direction = keys[opts.avoid.length * 3 % keys.length];
+            spec2.sections = layoutFor(f, spec2.direction, heroFor(spec2.direction, f.photos.length));
+          }
+          spec2.by = "rules";
+          spec2.qa = D.qa(spec2, f);
+          return spec2;
+        }
+        const content = [];
+        f.photos.filter((x) => /^https:\/\//.test(x.url)).slice(0, 4).forEach((x) => content.push({ type: "image", source: { type: "url", url: x.url } }));
+        content.push({ type: "text", text: userPrompt(f, brief, opts.previous, opts.avoid) });
+        let spec = normalize(await ask(SYSTEM(), content), f, fallback);
+        let checks = D.qa(spec, f);
+        const fixable = checks.filter((x) => !x.ok && x.fix && !/photo/i.test(x.label));
+        if (fixable.length) {
+          content[content.length - 1] = { type: "text", text: userPrompt(f, brief, spec, opts.avoid) + "\n\nYour last version failed these design checks. Fix them and keep everything else: " + fixable.map((x) => x.label + " (" + x.fix + ")").join("; ") };
+          try {
+            spec = normalize(await ask(SYSTEM(), content), f, fallback);
+            checks = D.qa(spec, f);
+          } catch (_) {
+          }
+        }
+        spec.by = "ai";
+        spec.qa = checks;
+        return spec;
+      }
+      return { enabled, design, ask, guessDirection, facts, normalize, SYSTEM };
+    };
+    module.exports.VIBES = VIBES;
+    module.exports.rulesCopy = rulesCopy;
+    module.exports.layoutFor = layoutFor;
+    module.exports.guessDirection = guessDirection;
+    module.exports.heroFor = heroFor;
+  }
+});
+
+// server/studio/index.js
+var require_studio = __commonJS({
+  "server/studio/index.js"(exports, module) {
+    var crypto = __require("crypto");
+    var D = require_design();
+    var render = require_render();
+    var FN = require_funnels();
+    var Gen = require_generate();
+    module.exports = function(o) {
+      const { cfg, ws, auth, pub, urls, stripeReady, log, json, jsonBody, send, err, ip } = o;
+      const gen = Gen(cfg);
+      const HTML = "text/html; charset=utf-8";
+      const st = (s) => s.studio = s.studio || { sites: {}, funnels: [] };
+      const today = (s) => s.today;
+      function blockedNights(s, pid) {
+        const out = /* @__PURE__ */ new Set();
+        const end = addDays(s.today, 540);
+        const run = (a, b) => {
+          for (let x = a < s.today ? s.today : a; x < b && x < end; x = addDays(x, 1)) out.add(x);
+        };
+        s.bookings.forEach((b) => {
+          if (b.propertyId === pid && b.status !== "cancelled" && b.checkOut > s.today) run(b.checkIn, b.checkOut);
+        });
+        (s.blocks || []).forEach((k) => {
+          if (k.propertyId === pid && k.to > s.today) run(k.from, k.to);
+        });
+        return [...out].sort();
+      }
+      function addDays(a, n) {
+        const x = /* @__PURE__ */ new Date(a + "T00:00:00Z");
+        x.setUTCDate(x.getUTCDate() + n);
+        return x.toISOString().slice(0, 10);
+      }
+      const promosHashed = (s) => Object.fromEntries(Object.entries(s.promos || {}).map(([k, v]) => [pub.fnv(k), v]));
+      function siteCtx(w, p, url, extra) {
+        const s = w.state;
+        return Object.assign({ url, bookUrl: "/api/public/" + w.slug + "/book", today: s.today, blocked: blockedNights(s, p.id), promos: promosHashed(s), stripe: stripeReady(w) || w.kind !== "live", bank: ((pub.siteState(s, p.id) || {}).account || {}).bank || null }, extra || {});
+      }
+      function publishedSite(w, p, canonical) {
+        const site = ((w.state.studio || {}).sites || {})[p.id];
+        if (!site || !site.published) return null;
+        return render.site(w.state, p, site.published, siteCtx(w, p, canonical));
+      }
+      const brief = (b) => {
+        b = b || {};
+        return { vibe: Gen.VIBES[b.vibe] ? b.vibe : "", audience: String(b.audience || "").slice(0, 200), notes: String(b.notes || "").slice(0, 600), direction: D.DIRECTIONS[b.direction] ? b.direction : "", instruction: String(b.instruction || "").slice(0, 600) };
+      };
+      const limited = (w, what, n) => {
+        if (!auth.limit("studio:" + what + ":" + w.id, n, 36e5)) throw err(429, "That is a lot of designs this hour. Try again in a little while.");
+      };
+      async function save(wid, fn, meta) {
+        return ws.withWs(wid, (BB) => fn(BB.store.get(), BB), meta || { action: "studio" });
+      }
+      async function reply(res, wid, extra, headers) {
+        const w = await ws.open(wid);
+        return json(res, Object.assign({ state: w.state, version: await ws.version(wid) }, extra || {}), 200, headers);
+      }
+      async function host(req, res, p, m, w, headers) {
+        const api = p.replace(/^\/api\/demo\//, "/api/");
+        const s = w.state;
+        if (api === "/api/studio/meta" && m === "GET") return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + " & " + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES }, 200, headers), true;
+        if (api === "/api/studio/generate" && m === "POST") {
+          limited(w, "gen", w.kind === "demo" ? 12 : 40);
+          const j = await jsonBody(req, 2e4);
+          const prop = s.properties.find((x) => x.id === j.propertyId);
+          if (!prop) throw err(404, "Home not found");
+          const cur = (st(s).sites || {})[prop.id] || {};
+          const b = brief(j.brief);
+          const prev = j.mode === "revise" ? cur.draft : null;
+          const avoid = j.mode === "another" && cur.draft ? [cur.draft.direction].concat(cur.tried || []).slice(0, 7) : null;
+          let spec;
+          try {
+            spec = await gen.design(s, prop, b, { previous: prev, avoid });
+          } catch (e) {
+            log("studio", e.message);
+            spec = await Gen({ ai: {} }).design(s, prop, b, { previous: prev, avoid });
+            spec.note = "The AI designer was not available, so this version was laid out by the design rules. Try again in a minute for an AI design.";
+          }
+          spec.at = (/* @__PURE__ */ new Date()).toISOString();
+          await save(w.id, (S, BB) => {
+            const sx = st(S);
+            const x = sx.sites[prop.id] = sx.sites[prop.id] || {};
+            if (x.draft) {
+              x.history = [x.draft].concat(x.history || []).slice(0, 6);
+            }
+            x.draft = spec;
+            x.brief = b;
+            x.tried = j.mode === "another" ? avoid || [] : [];
+            BB.log("site", "Site builder", (j.mode === "revise" ? "Revised the design for " : "Designed a new site for ") + prop.name + " in the " + D.DIRECTIONS[spec.direction].name + " direction. Preview it, then publish.", prop.id);
+            BB.store.commit({ type: "website", quiet: true });
+          });
+          return reply(res, w.id, { spec }, headers), true;
+        }
+        if (api === "/api/studio/edit" && m === "POST") {
+          const j = await jsonBody(req, 6e4);
+          const prop = s.properties.find((x2) => x2.id === j.propertyId);
+          if (!prop) throw err(404, "Home not found");
+          const cur = ((s.studio || {}).sites || {})[prop.id];
+          if (!cur || !cur.draft) throw err(400, "Design a site first.");
+          const f = render.facts(s, prop);
+          const x = j.patch || {};
+          const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === "" ? null : x.accent || cur.draft.accent, heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}) };
+          if (x.heroVariant) merged.sections = merged.sections.map((q) => q.type === "hero" ? { type: "hero", variant: x.heroVariant } : q);
+          const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy };
+          const spec = Object.assign(gen.normalize(merged, f, fallback), { by: cur.draft.by, at: (/* @__PURE__ */ new Date()).toISOString(), rationale: cur.draft.rationale });
+          if (x.heroVariant && x.heroVariant !== "type" && !f.photos.length) spec.note = "Add photos in Website & SEO to use an image-led hero.";
+          spec.qa = D.qa(spec, f);
+          await save(w.id, (S) => {
+            const x2 = st(S).sites[prop.id];
+            x2.history = [x2.draft].concat(x2.history || []).slice(0, 12);
+            x2.draft = spec;
+          });
+          return reply(res, w.id, { spec }, headers), true;
+        }
+        if (api === "/api/studio/undo" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await save(w.id, (S) => {
+            const x = ((S.studio || {}).sites || {})[j.propertyId];
+            if (!x || !(x.history || []).length) throw err(400, "Nothing to undo.");
+            x.draft = x.history.shift();
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/studio/publish" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          const prop = s.properties.find((x) => x.id === j.propertyId);
+          if (!prop) throw err(404, "Home not found");
+          await save(w.id, (S, BB) => {
+            const x = ((S.studio || {}).sites || {})[prop.id];
+            if (j.off) {
+              if (x) {
+                x.published = null;
+                x.publishedAt = null;
+              }
+              BB.log("site", "Site builder", prop.name + " is back on the standard booking site.", prop.id);
+            } else {
+              if (!x || !x.draft) throw err(400, "Design a site first.");
+              x.published = JSON.parse(JSON.stringify(x.draft));
+              x.publishedAt = (/* @__PURE__ */ new Date()).toISOString();
+              BB.log("site", "Site builder", "Published the new " + D.DIRECTIONS[x.draft.direction].name + " site for " + prop.name + ". Guests and search engines see it now.", prop.id);
+            }
+            BB.store.commit({ type: "website" });
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/funnels/create" && m === "POST") {
+          limited(w, "fn", w.kind === "demo" ? 12 : 40);
+          const j = await jsonBody(req, 1e4);
+          const tpl = FN.TEMPLATES[j.template] ? j.template : null;
+          if (!tpl) throw err(400, "Pick a funnel type.");
+          const prop = s.properties.find((x) => x.id === j.propertyId) || s.properties[0];
+          if (!prop) throw err(400, "Add a home first.");
+          const pct = Math.max(5, Math.min(30, parseInt(j.pct, 10) || (tpl === "lastminute" ? 15 : 10)));
+          const code = String(j.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14) || { guide: "GUIDE", waitlist: "FIRST", offer: "DIRECT", lastminute: "LASTMIN", comeback: "WELCOMEBACK" }[tpl] + pct;
+          const opt = { code, pct, season: String(j.season || "").slice(0, 40), notes: String(j.notes || "").slice(0, 400), headline: "" };
+          const f = render.facts(s, prop);
+          const steps = FN.TEMPLATES[tpl].steps.concat(FN.TEMPLATES[tpl].steps.includes("optin") && !FN.TEMPLATES[tpl].steps.includes("thanks") ? ["thanks"] : []);
+          let copy = FN.rulesCopy(tpl, f, opt), name = FN.TEMPLATES[tpl].name + " \xB7 " + prop.short, by = "rules";
+          if (gen.enabled) {
+            try {
+              const r = await gen.ask("You write high-converting, honest landing pages for UK holiday lets, at the standard of a top design studio.\n" + D.PRINCIPLES.join("\n"), [{ type: "text", text: FN.aiPrompt(tpl, f, opt) }], FN.schema(steps));
+              const clean = (x, n) => String(x || "").replace(/[<>]/g, "").trim().slice(0, n);
+              steps.forEach((k) => {
+                const a = r[k] || {}, b = copy[k] || {};
+                copy[k] = { eyebrow: clean(a.eyebrow, 60) || b.eyebrow, headline: clean(a.headline, 90) || b.headline, subhead: clean(a.subhead, 260) || b.subhead, points: (Array.isArray(a.points) && a.points.length ? a.points : b.points || []).map((x) => clean(x, 110)).slice(0, 4), button: clean(a.button, 32) || b.button, fine: clean(a.fine, 160) || b.fine || "", urgency: clean(a.urgency, 60) || b.urgency || "", text: clean(a.text, 300) || b.text || "" };
+              });
+              if (r.name) name = clean(r.name, 60);
+              by = "ai";
+            } catch (e) {
+              log("studio funnel", e.message);
+            }
+          }
+          const site = ((s.studio || {}).sites || {})[prop.id] || {};
+          const look = site.published || site.draft || {};
+          const fnl = {
+            id: "fn" + crypto.randomBytes(4).toString("hex"),
+            name,
+            template: tpl,
+            propertyId: prop.id,
+            status: "draft",
+            code,
+            pct,
+            season: opt.season,
+            steps,
+            copy,
+            by,
+            direction: look.direction || gen.guessDirection(f, null),
+            accent: look.accent || null,
+            createdAt: s.today,
+            stats: { views: {}, leads: 0 }
+          };
+          await save(w.id, (S, BB) => {
+            st(S).funnels.unshift(fnl);
+            if (code) S.promos[code] = S.promos[code] || pct;
+            BB.log("campaign", "Funnels", 'Created the "' + name + '" funnel' + (code ? " with code " + code + " (" + pct + "% off)" : "") + ". Preview it, then make it live.", fnl.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, { funnel: fnl }, headers), true;
+        }
+        if (api === "/api/funnels/edit" && m === "POST") {
+          const j = await jsonBody(req, 4e4);
+          await save(w.id, (S, BB) => {
+            const x = (st(S).funnels || []).find((q) => q.id === j.id);
+            if (!x) throw err(404, "Funnel not found");
+            const pt = j.patch || {};
+            if (pt.name) x.name = String(pt.name).slice(0, 60);
+            if (pt.direction && D.DIRECTIONS[pt.direction]) x.direction = pt.direction;
+            if (pt.status === "live" || pt.status === "draft" || pt.status === "paused") {
+              x.status = pt.status;
+              BB.log("campaign", "Funnels", '"' + x.name + '" is ' + (pt.status === "live" ? "live. Share its link anywhere." : pt.status === "paused" ? "paused." : "back in draft."), x.id);
+            }
+            if (pt.step && x.copy[pt.step] && pt.copy) {
+              const c = x.copy[pt.step];
+              ["eyebrow", "headline", "subhead", "button", "fine", "urgency", "text"].forEach((k) => {
+                if (typeof pt.copy[k] === "string") c[k] = pt.copy[k].replace(/[<>]/g, "").slice(0, 300);
+              });
+              if (Array.isArray(pt.copy.points)) c.points = pt.copy.points.map((q) => String(q).replace(/[<>]/g, "").slice(0, 110)).filter(Boolean).slice(0, 4);
+            }
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/funnels/delete" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await save(w.id, (S) => {
+            const sx = st(S);
+            sx.funnels = sx.funnels.filter((q) => q.id !== j.id);
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        return false;
+      }
+      function preview(res, w, p, q, isDemo) {
+        let mm;
+        if (mm = p.match(/^\/(?:app|demo)\/studio\/([^/]+)$/)) {
+          const prop = w.state.properties.find((x) => x.id === decodeURIComponent(mm[1]));
+          if (!prop) return send(res, 404, "Not found", "text/plain"), true;
+          const site = ((w.state.studio || {}).sites || {})[prop.id];
+          const spec = site && (q.get("v") === "published" ? site.published : site.draft);
+          if (!spec) return send(res, 404, "No design yet", "text/plain"), true;
+          const url = urls.site(w, prop);
+          send(res, 200, render.site(w.state, prop, spec, siteCtx(w, prop, url, { preview: true, banner: q.get("bare") ? null : isDemo ? "Demo preview \xB7 bookings here are pretend" : "Preview \xB7 " + (q.get("v") === "published" ? "live version" : "draft, not published yet") })), HTML, { "cache-control": "no-store" });
+          return true;
+        }
+        if (mm = p.match(/^\/(?:app|demo)\/funnel\/([^/]+)\/(optin|offer|thanks)$/)) {
+          const fn = ((w.state.studio || {}).funnels || []).find((x) => x.id === mm[1]);
+          if (!fn) return send(res, 404, "Not found", "text/plain"), true;
+          const prop = w.state.properties.find((x) => x.id === fn.propertyId) || w.state.properties[0];
+          send(res, 200, FN.page(w.state, prop, fn, mm[2], { siteUrl: isDemo ? "/demo" : urls.site(w, prop), postUrl: "#", today: w.state.today, preview: true, banner: q.get("bare") ? null : "Preview" }), HTML, { "cache-control": "no-store" });
+          return true;
+        }
+        return false;
+      }
+      let day = "", seen = /* @__PURE__ */ new Set();
+      async function countView(w, fn, step, req) {
+        const ua = String(req.headers["user-agent"] || "");
+        if (!ua || /bot|crawl|spider|preview|curl|headless/i.test(ua)) return;
+        const t = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+        if (t !== day) {
+          day = t;
+          seen = /* @__PURE__ */ new Set();
+        }
+        const h = crypto.createHash("sha256").update(t + ip(req) + ua + fn.id + step).digest("base64url").slice(0, 16);
+        if (seen.has(h)) return;
+        seen.add(h);
+        await ws.withWs(w.id, (BB) => {
+          const x = ((BB.store.get().studio || {}).funnels || []).find((q) => q.id === fn.id);
+          if (!x) return;
+          x.stats = x.stats || { views: {}, leads: 0 };
+          x.stats.views[step] = (x.stats.views[step] || 0) + 1;
+          BB.store.commit({ type: "campaign", quiet: true });
+        }, { quiet: true });
+      }
+      async function funnel(req, res, p, m, u) {
+        const mm = p.match(/^\/f\/([a-z0-9-]+)\/([a-z0-9]+)(?:\/(optin|offer|thanks))?\/?$/);
+        if (!mm) return false;
+        const r = await ws.bySlug(mm[1]);
+        if (!r) return false;
+        const w = await ws.open(r.id);
+        w.catchUp();
+        const fn = ((w.state.studio || {}).funnels || []).find((x) => x.id === mm[2]);
+        if (!fn || fn.status !== "live") {
+          send(res, 404, '<!doctype html><title>Not found</title><p style="font:16px system-ui;padding:40px">This page is not available.</p>', HTML);
+          return true;
+        }
+        if (o.hidden && await o.hidden(req, w)) {
+          send(res, 503, '<!doctype html><title>Coming soon</title><p style="font:16px system-ui;padding:40px">This page is opening soon.</p>', HTML);
+          return true;
+        }
+        const prop = w.state.properties.find((x) => x.id === fn.propertyId) || w.state.properties[0];
+        const step = mm[3] || fn.steps[0];
+        if (!fn.steps.includes(step)) return false;
+        const base = cfg.baseUrl + "/f/" + w.slug + "/" + fn.id;
+        const ctx = { siteUrl: urls.site(w, prop), postUrl: base + "/optin", today: w.state.today };
+        if (m === "POST" && step === "optin") {
+          if (!auth.limit("optin:" + ip(req), 10, 36e5)) {
+            send(res, 429, FN.page(w.state, prop, fn, "optin", Object.assign(ctx, { error: "Too many tries from here. Try again later." })), HTML);
+            return true;
+          }
+          const raw = await new Promise((ok) => {
+            let b = "";
+            req.on("data", (c) => {
+              b += c;
+              if (b.length > 4e3) req.destroy();
+            });
+            req.on("end", () => ok(b));
+          });
+          const f = Object.fromEntries(new URLSearchParams(raw));
+          const email = String(f.email || "").trim().toLowerCase().slice(0, 120), name = String(f.name || "").trim().slice(0, 60);
+          if (f.website) {
+            res.writeHead(303, { location: base + "/thanks" });
+            res.end();
+            return true;
+          }
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !name) {
+            send(res, 400, FN.page(w.state, prop, fn, "optin", Object.assign(ctx, { error: "Add your first name and a valid email." })), HTML);
+            return true;
+          }
+          const consent = f.consent === "1";
+          await ws.withWs(w.id, (BB) => {
+            const S = BB.store.get();
+            const x = ((S.studio || {}).funnels || []).find((q) => q.id === fn.id);
+            const tag = "Funnel: " + fn.name.slice(0, 30);
+            let g = S.guests.find((q) => String(q.email).toLowerCase() === email);
+            if (!g) {
+              g = { id: "g" + ++S.seq, name, email, phone: "", city: "", tags: [tag], subscribed: consent, notes: "", source: "funnel", createdAt: S.today };
+              S.guests.push(g);
+            } else {
+              if (!g.tags.includes(tag)) g.tags.push(tag);
+              if (consent && !g.unsubscribedAt) g.subscribed = true;
+            }
+            if (x) {
+              x.stats = x.stats || { views: {}, leads: 0 };
+              x.stats.leads = (x.stats.leads || 0) + 1;
+            }
+            BB.log("campaign", "Funnels", name + ' signed up through "' + fn.name + '"' + (consent ? " and joined your guest list." : " (no marketing consent)."), g.id);
+            BB.store.commit({ type: "guest", id: g.id });
+          });
+          res.writeHead(303, { location: base + "/thanks" });
+          res.end();
+          return true;
+        }
+        if (m !== "GET" && m !== "HEAD") return false;
+        countView(w, fn, step, req).catch(() => {
+        });
+        send(res, 200, FN.page(w.state, prop, fn, step, ctx), HTML, { "cache-control": "no-cache" });
+        return true;
+      }
+      return { host, preview, publishedSite, funnel, gen };
+    };
+  }
+});
+
 // server/legal.js
 var require_legal = __commonJS({
   "server/legal.js"(exports, module) {
@@ -16074,6 +17681,7 @@ var require_server = __commonJS({
       return ws.subscribe(wid, res);
     }
     var err = (status, message) => Object.assign(new Error(message), { status });
+    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
     var MIME = { ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".html": "text/html; charset=utf-8", ".pdf": "application/pdf", ".txt": "text/plain; charset=utf-8" };
     function file(res, base, rel, cache, extra) {
       const f = path.normalize(path.join(base, rel));
@@ -16102,6 +17710,7 @@ var require_server = __commonJS({
       return {
         mode: "host",
         surface,
+        slug: w.slug,
         state: s,
         version: w.version,
         actUrl: "/api/act",
@@ -16150,6 +17759,8 @@ var require_server = __commonJS({
     function sitePage(res, w, p, canonical, host, req) {
       const s = w.state;
       if (req && w.kind === "live") visits.count(req, w.id, p.id, s.today);
+      const built = studio.publishedSite(w, p, canonical);
+      if (built) return send(res, 200, built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
       const st = pub.siteState(s, p.id);
       send(res, 200, pages.page({
         title: seo.titleOf(p),
@@ -16637,6 +18248,7 @@ var require_server = __commonJS({
         }
         return send(res, 200, pages.plain({ title: "Unsubscribe", body: "<h1>Stop emails from " + E(w.state.account.business) + '?</h1><p>You will still get emails about any stay you have booked.</p><form method="post"><button type="submit">Unsubscribe</button></form>' }));
       }
+      if (p.startsWith("/f/") && await studio.funnel(req, res, p, m, u)) return;
       const dom = host && host !== MAIN_HOST && await ws.domain(host);
       if (dom) {
         if (!dom.verified) return send(res, 404, pages.plain({ title: "Coming soon", body: "<h1>This booking site is being connected.</h1><p>Check back soon.</p>" }));
@@ -16725,7 +18337,7 @@ var require_server = __commonJS({
         return await adminPost(req, res, p);
       }
       if (p === "/api/leads" && (m === "POST" || m === "OPTIONS")) return lead(req, res);
-      if (p === "/demo" || p.startsWith("/api/demo/")) {
+      if (p === "/demo" || p.startsWith("/api/demo/") || p.startsWith("/demo/")) {
         const c = cookies(req);
         let wid = c.bb_demo;
         let r = wid && await ws.row(wid);
@@ -16745,6 +18357,14 @@ var require_server = __commonJS({
           const j = await jsonBody(req, 2e6);
           const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []);
           return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers);
+        }
+        if (p.startsWith("/api/demo/studio/") || p.startsWith("/api/demo/funnels/")) {
+          const w = await ws.open(wid);
+          if (await studio.host(req, res, p, m, w, headers)) return;
+        }
+        if (p.startsWith("/demo/studio/") || p.startsWith("/demo/funnel/")) {
+          const w = await ws.open(wid);
+          if (studio.preview(res, w, p, u.searchParams, true)) return;
         }
         if (p === "/api/demo/reset" && m === "POST") {
           await ws.resetDemo(wid);
@@ -16858,6 +18478,8 @@ var require_server = __commonJS({
         }
         if (p === "/api/state") return json(res, Object.assign({ state: w.state, version: await ws.version(w.id) }, hostLinks(w)));
         if (p === "/api/stream") return await stream(res, u, w.id);
+        if ((p.startsWith("/api/studio/") || p.startsWith("/api/funnels/")) && await studio.host(req, res, p, m, w)) return;
+        if ((p.startsWith("/app/studio/") || p.startsWith("/app/funnel/")) && studio.preview(res, w, p, u.searchParams)) return;
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);
           const name = String(j.name || "");
