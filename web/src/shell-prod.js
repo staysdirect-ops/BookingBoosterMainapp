@@ -17,21 +17,24 @@
   }
 
   /* ---------- host ---------- */
+  const money = n => '£' + (Number(n) || 0).toFixed(2);
   let drawerInst = null, drawerOpen = false, seen = BB.store.get().events.length, menu = false;
   function hostBar() {
-    const s = BB.store.get(); const unread = s.events.length - seen;
+    const s = BB.store.get(); const unread = s.events.length - seen; const cr = BOOT.aiCredit;
     const tab = (k, t, i, href) => '<a href="' + href + '" data-surface="' + k + '" aria-current="' + (current === k ? 'page' : 'false') + '">' + BB.icon(i) + '<span>' + t + '</span></a>';
     return '<div class="pbar-in hbar">' +
       '<a class="pbar-brand" href="/app">' + BB.MARK + '<span><b>bookingbooster</b><em>' + esc(s.account.business) + '</em></span></a>' +
       '<nav class="pbar-tabs" aria-label="Your workspace">' + tab('app', 'Console', 'dash', '/app') + tab('mobile', 'Phone view', 'phone', '/app/phone') +
         (s.properties.length ? '<button data-act="sites" aria-expanded="' + (menu === 'sites') + '">' + BB.icon('home') + '<span>My sites</span></button>' : '') + '</nav>' +
       '<div class="pbar-tools">' +
+        (cr && (cr.empty || cr.low) ? '<a class="pbtn" href="/app/billing#ai-credit" title="' + (cr.empty ? 'AI credit used up. Top up to keep using the AI tools' : 'AI credit running low') + '">' + BB.icon('bolt') + '<span>' + (cr.empty ? 'Top up AI credit' : 'AI credit ' + money(cr.balance)) + '</span></a>' : '') +
         '<button class="pbtn" data-act="activity" aria-expanded="' + drawerOpen + '">' + BB.icon('bolt') + '<span>Activity</span>' + (unread > 0 && !drawerOpen ? '<i class="badge num">' + Math.min(unread, 99) + '</i>' : '') + '</button>' +
         '<button class="pbtn" data-act="me" aria-expanded="' + (menu === 'me') + '">' + BB.avatar(s.account.owner || 'You', 'sm') + '<span>' + esc(String(s.account.owner || '').split(' ')[0] || 'Account') + '</span></button>' +
       '</div>' +
       (menu === 'sites' ? '<div class="hmenu hm-sites" role="menu">' + s.properties.map(p => '<a role="menuitem" href="' + esc((BOOT.siteUrls || {})[p.id] || '#') + '" target="_blank" rel="noopener">' + BB.icon('web') + '<span><b>' + esc(p.name) + '</b><em>' + esc(p.domain) + '</em></span></a>').join('') + '</div>' : '') +
       (menu === 'me' ? '<div class="hmenu hm-me" role="menu"><p><b>' + esc(s.account.owner) + '</b><em>' + esc(s.account.email) + '</em><em>' + esc(s.account.plan) + ' plan</em></p>' +
         '<a role="menuitem" href="/app/billing">' + BB.icon('card') + '<span>Plan and billing</span></a>' +
+        (cr ? '<a role="menuitem" href="/app/billing#ai-credit">' + BB.icon('bolt') + '<span>AI credit · ' + money(cr.balance) + ' left</span></a>' : '') +
         '<a role="menuitem" href="/app/account">' + BB.icon('user') + '<span>Account and data</span></a>' +
         '<a role="menuitem" href="/help" target="_blank">' + BB.icon('list') + '<span>Help</span></a>' +
         '<form method="post" action="/logout"><button role="menuitem" type="submit">' + BB.icon('out') + '<span>Sign out</span></button></form></div>' : '') +

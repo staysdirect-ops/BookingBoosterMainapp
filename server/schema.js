@@ -27,6 +27,11 @@ create table if not exists lead_seq (lead_id bigint primary key, seq text not nu
   next_at bigint, sent text not null default '{}', vars text not null default '{}', updated_at bigint not null);
 create table if not exists lead_optout (email text primary key, at bigint not null);
 create table if not exists kv (k text primary key, v text not null);
+create table if not exists ai_credit (workspace_id text primary key, anchor bigint not null, period text not null,
+  allowance bigint not null default 0, allowance_left bigint not null default 0, topup_left bigint not null default 0, updated_at bigint not null);
+create table if not exists ai_ledger (id bigserial primary key, workspace_id text not null, kind text not null, amount bigint not null,
+  feature text, model text, tokens_in integer, tokens_out integer, ref text unique, created_at bigint not null);
+create index if not exists ai_ledger_ws on ai_ledger(workspace_id, created_at);
 create index if not exists lead_seq_due on lead_seq(status, next_at);
 create index if not exists outbox_ws on outbox(workspace_id, created_at);
 create index if not exists pay_ws on payments(workspace_id, booking_id);

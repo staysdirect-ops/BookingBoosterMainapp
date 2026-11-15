@@ -73,16 +73,25 @@
 
   // Claude-drafted replies for the inbox when the server has a key. The rule-based draft shows until it arrives.
   if (mode === 'host' && BOOT.aiDrafts && BB.suggestReply) {
-    const base = BB.suggestReply, cache = {}, asked = {};
+    const base = BB.suggestReply, cache = {}, asked = {}; let creditOut = !!(BOOT.aiCredit && BOOT.aiCredit.empty);
     BB.suggestReply = function (tid) {
       const t = BB.q.thread(tid); if (!t) return '';
       const last = t.messages.filter(m => m.from === 'guest').pop(); if (!last) return '';
       const key = tid + ':' + t.messages.length;
       if (cache[key]) return cache[key];
-      if (!asked[key]) { asked[key] = 1; call('/api/suggest', { threadId: tid }).then(j => { if (j && j.text) { cache[key] = j.text; BB.store.commit({ quiet: true, type: 'draft' }); } }).catch(() => {}); }
+      if (!asked[key] && !creditOut) { asked[key] = 1; call('/api/suggest', { threadId: tid }).then(j => {
+        if (j && j.text) { cache[key] = j.text; BB.store.commit({ quiet: true, type: 'draft' }); BB.api.credits(); }
+        if (j && j.credit && j.credit.empty) { creditOut = true; BOOT.aiCredit = Object.assign({}, BOOT.aiCredit, { empty: true, balance: 0 }); BB.toast(j.credit.message, 'bad'); BB.store.commit({ quiet: true, type: 'credit' }); }
+      }).catch(() => {}); }
       return base(tid);
     };
   }
+
+  // AI credit: the balance shown in the account menu. Refreshed after AI actions (other surfaces call BB.api.credits() too).
+  BB.api.credits = function () {
+    if (mode !== 'host' || !BOOT.aiCredit) return Promise.resolve(null);
+    return call('/api/credits', null, 'GET').then(c => { BOOT.aiCredit = c; BB.store.commit({ quiet: true, type: 'credit' }); return c; }).catch(() => null);
+  };
 
   // Live updates from other devices and from guests.
   if (BOOT.streamUrl && BOOT.poll) {

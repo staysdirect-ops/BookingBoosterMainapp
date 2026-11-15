@@ -54,6 +54,7 @@ async function payUrl(w, b, back) {
 const secrets = require('./secrets')(db, cfg);
 const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
+const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
 const backup = require('./backup')({ db, cfg, log });
@@ -110,9 +111,9 @@ const MARK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 /* ---------------- boot objects ---------------- */
 let marketingState = null;
 const marketing = () => marketingState || (marketingState = seedDemo());
-function hostBoot(w, surface) {
+async function hostBoot(w, surface) {
   const s = w.state;
-  return { mode: 'host', surface, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain,
+  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain,
     ...hostLinks(w), aiEngines: ai.available(), test: testNotes() };
 }
 const SOON = ['cleaner', 'google', 'gsc', 'analytics', 'pricelabs']; // shown in live accounts as coming soon
@@ -203,7 +204,8 @@ async function stripeWebhook(req, res) {
       if (m.kind === 'link') { await payIns.run(o.id, w.id, m.booking, 'booking', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); await ws.act(w.id, 'paymentConfirmed', [m.booking, { intent: o.payment_intent, session: o.id }]); }
       if (m.kind === 'deposit') { await payIns.run(o.id, w.id, m.booking, 'deposit', 20000, 'card-saved', o.setup_intent, Date.now(), Date.now()); await ws.act(w.id, 'checkin', [m.booking, { deposit: true }]); }
       if (m.kind === 'extra') { await payIns.run(o.id, w.id, m.booking, 'extra', o.amount_total || 0, 'paid', o.payment_intent, Date.now(), Date.now()); }
-      if (m.kind === 'plan') { await ws.setMeta(w.id, { billing_status: 'active', stripe_customer: o.customer, plan: m.plan }); await ws.withWs(w.id, BB => { BB.store.get().account.plan = m.plan; BB.store.get().account.billing = 'active'; BB.store.commit({}); }); }
+      if (m.kind === 'plan') { await ws.setMeta(w.id, { billing_status: 'active', stripe_customer: o.customer, plan: m.plan }); await ws.withWs(w.id, BB => { BB.store.get().account.plan = m.plan; BB.store.get().account.billing = 'active'; BB.store.commit({}); }); await credits.planStarted(w.id); }
+      if (m.kind === 'credit' && o.payment_status === 'paid') { const pounds = (o.amount_total || 0) / 100; if (await credits.topup(w.id, pounds, o.id)) log('credits', w.id, 'topped up £' + pounds); }
     }
     if (ev.type === 'checkout.session.expired' && w && m.kind === 'booking') { await payUpd.run('expired', null, Date.now(), o.id); await ws.act(w.id, 'expirePending', [m.booking]); }
     if (ev.type === 'account.updated' && o.id) { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_account = ?').get(o.id); if (r) await markStripe(r.id, !!o.charges_enabled); }
@@ -525,7 +527,7 @@ async function route(req, res) {
     const w = await ws.open(s.workspace_id); if (!w) return json(res, { error: 'Workspace missing' }, 500);
     if (w.catchUp()) ws.persist(w, { rollover: true });
     if (p === '/app' || p === '/app/phone') return send(res, 200, pages.page({ title: w.state.account.business + ' · Bookingbooster', robots: 'noindex', app: true, boot: await hostBoot(w, p === '/app/phone' ? 'mobile' : 'app'), banner: testNotes().length && u.searchParams.get('welcome') ? '<b>Test mode</b> ' + E(testNotes().join(', ')) + ' are not switched on for this server yet.' : null }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
-    if (p === '/app/billing') return send(res, 200, await billingPage(w));
+    if (p === '/app/billing') return send(res, 200, await billingPage(w, u.searchParams));
     if (p === '/app/account' && m === 'GET') return send(res, 200, await accountPage(w, s, u.searchParams.get('msg')));
     if (p === '/app/account/export') { // everything in the account, as one JSON file (UK GDPR data portability)
       const out = { exported_at: new Date().toISOString(), account: w.state.account, homes: w.state.properties, bookings: w.state.bookings, guests: w.state.guests, messages: w.state.threads, campaigns: w.state.campaigns, automations: w.state.automations, blocks: w.state.blocks };
@@ -540,6 +542,15 @@ async function route(req, res) {
     if (p === '/app/billing/start' && m === 'POST') {
       if (!stripe.enabled) return redirect(res, '/app/billing?msg=stripe');
       const r = await ws.row(w.id); const sess = await stripe.subscribe({ customerEmail: w.state.account.email, plan: r.plan || w.state.account.plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/billing?ok=1', cancelUrl: cfg.baseUrl + '/app/billing', meta: { workspace: w.id, kind: 'plan', plan: r.plan || w.state.account.plan } });
+      return redirect(res, sess.url);
+    }
+    if (p === '/app/billing/topup' && m === 'POST') {
+      const f = await formBody(req); const pounds = credits.topupAmount(f.custom ? f.custom : f.amount);
+      if (!pounds) return redirect(res, '/app/billing?msg=topup#ai-credit');
+      if (!stripe.enabled) return redirect(res, '/app/billing?msg=stripe#ai-credit');
+      if (!auth.limit('topup:' + w.id, 20, 3600e3)) throw err(429, 'Too many tries. Try again in an hour.');
+      const r = await ws.row(w.id);
+      const sess = await stripe.checkoutCredit({ customer: r.stripe_customer, email: w.state.account.email, pounds, successUrl: cfg.baseUrl + '/app/billing?topup=' + pounds + '#ai-credit', cancelUrl: cfg.baseUrl + '/app/billing#ai-credit', meta: { workspace: w.id, kind: 'credit', pounds: String(pounds) } });
       return redirect(res, sess.url);
     }
     if (p === '/app/billing/portal' && m === 'POST') { const r = await ws.row(w.id); if (!r.stripe_customer) return redirect(res, '/app/billing'); return redirect(res, await stripe.portal(r.stripe_customer, cfg.baseUrl + '/app/billing')); }
@@ -618,8 +629,10 @@ async function route(req, res) {
       if (!assist.enabled) return json(res, { text: null });
       if (!auth.limit('suggest:' + w.id, 120, 3600e3)) throw err(429, 'Too many drafts this hour. Try again later.');
       const j = await jsonBody(req, 2e3); const t = w.state.threads.find(x => x.id === j.threadId); if (!t) throw err(404, 'Conversation not found');
-      try { return json(res, { text: await assist.draft(w.state, t) }); } catch (e) { log('assist', e.message); return json(res, { text: null }); }
+      try { await credits.check(w.id); } catch (e) { if (e.code === 'ai_credit') return json(res, { text: null, credit: { empty: true, message: e.message, url: e.topupUrl } }); throw e; }
+      try { return json(res, { text: await assist.draft(w.state, t, credits.meter(w.id, 'reply')) }); } catch (e) { log('assist', e.message); return json(res, { text: null }); }
     }
+    if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
     if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => ({ propertyId: x.id, name: x.name, url: urls.ical(w, x) })) });
@@ -641,7 +654,8 @@ const stripeLine = st => stripeKeyForm(st) + '<p><small>Stripe: ' + (!st.on ? 'o
 async function adminPage(req, res, note) {
   if (!await isAdmin(req)) return notFound(res);
   const leadRows = await db.prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT 300').all();
-  const accts = await db.prepare("SELECT id, slug, plan, billing_status, created_at FROM workspaces WHERE kind = 'live' ORDER BY created_at DESC LIMIT 300").all();
+  const accts = await db.prepare("SELECT w.id, w.slug, w.plan, w.billing_status, w.created_at, c.allowance_left, c.topup_left, (SELECT coalesce(sum(l.amount), 0) FROM ai_ledger l WHERE l.workspace_id = w.id AND l.kind = 'use' AND l.created_at > ?) AS ai_used FROM workspaces w LEFT JOIN ai_credit c ON c.workspace_id = w.id WHERE w.kind = 'live' ORDER BY w.created_at DESC LIMIT 300").all(Date.now() - 30 * 864e5);
+  const aiTotal = accts.reduce((a, x) => a + Number(x.ai_used || 0), 0) / credits.UNIT;
   const d = t => new Date(t).toLocaleString('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const st = await leads.loadSettings(); const wd = st.webinar_at ? new Date(st.webinar_at) : null;
   const ukParts = ms => { const f = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(ms)); const g = k => (f.find(x => x.type === k) || {}).value; return [g('year') + '-' + g('month') + '-' + g('day'), g('hour') + ':' + g('minute')]; };
@@ -668,7 +682,12 @@ async function adminPage(req, res, note) {
   send(res, 200, authPage('Team', '<h1>Leads and accounts</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + '<p>' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.</p>' +
     stripeLine(await stripeAuto.status()) + '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
     '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div>' +
-    '<div class="card" style="overflow:auto"><b>Host accounts</b><table style="width:100%;font-size:13px">' + accts.map(a => '<tr><td>' + d(a.created_at) + '</td><td>' + E(a.slug) + '</td><td>' + E(a.plan || '') + '</td><td>' + E(a.billing_status || '') + '</td></tr>').join('') + '</table></div>', true), 'text/html; charset=utf-8');
+    '<div class="card" style="overflow:auto"><b>Host accounts</b><p style="margin:4px 0 0"><small>AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + ' a month' + (cfg.credits.markup !== 1 ? ', usage charged at ' + cfg.credits.markup + '× cost' : ', usage charged at cost') + '. AI used by all hosts in the last 30 days: ' + credits.money(aiTotal) + '.</small></p>' +
+    '<table style="width:100%;font-size:13px"><tr><th align="left">Joined</th><th align="left">Site</th><th align="left">Plan</th><th align="left">Billing</th><th align="left">AI credit left</th><th align="left">AI used, 30 days</th><th align="left"></th></tr>' + accts.map(a => {
+      const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT;
+      return '<tr style="vertical-align:top"><td>' + d(a.created_at) + '</td><td>' + E(a.slug) + '</td><td>' + E(a.plan || '') + '</td><td>' + E(a.billing_status || '') + '</td><td>' + (left == null ? '<small>Not used yet</small>' : credits.money(left)) + '</td><td>' + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td>' +
+        '<td class="act"><details><summary>Add credit</summary><form method="post" action="/admin/credits/' + E(a.id) + '">' + inp('pounds', '', 'Pounds to add, e.g. 20', 'number') + '<button>Add AI credit</button></form></details></td></tr>';
+    }).join('') + '</table></div>', true), 'text/html; charset=utf-8');
 }
 async function adminPost(req, res, p) {
   if (!await isAdmin(req)) return notFound(res);
@@ -679,6 +698,12 @@ async function adminPost(req, res, p) {
     const at = f.webinar_day ? leads.ukAt(f.webinar_day, f.webinar_time || '12:30') : 0;
     await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });
     await leads.run(); return await adminPage(req, res, 'Saved.');
+  }
+  if ((mm = p.match(/^\/admin\/credits\/([A-Za-z0-9_-]+)$/))) { // goodwill credit from the team, e.g. after a support issue
+    const pounds = Math.round(Number(f.pounds) * 100) / 100; const r = await ws.row(mm[1]);
+    if (!r || !(pounds > 0) || pounds > 20000) return await adminPage(req, res, 'Enter an amount between £0.01 and £20,000.');
+    await credits.topup(mm[1], pounds, null, 'grant'); log('credits', mm[1], 'team added £' + pounds);
+    return await adminPage(req, res, 'Added ' + credits.money(pounds) + ' of AI credit to ' + (r.slug || mm[1]) + '.');
   }
   if ((mm = p.match(/^\/admin\/leads\/(\d+)\/(audit|proposal|stop)$/))) {
     const id = +mm[1];
@@ -754,17 +779,41 @@ async function accountPost(req, res, p, w, sess) {
 }
 async function deleteWorkspace(wid) {
   for (const u of await db.prepare('SELECT id FROM users WHERE workspace_id = ?').all(wid)) await auth.deleteUser(u.id);
-  for (const t of ['secrets', 'payments', 'outbox', 'domains']) await db.prepare('DELETE FROM ' + t + ' WHERE workspace_id = ?').run(wid);
+  for (const t of ['secrets', 'payments', 'outbox', 'domains', 'ai_credit', 'ai_ledger']) await db.prepare('DELETE FROM ' + t + ' WHERE workspace_id = ?').run(wid);
   await db.prepare('DELETE FROM kv WHERE k IN (?, ?)').run('hostmail:' + wid, 'hostprefs:' + wid);
   await ws.remove(wid);
   for (const dir of ['uploads', 'media']) await files.delPrefix(dir + '/' + wid);
 }
-async function billingPage(w) {
+async function billingPage(w, sp) {
   const r = await ws.row(w.id); const s = w.state; const price = 200, setup = 997;
   const status = { trial: 'Not paid yet. The £' + setup + ' setup fee is due. Your booking site goes live to guests once it is paid, and your first month is free', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
   return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">Plus a one-off setup fee of £' + setup + ', paid today. Your first month is free, and the plan is billed from a month after you start.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
     (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Pay the £' + setup + ' setup fee and start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
+    (credits.enabled ? await creditCard(w, sp) : '') +
     '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+}
+// AI credit: the monthly allowance, top-ups, what was used, and the top-up form.
+async function creditCard(w, sp) {
+  const c = await credits.summary(w.id), rows = await credits.recent(w.id, 12), M = credits.money;
+  const st = (await ws.row(w.id) || {}).billing_status, starter = stripe.enabled && w.kind === 'live' && (!st || st === 'trial');
+  const day = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/London' });
+  const msg = sp && sp.get('msg') === 'topup' ? '<p class="err">Choose an amount in whole pounds from £' + credits.TOPUP_MIN + ' to £' + credits.TOPUP_MAX.toLocaleString('en-GB') + '.</p>'
+    : sp && sp.get('topup') ? '<p class="ok">Thank you. £' + E(sp.get('topup')) + ' of AI credit is added as soon as Stripe confirms the payment, usually within a minute.</p>' : '';
+  const pct = c.included ? Math.max(0, Math.min(100, Math.round(100 * c.includedLeft / c.included))) : 0;
+  const status = c.empty ? '<p class="err" style="margin:8px 0 0"><b>Your AI credit has run out.</b> The site builder, funnels and reply drafts are paused until you top up' + (c.included ? ' or your allowance comes back on ' + day(c.resetsAt) : '') + '.</p>'
+    : c.low ? '<p class="err" style="margin:8px 0 0">Your AI credit is running low. Top up so the AI tools keep working.</p>' : '';
+  const used = c.byFeature.length ? '<p style="margin:6px 0 0"><small>Used since ' + day(c.periodStart) + ': ' + c.byFeature.map(x => E(x.name) + ' ' + M(x.pounds) + ' (' + x.count + ')').join(' · ') + '</small></p>' : '';
+  const hist = rows.length ? '<details style="margin-top:10px"><summary>Recent activity</summary><table style="width:100%;font-size:13px;margin-top:6px">' + rows.map(x => '<tr><td>' + new Date(x.at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }) + '</td><td>' + E(x.name) + '</td><td align="right">' + (x.kind === 'use' ? '-' + M(x.pounds) : '+' + M(x.pounds)) + '</td></tr>').join('') + '</table></details>' : '';
+  const presets = credits.TOPUP_PRESETS.map((n, i) => '<label style="display:inline-flex;align-items:center;gap:4px;margin:0 10px 6px 0;font-weight:400"><input type="radio" style="padding:0;margin:0" name="amount" value="' + n + '"' + (i === 1 ? ' checked' : '') + '> £' + n.toLocaleString('en-GB') + '</label>').join('');
+  const form = stripe.enabled ? '<form method="post" action="/app/billing/topup" style="margin-top:12px"><b>Top up</b><div style="margin:8px 0">' + presets + '</div>' +
+    '<label>Or another amount (£' + credits.TOPUP_MIN + ' to £' + credits.TOPUP_MAX.toLocaleString('en-GB') + ')<input name="custom" inputmode="numeric" pattern="[0-9,]*" placeholder="e.g. 75"></label>' +
+    '<button>Top up with card</button><p style="margin:6px 0 0"><small>Paid by card through Stripe, inc. VAT. Top-ups never expire and are used after your monthly allowance.</small></p></form>'
+    : '<p><small>Card payments are not switched on for this server yet, so top-ups are not available.</small></p>';
+  return '<div class="card" id="ai-credit"><b>AI credit · ' + M(c.balance) + ' left</b>' + msg +
+    (starter ? '<p style="margin:6px 0 0">You have ' + M(c.included) + ' of AI use to try the site builder, funnels and reply drafts before your plan starts. Once it starts, your plan includes ' + M(cfg.credits.monthly) + ' of AI use every month.' + (c.topup > 0 ? ' Plus ' + M(c.topup) + ' of top-ups.' : '') + '</p>'
+      : '<p style="margin:6px 0 0">Your plan includes ' + M(c.included) + ' of AI use a month for the site builder, funnels and reply drafts. ' + M(c.includedLeft) + ' of it is left this month, and it resets on ' + day(c.resetsAt) + '.' + (c.topup > 0 ? ' Plus ' + M(c.topup) + ' of top-ups.' : '') + '</p>') +
+    '<div style="height:8px;background:#E4E7F0;border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:#3355FF"></div></div>' +
+    status + used + '<p style="margin:6px 0 0"><small>Each AI action is charged by how much AI work it takes' + (c.markup === 1 ? ', at the price the AI provider charges us' : '') + '. A reply draft is usually under 1p; a full site design is usually under £1.</small></p>' + hist + form + '</div>';
 }
 const LEGAL = require('./legal')(cfg, E);
 function staticPage(p) {
