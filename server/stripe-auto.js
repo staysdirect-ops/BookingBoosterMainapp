@@ -114,7 +114,7 @@ function auto({ cfg, stripe, db, log }) {
     try {
       const r = await setup(stripe, cfg.baseUrl, { recreate: true });
       const saved = { fp: fp(), mode: mode(), at: t, prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
-      await set.run(KEY, JSON.stringify(saved)); apply(saved); log('stripe', 'Prices and webhooks set up in ' + mode() + ' mode');
+      await set.run(KEY, JSON.stringify(saved)); apply(saved); log('stripe', 'Prices and webhooks set up in ' + mode() + ' mode' + (cfg.stripe.keyName ? ', key from ' + cfg.stripe.keyName : ''));
       return saved;
     } catch (e) {
       log('stripe setup', e.message);
@@ -128,7 +128,7 @@ function auto({ cfg, stripe, db, log }) {
     if (!stripe.enabled) return { on: false, canSave: !envKey };
     const s = await read(); apply(s);
     const p = cfg.stripe.prices;
-    return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || '' : '', at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4) };
+    return { on: true, mode: mode(), prices: !!(p.Growth && p.setup && p.addon), webhooks: !!(cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret), error: s && s.fp === fp() ? s.error || '' : '', at: s && s.at, canSave: !envKey, last4: String(cfg.stripe.key).slice(-4), keyName: cfg.stripe.keyName || 'team page' };
   }
   return { load, ensure, status, saveKey };
 }

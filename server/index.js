@@ -637,7 +637,7 @@ const isAdmin = async req => { const u = await me(req); const email = String((u 
 const stripeKeyForm = st => st.canSave ? '<details class="card"' + (st.on ? '' : ' open') + '><summary><b>' + (st.on ? 'Change the Stripe key' : 'Connect Stripe') + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off">' +
   '<p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p>' +
   '<label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : '';
-const stripeLine = st => stripeKeyForm(st) + '<p><small>Stripe: ' + (!st.on ? 'off' : st.mode + ' mode (key ending ' + E(st.last4) + ') · plan prices ' + (st.prices ? 'ready' : 'not yet') + ' · webhooks ' + (st.webhooks ? 'ready' : 'not yet') + (st.error ? ' · last setup error: ' + E(st.error) : '')) + '</small></p>';
+const stripeLine = st => stripeKeyForm(st) + '<p><small>Stripe: ' + (!st.on ? 'off' : st.mode + ' mode (key ending ' + E(st.last4) + ', from ' + E(st.keyName) + ') · plan prices ' + (st.prices ? 'ready' : 'not yet') + ' · webhooks ' + (st.webhooks ? 'ready' : 'not yet') + (st.error ? ' · last setup error: ' + E(st.error) : '')) + '</small></p>';
 async function adminPage(req, res, note) {
   if (!await isAdmin(req)) return notFound(res);
   const leadRows = await db.prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT 300').all();
