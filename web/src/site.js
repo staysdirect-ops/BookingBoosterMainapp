@@ -10,8 +10,8 @@
 
   /* ---------- static content ---------- */
   const PLANS = [
-    // One plan: a one-off setup fee, first month free, then a monthly price. Both include VAT.
-    { id: 'growth', name: 'Growth', price: 200, setup: 997, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
+    // One plan: a monthly price including VAT. No setup fee.
+    { id: 'growth', name: 'Growth', price: 200, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
   ];
   const ADDON = { name: 'Calendar sync add-on', price: 15 };
   const plan = id => PLANS.find(p => p.id === id) || PLANS[0];
@@ -31,7 +31,7 @@
     ['What is AI visibility?', 'How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps.'],
     ['How long does setup take?', 'Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week.'],
     ['Who owns the guest list?', 'You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR.'],
-    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. There is a one-off £997 setup fee, your first month is free, then it is £200 a month. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
+    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is £200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
   ];
 
   /* ---------- small helpers ---------- */
@@ -60,7 +60,15 @@
     if (theme === 'city') return '<div class="s-scene t-city" aria-hidden="true"><i class="hill"></i><i class="ter"></i><i class="par"></i><i class="win"></i><i class="doors"></i><i class="rail"></i><i class="street"></i></div>';
     return '<div class="s-scene t-cabin" aria-hidden="true"><i class="sun"></i><i class="mtn"></i><i class="mtn m2"></i><i class="tree t1"></i><i class="tree t3"></i><i class="cab"></i><i class="win"></i><i class="tree t2"></i><i class="tree t4"></i></div>';
   }
+  // The demo guest site, shown as a real screenshot in a browser frame (see /media in server/index.js).
+  const DEMO_SHOT = '/media/shot-site.jpg';
+  function shotSite(o) {
+    return '<div class="s-browser s-shot' + (o.cls ? ' ' + o.cls : '') + '">' +
+      '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + 'larchfellcabin.co.uk</span></div>' +
+      '<div class="s-shot-vp"><img src="' + DEMO_SHOT + '" alt="Larch Fell Cabin, a demo booking website made with Bookingbooster" loading="eager"></div></div>';
+  }
   function miniSite(o) {
+    if (o.shot) return shotSite(o);
     const th = o.theme || 'cabin';
     return '<div class="s-browser th-' + th + (o.cls ? ' ' + o.cls : '') + '">' +
       '<div class="s-bbar"><i></i><i></i><i></i><span>' + icon('lock') + esc(o.domain || 'yourhome.co.uk') + '</span></div>' +
@@ -102,31 +110,34 @@
       '</header>';
   }
 
-  function hero(inst, L) {
-    const r = L.found, g = r && BB.q.guest(r.guestId), rp = r && BB.q.property(r.propertyId);
-    const gname = g ? g.name.split(' ')[0] + ' ' + (g.name.split(' ')[1] || '')[0] + '.' : '';
-    const via = r && r.source === 'ai' ? 'ChatGPT' : r && r.source === 'google' ? 'Google search' : 'your site';
-    const ret = Math.round(L.m.returningShare * 100);
-    const retNames = L.s.guests.filter(x => x.tags.includes('Repeat')).slice(0, 3).map(x => x.name);
-    return '<section class="s-hero" id="s-top-' + inst.uid + '"><div class="s-w s-hero-in">' +
-      '<div class="s-hero-copy">' +
-        '<button class="s-tagline s-rise" style="--d:0" data-scroll="ai"><b>New</b>Does AI recommend your holiday let?' + icon('arrow') + '</button>' +
-        '<h1 class="s-h1 s-rise" style="--d:1">More direct bookings. <span class="s-hl">Less platform fees.</span></h1>' +
-        '<p class="s-lead s-rise" style="--d:2">Own your bookings, your guests and your website. We get your holiday let found on Google and in AI answers, bring past guests back, and you stop paying 15% or more on every stay.</p>' +
-        '<div class="s-cta s-rise" style="--d:3"><button class="btn primary lg s-glow" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg"' + go('live') + '>' + icon('play') + 'See the live demo</button></div>' +
-        (LIVE() ? '<div class="s-proof s-rise" style="--d:4"><span><b>No commission on bookings.</b> First month free. Prices include VAT.</span></div>'
-          : '<div class="s-proof s-rise" style="--d:4"><span class="s-faces">' + ['Amelia Clarke', 'Rhys Evans', 'Priya Nair', 'Callum Reid'].map(n => BB.avatar(n, 'sm')).join('') + '</span>' +
-          '<span><b>1,200+ UK hosts</b> keep their fees<span class="s-stars">★★★★★</span>4.9 average<small>Sample figures</small></span></div>') +
+  /* ---------- social-style building blocks: pills, chevrons, real product screens ---------- */
+  const M = n => '/media/' + n + '.jpg';
+  const CHEV = '<svg class="s-chev" viewBox="0 0 100 100" aria-hidden="true"><path d="M10 52 L50 14 L90 52"/><path d="M24 80 L50 56 L76 80"/></svg>';
+  const pill = t => '<span class="s-pill"><i></i>' + t + '</span>';
+  const frame = (img, url, cls) => '<div class="s-frame ' + (cls || '') + '"><div class="s-frame-bar"><b></b><b></b><b></b><span>' + icon('lock') + esc(url) + '</span></div><img src="' + M(img) + '" alt="" loading="lazy" decoding="async" width="1600" height="1000"></div>';
+  const phoneF = (img, cls) => '<div class="s-phone ' + (cls || '') + '"><div class="s-phone-scr"><img src="' + M(img) + '" alt="" loading="lazy" decoding="async" width="560" height="1032"></div></div>';
+  const NC_IC = { good: () => icon('check'), gpt: () => BB.aiLogo('chatgpt'), up: () => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>', spark: () => icon('spark'), key: () => icon('key') };
+  const ncard = (k, b, ic, cls) => '<div class="s-nc ' + (cls || '') + '"><span class="s-nc-ic ' + ic + '">' + NC_IC[ic]() + '</span><span><small>' + k + '</small><b>' + b + '</b></span></div>';
+
+  function hero(inst) {
+    return '<section class="s-hero s-hero3 t-cobalt" id="s-top-' + inst.uid + '">' + CHEV + '<div class="s-w s-hero3-in">' +
+      '<div class="s-hero3-copy">' +
+        '<div class="s-rise" style="--d:0">' + pill('Direct bookings for UK holiday lets') + '</div>' +
+        '<h1 class="s-h1 s-rise" style="--d:1">Fill your calendar <span class="s-hl">without the 15% fee.</span></h1>' +
+        '<p class="s-lead s-rise" style="--d:2">Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Set up for you, with no commission on bookings.</p>' +
+        '<div class="s-cta s-rise" style="--d:3"><button class="btn s-yel lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn s-out lg"' + go('live') + '>' + icon('play') + 'Try the live demo</button></div>' +
+        '<p class="s-hero3-price s-rise" style="--d:4"><b>£200 a month. No setup fee.</b> No commission on bookings. Prices include VAT. Cancel anytime.</p>' +
       '</div>' +
-      '<div class="s-collage" aria-label="Product preview with live numbers from the demo">' +
-        '<div class="s-rise" style="--d:2">' + miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-hero-browser' }) + '</div>' +
-        (r ? '<div class="s-fc s-fc-ai s-rise" style="--d:5"><small>' + icon(r.source === 'ai' ? 'spark' : 'search') + 'Booked via ' + via + '</small>' +
-          (r.source === 'ai' ? '<p class="s-fc-q">“' + esc(L.aiQ.q.charAt(0).toUpperCase() + L.aiQ.q.slice(1)) + '?”</p>' : '') +
-          '<p><b>' + esc(gname) + ' booked ' + esc(rp.short) + '</b> for ' + BB.dates(r) + '.</p><span class="s-fc-row"><b class="num">' + $(r.total) + '</b><span class="s-cite">' + icon('check') + 'You kept ' + $(Math.round(r.total * FEE())) + '</span></span></div>' : '') +
-        '<div class="s-fc s-fc-bk s-rise" style="--d:6"><span class="s-faces">' + retNames.map(n => BB.avatar(n, 'sm')).join('') + '</span><span><small>Returning guests</small><b><span class="num">' + ret + '%</span> of bookings</b><em>came from guests who stayed before</em></span></div>' +
-        '<div class="s-fc s-fc-fee s-rise" style="--d:7"><small>Fees kept this year</small><b class="num">' + $(L.m.saved) + '</b><span class="s-bars">' + [32, 44, 51, 63, 78, 100].map(h => '<i style="height:' + h + '%"></i>').join('') + '</span></div>' +
+      '<div class="s-hero3-stage s-rise" style="--d:2" role="img" aria-label="A holiday let booking website, the host app showing today’s bookings, a new direct booking and a ChatGPT recommendation">' +
+        frame('shot-site', 'larchfellcabin.co.uk', 's-hero3-browser') + phoneF('phone-today', 's-hero3-phone') +
+        ncard('New direct booking', '£1,180 · 4 nights', 'good', 'dark s-hn1') + ncard('Shows up in ChatGPT', 'Larch Fell Cabin', 'gpt', 's-hn2') +
       '</div>' +
     '</div></section>';
+  }
+
+  function proof() {
+    const it = [[(FEE() * 100).toFixed(1) + '%', 'Airbnb’s host fee, kept by you on every direct booking'], ['0%', 'commission on your bookings, ever'], ['Same day', 'your booking site goes live on a free address'], ['5 in 1', 'website, SEO, AI search, guest app and outreach in one login']];
+    return '<section class="s-proof3 t-ink" aria-label="At a glance"><div class="s-dots"></div><div class="s-w"><ul>' + it.map(([b, t]) => '<li><b>' + b + '</b><span>' + t + '</span></li>').join('') + '</ul></div></section>';
   }
 
   function logos() {
@@ -135,33 +146,77 @@
       names.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul></div></section>';
   }
 
-  function pillars(inst, L) {
-    const vis = Object.values(L.s.website.visitors).reduce((a, b) => a + b, 0);
-    const c1 = L.s.campaigns.find(c => c.status === 'sent') || L.s.campaigns[0];
-    const lp = L.p;
-    const cards = [
-      ['blue', '01', 'Website', 'Your own booking site', 'Your domain, instant booking, payments and deposits. Guests skip the service fee, so they pick you.', '<span class="s-viz-url">' + icon('lock') + esc(lp.domain) + '</span><span class="s-viz-row"><b class="num">' + vis.toLocaleString('en-GB') + '</b> visits this month</span>', go('property', { propertyId: lp.id }), 'See a host site'],
-      ['', '02', 'SEO', 'Found on Google', 'Local pages for the searches guests really make near you, written and published every month.', '<span class="s-viz-q">“cabin hot tub lake district”</span><span class="s-viz-row"><b class="num">#4</b><em class="s-up">▲ 3</em> in Google</span>', go('app', { view: 'website' }), 'See website and SEO'],
-      ['dark', '03', 'AI answers', 'Recommended by AI', 'Structured so your holiday let shows up in ChatGPT, Gemini, Perplexity and Google AI answers, with a link that books direct.', '<span class="s-viz-row s-viz-ai">' + BB.aiLogos() + '</span><span class="s-viz-row">Mentioned in <b class="num s-yel">' + L.ai.mentioned + ' of ' + L.ai.total + '</b> AI answers</span><span class="s-meter"><i style="width:' + L.ai.score + '%"></i></span>', go('app', { view: 'ai' }), 'See AI visibility'],
-      ['yel', '04', 'Guests', 'Guests who return', 'Check-in app, emails and texts that turn one stay into three, sent from your own name.', '<span class="s-viz-row"><b class="num">' + pct(c1.recipients ? c1.opens / c1.recipients : 0.54) + '</b> opened · <b class="num">' + c1.bookings + '</b> rebooked</span><span class="s-viz-q">' + esc(c1.subject) + '</span>', go('app', { view: 'campaigns' }), 'See campaigns'],
-    ];
-    return '<section class="s-sec" id="s-product-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head"><p class="eyebrow">One system</p><h2 class="s-h2">Everything a host needs to go direct.</h2>' +
-      '<p class="s-sub">Four tools that share one guest list you own. The guest who finds you on Google books on your site, checks in on your app and hears from you next season. No platform in the middle.</p></div>' +
-      '<div class="s-pillars">' + cards.map(([cls, n, k, h, p, viz, link, lt]) =>
-        '<article class="s-pil ' + cls + '"><span class="s-pil-n">' + n + ' · ' + k + '</span><h3>' + h + '</h3><p>' + p + '</p><div class="s-viz">' + viz + '</div>' +
-        '<button class="s-see"' + link + '>' + lt + icon('arrow') + '</button></article>').join('') + '</div>' +
+  function film() {
+    return '<section class="s-sec s-film" id="s-film" aria-label="Explainer video"><div class="s-w">' +
+      '<div class="s-head s-center">' + pill('See it in 47 seconds') + '<h2 class="s-h2">What Bookingbooster does for your holiday let.</h2></div>' +
+      '<div class="s-film-frame"><video controls preload="none" playsinline poster="/media/explainer.jpg" src="/media/explainer.mp4" aria-label="Bookingbooster explainer video"></video></div>' +
       '</div></section>';
   }
 
+  function features(inst, L) {
+    const F = [
+      { id: 'product', t: 't-white', pill: 'Your booking website', h: 'Your cottage. Your website. <span class="s-hl">Your guests.</span>',
+        p: 'A fast, good-looking booking site on your own .co.uk domain, made from your listing. Live calendar, instant booking and card payments. Guests skip the platform’s service fee, so they choose you.',
+        pts: ['Your domain, your brand, your house rules', 'Card, Apple Pay and Google Pay through Stripe', 'Security deposits held on the card, released on their own'],
+        alt: 'A holiday let booking website on a laptop and a phone',
+        vis: frame('shot-site2', 'tidewatercottage.co.uk', 's-fv-main') + phoneF('phone-site', 's-fv-phone') + ncard('Booked direct', 'No platform fee', 'good', 's-fv-nc'),
+        cta: ['See a host site', go('property', { propertyId: L.p.id })] },
+      { t: 't-sky', pill: 'Google SEO', h: 'Get found on Google for the stays <span class="s-hl">guests search.</span>',
+        p: 'Your listing can’t rank on Google. Your website can. Every month we write and publish local pages for the searches guests really make near you, like “cabin with hot tub Lake District”.',
+        pts: ['Local pages and area guides, written for you', 'Google Business Profile set up and kept fresh', 'Search Console connected, with a monthly report'],
+        alt: 'The website and SEO screen in the host console',
+        vis: frame('shot-seo', 'booking-booster.co.uk/app', 's-fv-main') + ncard('Example search ranking', '#4 for “cabin hot tub lake district”', 'up', 'dark s-fv-nc'),
+        cta: ['See website and SEO', go('app', { view: 'website' })] },
+    ];
+    const G = [
+      { t: 't-yellow', pill: 'Guest app', h: 'Your house guide in <span class="s-hl">every guest’s pocket.</span>',
+        p: 'No download. Guests open it from their booking email, check in online in about three minutes, and the door code arrives on its own when they are done.',
+        pts: ['ID check, rental agreement and deposit hold', 'Door codes for Nuki and Yale smart locks', 'House guide, local tips and messages in one place'],
+        alt: 'The guest app on two phones: the trip page and messages',
+        vis: phoneF('phone-guest', 's-fv-p1') + phoneF('phone-inbox', 's-fv-p2') + ncard('Check-in done', 'Door code sent', 'key', 's-fv-nc'),
+        cta: ['Open the guest app', go('guest', { bookingId: (BB.q.upcoming()[0] || {}).id })] },
+      { t: 't-cobalt', pill: 'Guest outreach', h: 'Quiet week? <span class="s-hl">Text your regulars.</span>',
+        p: 'Past guests are your best guests. We bring them back with emails and texts sent in your name: gap-night offers, next-season reminders and a welcome-back note that pays for itself.',
+        pts: ['Import past guests from your platform exports', 'Ready-made campaigns for gap nights and next season', 'See opens, clicks and bookings from every send'],
+        alt: 'The campaigns screen in the host console',
+        vis: frame('shot-campaigns', 'booking-booster.co.uk/app', 's-fv-main') + ncard('Example campaign', '23 rebooked from one email', 'good', 'dark s-fv-nc'),
+        cta: ['See campaigns', go('app', { view: 'campaigns' })] },
+      { t: 't-sky', pill: 'Host console and app', h: 'Every booking, message and payment. <span class="s-hl">One screen.</span>',
+        p: 'Run it all from your laptop or your phone. See who arrives today, answer guests with suggested replies, and get a buzz the moment a direct booking lands.',
+        pts: ['Calendar, bookings, payments and messages together', 'Suggested replies to guest questions', 'Fees kept and returning guests, tracked every month'],
+        alt: 'The host console dashboard and the host app on a phone',
+        vis: frame('shot-console', 'booking-booster.co.uk/app', 's-fv-main') + phoneF('phone-grow', 's-fv-phone'),
+        cta: ['Open the host console', go('app', { view: 'dashboard' })] },
+    ];
+    const row = (f, i) => '<section class="s-feat ' + f.t + (i % 2 ? ' flip' : '') + '"' + (f.id ? ' id="s-' + f.id + '-' + inst.uid + '"' : '') + '>' + CHEV + '<div class="s-w s-feat-in">' +
+      '<div class="s-feat-copy">' + pill(f.pill) + '<h2 class="s-h2">' + f.h + '</h2><p class="s-sub">' + f.p + '</p>' +
+        '<ul class="s-ticks3">' + f.pts.map(x => '<li><span>' + icon('check') + '</span>' + x + '</li>').join('') + '</ul>' +
+        '<button class="btn s-b lg"' + f.cta[1] + '>' + f.cta[0] + icon('arrow') + '</button></div>' +
+      '<div class="s-feat-vis" role="img" aria-label="' + esc(f.alt) + '">' + f.vis + '</div></div></section>';
+    return { top: F.map(row).join(''), bottom: G.map((f, i) => row(f, i + F.length + 1)).join('') };
+  }
+
+  const MYTHS = [
+    ['SEO takes years.', 'Local pages for specific searches can rank in months, especially in smaller towns.'],
+    ['I would have to leave the platforms.', 'Keep them if you like. The optional calendar sync blocks dates booked there, so you never double book.'],
+    ['Direct bookings are risky.', 'Card payments, ID checks, rental agreements and security deposits protect every direct stay.'],
+    ['My guests do not use apps.', 'No download needed. The guest app opens from a link in their booking confirmation.'],
+    ['People do not trust small websites.', 'A secure site with real reviews, clear prices and instant payment earns trust fast.'],
+    ['I need to be good with tech.', 'We set everything up. You approve it and keep hosting.'],
+  ];
+  function myths() {
+    return '<section class="s-sec s-myths t-white"><div class="s-w"><div class="s-head">' + pill('Myth vs fact') + '<h2 class="s-h2">What hosts worry about, <span class="s-hl">and what is true.</span></h2></div>' +
+      '<ul class="s-myth-grid">' + MYTHS.map(([m, f]) => '<li><p class="s-myth"><span>Myth</span><s>' + m + '</s></p><p class="s-fact"><span>Fact</span>' + f + '</p></li>').join('') + '</ul></div></section>';
+  }
+
   function calcVals(st) {
-    const direct = st.rev * st.share / 100, kept = Math.round(direct * FEE()), planYear = plan('growth').price * 11 + plan('growth').setup;
+    const direct = st.rev * st.share / 100, kept = Math.round(direct * FEE()), planYear = plan('growth').price * 12;
     return { direct, kept, planYear, net: kept - planYear, weeks: kept > 0 ? Math.ceil(planYear / (kept / 52)) : 99 };
   }
   function calc(inst) {
     const st = inst.st, v = calcVals(st), u = inst.uid, maxBar = Math.max(v.kept, v.planYear, 1);
     return '<section class="s-sec s-calc-sec"><div class="s-w s-calc">' +
-      '<div class="s-calc-l"><p class="eyebrow">Fee calculator</p><h2 class="s-h2">What would going direct be worth to you?</h2>' +
+      '<div class="s-calc-l">' + pill('Fee calculator') + '<h2 class="s-h2">What would going direct be worth to you?</h2>' +
         '<p class="s-sub">Every guest who books on your own site skips the platform and its fee. Here is the money that stays with you, in pounds.</p>' +
         '<div class="s-slider"><label for="s-rev-' + u + '"><span>Yearly booking revenue</span><b class="num" data-cv="rev">' + $(st.rev) + '</b></label>' +
           '<input type="range" id="s-rev-' + u + '" data-calc="rev" min="10000" max="250000" step="2000" value="' + st.rev + '" style="--p:' + ((st.rev - 10000) / 2400) + '%"><div class="s-ticks"><span>£10k</span><span>£250k</span></div></div>' +
@@ -173,11 +228,11 @@
         '<p class="s-calc-big num" data-cv="kept" data-v="' + v.kept + '">' + $(v.kept) + '</p>' +
         '<p class="s-calc-sm">on <b class="num" data-cv="direct" data-v="' + v.direct + '">' + $(v.direct) + '</b> of bookings moved direct, at Airbnb’s ' + (FEE() * 100).toFixed(1) + '% host fee</p>' +
         '<div class="s-cmp"><div><span>Fees you keep</span><span class="s-cmp-bar"><i class="kept" data-cv="barKept" style="width:' + (100 * v.kept / maxBar) + '%"></i></span><b class="num" data-cv="kept2" data-v="' + v.kept + '">' + $(v.kept) + '</b></div>' +
-        '<div><span>Growth plan, first year</span><span class="s-cmp-bar"><i class="plan" data-cv="barPlan" style="width:' + (100 * v.planYear / maxBar) + '%"></i></span><b class="num">' + $(v.planYear) + '</b></div></div>' +
+        '<div><span>Plan, first year (12 × £' + plan('growth').price + ')</span><span class="s-cmp-bar"><i class="plan" data-cv="barPlan" style="width:' + (100 * v.planYear / maxBar) + '%"></i></span><b class="num">' + $(v.planYear) + '</b></div></div>' +
         '<div class="s-calc-net"><span data-cv="netLabel">' + (v.net >= 0 ? 'Left over after the plan' : 'Short of covering the plan') + '</span><b class="num" data-cv="net" data-v="' + v.net + '">' + $(v.net) + '</b></div>' +
         '<p class="s-calc-pay" data-cv="pay">' + payLine(v) + '</p>' +
         '<button class="btn accent lg block" data-act="start">Start keeping it' + icon('arrow') + '</button>' +
-        '<p class="s-fine">Estimate only. Uses Airbnb’s host-only fee of 15.5% and the Growth plan’s first year billed monthly (setup fee plus 11 paid months), including VAT.</p>' +
+        '<p class="s-fine">Estimate only. Uses Airbnb’s host-only fee of 15.5% and the plan’s first year billed monthly (12 months at £200), including VAT.</p>' +
       '</div>' +
     '</div></section>';
   }
@@ -229,18 +284,44 @@
         '<div class="s-ai-cta"><button class="btn accent" data-act="start">Fix my AI visibility' + icon('arrow') + '</button><button class="btn s-ghost-inv"' + go('app', { view: 'ai' }) + '>See the weekly AI report</button></div>' +
       '</div>';
     }
-    return '<section class="s-ink" id="s-ai-' + u + '"><div class="s-w s-ai">' +
-      '<div class="s-ai-l"><p class="eyebrow">AI search</p><h2 class="s-h2">Travellers ask AI where to stay. Be the answer.</h2>' +
-        '<p class="s-sub">We track the questions guests ask about your area and shape your site so assistants recommend it, with a link that books direct.</p>' +
-        '<form class="s-ai-form" data-form="ai" novalidate>' +
-          '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
-          '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
-          '<button class="btn accent lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking…' : 'Check') + '</button>' +
-          (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
-        '</form>' +
-        '<p class="s-fine">Demo: this check is simulated with sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+    const ok = icon('check');
+    return '<section class="s-ink s-ai2" id="s-ai-' + u + '">' + CHEV + '<div class="s-w">' +
+      '<div class="s-ai2-head">' +
+        pill('AI search') +
+        '<h2 class="s-h2">When guests ask ChatGPT, <span class="s-hl">be the answer.</span></h2>' +
+        '<p class="s-sub">More guests start with ChatGPT, Gemini, Perplexity or Google’s AI answers instead of scrolling a listings site. Those assistants recommend the places they can read and trust. We make your booking site one of them, with a link that books direct.</p>' +
+        '<div class="s-ai2-logos">' + ENGINES.map(([k, t]) => '<span>' + BB.aiName(k, t) + '</span>').join('') + '</div>' +
       '</div>' +
-      '<div class="s-ai-r" aria-live="polite">' + panel + '</div>' +
+      '<ol class="s-ai2-steps">' +
+        '<li><span class="s-ai2-n">1</span><h3>A guest asks</h3><p>They type a real question about your area, the way they would ask a friend.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-bubble">' + esc(question) + '</div></div></li>' +
+        '<li><span class="s-ai2-n">2</span><h3>The assistant reads the web</h3><p>It looks for clear, trusted facts. We put them on your site in the format assistants read.</p>' +
+          '<div class="s-ai2-viz"><ul class="s-ai2-src">' +
+            ['Your booking site, with structured data', 'Questions and answers about your home', 'Google Business Profile and reviews', 'An open door for AI crawlers'].map(t => '<li>' + ok + esc(t) + '</li>').join('') +
+          '</ul></div></li>' +
+        '<li><span class="s-ai2-n">3</span><h3>It recommends you</h3><p>Your home appears in the answer, with a link to your own site, so the guest books without a platform fee.</p>' +
+          '<div class="s-ai2-viz"><div class="s-ai2-ans"><small>' + BB.aiName('chatgpt', 'ChatGPT') + '</small><p><b>Larch Fell Cabin</b> is a cosy cabin with a private hot tub and fell views, ten minutes from Windermere.</p><span class="s-ai2-link">' + icon('lock') + 'larchfellcabin.co.uk<em>Book direct</em></span></div></div></li>' +
+      '</ol>' +
+      '<div class="s-ai2-weekly"><h3>What we do for you, every week</h3><ul>' +
+        '<li><b>Ask the questions guests ask.</b><span>We put travellers’ questions about your area to each assistant and read every answer.</span></li>' +
+        '<li><b>Make your site easy for AI to read.</b><span>Structured data, clear answers about your home, a sitemap and an llms.txt file.</span></li>' +
+        '<li><b>Fill the gaps.</b><span>When an assistant recommends someone else, we add the local pages and facts that were missing.</span></li>' +
+        '<li><b>Show you the score.</b><span>A weekly AI visibility report in your console, so you can see it move.</span></li>' +
+      '</ul></div>' +
+      '<div class="s-ai2-shot"><div>' + pill('Your weekly AI report') + '<h3>Mentioned in 6 of 8 <span>AI answers.</span></h3><p>See which questions name you, which name a competitor, and the fixes that win you the next one. Example report with sample data.</p></div>' +
+        '<div role="img" aria-label="The AI visibility report in the host console">' + frame('shot-ai', 'booking-booster.co.uk/app') + '</div></div>' +
+      '<div class="s-ai2-check">' +
+        '<div class="s-ai2-form"><h3>Check your area now</h3><p>See what assistants say when a traveller asks about stays near you.</p>' +
+          '<form class="s-ai-form" data-form="ai" novalidate>' +
+            '<label class="s-f"><span>Town or area</span><input id="s-ai-town-' + u + '" data-ai="town" value="' + esc(a.town) + '" maxlength="40" autocomplete="off" placeholder="Keswick"></label>' +
+            '<label class="s-f"><span>Type of stay</span><select id="s-ai-type-' + u + '" data-ai="type">' + STAY_TYPES.map(([k, t]) => '<option value="' + k + '"' + (a.type === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
+            '<button class="btn primary lg" type="submit"' + (a.phase === 'scan' ? ' disabled' : '') + '>' + icon('search') + (a.phase === 'done' ? 'Check again' : a.phase === 'scan' ? 'Checking…' : 'Check my area') + '</button>' +
+            (a.err ? '<p class="s-err" role="alert">' + esc(a.err) + '</p>' : '') +
+          '</form>' +
+          '<p class="s-fine">This preview uses sample answers. The real check runs in your console every week.</p>' + BB.aiTm() +
+        '</div>' +
+        '<div class="s-ai-r" aria-live="polite"><div class="s-ai2-win"><i></i><i></i><i></i><span>AI answer check</span></div><div class="s-ai2-body">' + panel + '</div></div>' +
+      '</div>' +
     '</div></section>';
   }
   function runAi(inst) {
@@ -257,50 +338,12 @@
       ['We build and tune it', 'Your booking site, local SEO pages, AI-ready answers and your guest list, set up and kept up for you.', 'build'],
       ['Bookings come direct', 'Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season.', 'book'],
     ];
-    return '<section class="s-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">How it works</p><h2 class="s-h2">Live the same day. You barely lift a finger.</h2></div>' +
+    return '<section class="s-sec"><div class="s-w"><div class="s-head">' + pill('How it works') + '<h2 class="s-h2">Live the same day. You barely lift a finger.</h2></div>' +
       '<ol class="s-steps">' + steps.map(([h, p, k], i) => '<li><span class="s-step-n num">' + (i + 1) + '</span><h3>' + h + '</h3><p>' + p + '</p>' +
         (k === 'link' ? '<div class="s-step-viz"><span class="s-url-demo">' + icon('globe') + 'airbnb.co.uk/rooms/48213907</span></div>' :
          k === 'build' ? '<div class="s-step-viz s-chk">' + ['Booking site', 'SEO pages', 'AI answers', 'Guest list'].map(x => '<span>' + icon('check') + x + '</span>').join('') + '</div>' :
          '<div class="s-step-viz"><span class="s-bk-demo">' + BB.chan('direct') + '<b class="num">+£980</b><em>no platform fee</em></span></div>') + '</li>').join('') + '</ol>' +
       '<div class="s-how-cta"><button class="btn primary lg" data-act="start">Paste my listing link' + icon('arrow') + '</button></div></div></section>';
-  }
-
-  function tour(inst, L) {
-    const t = inst.st.tour, s = L.s, m = L.m;
-    const tabs = [['console', 'Host console', 'dash'], ['mobile', 'Host app', 'phone'], ['guest', 'Guest app', 'key'], ['property', 'Property site', 'home']];
-    let prev, info;
-    if (t === 'console') {
-      const months = m.months.slice(-6), mx = Math.max(...months.map(k => m.byMonth[k].direct + m.byMonth[k].platforms), 1);
-      prev = '<div class="s-con"><aside><span class="s-con-logo">' + BB.MARK + '</span>' + ['dash', 'cal', 'inbox', 'users', 'mail', 'spark'].map((k, i) => '<i class="' + (i ? '' : 'on') + '">' + icon(k) + '</i>').join('') + '</aside>' +
-        '<div class="s-con-main"><div class="s-con-h"><b>Good morning, ' + esc(s.account.owner.split(' ')[0]) + '</b><span>' + D.fmt(s.today, { weekday: 'long', month: 'long' }) + '</span></div>' +
-        '<div class="s-kpis"><div><span>Revenue, 30 days</span><b class="num">' + $(m.rev30) + '</b></div><div><span>Returning guests</span><b class="num">' + pct(m.returningShare) + '</b></div><div><span>Fees kept</span><b class="num">' + $(m.saved) + '</b></div></div>' +
-        '<div class="s-chart">' + months.map(k => { const x = m.byMonth[k]; return '<div><span class="s-col"><i class="pl" style="height:' + (100 * (x.returning || 0) / mx) + '%"></i><i class="di" style="height:' + (100 * (x.newGuests || 0) / mx) + '%"></i></span><em>' + BB.monthName(k).slice(0, 3) + '</em></div>'; }).join('') + '</div>' +
-        '<div class="s-legend"><span><i class="di"></i>New guests</span><span><i class="pl"></i>Returning guests</span></div></div></div>';
-      info = ['Run everything from one screen', 'Calendar, bookings, payments, messages, guests and campaigns, all on bookings you own.', go('app', { view: 'dashboard' }), 'Open the host console'];
-    } else if (t === 'mobile') {
-      const arr = BB.q.arrivals().slice(0, 3);
-      prev = '<div class="s-mini-phone"><div class="s-mp-screen"><div class="s-mp-top"><b>Today</b><span>' + D.fmt(s.today, { weekday: 'short' }) + '</span></div>' +
-        '<div class="s-mp-kpi"><span>Arriving</span><b class="num">' + BB.q.arrivals().length + '</b><span>Staying</span><b class="num">' + BB.q.inHouse().length + '</b></div>' +
-        arr.map(b => { const g = BB.q.guest(b.guestId); return '<div class="s-mp-row">' + BB.avatar(g.name, 'sm') + '<span><b>' + esc(g.name) + '</b><em>' + esc(BB.q.property(b.propertyId).short) + ' · ' + esc(BB.sourceLabel(b)) + '</em></span>' + BB.stepDots(b) + '</div>'; }).join('') +
-        '<div class="s-mp-tabs">' + ['dash', 'cal', 'inbox', 'user'].map((k, i) => '<i class="' + (i ? '' : 'on') + '">' + icon(k) + '</i>').join('') + '</div></div></div>';
-      info = ['Your business in your pocket', 'See who arrives today, reply to guests, and get a buzz the moment a direct booking lands.', go('mobile'), 'Open the host app'];
-    } else if (t === 'guest') {
-      const b = BB.q.upcoming().find(x => !x.checkin.done) || BB.q.upcoming()[0];
-      const g = BB.q.guest(b.guestId), p = BB.q.property(b.propertyId), c = b.checkin;
-      prev = '<div class="s-mini-phone"><div class="s-mp-screen"><div class="s-mp-hero">' + scene(p.theme) + '<span>' + esc(p.name) + '</span></div>' +
-        '<div class="s-mp-body"><b class="s-mp-hi">Hi ' + esc(g.name.split(' ')[0]) + ', check in before you arrive</b><em>' + BB.dates(b) + '</em>' +
-        [['ID and selfie', c.id && c.selfie], ['Rental agreement', c.agreement], ['Deposit hold', c.deposit]].map(([x, ok]) => '<div class="s-mp-step ' + (ok ? 'ok' : '') + '"><i>' + (ok ? icon('check') : '') + '</i>' + x + '</div>').join('') +
-        '<span class="s-mp-btn">Start check-in</span></div></div></div>';
-      info = ['A check-in app guests actually finish', 'ID, agreement and deposit in three minutes. The door code arrives on its own when they are done.', go('guest', { bookingId: b.id }), 'Open the guest app'];
-    } else {
-      prev = miniSite({ theme: L.p.theme, name: L.p.name, domain: L.p.domain, price: L.p.nightly, save: L.save, cls: 's-tour-browser' });
-      info = ['A site that books, not just a brochure', 'Live calendar, instant booking, and a price that shows guests what they save by skipping the platform.', go('property', { propertyId: L.p.id }), 'Open a property site'];
-    }
-    return '<section class="s-sec s-tour-sec"><div class="s-w"><div class="s-head"><p class="eyebrow">Product tour</p><h2 class="s-h2">One login. Four places it shows up.</h2>' +
-      '<p class="s-sub">Every part runs on the same data. Book a stay on the property site and it appears in the console, the host app and the guest app at once.</p></div>' +
-      '<div class="s-tabs" role="tablist" aria-label="Product tour">' + tabs.map(([k, l, i]) => '<button role="tab" id="s-tab-' + k + '-' + inst.uid + '" aria-selected="' + (t === k) + '" data-tour="' + k + '">' + icon(i) + l + '</button>').join('') + '</div>' +
-      '<div class="s-tour" role="tabpanel"><div class="s-tour-prev">' + prev + '</div><div class="s-tour-info"><h3>' + info[0] + '</h3><p>' + info[1] + '</p><button class="btn primary"' + info[2] + '>' + info[3] + icon('arrow') + '</button><p class="s-fine">Opens the working prototype with sample data.</p></div></div>' +
-      '</div></section>';
   }
 
   function customers(inst) {
@@ -316,11 +359,11 @@
   function pricing(inst) {
     const an = inst.st.annual;
     return '<section class="s-sec s-pricing" id="s-pricing-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head s-head-row"><div><p class="eyebrow">Pricing</p><h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. A one-off £997 setup fee, your first month free, then £200 a month. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
+      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. £200 a month, with no setup fee. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
         '</div>' +
       '<div class="s-plans">' + PLANS.map(p => '<article class="s-plan' + (p.hot ? ' hot' : '') + '">' + '' +
         '<h3>' + p.name + '</h3><p class="s-plan-tag">' + p.tag + '</p><div class="s-amt"><b class="num">£' + perMonth(p, an) + '</b><span>/ month</span></div>' +
-        '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' Plus a one-off ' + $(p.setup) + ' setup fee. First month free.</p>' +
+        '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' No setup fee.</p>' +
         '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul>' +
         '<button class="btn ' + (p.hot ? 'accent' : '') + ' block lg" data-act="start" data-plan="' + p.id + '">' + p.cta + '</button></article>').join('') + '</div>' +
       '<div class="s-addon"><span class="s-addon-ic">' + icon('sync') + '</span><div><b>Optional: ' + ADDON.name + ' <em>+£' + ADDON.price + ' a month</em></b><p>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Paste the calendar link and dates booked there are blocked on your site, so you never double book. Most hosts never need it.</p></div></div>' +
@@ -329,15 +372,24 @@
 
   function faq(inst) {
     const open = inst.st.faq;
-    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head"><p class="eyebrow">FAQ</p><h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
+    return '<section class="s-sec s-faq-sec" id="s-faq-' + inst.uid + '"><div class="s-w s-faq-w"><div class="s-head">' + pill('FAQ') + '<h2 class="s-h2">Questions hosts ask.</h2><p class="s-sub">Something else? Email <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a> and a person answers within a working day.</p></div>' +
       '<div class="s-faq">' + FAQ.map(([q, a], i) => '<div class="s-qa' + (open === i ? ' open' : '') + '"><h3><button id="s-faq-' + i + '-' + inst.uid + '" data-faq="' + i + '" aria-expanded="' + (open === i) + '" aria-controls="s-faqp-' + i + '-' + inst.uid + '">' + q + '<span class="s-pm" aria-hidden="true"></span></button></h3>' +
         '<div class="s-ans" id="s-faqp-' + i + '-' + inst.uid + '" role="region"' + (open === i ? '' : ' hidden') + '><p>' + a + '</p></div></div>').join('') + '</div></div></section>';
   }
 
+  /* the brand's live social profiles (same list as server/marketing.js) */
+  const SOCIAL = [
+    ['Instagram', 'https://www.instagram.com/bookingbooster_1/', '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/>'],
+    ['Facebook', 'https://www.facebook.com/1300137993193053', '<path fill="currentColor" d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.4V14h2.8v8z"/>'],
+    ['TikTok', 'https://www.tiktok.com/@bookingbooster', '<path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v3.1c-1.4.1-2.7-.3-3.9-1.1v6.1c0 3.4-2.5 5.6-5.6 5.6S5.4 18.2 5.4 15.1c0-3.3 2.8-5.7 6.3-5.2v3.2c-1.5-.4-3 .5-3 2.1 0 1.2 1 2.2 2.3 2.2 1.4 0 2.4-.9 2.4-2.7V3z"/>'],
+    ['YouTube', 'https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA', '<rect x="2" y="5" width="20" height="14" rx="4.5" fill="currentColor"/><path fill="var(--sicon-bg, #2747F5)" d="M10 9v6l5.2-3z"/>'],
+  ];
+  const socials = () => '<ul class="s-social" aria-label="Follow Bookingbooster">' + SOCIAL.map(([n, u, d]) => '<li><a href="' + u + '" target="_blank" rel="me noopener" aria-label="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg></a></li>').join('') + '</ul>';
+
   function footer() {
     return '<section class="s-final"><div class="s-w"><h2 class="s-final-h">Keep the 15%.<br>Get found. <span>Get booked.</span></h2>' +
       '<div class="s-cta"><button class="btn accent lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg s-ghost-inv"' + go('live') + '>See the live demo</button></div>' +
-      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em></span>' +
+      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em>' + socials() + '</span>' +
       '<nav aria-label="Footer"><div><b>Product</b><button data-scroll="product">Overview</button><button data-scroll="ai">AI search</button><button data-scroll="pricing">Pricing</button></div>' +
       '<div><b>Try it</b><button' + go('live') + '>Live demo</button><button' + go('app') + '>Host console</button><button' + go('property', { propertyId: 'laurel' }) + '>Property site</button></div>' +
       '<div><b>Company</b>' + (LIVE() ? '<a href="/help">Help</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>' : '<button data-scroll="customers">Customers</button>') + '<button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
@@ -348,7 +400,8 @@
 
   function home(inst) {
     const L = liveData();
-    return nav(inst) + hero(inst, L) + logos() + pillars(inst, L) + calc(inst) + aiSection(inst) + how(inst) + tour(inst, L) + customers(inst) + pricing(inst) + faq(inst) + footer();
+    const F = features(inst, L);
+    return nav(inst) + hero(inst) + proof() + F.top + film() + calc(inst) + aiSection(inst) + F.bottom + how(inst) + myths() + customers(inst) + pricing(inst) + faq(inst) + footer();
   }
 
   /* =====================================================================
@@ -538,10 +591,10 @@
           (ready ? '' : '<p class="s-fine">Connect Stripe so guests can pay you. It is the one thing a booking site needs.</p>') +
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
       }
-      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">A one-off £997 setup fee, your first month free, then £200 a month. Cancel anytime, prices include VAT.</p>' +
+      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">£200 a month, with no setup fee. Cancel anytime, prices include VAT.</p>' +
         '<div class="s-obplans" role="radiogroup" aria-label="Plan">' + PLANS.map(p => '<button class="s-obplan' + (ob.plan === p.id ? ' on' : '') + '" role="radio" aria-checked="' + (ob.plan === p.id) + '" data-pick-plan="' + p.id + '">' +
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
-          '<span class="s-amt"><b class="num">£' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' Plus a one-off ' + $(p.setup) + ' setup fee. First month free.</span>' +
+          '<span class="s-amt"><b class="num">£' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' No setup fee.</span>' +
           '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></button>').join('') + '</div>' +
         (ob.addon ? '<p class="s-addon-note">' + icon('sync') + 'Plus the Calendar sync add-on, £' + ADDON.price + ' a month.</p>' : '') +
         '<form data-form="next" class="s-ob-form">' + navRow('Continue with ' + plan(ob.plan).name) + '</form>';
@@ -556,7 +609,7 @@
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
             '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (/bookingbooster\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
-            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT, plus a one-off ' + $(p.setup) + ' setup fee. First month free</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
+            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
           '<form data-form="launch" class="s-ob-form" novalidate>' + (REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (REAL() && BB.BOOT.payFirst ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
       }
@@ -633,7 +686,7 @@
   BB.define('site', {
     create(root, opts, inst) {
       inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = [];
-      Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 60000, share: 30, tour: 'console', annual: false, faq: 0,
+      Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
         ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
           opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';

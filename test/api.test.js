@@ -35,9 +35,9 @@ test.after(() => { srv.stop(); icsSrv.close(); fs.rmSync(DATA, { recursive: true
 test('marketing pages, robots and llms.txt', async () => {
   const home = await call('/'); assert.equal(home.status, 200); assert.match(home.body, /bookingbooster/i);
   const robots = await call('/robots.txt'); assert.match(robots.body, /GPTBot/); assert.match(robots.body, /Sitemap:/);
-  const llms = await call('/llms.txt'); assert.equal(llms.status, 200); assert.match(llms.body, /£997/); assert.match(llms.body, /## Questions/);
+  const llms = await call('/llms.txt'); assert.equal(llms.status, 200); assert.match(llms.body, /£200 a month, no setup fee/); assert.match(llms.body, /## Questions/);
   // Crawlable words and structured data, without running JavaScript
-  assert.match(home.body, /<h1>More direct bookings/); assert.match(home.body, /application\/ld\+json/);
+  assert.match(home.body, /<h1>Fill your calendar without the 15% fee/); assert.match(home.body, /application\/ld\+json/);
   const ld = JSON.parse(home.body.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
   const types = ld['@graph'].map(x => x['@type']); for (const t of ['Organization', 'WebSite', 'Service', 'FAQPage']) assert.ok(types.includes(t), t);
   assert.doesNotMatch(home.body, /01234567|Sample Street/);
