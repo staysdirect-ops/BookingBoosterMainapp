@@ -4,8 +4,8 @@
 const crypto = require('crypto');
 
 module.exports = function (cfg) {
-  const key = cfg.stripe.key;
-  const enabled = !!key;
+  // Read each time: on Supabase the key can also be saved from the team page (kept encrypted in the database).
+  const keyOf = () => cfg.stripe.key;
   function form(obj, prefix, out) {
     out = out || [];
     for (const [k, v] of Object.entries(obj)) {
@@ -18,8 +18,8 @@ module.exports = function (cfg) {
     return out;
   }
   async function api(method, path, params, opts) {
-    if (!enabled) throw new Error('Stripe is not set up on this server.');
-    const headers = { authorization: 'Bearer ' + key };
+    if (!keyOf()) throw new Error('Stripe is not set up on this server.');
+    const headers = { authorization: 'Bearer ' + keyOf() };
     if (opts && opts.account) headers['Stripe-Account'] = opts.account;
     if (opts && opts.idem) headers['Idempotency-Key'] = opts.idem;
     let url = (cfg.stripe.apiBase || 'https://api.stripe.com') + '/v1' + path, body;
@@ -33,7 +33,7 @@ module.exports = function (cfg) {
   const pence = n => Math.round(Number(n) * 100);
 
   return {
-    enabled, api,
+    get enabled() { return !!keyOf(); }, api,
     async connect({ email, business, accountId, returnUrl, refreshUrl }) {
       const acct = accountId || (await api('POST', '/accounts', { type: 'express', country: 'GB', email, business_profile: { name: business, mcc: '7011', product_description: 'Holiday let bookings' }, capabilities: { card_payments: { requested: true }, transfers: { requested: true } } })).id;
       const link = await api('POST', '/account_links', { account: acct, refresh_url: refreshUrl, return_url: returnUrl, type: 'account_onboarding' });

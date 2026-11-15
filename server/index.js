@@ -647,8 +647,13 @@ async function route(req, res) {
 /* ---------------- leads from the marketing sites ---------------- */
 const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)');
 // Team view of leads and accounts, for the emails listed in ADMIN_EMAILS.
-const isAdmin = async req => { const u = await me(req); const email = String((u && u.email) || '').toLowerCase(); return !!email && cfg.admins.includes(email); };
-const stripeLine = st => '<p><small>Stripe: ' + (!st.on ? 'off (add STRIPE_SECRET_KEY to the server secrets)' : st.mode + ' mode · plan prices ' + (st.prices ? 'ready' : 'not yet') + ' · webhooks ' + (st.webhooks ? 'ready' : 'not yet') + (st.error ? ' · last setup error: ' + E(st.error) : '')) + '</small></p>';
+// Also config:admins in the kv table (comma separated), so team members can be added without changing the server's settings.
+const isAdmin = async req => { const u = await me(req); const email = String((u && u.email) || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
+  const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email); };
+const stripeKeyForm = st => st.canSave ? '<details class="card"' + (st.on ? '' : ' open') + '><summary><b>' + (st.on ? 'Change the Stripe key' : 'Connect Stripe') + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off">' +
+  '<p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p>' +
+  '<label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : '';
+const stripeLine = st => stripeKeyForm(st) + '<p><small>Stripe: ' + (!st.on ? 'off' : st.mode + ' mode (key ending ' + E(st.last4) + ') · plan prices ' + (st.prices ? 'ready' : 'not yet') + ' · webhooks ' + (st.webhooks ? 'ready' : 'not yet') + (st.error ? ' · last setup error: ' + E(st.error) : '')) + '</small></p>';
 async function adminPage(req, res, note) {
   if (!await isAdmin(req)) return notFound(res);
   const leadRows = await db.prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT 300').all();
@@ -685,6 +690,7 @@ async function adminPost(req, res, p) {
   if (!await isAdmin(req)) return notFound(res);
   const f = await formBody(req); let mm;
   const url = v => { v = String(v || '').trim(); return /^https?:\/\/[^\s"<>]+$/i.test(v) ? v.slice(0, 500) : ''; };
+  if (p === '/admin/stripe/key') { const r = await stripeAuto.saveKey(f.key); return await adminPage(req, res, r.error || ('Stripe is connected in ' + r.mode + ' mode.' + (r.setup && r.setup.error ? ' Prices and webhooks could not be set up yet: ' + r.setup.error : ' Plan prices and webhooks are ready.'))); }
   if (p === '/admin/settings') {
     const at = f.webinar_day ? leads.ukAt(f.webinar_day, f.webinar_time || '12:30') : 0;
     await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });
