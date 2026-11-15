@@ -365,7 +365,7 @@
       a.runs++;
       if (trigger === 'booking.created') {
         const g = BB.q.guest(ctx.guestId), p = BB.q.property(ctx.propertyId);
-        if (BB.q.connected('email')) log('email', 'Automation: ' + a.name, 'Emailed ' + g.name + ' the confirmation' + (S().live ? '' : ' and wallet pass') + ' for ' + p.short + '.', ctx.id, ['Booking', 'Automation', 'Email']);
+        if (BB.q.connected('email') && !(ctx.payBy === 'transfer' && !ctx.paid)) log('email', 'Automation: ' + a.name, 'Emailed ' + g.name + ' the confirmation' + (S().live ? '' : ' and wallet pass') + ' for ' + p.short + '.', ctx.id, ['Booking', 'Automation', 'Email']);
         if (BB.q.connected('sms')) log('sms', 'Automation: ' + a.name, 'Texted ' + g.name.split(' ')[0] + ' the check-in link.', ctx.id, ['Booking', 'Automation', 'Text']);
         if (BB.q.connected('email')) fx('email.guest', { guestId: ctx.guestId, bookingId: ctx.id, propertyId: ctx.propertyId, template: 'confirmation' });
         if (BB.q.connected('sms')) fx('sms.guest', { guestId: ctx.guestId, bookingId: ctx.id, propertyId: ctx.propertyId, template: 'checkin-link' });
@@ -416,6 +416,7 @@
     let bid = prefix + '-' + (2300 + S().bookings.length); while (BB.q.booking(bid)) bid = prefix + '-' + (+bid.split('-')[1] + 1);
     const pending = !!input.pending && channel === 'direct';
     const request = !pending && !!input.request && S().live && channel === 'direct';
+    const transfer = !pending && !request && channel === 'direct' && input.payBy === 'transfer';
     const b = {
       id: bid, propertyId: p.id, guestId: g.id, checkIn: input.checkIn, checkOut: input.checkOut,
       adults: input.adults || 2, children: input.children || 0, pets: input.pets ? 1 : 0, channel, status: pending ? 'pending' : request ? 'request' : 'confirmed',
@@ -425,6 +426,7 @@
       code: p.lockPrefix + String(10 + ((S().seq * 37) % 89)), review: null, source: input.source || 'website',
     };
     if (input.extras) b.extras = input.extras;
+    if (transfer) { b.paid = false; b.payBy = 'transfer'; b.invoice = { no: 'INV-' + bid, issued: S().today, due: BB.transferDue(b) }; }
     S().bookings.push(b); tick(1);
     if (pending) {
       b.holdUntil = Date.now() + 30 * 60e3;
@@ -448,13 +450,14 @@
     }
     const src = input.source === 'console' ? 'Host console' : input.source === 'mobile' ? 'Host app' : input.source === 'guest-app' ? 'Guest app · ' + p.domain : input.source === 'campaign' ? 'Campaign · ' + p.domain : channel === 'direct' ? p.domain : BB.CHANNEL[channel];
     log('booking', src, (channel === 'direct' ? 'New direct booking: ' : 'New ' + BB.CHANNEL[channel] + ' booking: ') + g.name + ', ' + p.short + ', ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + ', ' + BB.money(b.total) + (q.promo ? ' with code ' + q.promo : '') + '.', b.id, ['Booking site', 'Bookingbooster']);
+    if (transfer) { log('payment', p.domain, g.name.split(' ')[0] + ' chose to pay by bank transfer. Invoice ' + b.invoice.no + ' for ' + BB.money(b.total) + ' was emailed and is due ' + D.fmt(b.invoice.due) + '. Mark it paid when the money reaches your bank.', b.id, ['Booking site', 'Email']); fx('payment.invoice', { bookingId: b.id }); }
     if (channel === 'direct' && b.paid) log('payment', 'Stripe', 'Charged ' + BB.money(b.total) + ' to ' + g.name.split(' ')[0] + "'s card. Payout lands in 2 days.", b.id, ['Bookingbooster', 'Stripe']);
     if (isNew) log('campaign', 'Guest list', g.name + ' added as a new guest' + (g.subscribed ? ' and subscribed to emails.' : '.'), g.id);
     runAutomations('booking.created', b);
     notify((channel === 'direct' ? 'New direct booking · ' : 'New ' + BB.CHANNEL[channel] + ' booking · ') + BB.money(b.total), g.name + ' booked ' + p.short + ', ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + (channel === 'direct' ? '. You saved ' + BB.money(Math.round(b.total * PLATFORM_FEE.airbnb)) + ' in fees.' : '.'), b.id);
     let t = BB.q.threadFor(b.id);
     if (!t) { t = { id: 't' + (++S().seq), guestId: g.id, bookingId: b.id, channel, unread: 0, messages: [] }; S().threads.push(t); }
-    t.messages.push({ from: 'auto', text: 'Hi ' + g.name.split(' ')[0] + ', you are booked at ' + p.name + ' for ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + '. Check in online any time before you arrive.', at: stamp() });
+    t.messages.push({ from: 'auto', text: 'Hi ' + g.name.split(' ')[0] + ', you are booked at ' + p.name + ' for ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + '.' + (transfer ? ' Please pay ' + BB.money(b.total) + ' by bank transfer by ' + D.fmt(b.invoice.due) + ', using ' + b.id + ' as the reference. The bank details are on your invoice.' : ' Check in online any time before you arrive.'), at: stamp() });
     // campaign attribution
     if (q.promo) { const c = S().campaigns.find(c => c.body.promo === q.promo && c.status === 'sent'); if (c) { c.bookings++; c.revenue += b.total; log('campaign', 'Campaigns', 'Booking ' + b.id + ' credited to the "' + c.name + '" campaign.', c.id); } }
     BB.store.commit({ type: 'booking', id: b.id });

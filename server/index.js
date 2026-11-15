@@ -16,6 +16,7 @@ const pages = require('./pages');
 const seo = require('./seo');
 const mkt = require('./marketing');
 const pub = require('./public');
+const invoice = require('./invoice');
 const ical = require('./ical');
 const msg = require('./messaging')(db, cfg);
 const stripe = require('./stripe')(cfg);
@@ -34,6 +35,7 @@ const urls = {
     if (cfg.sitesDomain) return 'https://' + ws.siteSub(w, p) + '.' + cfg.sitesDomain + '/';
     return cfg.baseUrl + '/s/' + w.slug + '/' + p.id;
   },
+  invoice(w, b) { return cfg.baseUrl + '/trip/' + w.slug + '/' + encodeURIComponent(b.id) + '/invoice?k=' + auth.sign('trip', w.id, b.id); },
   trip(w, b, step) { return cfg.baseUrl + '/trip/' + w.slug + '/' + encodeURIComponent(b.id) + '?k=' + auth.sign('trip', w.id, b.id) + (step ? '&step=' + step : ''); },
   track(w, kind, c, g) { return cfg.baseUrl + '/' + kind + '/' + w.slug + '/' + encodeURIComponent(c.id) + '/' + encodeURIComponent(g.id) + '/' + auth.sign(kind === 'c' ? 'click' : 'open', w.id, c.id + ':' + g.id) + (kind === 'o' ? '.gif' : ''); },
   unsub(w, g) { return cfg.baseUrl + '/u/' + w.slug + '/' + encodeURIComponent(g.id) + '/' + auth.sign('unsub', w.id, g.id); },
@@ -147,6 +149,11 @@ function tripPage(res, w, b, k, step) {
   'text/html; charset=utf-8', { 'cache-control': 'no-store' });
 }
 
+function sendInvoice(res, w, b, host) {
+  const s = w.state; const p = s.properties.find(x => x.id === b.propertyId) || {}; const g = s.guests.find(x => x.id === b.guestId) || { name: 'Guest', email: '' };
+  send(res, 200, invoice.render({ s, b, p, g, host }), 'text/html; charset=utf-8', { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' });
+}
+
 /* ---------------- public API (guests) ---------------- */
 const BOOK_KEYS = ['propertyId', 'checkIn', 'checkOut', 'name', 'email', 'phone', 'adults', 'children', 'pets', 'promo', 'subscribe'];
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
@@ -162,12 +169,14 @@ async function publicBook(req, res, w) {
   x.channel = 'direct';
   const ready = stripeReady(w);
   let r;
-  if (kind === 'request' || (w.kind === 'live' && !ready)) { r = (await ws.act(w.id, x.source === 'guest-app' ? 'requestGuestBooking' : 'requestPropertyBooking', [x])).result; r && (r.request = true); }
+  if (kind === 'transfer') { r = (await ws.act(w.id, 'bookByTransfer', [x])).result; }
+  else if (kind === 'request' || (w.kind === 'live' && !ready)) { r = (await ws.act(w.id, x.source === 'guest-app' ? 'requestGuestBooking' : 'requestPropertyBooking', [x])).result; r && (r.request = true); }
   else if (ready) { r = (await ws.act(w.id, 'createBooking', [Object.assign(x, { pending: true })])).result; }
   else r = (await ws.act(w.id, 'createBooking', [x])).result; // demo workspace: simulated card payment
   if (!r || !r.ok) return json(res, { ok: false, error: (r && r.error) || 'Those dates could not be booked.' });
   const b = w.state.bookings.find(q => q.id === r.booking.id);
   const out = { ok: true, bookingId: b.id, tripUrl: urls.trip(w, b), request: !!r.request };
+  if (b.payBy === 'transfer') out.invoiceUrl = urls.invoice(w, b);
   if (r.pending) { try { out.checkoutUrl = await payUrl(w, b, req.headers.referer); } catch (e) { await ws.act(w.id, 'expirePending', [b.id]); throw err(502, 'Card payments are not available right now. Try again, or send a booking request.'); } }
   out.state = pub.tripState(w.state, b.id); out.version = await ws.version(w.id);
   json(res, out);
@@ -357,6 +366,12 @@ async function route(req, res) {
   }
 
   /* trip app, calendar feeds and unsubscribe links (any host) */
+  if ((mm = p.match(/^\/trip\/([a-z0-9-]+)\/([^/]+)\/invoice$/))) {
+    const r = await ws.bySlug(mm[1]); const bid = decodeURIComponent(mm[2]); const k = u.searchParams.get('k');
+    if (!r || !auth.verify(k, 'trip', r.id, bid)) return send(res, 403, pages.plain({ title: 'Link expired', body: '<h1>This invoice link has expired.</h1><p>Ask your host to send it again.</p>' }));
+    const w = await ws.open(r.id); w.catchUp(); const b = w.state.bookings.find(x => x.id === bid); if (!b || b.channel !== 'direct' || b.status === 'request') return notFound(res);
+    return sendInvoice(res, w, b, false);
+  }
   if ((mm = p.match(/^\/trip\/([a-z0-9-]+)\/([^/]+)$/))) {
     const r = await ws.bySlug(mm[1]); const bid = decodeURIComponent(mm[2]); const k = u.searchParams.get('k');
     if (!r || !auth.verify(k, 'trip', r.id, bid)) return send(res, 403, pages.plain({ title: 'Link expired', body: '<h1>This trip link has expired.</h1><p>Ask your host to send it again.</p>' }));
@@ -568,6 +583,7 @@ async function route(req, res) {
       const r = await ws.act(w.id, name, Array.isArray(j.args) ? j.args : []);
       return json(res, Object.assign({ state: r.w.state, version: r.version, result: r.result }, name === 'addProperty' || name === 'updateProperty' ? hostLinks(r.w) : {}));
     }
+    if ((mm = p.match(/^\/app\/invoice\/([^/]+)$/))) { const b = w.state.bookings.find(x => x.id === decodeURIComponent(mm[1])); if (!b || b.channel !== 'direct') return notFound(res); return sendInvoice(res, w, b, true); }
     if ((mm = p.match(/^\/app\/id\/([^/]+)$/))) { const b = await files.get('uploads/' + w.id + '/' + idFile(decodeURIComponent(mm[1]))); if (!b) return notFound(res); return send(res, 200, b, 'image/jpeg', { 'cache-control': 'private, no-store' }); }
     if ((mm = p.match(/^\/app\/photos\/([a-z0-9-]+)$/)) && m === 'POST') {
       const prop = w.state.properties.find(x => x.id === mm[1]); if (!prop) throw err(404, 'Home not found');

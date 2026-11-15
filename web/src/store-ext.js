@@ -63,9 +63,55 @@
   };
   BB.act.markPaid = function (id) {
     const b = BB.q.booking(id); if (!b || b.paid) return;
-    b.paid = true; if (b.status === 'pending') b.status = 'confirmed';
-    BB.log('payment', 'Host console', 'Marked ' + b.id + ' as paid offline, ' + BB.money(b.total) + ' from ' + gOf(b).name + '.', id);
+    b.paid = true; b.paidAt = S().today; if (b.status === 'pending') b.status = 'confirmed';
+    if (b.payBy === 'transfer') {
+      const g = gOf(b), p = P(b.propertyId);
+      BB.log('payment', 'Host console', 'Bank transfer received for ' + b.id + ': ' + money(b.total) + ' from ' + g.name + '. Invoice ' + (b.invoice ? b.invoice.no : '') + ' is paid.', id, ['Host console', 'Email']);
+      const t = BB.q.threadFor(id); if (t) t.messages.push({ from: 'auto', text: 'Thanks ' + first(g.name) + ', your bank transfer of ' + money(b.total) + ' has arrived. Your stay at ' + p.name + ' is paid in full.', at: stamp() });
+      // The booking email was held back while the invoice was open; now it goes out as a paid confirmation.
+      if (BB.q.connected('email')) BB.fx('email.guest', { guestId: b.guestId, bookingId: id, propertyId: b.propertyId, template: 'confirmation' });
+      if (b.checkin && b.checkin.done) BB.fx(BB.q.connected('sms') ? 'sms.guest' : 'email.guest', { guestId: b.guestId, bookingId: id, propertyId: b.propertyId, template: 'door-code' });
+    } else BB.log('payment', 'Host console', 'Marked ' + b.id + ' as paid offline, ' + BB.money(b.total) + ' from ' + gOf(b).name + '.', id);
     BB.store.commit({ type: 'booking', id });
+  };
+  /* ---------- bank transfer and invoices ---------- */
+  // The host's bank details for guests who would rather pay by bank transfer than by card.
+  const BANK_KEYS = { holder: 70, bankName: 60, sortCode: 8, account: 8, iban: 34, bic: 11, note: 300 };
+  BB.bankReady = function (s) { const k = (s || S()).account.bank; return !!(k && k.on && k.holder && ((k.sortCode && k.account) || k.iban)); };
+  BB.transferDays = function (s) { const k = (s || S()).account.bank; return Math.max(1, Math.min(30, (k && +k.days) || 3)); };
+  // Due in the host's number of days, but never later than the day before arrival (or today, for a last-minute stay).
+  BB.transferDue = function (b) { const t = S().today, due = D.add(t, BB.transferDays()), last = D.add(b.checkIn, -1); return due < last ? due : (last > t ? last : t); };
+  BB.act.saveBankTransfer = function (patch) {
+    const a = S().account, k = Object.assign({}, a.bank || {});
+    patch = patch || {};
+    Object.keys(BANK_KEYS).forEach(f => { if (patch[f] !== undefined) k[f] = String(patch[f] || '').trim().slice(0, BANK_KEYS[f]); });
+    if (patch.sortCode !== undefined) { const d = String(patch.sortCode).replace(/\D/g, ''); k.sortCode = d.length === 6 ? d.slice(0, 2) + '-' + d.slice(2, 4) + '-' + d.slice(4) : ''; }
+    if (patch.account !== undefined) { const d = String(patch.account).replace(/\D/g, ''); k.account = d.length === 8 ? d : ''; }
+    if (patch.iban !== undefined) k.iban = String(patch.iban).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 34);
+    if (patch.bic !== undefined) k.bic = String(patch.bic).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 11);
+    if (patch.days !== undefined) k.days = Math.max(1, Math.min(30, parseInt(patch.days, 10) || 3));
+    if (patch.on !== undefined) k.on = !!patch.on;
+    a.bank = k;
+    if (k.on && !BB.bankReady()) { k.on = false; BB.store.commit({ type: 'account' }); return { ok: false, error: 'Add the account name and either a sort code and 8-digit account number, or an IBAN.' }; }
+    BB.log('payment', 'Payments', k.on ? 'Bank transfer is on. Guests can book and pay by invoice within ' + BB.transferDays() + ' days.' : 'Bank transfer details saved. Guests cannot choose bank transfer at checkout.', null, ['Payments']);
+    BB.store.commit({ type: 'account' }); return { ok: true };
+  };
+  // A guest books on the site and pays by bank transfer: the stay is booked, unpaid, with an invoice due in a few days.
+  BB.act.bookByTransfer = function (input) {
+    if (!BB.bankReady()) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
+    return BB.act.createBooking(Object.assign({}, input, { pay: 'manual', channel: 'direct', payBy: 'transfer', pending: false, request: false }));
+  };
+  // Host sends an invoice with bank details for any unpaid direct booking (a phone booking, or an accepted request).
+  BB.act.sendInvoice = function (id) {
+    const b = BB.q.booking(id); if (!b || b.paid || b.channel !== 'direct' || !['confirmed', 'pending'].includes(b.status)) return { ok: false, error: 'Only unpaid direct bookings can be invoiced.' };
+    if (!BB.bankReady()) return { ok: false, error: 'Add your bank details in Payments first.' };
+    const again = b.payBy === 'transfer' && b.invoice;
+    b.payBy = 'transfer'; if (b.status === 'pending') { b.status = 'confirmed'; delete b.holdUntil; }
+    if (!b.invoice) b.invoice = { no: 'INV-' + b.id, issued: S().today, due: BB.transferDue(b) };
+    b.invoice.sentAt = stamp();
+    BB.log('payment', 'Host console', (again ? 'Emailed ' : 'Sent ') + gOf(b).name + ' invoice ' + b.invoice.no + ' for ' + money(b.total) + ', due by bank transfer ' + D.fmt(b.invoice.due) + '.', id, ['Host console', 'Email']);
+    BB.fx('payment.invoice', { bookingId: id });
+    BB.store.commit({ type: 'booking', id }); return { ok: true };
   };
   BB.act.buyExtra = function (bookingId, name, price) {
     const b = BB.q.booking(bookingId); if (!b) return;

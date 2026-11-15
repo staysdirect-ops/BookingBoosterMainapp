@@ -2,6 +2,7 @@
 // campaign sends, calendar sync and AI checks. Only live workspaces touch the outside world; the demo never does.
 'use strict';
 const ical = require('./ical');
+const invoiceMod = require('./invoice');
 
 module.exports = function (ctx) {
   const { cfg, ws, msg, stripe, ai, auth, urls, db, log } = ctx;
@@ -52,6 +53,8 @@ module.exports = function (ctx) {
     const s = w.state; const g = s.guests.find(x => x.id === d.guestId); if (!g || /@example\.(com|org)$/.test(g.email)) return;
     const b = d.bookingId && s.bookings.find(x => x.id === d.bookingId);
     const p = s.properties.find(x => x.id === (d.propertyId || (b && b.propertyId))) || s.properties[0]; if (!p) return;
+    // An open bank transfer invoice holds back the "booked, total paid" email and the door code until the money arrives.
+    if (b && b.payBy === 'transfer' && !b.paid && ['confirmation', 'door-code'].includes(d.template)) return;
     const v = vars(w, b, p, g);
     let subject, html, text;
     if (TPL[d.template] && b) { const [file, subj] = TPL[d.template]; subject = subj(p, b); html = msg.template(file, v); text = (TEXT[d.template] || (() => subject))(v, b, p); }
@@ -72,6 +75,7 @@ module.exports = function (ctx) {
   async function guestSms(w, d) {
     const s = w.state; const g = s.guests.find(x => x.id === d.guestId); const b = s.bookings.find(x => x.id === d.bookingId); if (!g || !b || !g.phone) return;
     const p = s.properties.find(x => x.id === b.propertyId); const f = TEXT[d.template]; if (!f) return;
+    if (b.payBy === 'transfer' && !b.paid && ['confirmation', 'door-code'].includes(d.template)) return;
     await msg.sendSms({ workspaceId: w.id, to: g.phone, text: f(vars(w, b, p, g), b, p), meta: { template: d.template, bookingId: b.id } });
   }
   async function campaign(w, d) {
@@ -118,6 +122,14 @@ module.exports = function (ctx) {
     if (!url) return;
     await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: 'Pay for your stay at ' + p.name, text: 'Hi ' + first(g.name) + ', here is a secure link to pay ' + money(b.total) + ' for ' + p.name + ': ' + url, html: simple(p, vars(w, b, p, g), 'Hi ' + first(g.name) + ', here is a secure link to pay ' + money(b.total) + ' for your stay at ' + p.name + ', ' + fmt(b.checkIn) + ' to ' + fmt(b.checkOut) + '.', { label: 'Pay ' + money(b.total), url }), from: fromFor(w), replyTo: s.account.email, meta: { bookingId: b.id, template: 'payment-link' } });
   }
+  // Bank transfer: the guest gets the invoice by email, with the bank details, the amount, the due date and the reference.
+  async function invoiceEmail(w, d) {
+    const s = w.state; const b = s.bookings.find(x => x.id === d.bookingId); if (!b || b.paid || !b.invoice) return;
+    const g = s.guests.find(x => x.id === b.guestId); const p = s.properties.find(x => x.id === b.propertyId); if (!g || !p || /@example\.(com|org)$/.test(g.email)) return;
+    const k = s.account.bank || {}; const url = urls.invoice(w, b);
+    const body = 'Hi ' + first(g.name) + ', thank you for booking ' + p.name + ', ' + fmt(b.checkIn) + ' to ' + fmt(b.checkOut) + '.\n\nPlease pay ' + money(b.total) + ' by bank transfer by ' + fmt(b.invoice.due) + ', using ' + b.id + ' as the payment reference. Your dates are held for you, and we will confirm as soon as the money arrives.\n\n' + invoiceMod.bankText(k, b) + (k.note ? '\n\n' + k.note : '');
+    await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: 'Invoice ' + b.invoice.no + ' for your stay at ' + p.name, text: body + '\n\nYour invoice: ' + url, html: simple(p, vars(w, b, p, g), body, { label: 'View your invoice', url }), from: fromFor(w), replyTo: s.account.email, meta: { bookingId: b.id, template: 'invoice' } });
+  }
   async function lockCode(w, d) {
     const s = w.state; const p = s.properties.find(x => x.id === d.propertyId); const b = s.bookings.find(x => x.id === d.bookingId);
     const token = (ctx.secrets && await ctx.secrets.get(w.id, 'nuki')) || cfg.nuki.token;
@@ -154,6 +166,7 @@ module.exports = function (ctx) {
         else if (f.type === 'ai.check') await aiCheck(w);
         else if (f.type === 'payment.refund') await refund(w, d);
         else if (f.type === 'payment.link') await paymentLink(w, d);
+        else if (f.type === 'payment.invoice') await invoiceEmail(w, d);
         else if (f.type === 'lock.code') await lockCode(w, d);
         else if (f.type === 'email.host') await hostAlert(w, d);
         else if (f.type === 'property.added') { await hostEmail(w, d); await ws.withWs(w.id, () => {}); }

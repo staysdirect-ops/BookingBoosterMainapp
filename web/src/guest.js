@@ -211,6 +211,18 @@
     return { body, cta: '<button class="g-btn" data-g="tab" data-v="checkin">Start check-in</button><button class="g-btn ghost" data-g="tab" data-v="trip">Go to my trip</button>' };
   }
 
+  // Bank transfer: until the money arrives, the trip page shows what to pay, where, and the reference to use.
+  function transferAlert(b) {
+    if (b.payBy !== 'transfer' || b.paid || b.status === 'cancelled') return '';
+    const k = S().account.bank || {}, due = b.invoice ? D.fmt(b.invoice.due) : '';
+    const rows = [['Account name', k.holder], ['Sort code', k.sortCode], ['Account number', k.account], ['IBAN', k.iban], ['BIC', k.bic], ['Reference', b.id]].filter(r => r[1]);
+    const inv = BB.BOOT && BB.BOOT.mode === 'trip' && typeof location !== 'undefined' ? location.pathname + '/invoice' + location.search.replace(/[?&]step=[^&]*/, '').replace(/^&/, '?') : '';
+    return '<div class="g-alert g-bank"><b>Pay ' + money(b.total) + ' by bank transfer' + (due ? ' by ' + esc(due) : '') + '</b>' +
+      '<p>Use <b>' + esc(b.id) + '</b> as the reference. Your door code shows here once your payment has arrived and check-in is done.</p>' +
+      (k.holder ? '<p>' + rows.map(r => esc(r[0]) + ': <b class="num">' + esc(r[1]) + '</b>').join('<br>') + '</p>' : '') +
+      (inv ? '<p><a href="' + esc(inv) + '" target="_blank" rel="noopener">View or print your invoice</a></p>' : '') + '</div>';
+  }
+
   /* ---------- B. trip home ---------- */
   function tripView(inst, p, b) {
     const g = BB.q.guest(b.guestId), c = b.checkin, st = inst.st, n = doneCount(b);
@@ -219,6 +231,7 @@
       '<div class="g-ph"><p class="g-sub">' + (b.status === 'completed' ? 'Thanks for staying, ' + esc(first(g.name)) : started ? 'Welcome, ' + esc(first(g.name)) + '. You’re staying at' : 'Hi ' + esc(first(g.name)) + ', you’re going to') + '</p><h1 class="g-h">' + esc(p.name) + '</h1></div>' +
       '<div class="g-kv"><div><small>Check-in</small><b>' + esc(longDate(b.checkIn)) + '</b><span>from ' + esc(p.checkinTime) + '</span></div><div><small>Checkout</small><b>' + esc(longDate(b.checkOut)) + '</b><span>by ' + esc(p.checkoutTime) + '</span></div>' +
       '<div><small>Guests</small><b>' + esc(partyText(b)) + '</b></div><div><small>Booking</small><b class="num">#' + esc(b.id) + '</b><span>' + esc(BB.sourceLabel ? BB.sourceLabel(b) : 'Direct') + '</span></div></div>' +
+      transferAlert(b) +
       (b.status === 'request' ? '<div class="g-alert g-req"><b>Request sent</b><p>' + esc(first(S().account.owner || '') || 'Your host') + ' will accept or decline it soon. Your dates are held and nothing has been charged. Online check-in opens once your stay is confirmed.</p></div>' :
       cancelled ? '<div class="g-alert"><b>' + (b.declined ? 'This request was declined' : 'This booking was cancelled') + '</b><p>' + (b.declined ? 'Nothing was charged. Check your messages for a note from your host.' : b.paid ? money(b.total) + ' was refunded to your card.' : 'Nothing was charged.') + '</p></div>' :
         (c.done ? codeCard(b, p) :

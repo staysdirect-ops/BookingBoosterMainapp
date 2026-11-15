@@ -652,6 +652,8 @@
       // payment
       const payLine = b.status === 'cancelled' ? ['bad', 'Refunded', BB.money(b.total) + ' returned to the guest.'] :
         b.channel !== 'direct' ? ['good', 'Paid through ' + BB.CHANNEL[b.channel], BB.CHANNEL[b.channel] + ' pays out ' + BB.money(payout) + ' after check-in.'] :
+        b.paid && b.payBy === 'transfer' ? ['good', 'Paid by bank transfer', 'Recorded ' + D.fmt(b.paidAt || b.createdAt) + (b.invoice ? '. Invoice ' + b.invoice.no + '.' : '.')] :
+        b.payBy === 'transfer' && b.status !== 'request' ? ['warn', b.invoice && b.invoice.due < t ? 'Bank transfer overdue' : 'Awaiting bank transfer', (b.invoice ? 'Invoice ' + b.invoice.no + ' due ' + D.fmt(b.invoice.due) + '. ' : '') + 'The guest pays with ' + b.id + ' as the reference. Mark it paid when the money reaches your bank.'] :
         b.paid ? ['good', 'Paid by card', 'Charged ' + D.fmt(b.createdAt) + ' through Stripe. Payout ' + (D.add(b.createdAt, 2) <= t ? 'landed ' : 'lands ') + D.fmt(D.add(b.createdAt, 2)) + '.'] :
         b.status === 'request' ? ['warn', 'Not paid yet', BB.q.connected('stripe') ? 'Accept the request and the guest gets a Stripe payment link.' : 'Accept the request, then take payment your usual way. Connect Stripe to send a card payment link instead.'] :
         ['warn', 'Not paid yet', S().live ? 'Record the payment when it arrives.' : 'Booked by phone or by hand. Record the payment when it arrives.'];
@@ -698,7 +700,11 @@
             card('Payment', '', '<div class="a-pay"><div class="a-trow"><span>' + payLine[1] + '<em>' + esc(payLine[2]) + '</em></span>' + BB.pill(payLine[0], payLine[0] === 'good' ? 'Paid' : payLine[0] === 'bad' ? 'Refunded' : 'Unpaid') + '</div>' +
               '<div class="a-trow"><span>Security deposit<em>' + esc(depTxt) + '</em></span>' + depPill + '</div></div>' +
               (b.status === 'request' ? '<button class="btn sm block primary" data-accept="' + b.id + '">' + ic('check') + 'Accept request</button><button class="btn sm block" data-decline="' + b.id + '">Decline</button>' : '') +
-              (!b.paid && b.status === 'confirmed' ? (S().live ? '<button class="btn sm block primary" data-paylink="' + b.id + '">' + ic('send') + 'Email a payment link</button>' : '') + '<button class="btn sm block" data-paid="' + b.id + '">' + ic('check') + 'Mark as paid</button>' : '')) +
+              (!b.paid && b.status === 'confirmed' ? (b.payBy === 'transfer' ? '<button class="btn sm block primary" data-paid="' + b.id + '">' + ic('check') + 'Bank transfer received</button>' : '') +
+                (S().live && b.payBy !== 'transfer' ? '<button class="btn sm block primary" data-paylink="' + b.id + '">' + ic('send') + 'Email a payment link</button>' : '') +
+                (b.channel === 'direct' ? '<button class="btn sm block" data-invoice="' + b.id + '">' + ic('send') + (b.payBy === 'transfer' ? 'Email the invoice again' : 'Email an invoice for bank transfer') + '</button>' : '') +
+                (b.payBy === 'transfer' ? '' : '<button class="btn sm block" data-paid="' + b.id + '">' + ic('check') + 'Mark as paid</button>') : '') +
+              (S().live && b.invoice ? '<a class="btn sm block" href="/app/invoice/' + encodeURIComponent(b.id) + '" target="_blank" rel="noopener">' + ic('out') + 'View invoice</a>' : '')) +
           '</div></div>' +
         '</div>';
     },
@@ -714,6 +720,7 @@
       const dc = t.closest('[data-decline]'); if (dc) { if (dc.nextElementSibling && dc.nextElementSibling.classList.contains('a-decl')) return; const f = document.createElement('div'); f.className = 'a-decl'; f.innerHTML = '<label for="a-decl-why">Note for the guest (optional)</label><textarea id="a-decl-why" rows="3" placeholder="Sorry, those dates no longer work for us."></textarea><div class="a-decl-row"><button class="btn sm" data-decline-cancel>Keep request</button><button class="btn sm primary" data-decline-go="' + esc(dc.dataset.decline) + '">Decline and tell the guest</button></div>'; dc.after(f); f.querySelector('textarea').focus(); return; }
       const dcx = t.closest('[data-decline-cancel]'); if (dcx) { dcx.closest('.a-decl').remove(); return; }
       const dg = t.closest('[data-decline-go]'); if (dg) { const why = dg.closest('.a-decl').querySelector('textarea').value.trim(); BB.act.declineRequest(dg.dataset.declineGo, why); BB.toast('Declined. The guest has been told.'); return; }
+      const iv = t.closest('[data-invoice]'); if (iv) { if (!BB.bankReady()) { BB.toast('Add your bank details in Payments first.'); return inst.nav('payments'); } const r = BB.act.sendInvoice(iv.dataset.invoice); BB.toast(r && r.ok ? 'Invoice emailed' : (r && r.error) || 'Could not send the invoice', r && r.ok ? 'good' : undefined); return; }
       const pl = t.closest('[data-paylink]'); if (pl) { if (BB.BOOT && !BB.BOOT.stripe) { BB.toast('Connect Stripe in Connections first, so guests can pay you by card.'); return; } BB.act.sendPaymentLink(pl.dataset.paylink); BB.toast('Payment link sent', 'good'); }
     },
   };
@@ -825,6 +832,25 @@
   /* =====================================================================================
      PAYMENTS
      ===================================================================================== */
+  // Bank transfer settings: the details printed on invoices, and whether guests can choose it at checkout.
+  function bankCard(inst) {
+    const st = inst.st, k = S().account.bank || {}, d = Object.assign({}, k, st.bank || {}), ready = BB.bankReady();
+    if (!st.bank_edit && (k.holder || k.iban)) {
+      return card('Bank transfer', ready ? BB.pill('good', 'On') : BB.pill('muted', 'Off'),
+        '<p class="a-note a-nt0">' + (ready ? 'Guests can book and pay by bank transfer. They get an invoice and have ' + BB.transferDays() + ' day' + (BB.transferDays() === 1 ? '' : 's') + ' to pay.' : 'Saved, but guests cannot choose bank transfer at checkout.') + '</p>' +
+        [['Account name', k.holder], ['Sort code', k.sortCode], ['Account number', k.account ? '••••' + k.account.slice(-4) : ''], ['IBAN', k.iban]].filter(r => r[1]).map(r => '<div class="a-trow"><span>' + r[0] + '</span><b class="num">' + esc(r[1]) + '</b></div>').join('') +
+        '<button class="btn sm block" data-bankedit>' + ic('edit') + 'Edit bank transfer</button>');
+    }
+    const f = (key, label, ph, extra) => '<label class="field"><span>' + label + '</span><input id="bank-' + key + '-' + inst.uid + '" data-bank="' + key + '" autocomplete="off" value="' + esc(d[key] == null ? '' : d[key]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + (extra || '') + '></label>';
+    return card('Bank transfer', '', '<p class="a-note a-nt0">Let guests book now and pay by bank transfer. They get an invoice with these details, and you mark the booking paid when the money arrives.</p><div class="a-bankf">' +
+      f('holder', 'Account name', 'Fell & Harbour Stays Ltd') + f('bankName', 'Bank (optional)', 'Barclays') +
+      '<div class="a-f2">' + f('sortCode', 'Sort code', '20-00-00', ' inputmode="numeric"') + f('account', 'Account number', '12345678', ' inputmode="numeric"') + '</div>' +
+      '<div class="a-f2">' + f('iban', 'IBAN (for guests abroad)', 'GB00 BARC 2000 0012 3456 78') + f('bic', 'BIC / SWIFT', 'BARCGB22') + '</div>' +
+      f('days', 'Days guests have to pay', '3', ' type="number" min="1" max="30" inputmode="numeric"') + f('note', 'Note on the invoice (optional)', 'Payments usually take a few hours to arrive.') +
+      '<label class="a-check"><input type="checkbox" data-bank="on" id="bank-on-' + inst.uid + '"' + (d.on !== false ? ' checked' : '') + '><span>Offer bank transfer at checkout</span></label>' +
+      (st.bank_err ? '<p class="a-warnt" role="alert">' + esc(st.bank_err) + '</p>' : '') +
+      '<div class="a-acts">' + (k.holder || k.iban ? '<button class="btn sm" data-bankcancel>Cancel</button>' : '') + '<button class="btn sm primary" data-banksave>' + ic('check') + 'Save bank details</button></div></div>');
+  }
   V.payments = {
     label: 'Payments', group: 'Run', icon: 'card', order: 60,
     render(inst) {
@@ -856,13 +882,23 @@
           (unpaid.length ? '<div class="a-s12">' + card('Waiting for payment', plural(unpaid.length, 'booking'), '<div class="a-list">' + unpaid.map(b => '<div class="a-row">' + BB.avatar(gOf(b).name) + '<span class="a-row-t"><b>' + esc(gOf(b).name) + ' · ' + BB.money(b.total) + '</b><span>' + b.id + ' · ' + esc(P(b.propertyId).short) + ' · arrives ' + relDay(b.checkIn, true) + '</span></span><span class="a-row-m"><button class="btn sm" data-a="nav" data-view="booking" data-id="' + b.id + '">Open</button><button class="btn sm primary" data-paid="' + b.id + '">Mark paid</button></span></div>').join('') + '</div>') + '</div>' : '') +
           '<div class="a-s8">' + card('Direct payouts', plural(direct.length, 'booking'), '<div class="tblwrap a-flushx" id="paytbl-' + inst.uid + '"><table class="tbl a-tbl"><thead><tr><th>Payout</th><th>Guest</th><th>Stay</th><th class="r">Amount</th><th class="r">Fee avoided</th><th>Status</th></tr></thead><tbody>' + (rows || '<tr><td colspan="6"><div class="a-empty"><p>No direct bookings yet.</p></div></td></tr>') + '</tbody></table></div>' +
             (direct.length > lim ? '<div class="a-more"><button class="btn sm" data-paymore>Show more</button><span class="muted">Showing ' + lim + ' of ' + direct.length + '</span></div>' : ''), 'a-flushb') + '</div>' +
-          '<div class="a-s4"><div class="a-stack">' + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' · ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
+          '<div class="a-s4"><div class="a-stack">' + bankCard(inst) + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' · ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
             card('Fees you didn’t pay', yr, (() => { const rev = yearDirect.reduce((a, x) => a + x.b.total, 0); return '<p class="a-note a-nt0">What the platforms would have taken from your ' + BB.money(rev) + ' of direct bookings this year.</p>' + [['airbnb', 'Airbnb', 'host fee 15.5%'], ['booking', 'Booking.com', 'commission 15%'], ['vrbo', 'Vrbo', 'fees about 8%']].map(([k, n, e]) => '<div class="a-trow"><span>' + n + '<em>' + e + '</em></span><b class="num a-saved">' + BB.money(Math.round(rev * BB.PLATFORM_FEE[k])) + '</b></div>').join('') + (platFees ? '<div class="a-trow"><span>Fees on add-on bookings<em>Stays synced from platforms</em></span><b class="num">' + BB.money(platFees) + '</b></div>' : ''); })()) +
           '</div></div>' +
         '</div>';
     },
+    input(ev, inst) { const f = ev.target.closest('[data-bank]'); if (f) { inst.st.bank = inst.st.bank || {}; inst.st.bank[f.dataset.bank] = f.type === 'checkbox' ? f.checked : f.value; } },
+    change(ev, inst) { const f = ev.target.closest('[data-bank]'); if (f && f.type === 'checkbox') { inst.st.bank = inst.st.bank || {}; inst.st.bank.on = f.checked; } },
     click(ev, inst) {
       if (ev.target.closest('[data-paymore]')) return inst.set({ pay_lim: (inst.st.pay_lim || 12) + 20 });
+      if (ev.target.closest('[data-bankedit]')) return inst.set({ bank_edit: true, bank: null });
+      if (ev.target.closest('[data-bankcancel]')) return inst.set({ bank_edit: false, bank: null, bank_err: null });
+      if (ev.target.closest('[data-banksave]')) {
+        const r = BB.act.saveBankTransfer(Object.assign({ on: true }, S().account.bank || {}, inst.st.bank || {}));
+        if (r && r.ok) { inst.set({ bank_edit: false, bank: null, bank_err: null }); BB.toast(S().account.bank.on ? 'Bank transfer is on for guests' : 'Bank details saved', 'good'); }
+        else inst.set({ bank_err: (r && r.error) || 'Could not save those details.' });
+        return;
+      }
       const p = ev.target.closest('[data-paid]'); if (p) { BB.act.markPaid(p.dataset.paid); BB.toast('Payment recorded', 'good'); }
     },
   };
