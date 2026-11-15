@@ -11,12 +11,12 @@ const FAQ = [
   ['What is AI visibility?', 'How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps.'],
   ['How long does setup take?', 'Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week.'],
   ['Who owns the guest list?', 'You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR.'],
-  ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. There is no setup fee. Your first month is free, then it is £200 a month. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
+  ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is £200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
 ];
 // Extra answers for search engines and AI assistants. They are true of the product today.
 const MORE = [
   ['What is Bookingbooster?', 'Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission.'],
-  ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £200 a month, with no setup fee, and your first month is free. Guests pay you directly through your own Stripe account, and you keep every booking.'],
+  ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking.'],
   ['Is Bookingbooster a channel manager?', 'No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (£15 a month) keeps your calendars in step so you never double book.'],
   ['Who is Bookingbooster for?', 'Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd’s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us.'],
 ];
@@ -33,7 +33,7 @@ const STEPS = [
   ['Bookings come direct', 'Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season.'],
 ];
 const TITLE = 'Bookingbooster · Direct booking websites for UK holiday lets';
-const DESCRIPTION = 'Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. No setup fee, first month free, then £200 a month. No commission.';
+const DESCRIPTION = 'Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. £200 a month, with no setup fee. No commission.';
 const allFaq = () => FAQ.concat(MORE);
 
 // The brand's live social profiles (the accounts connected in Metricool).
@@ -58,7 +58,7 @@ function jsonLd(base, co) {
       provider: { '@id': url + '#org' }, areaServed: { '@type': 'Country', name: 'United Kingdom' }, audience: { '@type': 'BusinessAudience', audienceType: 'UK holiday let and short-term let owners' },
       description: DESCRIPTION,
       hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Bookingbooster pricing', itemListElement: [
-        offer('Monthly plan', PRICE.month, 'MON', { description: 'No setup fee and your first month is free. Everything included for up to ' + PRICE.homes + ' homes. No commission. Cancel anytime.' }),
+        offer('Monthly plan', PRICE.month, 'MON', { description: 'No setup fee. Everything included for up to ' + PRICE.homes + ' homes. No commission. Cancel anytime.' }),
         offer('Calendar sync add-on', PRICE.addon, 'MON', { description: 'Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager.' }),
       ] } },
     { '@type': 'FAQPage', '@id': url + '#faq', mainEntity: allFaq().map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
@@ -84,7 +84,7 @@ function content(base, co) {
     '<p><a href="/start">Get my booking site</a> · <a href="/demo">See the live demo</a></p>' +
     '<h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p>').join('') +
     '<h2>How it works</h2><ol>' + STEPS.map(([h, p]) => '<li><strong>' + esc(h) + '.</strong> ' + esc(p) + '</li>').join('') + '</ol>' +
-    '<h2>Pricing</h2><p>One plan, done for you. No setup fee, your first month free, then £' + PRICE.month + ' a month. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to ' + PRICE.homes + ' homes.</p>' +
+    '<h2>Pricing</h2><p>One plan, done for you. £' + PRICE.month + ' a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to ' + PRICE.homes + ' homes.</p>' +
     li(INCLUDED) + '<p>Optional calendar sync add-on: £' + PRICE.addon + ' a month.</p>' +
     '<h2>Questions hosts ask</h2>' + allFaq().map(([q, a]) => '<h3>' + esc(q) + '</h3><p>' + esc(a) + '</p>').join('') +
     '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p>' +
@@ -98,7 +98,7 @@ function llms(base, co) {
     '> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n' +
     '## Key facts\n\n' +
     '- Website: ' + base + '/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd’s huts)\n' +
-    '- Price: no setup fee, first month free, then £' + PRICE.month + ' a month. All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
+    '- Price: £' + PRICE.month + ' a month, no setup fee. All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
     '- Calendar sync add-on: £' + PRICE.addon + ' a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
     '## What is included\n\n' + INCLUDED.map(x => '- ' + x).join('\n') + '\n\n' +
     '## How it works\n\n' + STEPS.map(([h, p], i) => (i + 1) + '. ' + h + ': ' + p).join('\n') + '\n\n' +
