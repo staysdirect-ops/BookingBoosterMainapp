@@ -4,7 +4,7 @@
 'use strict';
 const { esc } = require('./pages');
 
-const PRICE = { setup: 0, month: 200, year: 2000, addon: 15, homes: 3 };
+const PRICE = { setup: 0, month: 200, year: 2000, addon: 15, homes: 3, aiCredit: 50 };
 const FAQ = [
   ['Do I have to leave Airbnb or Vrbo?', 'No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (£15 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there.'],
   ['How do guests pay?', 'By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout.'],
@@ -18,6 +18,8 @@ const MORE = [
   ['What is Bookingbooster?', 'Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission.'],
   ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking.'],
   ['Is Bookingbooster a channel manager?', 'No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (£15 a month) keeps your calendars in step so you never double book.'],
+  ['Is there a yearly plan?', 'Yes. The plan is £200 a month, or £2,000 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT.'],
+  ['What AI credit is included?', 'Every plan includes £50 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from £10, and top-ups never expire.'],
   ['Who is Bookingbooster for?', 'Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd’s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us.'],
 ];
 const FEATURES = [
@@ -59,6 +61,7 @@ function jsonLd(base, co) {
       description: DESCRIPTION,
       hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Bookingbooster pricing', itemListElement: [
         offer('Monthly plan', PRICE.month, 'MON', { description: 'No setup fee. Everything included for up to ' + PRICE.homes + ' homes. No commission. Cancel anytime.' }),
+        offer('Yearly plan', PRICE.year, 'ANN', { description: 'The same plan paid yearly: two months free. No setup fee.' }),
         offer('Calendar sync add-on', PRICE.addon, 'MON', { description: 'Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager.' }),
       ] } },
     { '@type': 'FAQPage', '@id': url + '#faq', mainEntity: allFaq().map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
@@ -88,7 +91,7 @@ function content(base, co) {
     li(INCLUDED) + '<p>Optional calendar sync add-on: £' + PRICE.addon + ' a month.</p>' +
     '<h2>Questions hosts ask</h2>' + allFaq().map(([q, a]) => '<h3>' + esc(q) + '</h3><p>' + esc(a) + '</p>').join('') +
     '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p>' +
-    '<p><a href="/help">Help</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>' +
+    '<p><a href="/direct-booking-website">Direct booking websites</a> · <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> · <a href="/guides">Free guides</a> · <a href="/help">Help</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>' +
     '<p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + '</a>').join(' · ') + '</p>' +
     '</article>';
 }
@@ -98,12 +101,15 @@ function llms(base, co) {
     '> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n' +
     '## Key facts\n\n' +
     '- Website: ' + base + '/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd’s huts)\n' +
-    '- Price: £' + PRICE.month + ' a month, no setup fee. All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
+    '- Price: £' + PRICE.month + ' a month, no setup fee. Or £' + PRICE.year.toLocaleString('en-GB') + ' a year paid yearly (two months free). All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
+    '- AI credit: £' + PRICE.aiCredit + ' a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from £10 never expire.\n' +
     '- Calendar sync add-on: £' + PRICE.addon + ' a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
     '## What is included\n\n' + INCLUDED.map(x => '- ' + x).join('\n') + '\n\n' +
     '## How it works\n\n' + STEPS.map(([h, p], i) => (i + 1) + '. ' + h + ': ' + p).join('\n') + '\n\n' +
     '## Questions\n\n' + allFaq().map(([q, a]) => '### ' + q + '\n\n' + a).join('\n\n') + '\n\n' +
-    '## Links\n\n- [Home and pricing](' + base + '/)\n- [Start a booking site](' + base + '/start)\n- [Live demo](' + base + '/demo)\n- [Help](' + base + '/help)\n- [Privacy notice](' + base + '/privacy)\n- [Terms of service](' + base + '/terms)\n';
+    '## Links\n\n- [Home and pricing](' + base + '/)\n- [Start a booking site](' + base + '/start)\n- [Live demo](' + base + '/demo)\n- [Help](' + base + '/help)\n- [Privacy notice](' + base + '/privacy)\n- [Terms of service](' + base + '/terms)\n' +
+    require('./answers').list().map(x => '- [' + x.title + '](' + base + x.path + '): ' + x.description).join('\n') + '\n' +
+    '- Social profiles: ' + SOCIAL.map(([n, u]) => '[' + n + '](' + u + ')').join(', ') + '\n';
 }
 
 module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
