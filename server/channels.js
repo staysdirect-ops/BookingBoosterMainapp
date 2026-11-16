@@ -10,6 +10,7 @@
 //   unblock(ctx, listingId, rec)                                          opens them again
 // ctx = { creds, save(creds) } so an adapter can keep a fresh access token.
 'use strict';
+const crypto = require('crypto');
 const ical = require('./ical');
 
 const UA = 'Bookingbooster calendar sync (+https://booking-booster.co.uk)';
@@ -71,33 +72,47 @@ const beds24 = {
 };
 
 /* ---------------- Smoobu ---------------- */
-// The host copies the API key from Smoobu (Settings > Developer / API keys).
-const SMOOBU = 'https://login.smoobu.com/api';
+// The host makes an API key in Smoobu (Settings > Advanced > API Keys > Create API Key, then Generate Secret).
+// Since 31 October 2026 Smoobu only accepts signed requests: X-API-Key, X-Timestamp, X-Nonce and an HMAC-SHA256
+// X-Signature over method, path, sorted query, timestamp, nonce, body hash and key, joined by newlines.
+const SMOOBU = 'https://login.smoobu.com';
+const rfc3986 = x => encodeURIComponent(x).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+function smoobuSign(creds, method, path, query, body, now = new Date(), nonce = crypto.randomUUID()) {
+  const qs = Object.keys(query || {}).sort().map(k => rfc3986(k) + '=' + rfc3986(query[k])).join('&');
+  const timestamp = now.toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const bodyHash = crypto.createHash('sha256').update(body || '').digest('hex');
+  const canonical = [method, path, qs, timestamp, nonce, bodyHash, creds.apiKey].join('\n');
+  const signature = crypto.createHmac('sha256', creds.apiSecret).update(canonical).digest('base64');
+  return { qs, headers: { 'X-API-Key': creds.apiKey, 'X-Timestamp': timestamp, 'X-Nonce': nonce, 'X-Signature': signature, 'cache-control': 'no-cache' } };
+}
+async function smoobuCall(creds, method, path, query, body) {
+  const raw = body === undefined ? '' : JSON.stringify(body);
+  const sig = smoobuSign(creds, method, path, query, raw);
+  return http(method, SMOOBU + path + (sig.qs ? '?' + sig.qs : ''), { headers: sig.headers, body });
+}
 const smoobu = {
   name: 'Smoobu',
-  fields: [{ key: 'apiKey', label: 'API key', secret: true }],
-  h: ctx => ({ 'Api-Key': ctx.creds.apiKey, 'cache-control': 'no-cache' }),
+  fields: [{ key: 'apiKey', label: 'API key' }, { key: 'apiSecret', label: 'API secret', secret: true }],
   async connect(c) {
-    need(c, ['apiKey']); const creds = { apiKey: String(c.apiKey).trim() };
-    const j = await http('GET', SMOOBU + '/apartments', { headers: smoobu.h({ creds }) });
+    need(c, ['apiKey', 'apiSecret']); const creds = { apiKey: String(c.apiKey).trim(), apiSecret: String(c.apiSecret).trim() };
+    const j = await smoobuCall(creds, 'GET', '/api/apartments');
     return { creds, listings: ((j && j.apartments) || []).map(x => ({ id: String(x.id), name: x.name || String(x.id) })) };
   },
   async busy(ctx, lid, a, b) {
     const out = [];
     for (let page = 1; page <= 20; page++) {
-      const qs = new URLSearchParams({ apartmentId: lid, departureFrom: a, arrivalTo: b, pageSize: '100', page: String(page), showCancellation: 'false' });
-      const j = await http('GET', SMOOBU + '/reservations?' + qs, { headers: smoobu.h(ctx) });
+      const j = await smoobuCall(ctx.creds, 'GET', '/api/reservations', { apartmentId: lid, departureFrom: a, arrivalTo: b, pageSize: '100', page: String(page), showCancellation: 'false' });
       for (const x of (j && j.bookings) || []) if (x.arrival && x.departure && !/cancel/i.test(String(x.type || ''))) out.push({ from: x.arrival, to: x.departure, ref: String(x.id) });
       if (!j || !j.page_count || page >= j.page_count) break;
     }
     return { ranges: out };
   },
   async block(ctx, lid, from, to, note) {
-    const j = await http('POST', SMOOBU + '/reservations', { headers: smoobu.h(ctx), body: { arrivalDate: from, departureDate: to, apartmentId: Number(lid), firstName: 'Bookingbooster', lastName: note, notice: note + '. Dates only, made by Bookingbooster calendar sync.' } });
+    const j = await smoobuCall(ctx.creds, 'POST', '/api/reservations', undefined, { arrivalDate: from, departureDate: to, apartmentId: Number(lid), firstName: 'Bookingbooster', lastName: note, notice: note + '. Dates only, made by Bookingbooster calendar sync.' });
     if (!j || !j.id) throw new ApiError('did not confirm the block.');
     return String(j.id);
   },
-  async unblock(ctx, lid, rec) { await http('DELETE', SMOOBU + '/reservations/' + encodeURIComponent(rec.ref), { headers: smoobu.h(ctx) }); },
+  async unblock(ctx, lid, rec) { await smoobuCall(ctx.creds, 'DELETE', '/api/reservations/' + encodeURIComponent(rec.ref)); },
 };
 
 /* ---------------- Hostaway ---------------- */
@@ -306,3 +321,4 @@ module.exports = function ({ ws, secrets, log, host }) {
 };
 module.exports.ADAPTERS = ADAPTERS;
 module.exports.ApiError = ApiError;
+module.exports.smoobuSign = smoobuSign;

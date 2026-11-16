@@ -17,13 +17,24 @@ function rig() {
 }
 const day = (s, n) => ical.addDay(s.today, n);
 
+// Checks a request the way Smoobu does: signature over method, path, sorted query, timestamp, nonce, body hash, key.
+const crypto = require('node:crypto');
+function smoobuOk(c) {
+  if (c.host !== 'login.smoobu.com') return true;
+  const h = c.headers; if (h['X-API-Key'] !== 'key-123' || !h['X-Nonce'] || !h['X-Timestamp']) return false;
+  if (Math.abs(Date.parse(h['X-Timestamp']) - Date.now()) > 300e3) return false;
+  const qs = [...c.q.keys()].sort().map(k => encodeURIComponent(k) + '=' + encodeURIComponent(c.q.get(k))).join('&');
+  const bodyHash = crypto.createHash('sha256').update(c.rawBody || '').digest('hex');
+  const want = crypto.createHmac('sha256', 'shh').update([c.method, c.path, qs, h['X-Timestamp'], h['X-Nonce'], bodyHash, 'key-123'].join('\n')).digest('base64');
+  return want === h['X-Signature'];
+}
 // A tiny fake of the parts of each API we use. Records every call.
 function fakeFetch(handlers) {
   const calls = [];
   const real = global.fetch;
   global.fetch = async (url, opts = {}) => {
     const u = new URL(url); const body = opts.body ? (String(opts.headers['content-type']).includes('json') ? JSON.parse(opts.body) : Object.fromEntries(new URLSearchParams(opts.body))) : null;
-    const call = { method: opts.method || 'GET', host: u.host, path: u.pathname, q: u.searchParams, headers: opts.headers || {}, body }; calls.push(call);
+    const call = { rawBody: opts.body || '', method: opts.method || 'GET', host: u.host, path: u.pathname, q: u.searchParams, headers: opts.headers || {}, body }; calls.push(call);
     for (const h of handlers) { const r = h(call); if (r !== undefined) return new Response(JSON.stringify(r[1]), { status: r[0], headers: { 'content-type': 'application/json' } }); }
     return new Response('{}', { status: 404 });
   };
@@ -35,20 +46,21 @@ test('Smoobu: connect, close direct bookings there, read its bookings back witho
   const remote = [{ id: 501, arrival: day(s, 30), departure: day(s, 33), type: 'reservation' }];
   let nextId = 900;
   const f = fakeFetch([
-    c => c.headers['Api-Key'] !== 'key-123' ? [401, { error: 'bad key' }] : undefined,
+    c => !smoobuOk(c) ? [401, { error: 'bad signature' }] : undefined,
     c => c.path === '/api/apartments' ? [200, { apartments: [{ id: 77, name: p.name }, { id: 78, name: 'Somewhere else' }] }] : undefined,
     c => c.path === '/api/reservations' && c.method === 'GET' ? [200, { page_count: 1, bookings: remote }] : undefined,
     c => c.path === '/api/reservations' && c.method === 'POST' ? (remote.push({ id: ++nextId, arrival: c.body.arrivalDate, departure: c.body.departureDate, type: 'reservation' }), [201, { id: nextId }]) : undefined,
     c => c.method === 'DELETE' ? (remote.splice(remote.findIndex(x => '/api/reservations/' + x.id === c.path), 1), [200, {}]) : undefined,
   ]);
   try {
-    await assert.rejects(ch.connect(w, 'smoobu', { apiKey: 'wrong' }), /did not accept the key/);
-    const listings = await ch.connect(w, 'smoobu', { apiKey: 'key-123' });
+    await assert.rejects(ch.connect(w, 'smoobu', { apiKey: 'key-123', apiSecret: 'wrong' }), /did not accept the key/);
+    const listings = await ch.connect(w, 'smoobu', { apiKey: 'key-123', apiSecret: 'shh' });
     assert.equal(listings.length, 2);
     const i = w.BB.q.integration('smoobu');
     assert.equal(i.connected, true); assert.equal(i.map[p.id], '77', 'the home with the same name is linked by itself');
     assert.ok(!JSON.stringify(s).includes('key-123'), 'the key never goes into the account state the browser sees');
     assert.match(store.get('cm:smoobu'), /key-123/);
+    assert.ok(!JSON.stringify(s).includes('shh'), 'nor the secret');
 
     await ch.sync(w, { id: 'smoobu' });
     const mine = s.bookings.filter(b => b.propertyId === p.id && b.status !== 'cancelled' && b.checkOut > s.today);
@@ -117,13 +129,22 @@ test('a failing channel manager keeps the dates it already gave us and says why'
     c => c.path === '/api/reservations' && c.method === 'POST' ? [201, { id: Math.floor(Math.random() * 1e6) }] : undefined,
   ]);
   try {
-    await ch.connect(w, 'smoobu', { apiKey: 'k' }); await ch.sync(w, { id: 'smoobu' });
+    await ch.connect(w, 'smoobu', { apiKey: 'key-123', apiSecret: 'shh' }); await ch.sync(w, { id: 'smoobu' });
     assert.equal(s.blocks.filter(k => k.sync === 'smoobu').length, 1);
     up = false; await ch.sync(w, { id: 'smoobu' });
     const i = w.BB.q.integration('smoobu');
     assert.equal(s.blocks.filter(k => k.sync === 'smoobu').length, 1, 'blocks stay while Smoobu is down');
     assert.match(i.status[p.id].error, /Smoobu answered with error 500/); assert.ok(i.error);
   } finally { f.restore(); }
+});
+
+test('Smoobu signature matches the worked example in its docs', () => {
+  const { smoobuSign } = require('../server/channels');
+  const a = smoobuSign({ apiKey: 'K', apiSecret: 'S' }, 'GET', '/api/reservations', { to: '2026-04-10', from: '2026-04-01' }, '', new Date('2026-04-01T12:00:00Z'), 'n-1');
+  assert.equal(a.qs, 'from=2026-04-01&to=2026-04-10', 'query sorted by key');
+  assert.equal(a.headers['X-Timestamp'], '2026-04-01T12:00:00Z');
+  const canonical = 'GET\n/api/reservations\nfrom=2026-04-01&to=2026-04-10\n2026-04-01T12:00:00Z\nn-1\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nK';
+  assert.equal(a.headers['X-Signature'], crypto.createHmac('sha256', 'S').update(canonical).digest('base64'));
 });
 
 test('every account gets the new calendars, and the demo still works', () => {

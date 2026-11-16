@@ -1398,7 +1398,7 @@ var require_bb_embedded_files = __commonJS({
     booking: { on: 'Dates booked on Booking.com show on your calendar as "Booked on Booking.com" and close on your own sites. We read dates only.', stop: 'Dates booked on Booking.com will no longer block your own sites.', ical: 'admin.booking.com/hotel/ical/9021774.ics' },
     other: { on: 'Dates booked on that site show on your calendar as blocked and close on your own sites. We read dates only.', stop: 'Dates booked on that site will no longer block your own sites.', ical: 'plumguide.com/ical/88213.ics' },
     beds24: { on: 'Two-way: dates taken in Beds24 close on your sites, and your direct bookings close the same nights in Beds24.', stop: 'We reopen the nights we closed in Beds24 and stop syncing.', how: 'In Beds24 open Settings, Apps & Integrations, API. Make an invite code with read and write access to bookings and read access to properties, then paste it here.', fields: [['inviteCode', 'Invite code', 1]] },
-    smoobu: { on: 'Two-way: dates taken in Smoobu close on your sites, and your direct bookings close the same nights in Smoobu.', stop: 'We remove the blocks we made in Smoobu and stop syncing.', how: 'In Smoobu open Settings, then Developer (API keys). Copy your API key and paste it here.', fields: [['apiKey', 'API key', 1]] },
+    smoobu: { on: 'Two-way: dates taken in Smoobu close on your sites, and your direct bookings close the same nights in Smoobu.', stop: 'We remove the blocks we made in Smoobu and stop syncing.', how: 'In Smoobu open Settings, Advanced, API Keys. Click Create API Key, then Generate Secret, and paste both here (Smoobu only shows the secret once).', fields: [['apiKey', 'API key'], ['apiSecret', 'API secret', 1]] },
     hostaway: { on: 'Two-way: dates taken in Hostaway close on your sites, and your direct bookings close the same nights in Hostaway.', stop: 'We reopen the nights we closed in Hostaway and stop syncing.', how: 'In Hostaway open Settings, Hostaway API, and create an API key. Paste your account ID and the key here.', fields: [['accountId', 'Account ID'], ['apiKey', 'API key', 1]] },
     guesty: { on: 'Two-way: dates taken in Guesty close on your sites, and your direct bookings close the same nights in Guesty.', stop: 'We reopen the nights we closed in Guesty and stop syncing.', how: 'In Guesty open Integrations, API (Open API), and create a new application. Paste its client ID and client secret here.', fields: [['clientId', 'Client ID'], ['clientSecret', 'Client secret', 1]] },
     lodgify: { on: 'Dates booked in Lodgify close on your sites. Lodgify reads your direct bookings from your Bookingbooster calendar link.', stop: 'Dates booked in Lodgify will no longer block your own sites.', how: 'In Lodgify open Settings, Public API, and copy your API key. Then add your Bookingbooster calendar link to each Lodgify property (Calendar, Sync) so direct bookings close there too.', fields: [['apiKey', 'API key', 1]] },
@@ -16586,6 +16586,7 @@ var require_stripe_auto = __commonJS({
 // server/channels.js
 var require_channels = __commonJS({
   "server/channels.js"(exports, module) {
+    var crypto = __require("crypto");
     var ical = require_ical();
     var UA = "Bookingbooster calendar sync (+https://booking-booster.co.uk)";
     var ApiError = class extends Error {
@@ -16669,34 +16670,46 @@ var require_channels = __commonJS({
         await http("DELETE", BEDS24 + "/bookings?id=" + encodeURIComponent(rec.ref), { headers: { token: await beds24.token(ctx) } });
       }
     };
-    var SMOOBU = "https://login.smoobu.com/api";
+    var SMOOBU = "https://login.smoobu.com";
+    var rfc3986 = (x) => encodeURIComponent(x).replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+    function smoobuSign(creds, method, path, query, body, now = /* @__PURE__ */ new Date(), nonce = crypto.randomUUID()) {
+      const qs = Object.keys(query || {}).sort().map((k) => rfc3986(k) + "=" + rfc3986(query[k])).join("&");
+      const timestamp = now.toISOString().replace(/\.\d{3}Z$/, "Z");
+      const bodyHash = crypto.createHash("sha256").update(body || "").digest("hex");
+      const canonical = [method, path, qs, timestamp, nonce, bodyHash, creds.apiKey].join("\n");
+      const signature = crypto.createHmac("sha256", creds.apiSecret).update(canonical).digest("base64");
+      return { qs, headers: { "X-API-Key": creds.apiKey, "X-Timestamp": timestamp, "X-Nonce": nonce, "X-Signature": signature, "cache-control": "no-cache" } };
+    }
+    async function smoobuCall(creds, method, path, query, body) {
+      const raw = body === void 0 ? "" : JSON.stringify(body);
+      const sig = smoobuSign(creds, method, path, query, raw);
+      return http(method, SMOOBU + path + (sig.qs ? "?" + sig.qs : ""), { headers: sig.headers, body });
+    }
     var smoobu = {
       name: "Smoobu",
-      fields: [{ key: "apiKey", label: "API key", secret: true }],
-      h: (ctx) => ({ "Api-Key": ctx.creds.apiKey, "cache-control": "no-cache" }),
+      fields: [{ key: "apiKey", label: "API key" }, { key: "apiSecret", label: "API secret", secret: true }],
       async connect(c) {
-        need(c, ["apiKey"]);
-        const creds = { apiKey: String(c.apiKey).trim() };
-        const j = await http("GET", SMOOBU + "/apartments", { headers: smoobu.h({ creds }) });
+        need(c, ["apiKey", "apiSecret"]);
+        const creds = { apiKey: String(c.apiKey).trim(), apiSecret: String(c.apiSecret).trim() };
+        const j = await smoobuCall(creds, "GET", "/api/apartments");
         return { creds, listings: (j && j.apartments || []).map((x) => ({ id: String(x.id), name: x.name || String(x.id) })) };
       },
       async busy(ctx, lid, a, b) {
         const out = [];
         for (let page = 1; page <= 20; page++) {
-          const qs = new URLSearchParams({ apartmentId: lid, departureFrom: a, arrivalTo: b, pageSize: "100", page: String(page), showCancellation: "false" });
-          const j = await http("GET", SMOOBU + "/reservations?" + qs, { headers: smoobu.h(ctx) });
+          const j = await smoobuCall(ctx.creds, "GET", "/api/reservations", { apartmentId: lid, departureFrom: a, arrivalTo: b, pageSize: "100", page: String(page), showCancellation: "false" });
           for (const x of j && j.bookings || []) if (x.arrival && x.departure && !/cancel/i.test(String(x.type || ""))) out.push({ from: x.arrival, to: x.departure, ref: String(x.id) });
           if (!j || !j.page_count || page >= j.page_count) break;
         }
         return { ranges: out };
       },
       async block(ctx, lid, from, to, note) {
-        const j = await http("POST", SMOOBU + "/reservations", { headers: smoobu.h(ctx), body: { arrivalDate: from, departureDate: to, apartmentId: Number(lid), firstName: "Bookingbooster", lastName: note, notice: note + ". Dates only, made by Bookingbooster calendar sync." } });
+        const j = await smoobuCall(ctx.creds, "POST", "/api/reservations", void 0, { arrivalDate: from, departureDate: to, apartmentId: Number(lid), firstName: "Bookingbooster", lastName: note, notice: note + ". Dates only, made by Bookingbooster calendar sync." });
         if (!j || !j.id) throw new ApiError("did not confirm the block.");
         return String(j.id);
       },
       async unblock(ctx, lid, rec) {
-        await http("DELETE", SMOOBU + "/reservations/" + encodeURIComponent(rec.ref), { headers: smoobu.h(ctx) });
+        await smoobuCall(ctx.creds, "DELETE", "/api/reservations/" + encodeURIComponent(rec.ref));
       }
     };
     var HOSTAWAY = "https://api.hostaway.com/v1";
@@ -16963,6 +16976,7 @@ var require_channels = __commonJS({
     };
     module.exports.ADAPTERS = ADAPTERS;
     module.exports.ApiError = ApiError;
+    module.exports.smoobuSign = smoobuSign;
   }
 });
 
