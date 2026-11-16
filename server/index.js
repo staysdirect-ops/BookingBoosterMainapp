@@ -175,6 +175,7 @@ async function publicBook(req, res, w) {
   const p = w.state.properties.find(q => q.id === x.propertyId && q.published !== false); if (!p) throw err(404, 'That home is not taking bookings.');
   x.source = ['google', 'ai', 'campaign', 'referral'].includes(input.source) ? input.source : (input.source === 'guest-app' ? 'guest-app' : 'website');
   x.channel = 'direct';
+  await effects.freshen(w, p.id); // re-read Airbnb and the rest first if they were not checked in the last few minutes
   const ready = stripeReady(w);
   let r;
   if (kind === 'transfer') { r = (await ws.act(w.id, 'bookByTransfer', [x])).result; }
@@ -423,10 +424,12 @@ async function route(req, res) {
     const step = ['checkin', 'messages', 'guide', 'checkout', 'trip'].includes(u.searchParams.get('step')) ? u.searchParams.get('step') : (u.searchParams.get('done') || u.searchParams.get('paid') ? 'done' : null);
     return tripPage(res, w, b, k, step);
   }
-  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)\.ics$/))) {
+  // <token>.ics carries direct bookings and blocks made here; <token>.<calendar>.ics (for example .airbnb.ics) also
+  // carries the dates read from every other calendar, so Airbnb, Vrbo and Booking.com block each other through us.
+  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z]+))?\.ics$/))) {
     const r = await ws.bySlug(mm[1]); const pid = decodeURIComponent(mm[2]);
-    if (!r || !auth.verify(mm[3], 'ical', r.id, pid)) return send(res, 404, 'Not found', 'text/plain');
-    const w = await ws.open(r.id); w.catchUp(); const f = ical.feed(w.state, pid, MAIN_HOST); if (!f) return send(res, 404, 'Not found', 'text/plain');
+    if (!r || !auth.verify(mm[3], 'ical', r.id, pid) || (mm[4] && !ical.CHANNELS.includes(mm[4]))) return send(res, 404, 'Not found', 'text/plain');
+    const w = await ws.open(r.id); w.catchUp(); const f = ical.feed(w.state, pid, MAIN_HOST, mm[4]); if (!f) return send(res, 404, 'Not found', 'text/plain');
     return send(res, 200, f, 'text/calendar; charset=utf-8', { 'cache-control': 'no-cache', 'content-disposition': 'inline; filename="' + pid + '.ics"' });
   }
   // Campaign click and open tracking: one count per guest, signed links only.
@@ -679,7 +682,9 @@ async function route(req, res) {
         if (iid === 'lock' && !cur.connected) throw err(400, 'Paste your Nuki API token to connect your locks.');
         if (iid === 'lock' && cur.connected) await secrets.del(w.id, 'nuki');
         if (iid === 'sms' && !cur.connected && !cfg.sms.sid) { /* allowed: texts stay in the outbox until Twilio keys are set */ }
-        if (cur.addon && !cur.connected) throw err(400, 'Paste a calendar link to turn on calendar sync.');
+        if (cur.api && !cur.connected) throw err(400, 'Add your ' + cur.name + ' key to connect it.');
+        if (cur.addon && !cur.api && !cur.connected) throw err(400, 'Paste a calendar link to turn on calendar sync.');
+        if (cur.api && cur.connected) await effects.channels.disconnect(w, iid); // reopens the dates we closed there and forgets the key
       }
       if (name === 'toggleIntegration' && j.args && j.args[0] === 'stripe' && stripe.enabled) { const on = w.state.integrations.find(i => i.id === 'stripe').connected; if (!on) return json(res, { state: w.state, version: await ws.version(w.id), redirect: '/app/stripe/connect', notice: 'Opening Stripe to connect your account' }); }
       const r = await ws.act(w.id, name, Array.isArray(j.args) ? j.args : []);
@@ -742,7 +747,17 @@ async function route(req, res) {
     if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
-    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => ({ propertyId: x.id, name: x.name, url: urls.ical(w, x) })) });
+    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
+    // Calendar sync add-on: connect a channel manager with the host's own API key (kept encrypted, never sent to the browser).
+    if (p === '/app/channel/connect' && m === 'POST') {
+      const j = await jsonBody(req, 4e3); const id = String(j.id || ''); const A = effects.channels.ADAPTERS[id];
+      if (!A) throw err(404, 'Unknown channel manager');
+      if (!auth.limit('cm:' + w.id, 10, 600e3)) throw err(429, 'Too many tries. Wait a few minutes and try again.');
+      const input = {}; for (const f of A.fields) input[f.key] = String((j.creds || {})[f.key] || '').trim().slice(0, 500);
+      let listings; try { listings = await effects.channels.connect(w, id, input); } catch (e) { throw err(e.status && e.status < 500 ? 400 : 502, e.message); }
+      effects.channels.sync(w, { id }).catch(e => log('channels', e.message));
+      return json(res, { state: (await ws.open(w.id)).state, version: await ws.version(w.id), listings });
+    }
     return notFound(res);
   }
   return notFound(res);

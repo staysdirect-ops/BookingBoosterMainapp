@@ -269,4 +269,50 @@
       blocks: [], events: [], notifications: [], seq: 100,
     };
   };
+
+  /* ---------- calendar sync add-on: more calendars and channel manager APIs ---------- */
+  // Added to every account, old or new, the first time it loads.
+  BB.SYNC_EXTRA = [
+    { id: 'other', name: 'Other calendar', group: 'Add-ons', addon: true, connected: false, detail: 'Optional. Paste a calendar link (iCal) from any other site, such as Plum Guide, Sykes, Holidu, Expedia or Google Calendar. Dates booked there are blocked on your sites.', lastSync: null },
+    { id: 'beds24', name: 'Beds24', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Beds24 account. Dates booked there close on your sites, and direct bookings close the dates in Beds24 within minutes.', lastSync: null },
+    { id: 'smoobu', name: 'Smoobu', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Smoobu account. Dates booked there close on your sites, and direct bookings close the dates in Smoobu within minutes.', lastSync: null },
+    { id: 'hostaway', name: 'Hostaway', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Hostaway account. Dates booked there close on your sites, and direct bookings close the dates in Hostaway within minutes.', lastSync: null },
+    { id: 'guesty', name: 'Guesty', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Guesty account. Dates booked there close on your sites, and direct bookings close the dates in Guesty within minutes.', lastSync: null },
+    { id: 'lodgify', name: 'Lodgify', group: 'Add-ons', addon: true, api: true, readOnly: true, connected: false, detail: 'Reads your Lodgify bookings every few minutes so those dates close on your sites. Lodgify reads your direct bookings back from your Bookingbooster calendar link.', lastSync: null },
+  ];
+  BB.ensureChannels = function (s) {
+    if (!s || !Array.isArray(s.integrations)) return;
+    BB.SYNC_EXTRA.forEach(x => { if (!s.integrations.some(i => i.id === x.id)) s.integrations.push(Object.assign({}, x)); });
+  };
+  try { BB.ensureChannels(S()); } catch (_) {}
+
+  // Pick which listing in the channel manager is which home. The listings come from the server when the host connects.
+  BB.act.mapChannelListing = function (id, pid, listingId) {
+    const i = BB.q.integration(id); if (!i || !i.api || !BB.q.property(pid)) return { ok: false };
+    listingId = listingId == null ? '' : String(listingId);
+    if (listingId && !(i.listings || []).some(l => String(l.id) === listingId)) return { ok: false, error: 'That listing is not in your ' + i.name + ' account.' };
+    i.map = i.map || {};
+    if (listingId) i.map[pid] = listingId; else { delete i.map[pid]; S().blocks = S().blocks.filter(k => !(k.sync === id && k.propertyId === pid)); }
+    const l = (i.listings || []).find(x => String(x.id) === listingId);
+    BB.log('sync', i.name, listingId ? P(pid).short + ' is now linked to "' + (l ? l.name : listingId) + '" in ' + i.name + '.' : P(pid).short + ' is no longer linked to ' + i.name + '.', id);
+    if (listingId) BB.fx('channels.sync', { id });
+    BB.store.commit({ type: 'integration', id });
+    return { ok: true };
+  };
+
+  // When a direct booking is made, changed or cancelled on a home linked to a channel manager API, tell the server
+  // to update the channel manager straight away (not just on the next scheduled check).
+  const directPrint = () => {
+    const s = S(); const homes = new Set();
+    (s.integrations || []).forEach(i => { if (i.api && i.connected && i.map) Object.keys(i.map).forEach(pid => homes.add(pid)); });
+    if (!homes.size) return '';
+    return s.bookings.filter(b => homes.has(b.propertyId) && b.status !== 'cancelled' && b.checkOut >= s.today).map(b => b.id + ':' + b.propertyId + ':' + b.checkIn + ':' + b.checkOut).sort().join(',')
+      + '|' + s.blocks.filter(k => homes.has(k.propertyId) && !k.sync && k.to >= s.today).map(k => k.propertyId + ':' + k.from + ':' + k.to).sort().join(',');
+  };
+  const commit0 = BB.store.commit;
+  BB.store.commit = function (meta) {
+    const s = S();
+    if (s && s.live) { const fp = directPrint(); if (fp && fp !== s.directPrint) { s.directPrint = fp; BB.fx('channels.push', {}); } else if (!fp && s.directPrint) s.directPrint = ''; }
+    return commit0.call(BB.store, meta);
+  };
 })();

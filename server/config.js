@@ -68,5 +68,5 @@ module.exports = {
   credits: { enabled: E.AI_CREDITS !== 'off', monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
   nuki: { token: E.NUKI_API_TOKEN },
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
-  icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15),
+  icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
 };

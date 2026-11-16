@@ -5,7 +5,9 @@ const ical = require('./ical');
 const invoiceMod = require('./invoice');
 
 module.exports = function (ctx) {
-  const { cfg, ws, msg, stripe, ai, auth, urls, db, log } = ctx;
+  const { cfg, ws, msg, stripe, ai, auth, urls, db, log, secrets } = ctx;
+  const host = new URL(cfg.baseUrl).host;
+  const channels = ctx.channels || require('./channels')({ ws, secrets, log, host });
   const money = n => '£' + Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: n % 1 ? 2 : 0 });
   const fmt = (iso, o) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', Object.assign({ timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }, o || {}));
   const first = n => String(n || '').split(' ')[0];
@@ -95,16 +97,49 @@ module.exports = function (ctx) {
     await ws.withWs(w.id, BB => { const x = BB.store.get().campaigns.find(y => y.id === c.id); if (x) x.recipients = sent; BB.log('campaign', 'Campaigns', 'Delivered "' + c.subject + '" to ' + sent + ' guest' + (sent === 1 ? '' : 's') + '.', c.id); BB.store.commit({}); });
   }
 
-  async function calendars(w, id) {
-    const s = w.state; const ids = id ? [id] : ['cm', 'airbnb', 'vrbo', 'booking'];
+  // Calendar links (iCal): read each home's links and block the dates taken there. Dates only.
+  const ICAL_IDS = ical.CHANNELS;
+  async function calendars(w, id, only) {
+    const ids = id ? [id] : ICAL_IDS.concat(Object.keys(channels.ADAPTERS));
     for (const iid of ids) {
-      const i = s.integrations.find(x => x.id === iid); if (!i || !i.connected || !i.links) continue;
+      if (channels.ADAPTERS[iid]) { await channels.sync(w, { id: iid, only }); continue; }
+      const i = w.state.integrations.find(x => x.id === iid); if (!i || !i.connected || !i.links) continue;
       for (const [pid, url] of Object.entries(i.links)) {
-        try { const ranges = ical.parse(await ical.fetchCalendar(url)); await ws.withWs(w.id, BB => BB.act.applyCalendar(iid, pid, ranges), { quiet: true }); }
-        catch (e) { await ws.withWs(w.id, BB => { const ii = BB.q.integration(iid); ii.error = e.message; BB.log('sync', ii.name, 'Could not read the calendar link for ' + (BB.q.property(pid) || {}).short + ': ' + e.message, iid); BB.store.commit({}); }); }
+        if (only && pid !== only) continue;
+        const status = { checked: new Date().toISOString() };
+        try {
+          const s = w.state;
+          const ranges = ical.merge(ical.dropEchoes(ical.events(await ical.fetchCalendar(url)), s, pid, host)).filter(r => r.to > s.today);
+          const had = s.blocks.filter(k => k.sync === iid && k.propertyId === pid && k.to > s.today).length;
+          const prev = (i.status || {})[pid] || {};
+          // A link that suddenly comes back empty is more often a hiccup at the other end than every stay cancelled
+          // at once, so the dates stay blocked until a second check agrees.
+          if (!ranges.length && had && !prev.empty) { status.empty = true; status.ok = status.checked; status.count = had; }
+          else { status.empty = false; status.ok = status.checked; status.count = ranges.length; await ws.withWs(w.id, BB => BB.act.applyCalendar(iid, pid, ranges), { quiet: true }); }
+        } catch (e) { status.error = e.message; }
+        await ws.withWs(w.id, BB => {
+          const ii = BB.q.integration(iid); ii.status = ii.status || {}; const prev = ii.status[pid] || {};
+          ii.status[pid] = Object.assign({}, prev, status, status.error ? {} : { error: null });
+          ii.error = Object.values(ii.status).map(v => v.error).find(Boolean) || null;
+          if (status.error && prev.error !== status.error) BB.log('sync', ii.name, 'Could not read the calendar link for ' + (BB.q.property(pid) || {}).short + ': ' + status.error, iid);
+          if (status.empty && !prev.empty) BB.log('sync', ii.name, 'The calendar link for ' + (BB.q.property(pid) || {}).short + ' came back empty. Its dates stay blocked until the next check confirms it.', iid);
+          BB.store.commit({ quiet: true });
+        }, { quiet: true });
       }
     }
   }
+  // Just before a guest books: re-read that home's calendars if they have not been checked in the last few minutes,
+  // so a stay booked on Airbnb a moment ago is not sold again here. Never holds the guest up for long.
+  const fresh = new Map();
+  async function freshen(w, pid, ms = 5000) {
+    if (w.kind !== 'live') return;
+    const k = w.id + '|' + pid; if (Date.now() - (fresh.get(k) || 0) < 3 * 60e3) return;
+    const linked = w.state.integrations.some(i => i.connected && ((i.links && i.links[pid]) || (i.api && i.map && i.map[pid])));
+    if (!linked) return;
+    fresh.set(k, Date.now());
+    await Promise.race([calendars(w, null, pid).catch(e => log('freshen', e.message)), new Promise(r => setTimeout(r, ms))]);
+  }
+
   async function aiCheck(w) {
     const s = w.state; if (!ai.available().length) return;
     const { results } = await ai.check(s.ai.questions, s.properties);
@@ -163,6 +198,8 @@ module.exports = function (ctx) {
         else if (f.type === 'sms.guest') await guestSms(w, d);
         else if (f.type === 'campaign.send') await campaign(w, d);
         else if (f.type === 'ical.sync') await calendars(w, d.id);
+        else if (f.type === 'channels.sync') await channels.sync(w, { id: d.id });
+        else if (f.type === 'channels.push') await channels.sync(w, { pull: false });
         else if (f.type === 'ai.check') await aiCheck(w);
         else if (f.type === 'payment.refund') await refund(w, d);
         else if (f.type === 'payment.link') await paymentLink(w, d);
@@ -173,5 +210,5 @@ module.exports = function (ctx) {
       } catch (e) { log('effect ' + f.type + ' failed:', e.message); }
     }
   }
-  return Object.assign(run, { calendars, aiCheck });
+  return Object.assign(run, { calendars, freshen, channels, aiCheck });
 };
