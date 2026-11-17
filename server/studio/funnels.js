@@ -12,6 +12,8 @@ const TEMPLATES = {
   waitlist: { name: 'First dibs on dates', blurb: 'Let people join a priority list for a season or event before the dates open to everyone.', steps: ['optin', 'thanks'], goal: 'leads' },
   offer: { name: 'Special offer', blurb: 'A focused sales page for one offer, with a promo code that takes guests straight to booking.', steps: ['offer'], goal: 'bookings' },
   lastminute: { name: 'Last-minute dates', blurb: 'Shows your next free dates, live from your calendar, with a code to fill them.', steps: ['offer'], goal: 'bookings' },
+  // made by Event ads (server/studio/events.js), not from the funnel picker: one event, its dates and a code
+  event: { name: 'Event stay', blurb: 'A page for one nearby event or course, with the free nights for it and a code.', steps: ['offer'], goal: 'bookings', hidden: true },
   comeback: { name: 'Welcome back', blurb: 'For past guests: a returning-guest discount and first pick of next season.', steps: ['optin', 'thanks'], goal: 'leads' },
 };
 
@@ -64,7 +66,7 @@ function aiPrompt(tpl, f, o) {
 function page(s, p, fn, step, ctx) {
   const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || 'linen', L = D.look({ direction: dir, accent: fn.accent || ctx.accent, style: fn.style || ctx.style }), c = (fn.copy || {})[step] || {};
   const ph = f.photos[0];
-  const book = ctx.siteUrl + (ctx.siteUrl.includes('?') ? '&' : '?') + (fn.code ? 'promo=' + encodeURIComponent(fn.code) + '&' : '') + 'utm_source=funnel&utm_campaign=' + encodeURIComponent(fn.id) + '#book';
+  const book = ctx.siteUrl + (ctx.siteUrl.includes('?') ? '&' : '?') + (fn.code ? 'promo=' + encodeURIComponent(fn.code) + '&' : '') + (fn.stay ? 'checkin=' + fn.stay.from + '&checkout=' + fn.stay.to + '&' : '') + 'utm_source=funnel&utm_campaign=' + encodeURIComponent(fn.id) + '#book';
   const h1 = '<h1 class="disp h1" style="font-size:calc(clamp(2.6rem,6vw,5.6rem) * var(--ds))">' + fmtInline(c.headline || '') + '</h1>';
   const pts = (c.points || []).filter(Boolean).length ? '<ul class="fn-pts">' + c.points.filter(Boolean).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '';
   const pic = ph ? '<figure class="frame" style="margin:0">' + img(ph, 'fetchpriority="high"') + '</figure>' : '<div class="frame" aria-hidden="true" style="aspect-ratio:4/5;background:var(--deep);border-radius:var(--ri);display:grid;place-items:center;color:var(--deepInk)"><span class="disp" style="font-size:calc(clamp(2.4rem,5vw,4.4rem) * var(--ds));text-align:center;padding:30px">' + esc(f.name) + '</span></div>';
@@ -81,7 +83,8 @@ function page(s, p, fn, step, ctx) {
       '<div class="acts" style="margin-top:34px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || 'See dates') + ARROW + '</a></div></div>' + pic + '</div></section>' + extra;
   } else {
     const gp = fn.template === 'lastminute' ? gaps(s, p, ctx.today) : [];
-    const gapList = fn.template === 'lastminute' ? (gp.length ? '<ul class="fn-pts">' + gp.map(g => '<li><b>' + fmtD(g.from) + ' – ' + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + ' night' + (g.n === 1 ? '' : 's') + ' free</span></li>').join('') + '</ul>' : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>') : '';
+    const stayLine = fn.template === 'event' && fn.stay ? '<ul class="fn-pts"><li><b>Arrive ' + fmtD(fn.stay.from) + ', leave ' + fmtD(fn.stay.to) + '</b>&nbsp;<span class="mut">' + fn.stay.n + ' night' + (fn.stay.n === 1 ? '' : 's') + ' free' + (fn.event ? ' for ' + esc(fn.event.name) : '') + '</span></li></ul>' : '';
+    const gapList = stayLine + (fn.template === 'lastminute' ? (gp.length ? '<ul class="fn-pts">' + gp.map(g => '<li><b>' + fmtD(g.from) + ' – ' + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + ' night' + (g.n === 1 ? '' : 's') + ' free</span></li>').join('') + '</ul>' : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>') : '');
     main = '<section class="fn-hero"><div class="w"><div><p class="eb">' + esc(c.eyebrow || '') + '</p>' + h1 + '<p class="lede">' + esc(c.subhead || '') + '</p>' + pts + gapList +
       (fn.code ? '<div class="code" aria-label="Promo code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px;margin:0">' + fn.pct + '% off your nights. Applied automatically on the next page.</p>' : '') +
       '<div class="acts" style="margin-top:30px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || 'Check dates') + ARROW + '</a>' + (c.urgency ? '<span class="urg">' + esc(c.urgency) + '</span>' : '') + '</div>' +

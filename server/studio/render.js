@@ -445,6 +445,8 @@ function nights(a,b){var o=[];for(var x=a;x<b;x=add(x,1))o.push(x);return o}func
 function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 function gbp(n){return '£'+Math.round(n).toLocaleString('en-GB')}var MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
 if(!st.m){st.m=K.today.slice(0,7)}
+// dates passed in the link (from an event ad or funnel) are picked for the guest when they are still free
+(function(){var ci=qs.get('checkin')||'',co=qs.get('checkout')||'';if(ci.length===10&&co.length===10&&!isNaN(P(ci))&&!isNaN(P(co))&&ci>K.today&&co>ci&&free(ci,co)){st.a=ci;st.b=co;st.m=ci.slice(0,7)}})();
 function quote(){if(!st.a||!st.b)return null;var ns=nights(st.a,st.b),n=ns.reduce(function(s,x){var w=P(x).getUTCDay();return s+K.nightly+((w===5||w===6)?K.weekend:0)},0);var g=val('ad')+val('ch'),pet=K.pets&&chk('pt')?K.petFee:0;var pc=st.promo&&K.promos[fnv(st.promo)]||0,disc=Math.round(n*pc/100);
 var pr=[];if(ns.length<K.minNights)pr.push('The minimum stay is '+K.minNights+' nights.');if(g>K.maxGuests)pr.push('This home sleeps '+K.maxGuests+'.');if(!free(st.a,st.b))pr.push('Some of those nights are taken.');
 return{n:ns.length,nightly:n,clean:K.cleaning,pet:pet,pc:pc,disc:disc,total:n+K.cleaning+pet-disc,pr:pr}}
