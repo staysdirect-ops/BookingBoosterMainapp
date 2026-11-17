@@ -148,7 +148,11 @@ module.exports = function (ctx) {
     const text = g.name + ' asked to book ' + p.name + ', ' + fmt(b.checkIn) + ' to ' + fmt(b.checkOut) + ', ' + b.adults + ' adult' + (b.adults === 1 ? '' : 's') + (b.children ? ' and ' + b.children + ' children' : '') + (b.pets ? ' and a dog' : '') + ', ' + money(b.total) + '. The dates are held until you accept or decline.';
     await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: 'Booking request: ' + p.name + ', ' + fmt(b.checkIn), text: text + '\n\nOpen your console: ' + url, html: simple(p, vars(w, b, p, g), text, { label: 'Accept or decline', url }), meta: { template: 'host-request', bookingId: b.id } });
   }
-  async function hostEmail(w, d) {
+  // An unpaid sign-up's site is still offline ("opening soon"), so its "site is live" email waits for the first payment (siteLive).
+  const unpaid = async w => { if (!stripe.enabled || w.kind !== 'live') return false; const r = await ws.row(w.id); return !r || !r.billing_status || r.billing_status === 'trial'; };
+  async function siteLive(wid) { const w = await ws.open(wid); if (!w) return; for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true); }
+  async function hostEmail(w, d, paid) {
+    if (!paid && await unpaid(w)) return;
     const s = w.state; const p = s.properties.find(x => x.id === d.propertyId); if (!p) return;
     const v = { first_name: first(s.account.owner), property_name: p.name, site_domain: p.domain, site_url: urls.site(w, p), pages_live: '6', account_url: cfg.baseUrl + '/app', website_editor_url: cfg.baseUrl + '/app', share_kit_url: cfg.baseUrl + '/app', help_url: cfg.baseUrl + '/help', company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + '/privacy', unsubscribe_url: cfg.baseUrl + '/app', preferences_url: cfg.baseUrl + '/app' };
     await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: p.name + ' is live', text: p.name + ' is live at ' + v.site_url + '. Open your console: ' + v.account_url, html: msg.template('host-o03-site-live', v), meta: { template: 'site-live' } });
@@ -173,5 +177,5 @@ module.exports = function (ctx) {
       } catch (e) { log('effect ' + f.type + ' failed:', e.message); }
     }
   }
-  return Object.assign(run, { calendars, aiCheck });
+  return Object.assign(run, { calendars, aiCheck, siteLive });
 };

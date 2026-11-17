@@ -629,7 +629,7 @@
                st === 'busy' ? '<span class="s-conn-ok"><i class="s-spin"></i>Connecting…</span>' :
                st === 'auth' ? '' : '<button class="btn sm primary" data-conn="' + k + '" data-c="auth">Connect</button>') + '</div>' +
               (st === 'auth' ? '<div class="s-oauth"><p><b>' + name + '</b> will let Bookingbooster:</p><ul>' + perms.map(p => '<li>' + icon('check') + p + '</li>').join('') + '</ul>' +
-                '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">Simulated sign-in for the prototype.</p></div>' : '') +
+                '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">' + (REAL() ? 'You connect your real account securely from your console once you have signed up.' : 'Simulated sign-in for the demo.') + '</p></div>' : '') +
               '</div>';
           }).join('') +
           '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional · £' + ADDON.price + ' a month</span></b><em>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
