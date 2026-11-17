@@ -2340,6 +2340,16 @@ var require_bb_embedded_files = __commonJS({
 .a-decl-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
 /* bank transfer settings (Payments) */
+.x-app .a-paym { display: grid; gap: 8px; margin-top: 4px; }
+.x-app .a-paym-o { display: flex; gap: 10px; align-items: flex-start; text-align: left; width: 100%; padding: 11px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: transparent; color: var(--fg); font: inherit; cursor: pointer; }
+.x-app .a-paym-o:hover:not(:disabled) { border-color: var(--primary); }
+.x-app .a-paym-o:disabled { opacity: .55; cursor: not-allowed; }
+.x-app .a-paym-o[aria-checked="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+.x-app .a-paym-o i { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; border: 1.5px solid var(--line-2); }
+.x-app .a-paym-o[aria-checked="true"] i { border: 5px solid var(--primary); }
+.x-app .a-paym-o span { display: grid; gap: 2px; min-width: 0; }
+.x-app .a-paym-o b { font-size: 14px; font-weight: 600; }
+.x-app .a-paym-o em { font-style: normal; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
 .x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
 .x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }
@@ -3179,6 +3189,22 @@ var require_bb_embedded_files = __commonJS({
      PAYMENTS
      ===================================================================================== */
   // Bank transfer settings: the details printed on invoices, and whether guests can choose it at checkout.
+  // The host picks how guests pay on their sites: card through Stripe, bank transfer, or let the guest choose.
+  function guestPayCard(inst) {
+    const gp = BB.guestPay(), bank = BB.bankReady(), stripeOn = BB.q.connected('stripe');
+    const opts = [
+      ['card', 'Card only', 'Card, Apple Pay and Google Pay through Stripe. The stay is paid the moment it is booked.'],
+      ['transfer', 'Bank transfer only', 'Guests book, get an invoice with your bank details and a payment reference, and the booking waits as unpaid until you mark it paid.'],
+      ['both', 'Guests choose', 'Card is the main button, with bank transfer offered underneath.'],
+    ];
+    const note = !bank && gp.want !== 'card' ? 'Add your bank details below to offer bank transfer. Until then guests pay by card.' :
+      gp.card && !stripeOn ? 'Stripe is not connected yet, so card guests send a booking request instead of paying.' : '';
+    return card('How guests pay', BB.pill('info', gp.mode === 'both' ? 'Card or transfer' : gp.mode === 'card' ? 'Card' : 'Bank transfer'),
+      '<div class="a-paym" role="radiogroup" aria-label="How guests pay">' + opts.map(([v, t, d]) => {
+        const locked = v !== 'card' && !bank;
+        return '<button type="button" role="radio" class="a-paym-o" data-guestpay="' + v + '" aria-checked="' + (gp.want === v) + '"' + (locked ? ' disabled title="Add your bank details first"' : '') + '><i aria-hidden="true"></i><span><b>' + t + '</b><em>' + d + '</em></span></button>';
+      }).join('') + '</div>' + (note ? '<p class="a-note">' + esc(note) + '</p>' : ''));
+  }
   function bankCard(inst) {
     const st = inst.st, k = S().account.bank || {}, d = Object.assign({}, k, st.bank || {}), ready = BB.bankReady();
     if (!st.bank_edit && (k.holder || k.iban)) {
@@ -3228,7 +3254,7 @@ var require_bb_embedded_files = __commonJS({
           (unpaid.length ? '<div class="a-s12">' + card('Waiting for payment', plural(unpaid.length, 'booking'), '<div class="a-list">' + unpaid.map(b => '<div class="a-row">' + BB.avatar(gOf(b).name) + '<span class="a-row-t"><b>' + esc(gOf(b).name) + ' \xB7 ' + BB.money(b.total) + '</b><span>' + b.id + ' \xB7 ' + esc(P(b.propertyId).short) + ' \xB7 arrives ' + relDay(b.checkIn, true) + '</span></span><span class="a-row-m"><button class="btn sm" data-a="nav" data-view="booking" data-id="' + b.id + '">Open</button><button class="btn sm primary" data-paid="' + b.id + '">Mark paid</button></span></div>').join('') + '</div>') + '</div>' : '') +
           '<div class="a-s8">' + card('Direct payouts', plural(direct.length, 'booking'), '<div class="tblwrap a-flushx" id="paytbl-' + inst.uid + '"><table class="tbl a-tbl"><thead><tr><th>Payout</th><th>Guest</th><th>Stay</th><th class="r">Amount</th><th class="r">Fee avoided</th><th>Status</th></tr></thead><tbody>' + (rows || '<tr><td colspan="6"><div class="a-empty"><p>No direct bookings yet.</p></div></td></tr>') + '</tbody></table></div>' +
             (direct.length > lim ? '<div class="a-more"><button class="btn sm" data-paymore>Show more</button><span class="muted">Showing ' + lim + ' of ' + direct.length + '</span></div>' : ''), 'a-flushb') + '</div>' +
-          '<div class="a-s4"><div class="a-stack">' + bankCard(inst) + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' \xB7 ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
+          '<div class="a-s4"><div class="a-stack">' + guestPayCard(inst) + bankCard(inst) + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' \xB7 ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
             card('Fees you didn\u2019t pay', yr, (() => { const rev = yearDirect.reduce((a, x) => a + x.b.total, 0); return '<p class="a-note a-nt0">What the platforms would have taken from your ' + BB.money(rev) + ' of direct bookings this year.</p>' + [['airbnb', 'Airbnb', 'host fee 15.5%'], ['booking', 'Booking.com', 'commission 15%'], ['vrbo', 'Vrbo', 'fees about 8%']].map(([k, n, e]) => '<div class="a-trow"><span>' + n + '<em>' + e + '</em></span><b class="num a-saved">' + BB.money(Math.round(rev * BB.PLATFORM_FEE[k])) + '</b></div>').join('') + (platFees ? '<div class="a-trow"><span>Fees on add-on bookings<em>Stays synced from platforms</em></span><b class="num">' + BB.money(platFees) + '</b></div>' : ''); })()) +
           '</div></div>' +
         '</div>';
@@ -3237,6 +3263,8 @@ var require_bb_embedded_files = __commonJS({
     change(ev, inst) { const f = ev.target.closest('[data-bank]'); if (f && f.type === 'checkbox') { inst.st.bank = inst.st.bank || {}; inst.st.bank.on = f.checked; } },
     click(ev, inst) {
       if (ev.target.closest('[data-paymore]')) return inst.set({ pay_lim: (inst.st.pay_lim || 12) + 20 });
+      const gpb = ev.target.closest('[data-guestpay]');
+      if (gpb) { const r = BB.act.setGuestPay(gpb.dataset.guestpay); if (r && r.ok) BB.toast(gpb.dataset.guestpay === 'card' ? 'Guests now pay by card' : gpb.dataset.guestpay === 'transfer' ? 'Guests now pay by bank transfer' : 'Guests can pay by card or bank transfer', 'good'); else BB.toast((r && r.error) || 'Could not change that.'); return; }
       if (ev.target.closest('[data-bankedit]')) return inst.set({ bank_edit: true, bank: null });
       if (ev.target.closest('[data-bankcancel]')) return inst.set({ bank_edit: false, bank: null, bank_err: null });
       if (ev.target.closest('[data-banksave]')) {
@@ -3989,26 +4017,30 @@ button { cursor: pointer; }
       '<p class="g-fine">Sample details are filled in for the demo. Change them to anything.</p></form>' + powered();
     return { body, cta: '<button class="g-btn" type="submit" form="gDet-' + u + '">Continue to payment</button>', back: true };
   }
+  // How guests pay is the host's choice: card (Stripe), bank transfer, or both. Trip links get it already resolved.
+  const payHow = () => REAL() ? (S().account.guestPay || 'both') : BB.guestPay ? BB.guestPay().mode : 'both';
+  const transferDays = () => Math.max(1, Math.min(30, +(S().account.bank && S().account.bank.days) || 3));
   function payView(inst, p) {
     const st = inst.st, k = st.bk, c = st.card, u = inst.uid;
     const q = BB.quote(p.id, k.a, k.b, k); if (!q) return bookView(inst, p);
     const cancelBy = D.add(k.a, -7);
-    const stripeErr = st.err && /Stripe/.test(st.err);
+    const stripeErr = st.err && /Stripe/.test(st.err), bankOnly = payHow() === 'transfer';
     const body = '<p class="g-step">Step 3 of 3 \xB7 Review and pay</p><h2 class="g-h">' + esc(D.fmt(k.a)) + ' \u2013 ' + esc(D.fmt(k.b)) + ' \xB7 ' + nightsWord(q.nights) + '</h2>' +
       '<div class="g-cmp"><div><span>Same stay on Airbnb</span><s>' + money(q.airbnb) + '</s></div><div class="win"><span>Booking direct</span><b>' + money(q.total) + '</b></div><div class="g-cmp-s">' + BB.icon('tag') + 'You save ' + money(q.guestSaves) + '</div></div>' +
       '<div class="g-sum"><div><span>' + money(q.avg) + ' \xD7 ' + nightsWord(q.nights) + '</span><span>' + money(q.nightly) + '</span></div><div><span>Cleaning</span><span>' + money(q.cleaning) + '</span></div>' +
       (q.pet ? '<div><span>Dog fee</span><span>' + money(q.pet) + '</span></div>' : '') + (q.discount ? '<div class="g-disc"><span>Code ' + esc(q.promo) + ', ' + q.promoPct + '% off</span><span>' + money(-q.discount) + '</span></div>' : '') +
-      '<div class="g-tot"><span>Total, charged today</span><span>' + money(q.total) + '</span></div></div>' +
+      '<div class="g-tot"><span>' + (bankOnly ? 'Total, by bank transfer' : 'Total, charged today') + '</span><span>' + money(q.total) + '</span></div></div>' +
       '<p class="g-fine">' + esc(partyText(k)) + ' \xB7 ' + (cancelBy > S().today ? 'Free cancellation until ' + esc(D.fmt(cancelBy)) + '.' : 'Cancel within 24 hours for a full refund.') + '</p>' +
-      '<button type="button" class="g-apple" data-g="pay" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>' + BB.icon('lock') + 'Pay with Apple Pay</button>' +
+      (bankOnly ? '<div class="g-alert g-bank"><b>Pay by bank transfer</b><p>' + esc(first(S().account.owner) || 'Your host') + ' takes payment by bank transfer. Book now and you get an invoice with the bank details and your payment reference. Pay within ' + transferDays() + ' day' + (transferDays() === 1 ? '' : 's') + ' to keep the booking.</p></div>' : '<button type="button" class="g-apple" data-g="pay" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>' + BB.icon('lock') + 'Pay with Apple Pay</button>' +
       '<div class="g-or"><span>or pay by card</span></div>' +
       '<div class="g-cardf"><label class="g-fld"><span>Card number</span><span class="g-cardn"><input id="gCn-' + u + '" data-f="cnum" inputmode="numeric" value="' + esc(c.num) + '" autocomplete="cc-number"><i class="g-visa">VISA</i></span></label>' +
       '<div class="g-two"><label class="g-fld"><span>Expiry</span><input id="gCe-' + u + '" data-f="cexp" value="' + esc(c.exp) + '" autocomplete="cc-exp"></label><label class="g-fld"><span>CVC</span><input id="gCc-' + u + '" data-f="ccvc" inputmode="numeric" value="' + esc(c.cvc) + '" autocomplete="cc-csc"></label><label class="g-fld"><span>Postcode</span><input id="gCp-' + u + '" data-f="cpost" value="' + esc(c.post || '') + '" autocomplete="postal-code" autocapitalize="characters"></label></div>' +
-      '<p class="g-fine">' + BB.icon('lock') + 'Test card ending 4242. Payments are processed by Stripe.</p></div>' +
+      '<p class="g-fine">' + BB.icon('lock') + 'Test card ending 4242. Payments are processed by Stripe.</p></div>') +
       (st.err ? '<div class="g-alert" role="alert"><b>' + (stripeErr ? 'Card payments are paused' : 'We could not book that') + '</b><p>' + esc(st.err) + '</p>' +
         (stripeErr ? '<button type="button" class="g-btn sm" data-g="request">Send a booking request instead</button><small>No charge now. ' + esc(first(S().account.owner)) + ' confirms and sends a payment link.</small>' : '<button type="button" class="g-btn sm ghost" data-g="to" data-v="book">Change dates</button>') + '</div>' : '') +
       powered();
-    const cta = '<button class="g-btn" data-g="pay" data-m="card"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Processing payment' : 'Pay ' + money(q.total)) + '</button>';
+    const cta = bankOnly ? '<button class="g-btn" data-g="pay" data-m="transfer"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Booking' : 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' :
+      '<button class="g-btn" data-g="pay" data-m="card"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Processing payment' : 'Pay ' + money(q.total)) + '</button>';
     return { body, cta, back: true };
   }
   function doneView(inst, p) {
@@ -4390,7 +4422,7 @@ button { cursor: pointer; }
     if (request) input.pay = 'manual';
     inst.set({ paying: true, err: null });
     if (BB.api && (BB.BOOT.mode === 'trip' || BB.BOOT.mode === 'site')) {
-      BB.api.book(input, request ? 'request' : 'pay').then(j => {
+      BB.api.book(input, request ? 'request' : method === 'transfer' ? 'transfer' : 'pay').then(j => {
         if (!inst.alive) return;
         if (!j.ok) return inst.set({ paying: false, err: j.error || 'That did not go through. Try again.' });
         if (j.checkoutUrl) { location.href = j.checkoutUrl; return; }
@@ -4400,7 +4432,7 @@ button { cursor: pointer; }
     }
     const id = setTimeout(() => {
       if (!inst.alive) return;
-      const r = request ? BB.act.requestGuestBooking(input) : BB.act.createBooking(input);
+      const r = request ? BB.act.requestGuestBooking(input) : method === 'transfer' ? BB.act.bookByTransfer(input) : BB.act.createBooking(input);
       if (!r.ok) return inst.set({ paying: false, err: r.error });
       if (!request && method === 'Apple Pay') BB.toast('Paid with Apple Pay', 'good');
       st.paying = false;
@@ -6483,12 +6515,12 @@ body.p-lock { overflow: hidden; }
     const stripe = BB.q.connected('stripe');
     const fld = (k, label, type, ac, ph) => '<label class="p-field' + (e[k] ? ' bad' : '') + '"><span>' + label + '</span><input id="' + ID(inst, 'f-' + k) + '" data-f="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(f[k] || '') + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '>' + (e[k] ? '<em>' + esc(e[k]) + '</em>' : '') + '</label>';
     return '<div class="p-w p-co"><button class="p-back" data-x="home">' + BB.icon('back') + 'Back to ' + esc(p.short) + '</button>' +
-      '<h1 class="p-co-h">' + (REALSITE() && !BB.BOOT.stripe ? (bankOn() ? 'Book your stay' : 'Request to book') : 'Confirm and pay') + '</h1>' +
+      '<h1 class="p-co-h">' + ((REALSITE() ? BB.BOOT.stripe && cardOn() : cardOn()) ? 'Confirm and pay' : bankOn() ? 'Book your stay' : 'Request to book') + '</h1>' +
       '<div class="p-co-grid"><form class="p-co-form" data-x="payform" novalidate>' +
         '<section class="p-card"><h3><span class="p-num">1</span>Your details</h3><div class="p-fgrid">' +
           fld('name', 'Full name', 'text', 'name', 'Jordan Avery') + fld('email', 'Email', 'email', 'email', 'you@example.com') + fld('phone', 'Mobile phone', 'tel', 'tel', 'For your check-in link and door code') +
         '</div><label class="p-check"><input type="checkbox" id="' + ID(inst, 'f-optin') + '" data-f="optin"' + (f.optin ? ' checked' : '') + '><span>Send me early access to open dates and returning-guest offers from ' + esc(p.short) + '. Unsubscribe any time.</span></label></section>' +
-        (REALSITE() ? realPay(inst, p, q, stripe) :
+        (REALSITE() ? realPay(inst, p, q, stripe) : !cardOn() && bankOn() ? bankPay(inst, q) :
         '<section class="p-card"><h3><span class="p-num">2</span>Payment</h3>' +
           '<div class="p-wallets"><button type="button" class="p-wal apple" data-x="wallet" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>Apple Pay</button><button type="button" class="p-wal google" data-x="wallet" data-m="Google Pay"' + (st.paying ? ' disabled' : '') + '><b>G</b>oogle Pay</button></div>' +
           '<p class="p-or"><span>or pay by card</span></p>' +
@@ -6504,8 +6536,11 @@ body.p-lock { overflow: hidden; }
   }
 
   const REALSITE = () => !!(BB.BOOT && BB.BOOT.mode === 'site');
+  // How guests pay is the host's choice in Payments: card (Stripe), bank transfer, or both. Booking sites get it already resolved.
+  const payHow = () => { const a = BB.store.get().account; return REALSITE() ? (a.guestPay || 'both') : BB.guestPay ? BB.guestPay().mode : 'both'; };
+  const cardOn = () => payHow() !== 'transfer';
   // Bank transfer: the host turned it on in Payments. Booking sites only see that it is on and how many days guests have to pay.
-  const bankOn = () => { const k = BB.store.get().account.bank; return !!(k && k.on && (REALSITE() || !BB.bankReady || BB.bankReady())); };
+  const bankOn = () => { const k = BB.store.get().account.bank; return payHow() !== 'card' && !!(k && k.on && (REALSITE() || !BB.bankReady || BB.bankReady())); };
   const bankDays = () => { const k = BB.store.get().account.bank; return Math.max(1, Math.min(30, +(k && k.days) || 3)); };
   function transferOpt(inst, q, alt) {
     if (!bankOn()) return '';
@@ -6514,18 +6549,24 @@ body.p-lock { overflow: hidden; }
       '<button type="button" class="p-btn' + (alt ? ' ghost' : ' p-pay') + '" data-x="transfer"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying && st.method === 'transfer' ? '<i class="p-spin"></i>Booking' : BB.icon('send') + 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' +
       '<p class="p-fine">You get an invoice by email with the bank details. Pay within ' + bankDays() + ' day' + (bankDays() === 1 ? '' : 's') + ' to keep the booking. Your dates are held in the meantime.</p>';
   }
+  // Bank transfer as the way to pay: the host chose bank transfer only, or has not connected Stripe yet.
+  function bankPay(inst, q) {
+    const st = inst.st, host = firstName(BB.store.get().account.owner) || 'your host';
+    const err = st.payErr ? '<div class="p-err" role="alert"><b>' + BB.icon('x') + 'That did not go through</b><p>' + esc(st.payErr) + '</p></div>' : '';
+    return '<section class="p-card"><h3><span class="p-num">2</span>Pay by bank transfer</h3>' +
+      '<p class="p-lead-s">Book now and pay ' + esc(host) + ' by bank transfer. You get an invoice with the bank details and your payment reference straight away.</p>' + err + transferOpt(inst, q, false) +
+      '<p class="p-or"><span>or</span></p><button type="button" class="p-btn ghost" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + BB.icon('send') + 'Send a booking request instead</button></section>';
+  }
   // Real booking sites: card details are taken on Stripe's own page, or the guest sends a request when the host has not connected Stripe yet.
   function realPay(inst, p, q) {
     const st = inst.st, host = firstName(BB.store.get().account.owner) || 'your host';
     const err = st.payErr ? '<div class="p-err" role="alert"><b>' + BB.icon('x') + 'That did not go through</b><p>' + esc(st.payErr) + '</p></div>' : '';
-    if (BB.BOOT.stripe) return '<section class="p-card"><h3><span class="p-num">2</span>Payment</h3>' +
+    if (BB.BOOT.stripe && cardOn()) return '<section class="p-card"><h3><span class="p-num">2</span>Payment</h3>' +
       '<p class="p-lead-s">You pay on Stripe\u2019s secure page by card, Apple Pay or Google Pay. Your dates are held for 30 minutes while you pay.</p>' +
       '<p class="p-fine">' + BB.icon('lock') + 'Secured by Stripe. A refundable ' + money(q.deposit) + ' damage deposit card check happens during online check-in, not now.</p>' + err +
       '<button type="submit" class="p-btn p-pay"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Opening secure payment' : BB.icon('lock') + 'Pay ' + money(q.total) + ' securely') + '</button>' +
       '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' + transferOpt(inst, q, true) + '</section>';
-    if (bankOn()) return '<section class="p-card"><h3><span class="p-num">2</span>Pay by bank transfer</h3>' +
-      '<p class="p-lead-s">Book now and pay ' + esc(host) + ' by bank transfer. You get an invoice with the bank details straight away.</p>' + err + transferOpt(inst, q, false) +
-      '<p class="p-or"><span>or</span></p><button type="button" class="p-btn ghost" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + BB.icon('send') + 'Send a booking request instead</button></section>';
+    if (bankOn()) return bankPay(inst, q);
     return '<section class="p-card"><h3><span class="p-num">2</span>No payment today</h3>' +
       '<p class="p-lead-s">Send ' + esc(host) + ' your request. Your dates are held, and ' + esc(host) + ' sends you a secure payment link to confirm.</p>' + err +
       '<button type="button" class="p-btn p-pay" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Sending' : BB.icon('send') + 'Send booking request') + '</button>' +
@@ -6660,6 +6701,16 @@ body.p-lock { overflow: hidden; }
       BB.toast(j.request ? 'Request sent to ' + firstName(BB.store.get().account.owner) : j.invoiceUrl ? 'Booked. Invoice sent to ' + f.email.trim() : 'Booked. Confirmation sent to ' + f.email.trim(), 'good');
     }).catch(e => { if (inst.alive) inst.set({ paying: false, payErr: e.message }); });
   }
+  function bookTransfer(inst) {
+    if (inst.st.paying) return;
+    const e = validate(inst); delete e.card;
+    if (Object.keys(e).length) return inst.set({ errors: e });
+    inst.set({ paying: true, method: 'transfer', errors: {}, payErr: null });
+    if (BB.api && BB.BOOT.mode === 'site') return serverBook(inst, 'transfer');
+    const r = BB.act.bookByTransfer(input(inst));
+    if (r.ok) { inst.st.paying = false; inst.set({ view: 'done', bookingId: r.booking.id, request: false }); window.scrollTo({ top: 0 }); BB.toast('Booked. Invoice sent to ' + inst.form.email.trim(), 'good'); }
+    else inst.set({ paying: false, payErr: r.error });
+  }
   function input(inst) {
     const st = inst.st, f = inst.form;
     return { propertyId: st.pid, checkIn: st.sel.a, checkOut: st.sel.b, name: String(f.name).trim(), email: String(f.email).trim(), phone: String(f.phone || '').trim(), adults: st.adults, children: st.children, pets: st.pets, promo: st.promo, channel: 'direct', source: 'website', subscribe: !!f.optin };
@@ -6724,16 +6775,7 @@ body.p-lock { overflow: hidden; }
             else inst.set({ payErr: r.error });
             break;
           }
-          case 'transfer': {
-            const e = validate(inst); delete e.card;
-            if (Object.keys(e).length) { inst.set({ errors: e }); break; }
-            inst.set({ paying: true, method: 'transfer', errors: {}, payErr: null });
-            if (BB.api && BB.BOOT.mode === 'site') { serverBook(inst, 'transfer'); break; }
-            const r = BB.act.bookByTransfer(input(inst));
-            if (r.ok) { inst.st.paying = false; inst.set({ view: 'done', bookingId: r.booking.id, request: false }); window.scrollTo({ top: 0 }); BB.toast('Booked. Invoice sent to ' + inst.form.email.trim(), 'good'); }
-            else inst.set({ paying: false, payErr: r.error });
-            break;
-          }
+          case 'transfer': bookTransfer(inst); break;
           case 'changedates': inst.set({ view: 'site', payErr: null }); openBooking(inst); break;
           case 'guestapp': BB.go('guest', { bookingId: st.bookingId, propertyId: st.pid }); break;
           case 'console': BB.go('app', { view: 'booking', id: st.bookingId }); break;
@@ -6777,7 +6819,7 @@ body.p-lock { overflow: hidden; }
           if (BB.store.get().promos[code]) inst.set({ promo: code, promoOpen: false, promoMsg: null });
           else inst.set({ promoMsg: 'That code is not valid for this home.' });
         }
-        if (f.dataset.x === 'payform') pay(inst, 'card');
+        if (f.dataset.x === 'payform') { if (cardOn()) pay(inst, 'card'); else if (bankOn()) bookTransfer(inst); }
       });
       inst._key = ev => {
         if (!inst.alive || !document.body.contains(root)) return;
@@ -9265,6 +9307,21 @@ body.p-lock { overflow: hidden; }
   BB.transferDays = function (s) { const k = (s || S()).account.bank; return Math.max(1, Math.min(30, (k && +k.days) || 3)); };
   // Due in the host's number of days, but never later than the day before arrival (or today, for a last-minute stay).
   BB.transferDue = function (b) { const t = S().today, due = D.add(t, BB.transferDays()), last = D.add(b.checkIn, -1); return due < last ? due : (last > t ? last : t); };
+  // How guests pay on the host's own sites: 'card' (Stripe), 'transfer' (bank transfer) or 'both' (the default).
+  // Bank transfer only counts once the bank details are complete, so a host can never be left with no way to get paid.
+  BB.GUEST_PAY = ['both', 'card', 'transfer'];
+  BB.guestPay = function (s) {
+    s = s || S(); const want = BB.GUEST_PAY.includes(s.account.guestPay) ? s.account.guestPay : 'both';
+    const transfer = want !== 'card' && BB.bankReady(s), card = want !== 'transfer' || !transfer;
+    return { want, card, transfer, mode: card && transfer ? 'both' : card ? 'card' : 'transfer' };
+  };
+  BB.act.setGuestPay = function (mode) {
+    if (!BB.GUEST_PAY.includes(mode)) return { ok: false, error: 'Choose card, bank transfer, or both.' };
+    if (mode !== 'card' && !BB.bankReady()) return { ok: false, error: 'Add your bank details and turn on bank transfer first.' };
+    S().account.guestPay = mode;
+    BB.log('payment', 'Payments', mode === 'card' ? 'Guests now pay by card through Stripe only.' : mode === 'transfer' ? 'Guests now book and pay by bank transfer only.' : 'Guests can now choose to pay by card or by bank transfer.', null, ['Payments']);
+    BB.store.commit({ type: 'account' }); return { ok: true };
+  };
   BB.act.saveBankTransfer = function (patch) {
     const a = S().account, k = Object.assign({}, a.bank || {});
     patch = patch || {};
@@ -9282,7 +9339,7 @@ body.p-lock { overflow: hidden; }
   };
   // A guest books on the site and pays by bank transfer: the stay is booked, unpaid, with an invoice due in a few days.
   BB.act.bookByTransfer = function (input) {
-    if (!BB.bankReady()) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
+    if (!BB.guestPay().transfer) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
     return BB.act.createBooking(Object.assign({}, input, { pay: 'manual', channel: 'direct', payBy: 'transfer', pending: false, request: false }));
   };
   // Host sends an invoice with bank details for any unpaid direct booking (a phone booking, or an accepted request).
@@ -13811,6 +13868,11 @@ var require_public = __commonJS({
       return !!(k && k.on && k.holder && (k.sortCode && k.account || k.iban));
     };
     var bankDays = (s) => Math.max(1, Math.min(30, +(s.account.bank && s.account.bank.days) || 3));
+    function guestPay(s) {
+      const want = ["both", "card", "transfer"].includes(s.account.guestPay) ? s.account.guestPay : "both";
+      const transfer = want !== "card" && bankReady(s), card = want !== "transfer" || !transfer;
+      return card && transfer ? "both" : card ? "card" : "transfer";
+    }
     var BANK_PUBLIC = ["holder", "bankName", "sortCode", "account", "iban", "bic", "note"];
     function base(s) {
       return {
@@ -13819,7 +13881,7 @@ var require_public = __commonJS({
         demo: !!s.demo,
         today: s.today,
         clock: s.clock,
-        account: { business: s.account.business, owner: String(s.account.owner || "").split(" ")[0], bank: bankReady(s) ? { on: true, days: bankDays(s) } : null },
+        account: { business: s.account.business, owner: String(s.account.owner || "").split(" ")[0], bank: bankReady(s) && guestPay(s) !== "card" ? { on: true, days: bankDays(s) } : null, guestPay: guestPay(s) },
         guests: [],
         threads: [],
         campaigns: [],
@@ -13890,12 +13952,12 @@ var require_public = __commonJS({
       o.properties = o.properties.map((x) => x.id === b.propertyId ? propPublic(p, !!(b.checkin && b.checkin.done) || b.checkIn <= s.today) : x);
       if (b.payBy === "transfer" && s.account.bank) {
         const k = s.account.bank;
-        o.account.bank = Object.assign({ on: bankReady(s), days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map((f) => [f, k[f] || ""])));
+        o.account.bank = Object.assign({ on: bankReady(s) && guestPay(s) !== "card", days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map((f) => [f, k[f] || ""])));
       }
       o.trip = b.id;
       return o;
     }
-    module.exports = { siteState, tripState, fnv };
+    module.exports = { siteState, tripState, fnv, guestPay };
   }
 });
 
@@ -19377,7 +19439,9 @@ var require_server = __commonJS({
       if (!p) throw err(404, "That home is not taking bookings.");
       x.source = ["google", "ai", "campaign", "referral"].includes(input.source) ? input.source : input.source === "guest-app" ? "guest-app" : "website";
       x.channel = "direct";
-      const ready = stripeReady(w);
+      const ready = stripeReady(w), how = pub.guestPay(w.state);
+      if (kind === "transfer" && how === "card") return json(res, { ok: false, error: "This home takes card payments only. Pay by card or send a booking request." });
+      if (kind !== "transfer" && kind !== "request" && how === "transfer") return json(res, { ok: false, error: "This home takes payment by bank transfer. Choose bank transfer to book.", transfer: true });
       let r;
       if (kind === "transfer") {
         r = (await ws.act(w.id, "bookByTransfer", [x])).result;

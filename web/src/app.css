@@ -592,6 +592,16 @@
 .a-decl-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
 /* bank transfer settings (Payments) */
+.x-app .a-paym { display: grid; gap: 8px; margin-top: 4px; }
+.x-app .a-paym-o { display: flex; gap: 10px; align-items: flex-start; text-align: left; width: 100%; padding: 11px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: transparent; color: var(--fg); font: inherit; cursor: pointer; }
+.x-app .a-paym-o:hover:not(:disabled) { border-color: var(--primary); }
+.x-app .a-paym-o:disabled { opacity: .55; cursor: not-allowed; }
+.x-app .a-paym-o[aria-checked="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+.x-app .a-paym-o i { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; border: 1.5px solid var(--line-2); }
+.x-app .a-paym-o[aria-checked="true"] i { border: 5px solid var(--primary); }
+.x-app .a-paym-o span { display: grid; gap: 2px; min-width: 0; }
+.x-app .a-paym-o b { font-size: 14px; font-weight: 600; }
+.x-app .a-paym-o em { font-style: normal; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
 .x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
 .x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }

@@ -179,7 +179,10 @@ async function publicBook(req, res, w) {
   const p = w.state.properties.find(q => q.id === x.propertyId && q.published !== false); if (!p) throw err(404, 'That home is not taking bookings.');
   x.source = ['google', 'ai', 'campaign', 'referral'].includes(input.source) ? input.source : (input.source === 'guest-app' ? 'guest-app' : 'website');
   x.channel = 'direct';
-  const ready = stripeReady(w);
+  const ready = stripeReady(w), how = pub.guestPay(w.state);
+  // The host chose how guests pay. A bank-transfer-only home turns away card checkouts, and the other way round.
+  if (kind === 'transfer' && how === 'card') return json(res, { ok: false, error: 'This home takes card payments only. Pay by card or send a booking request.' });
+  if (kind !== 'transfer' && kind !== 'request' && how === 'transfer') return json(res, { ok: false, error: 'This home takes payment by bank transfer. Choose bank transfer to book.', transfer: true });
   let r;
   if (kind === 'transfer') { r = (await ws.act(w.id, 'bookByTransfer', [x])).result; }
   else if (kind === 'request' || (w.kind === 'live' && !ready)) { r = (await ws.act(w.id, x.source === 'guest-app' ? 'requestGuestBooking' : 'requestPropertyBooking', [x])).result; r && (r.request = true); }
