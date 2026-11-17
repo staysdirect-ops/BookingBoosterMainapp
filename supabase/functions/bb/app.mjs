@@ -13658,7 +13658,7 @@ var require_pages = __commonJS({
       return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title || "Bookingbooster") + "</title>" + (o.description ? '<meta name="description" content="' + esc(o.description) + '">' : "") + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + (o.head || "") + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/icon-192.png" type="image/png" sizes="192x192">' + (o.app ? APP_HEAD : "") + FONTS + '<link rel="stylesheet" href="/assets/app.' + bundle.hash.css + '.css"><style>[hidden]{display:none!important}body{margin:0}.seo{max-width:760px;margin:0 auto;padding:32px 20px;font:16px/1.6 system-ui,sans-serif;color:#1b1f2a}.seo h1{font-size:32px;line-height:1.15}</style></head><body><header class="pbar" id="bbBar"></header><main id="bbApp" class="surface">' + (o.content || "") + '</main><aside class="drawer" id="bbDrawer" hidden aria-label="Activity"><button class="iconbtn drawer-x" data-close aria-label="Close activity"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="drawer-body"></div></aside>' + (o.banner ? '<div class="test-banner" role="note">' + o.banner + "</div>" : "") + "<script>window.__BB_BOOT__=" + safeJson(o.boot) + ';</script><script src="/assets/' + js + "." + bundle.hash[js] + '.js"></script></body></html>';
     }
     function plain(o) {
-      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + "</title>" + (o.index ? "" : '<meta name="robots" content="noindex">') + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + "</title>" + (o.index ? "" : '<meta name="robots" content="noindex">') + (o.head || "") + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
     }
     var MARK = '<svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
     var AUTH_CSS = `:root{--p:#2747F5;--ink:#0F1630;--fg:#0F1630;--mut:#5A6386;--line:#E6E5E0;--bg:#F7F6F2;--bad:#B4362B;color-scheme:light}
@@ -13771,7 +13771,7 @@ var require_seo = __commonJS({
         "Disallow: /api/",
         "",
         "# AI search and assistants are welcome to read and cite this site",
-        ...["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "PerplexityBot", "Google-Extended", "Applebot-Extended", "Bingbot"].map((b) => "User-agent: " + b + "\nAllow: /"),
+        ...["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot"].map((b) => "User-agent: " + b + "\nAllow: /"),
         "",
         "Sitemap: " + sitemapUrl,
         ""
@@ -13784,11 +13784,101 @@ var require_seo = __commonJS({
   }
 });
 
+// server/answers.js
+var require_answers = __commonJS({
+  "server/answers.js"(exports, module) {
+    var { esc } = require_pages();
+    var mkt = require_marketing();
+    var P = mkt.PRICE;
+    var AIRBNB_FEE = 0.155;
+    var money = (n) => "\xA3" + Math.round(n).toLocaleString("en-GB");
+    var feeOn = (rev) => money(rev * AIRBNB_FEE);
+    var GUIDES = [
+      ["direct-booking-playbook.pdf", "The direct booking playbook", "The full plan for moving a UK holiday let from platform bookings to direct bookings, step by step."],
+      ["direct-booking-launch-checklist.pdf", "Direct booking launch checklist", "Everything to tick off before your booking site takes its first payment."],
+      ["direct-booking-website-must-haves.pdf", "Direct booking website must-haves", "The features guests expect before they trust a site enough to pay on it."],
+      ["fee-leak-worksheet.pdf", "Fee leak worksheet", "Work out what platform fees cost you each year, stay by stay."],
+      ["get-found-in-ai-search.pdf", "Get found in AI search", "How ChatGPT, Perplexity, Gemini and Google AI Overviews choose which holiday lets to recommend, and how to be one of them."],
+      ["ai-search-self-audit.pdf", "AI search self-audit", "A checklist to test how your holiday let shows up in AI answers today."],
+      ["guest-message-template-pack.pdf", "Guest message template pack", "Ready-to-send messages for every stage of a stay."],
+      ["repeat-guest-engine.pdf", "The repeat guest engine", "How to turn one stay into three with email and text marketing."],
+      ["repeat-guest-swipe-file.pdf", "Repeat guest swipe file", "Email and text examples that bring past guests back."]
+    ];
+    var PRICE_LINE = "\xA3" + P.month + " a month, or \xA3" + P.year.toLocaleString("en-GB") + " a year, with no setup fee and no commission on bookings. Prices include VAT and cover up to " + P.homes + " homes. Every plan includes \xA3" + P.aiCredit + " of AI credit a month.";
+    var PAGES = {
+      "/direct-booking-website": {
+        title: "Direct booking website for UK holiday lets \xB7 Bookingbooster",
+        h1: "A direct booking website for your UK holiday let",
+        description: "What a direct booking website is, what it costs, and how UK holiday let owners use one to take bookings without paying 15% or more to Airbnb or Vrbo. " + PRICE_LINE,
+        lead: "A direct booking website is your own website, on your own domain, where guests check live availability and pay you directly. There is no platform in the middle, so there is no platform fee on the stay. Bookingbooster builds and runs one for UK holiday let owners, with SEO, AI search visibility and guest marketing included.",
+        sections: [
+          ["What you get", "<ul>" + ["Your own booking site on your own .co.uk domain, with live availability and instant booking", "Card, Apple Pay and Google Pay payments through your own Stripe account, paid into your UK bank", "Security deposits taken as card holds that release on their own after checkout", "A guest check-in app with door codes", "Local SEO pages written for the searches guests make near you, added every month", "AI search visibility: structured data, llms.txt and answers that ChatGPT, Perplexity, Gemini and Google AI Overviews can read and cite", "Email and text campaigns to past guests, written and sent for you", "An optional calendar sync add-on (\xA3" + P.addon + " a month) so you never double book with Airbnb, Vrbo or Booking.com"].map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"],
+          ["What it costs", "<p>" + esc(PRICE_LINE) + "</p><p>Platform fees, by comparison, grow with every booking. At Airbnb\u2019s host-only fee of 15.5%, a holiday let taking \xA330,000 a year through Airbnb pays about " + feeOn(3e4) + " in fees, and one taking \xA360,000 pays about " + feeOn(6e4) + ". The plan costs \xA3" + P.year.toLocaleString("en-GB") + ' a year on annual billing, whatever you take.</p><table><tr><th align="left">Yearly bookings</th><th align="left">Airbnb fee at 15.5%</th><th align="left">Bookingbooster, annual plan</th></tr>' + [2e4, 3e4, 6e4, 1e5].map((r) => "<tr><td>" + money(r) + "</td><td>" + feeOn(r) + "</td><td>" + money(P.year) + "</td></tr>").join("") + "</table><p><small>Estimates. Most hosts keep some platform listings, so the saving depends on how many stays move direct.</small></p>"],
+          ["Who it is for", "<p>Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in England, Scotland, Wales and Northern Ireland who want more bookings direct and fewer platform fees. One plan covers up to " + P.homes + " homes.</p>"],
+          ["How it works", "<ol><li><strong>Paste your listing link.</strong> We copy your photos, reviews and house rules from Airbnb or Vrbo. Nothing there is changed.</li><li><strong>We build and tune it.</strong> Your site is live the same day on a free address. Your own domain, SEO pages and guest list take about a week.</li><li><strong>Bookings come direct.</strong> Guests find you on Google and in AI answers, pay you, and are invited back next season.</li></ol>"]
+        ],
+        faq: [
+          ["Is a direct booking website worth it for one holiday let?", "Usually, yes, once a home takes more than about \xA313,000 a year through Airbnb: at the 15.5% host-only fee that is roughly \xA32,000 in fees, the cost of a year of Bookingbooster on annual billing. Every direct stay after that is money you keep."],
+          ["Do I have to leave Airbnb to take direct bookings?", "No. Most hosts keep their listings and move repeat guests and search traffic to their own site over time. The calendar sync add-on blocks dates booked on the platforms so you never double book."],
+          ["Does Bookingbooster take commission?", "No. " + PRICE_LINE + " Guests pay you directly through your own Stripe account."],
+          ["How long does it take to set up?", "Your site can be live the same day on a free address. Connecting your own domain, local SEO pages and importing your guest list takes about a week."]
+        ]
+      },
+      "/ai-search-for-holiday-lets": {
+        title: "How to get your holiday let recommended by ChatGPT and AI search \xB7 Bookingbooster",
+        h1: "How to get your holiday let recommended in ChatGPT, Perplexity and Google AI answers",
+        description: "How AI assistants choose which UK holiday lets to recommend, and the steps that make your own booking site the one they cite. A guide for holiday let owners from Bookingbooster.",
+        lead: "More travellers now ask ChatGPT, Perplexity, Gemini, Claude, Copilot or Google\u2019s AI Overviews where to stay, instead of scrolling a listings site. These assistants recommend places they can read, check and link to. A holiday let that only exists inside Airbnb is hard for them to cite. A holiday let with its own clear, fast, well-structured website is easy.",
+        sections: [
+          ["What AI assistants look for", "<ul>" + ["A page they can read without running JavaScript, that says plainly what the place is, where it is, who it sleeps and what it costs", "Structured data (schema.org VacationRental, FAQPage and Organization) that confirms those facts in a machine-readable form", "Answers to the exact questions travellers ask, such as \u201Cdog friendly cottage near Keswick with a hot tub\u201D", "The same name, address and details on Google Business Profile, social profiles and listings sites, so the facts agree", "Recent reviews from real guests", "A robots.txt that lets AI crawlers such as GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot and Google-Extended in, and an llms.txt that sums the place up"].map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"],
+          ["Steps you can take this week", "<ol><li><strong>Check where you stand.</strong> Ask ChatGPT, Perplexity and Gemini the questions a guest would ask about your area, and note who they recommend and which sites they cite.</li><li><strong>Give your home its own website.</strong> On your own domain, with the facts written out in full, not only in photos.</li><li><strong>Answer the questions guests ask.</strong> Pets, parking, hot tub, distance to the beach or pub, check-in times, minimum stay. One clear answer each.</li><li><strong>Claim your Google Business Profile</strong> and keep its name, address and website the same as your site.</li><li><strong>Ask happy guests for reviews</strong> and publish them on your site.</li><li><strong>Let AI crawlers in.</strong> Check your robots.txt does not block them, and add an llms.txt.</li></ol>"],
+          ["What Bookingbooster does for you", "<p>Every Bookingbooster site is built this way from day one: crawlable pages, VacationRental and FAQ structured data, an llms.txt for each home, a robots.txt that welcomes AI crawlers and a sitemap. Each week we check the questions guests ask about your area across AI assistants, show you where you appear, and fix the gaps. " + esc(PRICE_LINE) + "</p>"]
+        ],
+        faq: [
+          ["What is AEO or AI search optimisation?", "AEO (answer engine optimisation) is making your website easy for AI assistants such as ChatGPT, Perplexity, Gemini and Google AI Overviews to read, trust and cite, so they recommend you when someone asks a question you can answer. For a holiday let, that means clear facts, structured data, answers to guest questions and consistent details across the web."],
+          ["Can ChatGPT recommend my Airbnb listing?", "Sometimes, but it often cannot read or link to platform listings reliably, and when it does the guest books through the platform and you pay the fee. A direct booking website gives the assistant a page it can read and a link that books with you."],
+          ["Does my holiday let need an llms.txt file?", "It helps. llms.txt is a short plain-text summary of a site written for AI assistants. It does not replace good pages or structured data, but it gives assistants the key facts in one place. Every Bookingbooster site has one."],
+          ["How long does it take to show up in AI answers?", "It varies. Assistants that search the web live, such as ChatGPT search and Perplexity, can find a new, well-structured page within days or weeks of it being indexed. Answers built from training data change more slowly."]
+        ]
+      },
+      "/guides": {
+        title: "Free guides for UK holiday let hosts \xB7 Bookingbooster",
+        h1: "Free guides for UK holiday let hosts",
+        description: "Free PDF guides on direct bookings, platform fees, guest marketing and getting found in AI search, for UK holiday let and short-term let owners.",
+        lead: "Practical guides from Bookingbooster for owners of UK holiday lets who want more direct bookings and fewer platform fees. Free to download, no sign-up needed.",
+        sections: [["The guides", "<ul>" + GUIDES.map(([f, t, d]) => '<li><a href="/guides/' + f + '"><strong>' + esc(t) + "</strong></a> (PDF). " + esc(d) + "</li>").join("") + "</ul>"]],
+        faq: []
+      }
+    };
+    function jsonLd(base, path, pg) {
+      const url = base + path, home = base + "/";
+      const graph = [
+        { "@type": "WebPage", "@id": url + "#page", url, name: pg.h1, description: pg.description, inLanguage: "en-GB", isPartOf: { "@id": home + "#site" }, publisher: { "@id": home + "#org" }, about: { "@id": home + "#service" } },
+        { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Bookingbooster", item: home }, { "@type": "ListItem", position: 2, name: pg.h1, item: url }] },
+        { "@type": "Organization", "@id": home + "#org", name: "Bookingbooster", url: home, logo: base + "/assets/icons/icon-512.png", sameAs: mkt.SOCIAL.map((x) => x[1]) }
+      ];
+      if (pg.faq.length) graph.push({ "@type": "FAQPage", "@id": url + "#faq", mainEntity: pg.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) });
+      if (path === "/guides") graph.push({ "@type": "ItemList", name: pg.h1, itemListElement: GUIDES.map(([f, t], i) => ({ "@type": "ListItem", position: i + 1, name: t, url: base + "/guides/" + f })) });
+      return { "@context": "https://schema.org", "@graph": graph };
+    }
+    var NAV = [["/", "Home and pricing"], ["/direct-booking-website", "Direct booking websites"], ["/ai-search-for-holiday-lets", "Getting found in AI search"], ["/guides", "Free guides"]];
+    function render(base, path) {
+      const pg = PAGES[path];
+      if (!pg) return null;
+      const head = '<meta name="description" content="' + esc(pg.description) + '"><link rel="canonical" href="' + esc(base + path) + '"><meta property="og:type" content="article"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(pg.h1) + '"><meta property="og:description" content="' + esc(pg.description) + '"><meta property="og:url" content="' + esc(base + path) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + "/assets/icons/icon-512.png") + '"><link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(base + "/llms.txt") + '"><script type="application/ld+json">' + JSON.stringify(jsonLd(base, path, pg)).replace(/</g, "\\u003c") + "</script>";
+      const body = "<article><h1>" + esc(pg.h1) + "</h1><p>" + esc(pg.lead) + "</p>" + pg.sections.map(([h, html]) => "<h2>" + esc(h) + "</h2>" + html).join("") + (pg.faq.length ? "<h2>Questions</h2>" + pg.faq.map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") : "") + '<p><a href="/start"><strong>Get my booking site</strong></a> \xB7 <a href="/demo">See the live demo</a></p><nav aria-label="More from Bookingbooster"><p>' + NAV.filter(([u]) => u !== path).map(([u, t]) => '<a href="' + u + '">' + esc(t) + "</a>").join(" \xB7 ") + "</p></nav></article>";
+      return { title: pg.title, head, body };
+    }
+    var list = () => Object.entries(PAGES).map(([path, pg]) => ({ path, title: pg.h1, description: pg.description }));
+    module.exports = { PAGES, GUIDES, render, list };
+  }
+});
+
 // server/marketing.js
 var require_marketing = __commonJS({
   "server/marketing.js"(exports, module) {
     var { esc } = require_pages();
-    var PRICE = { setup: 0, month: 200, year: 2e3, addon: 15, homes: 3 };
+    var PRICE = { setup: 0, month: 200, year: 2e3, addon: 15, homes: 3, aiCredit: 50 };
     var FAQ = [
       ["Do I have to leave Airbnb or Vrbo?", "No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there."],
       ["How do guests pay?", "By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout."],
@@ -13801,6 +13891,8 @@ var require_marketing = __commonJS({
       ["What is Bookingbooster?", "Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission."],
       ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking."],
       ["Is Bookingbooster a channel manager?", "No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (\xA315 a month) keeps your calendars in step so you never double book."],
+      ["Is there a yearly plan?", "Yes. The plan is \xA3200 a month, or \xA32,000 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT."],
+      ["What AI credit is included?", "Every plan includes \xA350 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from \xA310, and top-ups never expire."],
       ["Who is Bookingbooster for?", "Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us."]
     ];
     var FEATURES = [
@@ -13860,6 +13952,7 @@ var require_marketing = __commonJS({
           description: DESCRIPTION,
           hasOfferCatalog: { "@type": "OfferCatalog", name: "Bookingbooster pricing", itemListElement: [
             offer("Monthly plan", PRICE.month, "MON", { description: "No setup fee. Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
+            offer("Yearly plan", PRICE.year, "ANN", { description: "The same plan paid yearly: two months free. No setup fee." }),
             offer("Calendar sync add-on", PRICE.addon, "MON", { description: "Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager." })
           ] }
         },
@@ -13873,10 +13966,10 @@ var require_marketing = __commonJS({
     var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
     function content(base, co) {
       const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
-      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
+      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/direct-booking-website">Direct booking websites</a> \xB7 <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> \xB7 <a href="/guides">Free guides</a> \xB7 <a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
     }
     module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
@@ -19709,6 +19802,7 @@ var require_server = __commonJS({
     var pages = require_pages();
     var seo = require_seo();
     var mkt = require_marketing();
+    var answers = require_answers();
     var pub = require_public();
     var invoice = require_invoice();
     var ical = require_ical();
@@ -20501,9 +20595,13 @@ var require_server = __commonJS({
           boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
       }
+      if (m === "GET" && Object.hasOwn(answers.PAGES, p)) {
+        const a = answers.render(cfg.baseUrl, p);
+        return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: "read", index: true }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
+      }
       if (p === "/robots.txt") return send(res, 200, seo.robots(cfg.baseUrl + "/sitemap.xml"), "text/plain; charset=utf-8");
       if (p === "/sitemap.xml") {
-        const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/help" }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + "/privacy" }, { loc: cfg.baseUrl + "/terms" }] : []);
+        const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/help" }].concat(answers.list().map((x) => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + "/privacy" }, { loc: cfg.baseUrl + "/terms" }] : []);
         for (const id of await ws.liveIds()) {
           const w = await ws.open(id);
           if (unpaid(w)) continue;

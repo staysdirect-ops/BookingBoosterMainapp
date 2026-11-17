@@ -36,7 +36,7 @@ function page(o) {
     '</body></html>';
 }
 function plain(o) {
-  return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + '</title>' + (o.index ? '' : '<meta name="robots" content="noindex">') +
+  return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + '</title>' + (o.index ? '' : '<meta name="robots" content="noindex">') + (o.head || '') +
     '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS +
     '<style>' + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === 'read' ? ' read' : o.wide ? ' wide' : '') + '"><a class="au-logo" href="/">' + MARK + '<b>bookingbooster</b></a>' + o.body + '</main></body></html>';
 }
