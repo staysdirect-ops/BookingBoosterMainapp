@@ -51,7 +51,8 @@ module.exports = function (o) {
   async function host(req, res, p, m, w, headers) {
     const api = p.replace(/^\/api\/demo\//, '/api/');
     const s = w.state;
-    if (api === '/api/studio/meta' && m === 'GET') return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + ' & ' + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES }, 200, headers), true;
+    if (api === '/api/studio/meta' && m === 'GET') return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + ' & ' + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark, font: d.font, palette: d.palette }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES,
+      fonts: Object.fromEntries(Object.entries(D.FONTS).map(([k, x]) => [k, { name: x.name, display: x.display, text: x.text, feel: x.feel, href: x.href }])), palettes: D.PALETTES, style: D.STYLE, pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])), variantNames: D.VARIANT_NAMES }, 200, headers), true;
 
     if (api === '/api/studio/generate' && m === 'POST') {
       limited(w, 'gen', w.kind === 'demo' ? 12 : 40);
@@ -75,10 +76,34 @@ module.exports = function (o) {
       const j = await jsonBody(req, 6e4); const prop = s.properties.find(x => x.id === j.propertyId); if (!prop) throw err(404, 'Home not found');
       const cur = ((s.studio || {}).sites || {})[prop.id]; if (!cur || !cur.draft) throw err(400, 'Design a site first.');
       const f = render.facts(s, prop); const x = j.patch || {};
-      const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === '' ? null : (x.accent || cur.draft.accent), heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}) };
+      const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === '' ? null : (x.accent || cur.draft.accent), heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}),
+        style: Object.assign({}, cur.draft.style || {}), template: x.template || cur.draft.template || null };
+      // a new direction brings its own fonts and colours; the host's other style choices stay
+      if (x.direction && x.direction !== cur.draft.direction) { delete merged.style.font; delete merged.style.palette; }
+      if (x.style && typeof x.style === 'object') for (const [k, v] of Object.entries(x.style)) { if (!D.STYLE_KEYS.includes(k)) continue; if (v === '' || v == null) delete merged.style[k]; else merged.style[k] = String(v); }
+      if (x.style === null) merged.style = {};
+      // a page template re-lays every section (keeping which sections the host has), and can move the gallery up
+      if (x.template && D.TEMPLATES[x.template]) {
+        const have = new Set(merged.sections.map(q => q.type)), T = D.TEMPLATES[x.template];
+        const laid = Gen.fromTemplate(f, x.template).filter(q => have.has(q.type));
+        merged.sections.forEach(q => { if (!laid.some(r => r.type === q.type)) laid.splice(Math.max(1, laid.findIndex(r => r.type === 'book')), 0, { type: q.type, variant: T.v[q.type] || q.variant }); });
+        merged.sections = laid;
+      }
+      // "Shuffle the style": a fresh, coherent mix of fonts, colours, shapes and layouts within the same direction
+      if (x.shuffle) {
+        const n = (cur.shuffles || 0) + 1 + Math.floor(Math.random() * 1000);
+        merged.style = D.varyStyle(merged.direction, prop.id, [{ direction: merged.direction, style: cur.draft.style || {} }], n);
+        if (n % 3) { const opts = (D.DIRECTIONS[merged.direction].alts.fonts).concat([D.DIRECTIONS[merged.direction].font]); merged.style.font = opts[n % opts.length]; }
+        merged.style.corners = Object.keys(D.STYLE.corners)[n % 4];
+        const tpls = Object.keys(D.TEMPLATES).filter(t => t !== cur.draft.template); const tpl = tpls[n % tpls.length];
+        const have = new Set(merged.sections.map(q => q.type));
+        merged.sections = Gen.fromTemplate(f, tpl, Gen.pickHero(merged.direction, f.photos.length, prop.id, n)).filter(q => have.has(q.type)); merged.template = tpl;
+        merged.style = D.cleanStyle(merged.style);
+      }
       if (x.heroVariant) merged.sections = merged.sections.map(q => q.type === 'hero' ? { type: 'hero', variant: x.heroVariant } : q);
-      const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy };
+      const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy, style: {} };
       const spec = Object.assign(gen.normalize(merged, f, fallback), { by: cur.draft.by, at: new Date().toISOString(), rationale: cur.draft.rationale });
+      if (x.template || x.shuffle) spec.template = merged.template;
       if (x.heroVariant && x.heroVariant !== 'type' && !f.photos.length) spec.note = 'Add photos in Website & SEO to use an image-led hero.';
       spec.qa = D.qa(spec, f);
       await save(w.id, S => { const x = st(S).sites[prop.id]; x.history = [x.draft].concat(x.history || []).slice(0, 12); x.draft = spec; });
@@ -118,7 +143,7 @@ module.exports = function (o) {
       }
       const site = ((s.studio || {}).sites || {})[prop.id] || {}; const look = site.published || site.draft || {};
       const fnl = { id: 'fn' + crypto.randomBytes(4).toString('hex'), name, template: tpl, propertyId: prop.id, status: 'draft', code, pct, season: opt.season, steps, copy, by,
-        direction: look.direction || gen.guessDirection(f, null), accent: look.accent || null, createdAt: s.today, stats: { views: {}, leads: 0 } };
+        direction: look.direction || gen.guessDirection(f, null), accent: look.accent || null, style: look.style || null, createdAt: s.today, stats: { views: {}, leads: 0 } };
       await save(w.id, (S, BB) => { st(S).funnels.unshift(fnl); if (code) S.promos[code] = S.promos[code] || pct; BB.log('campaign', 'Funnels', 'Created the "' + name + '" funnel' + (code ? ' with code ' + code + ' (' + pct + '% off)' : '') + '. Preview it, then make it live.', fnl.id); BB.store.commit({ type: 'campaign', quiet: true }); });
       return reply(res, w.id, { funnel: fnl }, headers), true;
     }

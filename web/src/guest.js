@@ -176,26 +176,30 @@
       '<p class="g-fine">Sample details are filled in for the demo. Change them to anything.</p></form>' + powered();
     return { body, cta: '<button class="g-btn" type="submit" form="gDet-' + u + '">Continue to payment</button>', back: true };
   }
+  // How guests pay is the host's choice: card (Stripe), bank transfer, or both. Trip links get it already resolved.
+  const payHow = () => REAL() ? (S().account.guestPay || 'both') : BB.guestPay ? BB.guestPay().mode : 'both';
+  const transferDays = () => Math.max(1, Math.min(30, +(S().account.bank && S().account.bank.days) || 3));
   function payView(inst, p) {
     const st = inst.st, k = st.bk, c = st.card, u = inst.uid;
     const q = BB.quote(p.id, k.a, k.b, k); if (!q) return bookView(inst, p);
     const cancelBy = D.add(k.a, -7);
-    const stripeErr = st.err && /Stripe/.test(st.err);
+    const stripeErr = st.err && /Stripe/.test(st.err), bankOnly = payHow() === 'transfer';
     const body = '<p class="g-step">Step 3 of 3 · Review and pay</p><h2 class="g-h">' + esc(D.fmt(k.a)) + ' – ' + esc(D.fmt(k.b)) + ' · ' + nightsWord(q.nights) + '</h2>' +
       '<div class="g-cmp"><div><span>Same stay on Airbnb</span><s>' + money(q.airbnb) + '</s></div><div class="win"><span>Booking direct</span><b>' + money(q.total) + '</b></div><div class="g-cmp-s">' + BB.icon('tag') + 'You save ' + money(q.guestSaves) + '</div></div>' +
       '<div class="g-sum"><div><span>' + money(q.avg) + ' × ' + nightsWord(q.nights) + '</span><span>' + money(q.nightly) + '</span></div><div><span>Cleaning</span><span>' + money(q.cleaning) + '</span></div>' +
       (q.pet ? '<div><span>Dog fee</span><span>' + money(q.pet) + '</span></div>' : '') + (q.discount ? '<div class="g-disc"><span>Code ' + esc(q.promo) + ', ' + q.promoPct + '% off</span><span>' + money(-q.discount) + '</span></div>' : '') +
-      '<div class="g-tot"><span>Total, charged today</span><span>' + money(q.total) + '</span></div></div>' +
+      '<div class="g-tot"><span>' + (bankOnly ? 'Total, by bank transfer' : 'Total, charged today') + '</span><span>' + money(q.total) + '</span></div></div>' +
       '<p class="g-fine">' + esc(partyText(k)) + ' · ' + (cancelBy > S().today ? 'Free cancellation until ' + esc(D.fmt(cancelBy)) + '.' : 'Cancel within 24 hours for a full refund.') + '</p>' +
-      '<button type="button" class="g-apple" data-g="pay" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>' + BB.icon('lock') + 'Pay with Apple Pay</button>' +
+      (bankOnly ? '<div class="g-alert g-bank"><b>Pay by bank transfer</b><p>' + esc(first(S().account.owner) || 'Your host') + ' takes payment by bank transfer. Book now and you get an invoice with the bank details and your payment reference. Pay within ' + transferDays() + ' day' + (transferDays() === 1 ? '' : 's') + ' to keep the booking.</p></div>' : '<button type="button" class="g-apple" data-g="pay" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>' + BB.icon('lock') + 'Pay with Apple Pay</button>' +
       '<div class="g-or"><span>or pay by card</span></div>' +
       '<div class="g-cardf"><label class="g-fld"><span>Card number</span><span class="g-cardn"><input id="gCn-' + u + '" data-f="cnum" inputmode="numeric" value="' + esc(c.num) + '" autocomplete="cc-number"><i class="g-visa">VISA</i></span></label>' +
       '<div class="g-two"><label class="g-fld"><span>Expiry</span><input id="gCe-' + u + '" data-f="cexp" value="' + esc(c.exp) + '" autocomplete="cc-exp"></label><label class="g-fld"><span>CVC</span><input id="gCc-' + u + '" data-f="ccvc" inputmode="numeric" value="' + esc(c.cvc) + '" autocomplete="cc-csc"></label><label class="g-fld"><span>Postcode</span><input id="gCp-' + u + '" data-f="cpost" value="' + esc(c.post || '') + '" autocomplete="postal-code" autocapitalize="characters"></label></div>' +
-      '<p class="g-fine">' + BB.icon('lock') + 'Test card ending 4242. Payments are processed by Stripe.</p></div>' +
+      '<p class="g-fine">' + BB.icon('lock') + 'Test card ending 4242. Payments are processed by Stripe.</p></div>') +
       (st.err ? '<div class="g-alert" role="alert"><b>' + (stripeErr ? 'Card payments are paused' : 'We could not book that') + '</b><p>' + esc(st.err) + '</p>' +
         (stripeErr ? '<button type="button" class="g-btn sm" data-g="request">Send a booking request instead</button><small>No charge now. ' + esc(first(S().account.owner)) + ' confirms and sends a payment link.</small>' : '<button type="button" class="g-btn sm ghost" data-g="to" data-v="book">Change dates</button>') + '</div>' : '') +
       powered();
-    const cta = '<button class="g-btn" data-g="pay" data-m="card"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Processing payment' : 'Pay ' + money(q.total)) + '</button>';
+    const cta = bankOnly ? '<button class="g-btn" data-g="pay" data-m="transfer"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Booking' : 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' :
+      '<button class="g-btn" data-g="pay" data-m="card"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Processing payment' : 'Pay ' + money(q.total)) + '</button>';
     return { body, cta, back: true };
   }
   function doneView(inst, p) {
@@ -577,7 +581,7 @@
     if (request) input.pay = 'manual';
     inst.set({ paying: true, err: null });
     if (BB.api && (BB.BOOT.mode === 'trip' || BB.BOOT.mode === 'site')) {
-      BB.api.book(input, request ? 'request' : 'pay').then(j => {
+      BB.api.book(input, request ? 'request' : method === 'transfer' ? 'transfer' : 'pay').then(j => {
         if (!inst.alive) return;
         if (!j.ok) return inst.set({ paying: false, err: j.error || 'That did not go through. Try again.' });
         if (j.checkoutUrl) { location.href = j.checkoutUrl; return; }
@@ -587,7 +591,7 @@
     }
     const id = setTimeout(() => {
       if (!inst.alive) return;
-      const r = request ? BB.act.requestGuestBooking(input) : BB.act.createBooking(input);
+      const r = request ? BB.act.requestGuestBooking(input) : method === 'transfer' ? BB.act.bookByTransfer(input) : BB.act.createBooking(input);
       if (!r.ok) return inst.set({ paying: false, err: r.error });
       if (!request && method === 'Apple Pay') BB.toast('Paid with Apple Pay', 'good');
       st.paying = false;

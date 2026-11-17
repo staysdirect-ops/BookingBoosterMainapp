@@ -34,12 +34,26 @@ function facts(s, p, o) {
 /* ---------- styles ---------- */
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
-function css(dir, pal) {
-  const d = D.DIRECTIONS[dir] || D.DIRECTIONS.linen;
+// The page's design tokens and style switches, from a resolved look (design.look).
+const IMGS = '.frame img,.h-ed .img img,.h-cen .wide img,.mos img,.h-arch .main,.hl-pan .pic img,.grid button,.strip img,.st-ph .pic img,.hl-cards img,.msn button,.cl-split .pic img';
+function css(L) {
+  const pal = L.pal, d = L.d, ds = L.disp, sh = L.shape;
   const v = '--bg:' + pal.bg + ';--bg2:' + pal.bg2 + ';--ink:' + pal.ink + ';--mut:' + pal.muted + ';--line:' + pal.line + ';--ac:' + pal.accent + ';--acInk:' + pal.accentInk + ';--acT:' + pal.accentText + ';--acD:' + pal.accentDeep + ';--dBtn:' + pal.deepBtn + ';--dBtnI:' + pal.deepBtnInk +
-    ';--deep:' + pal.deep + ';--deepInk:' + pal.deepInk + ";--fd:'" + d.fonts.display + "',Georgia,serif;--ft:'" + d.fonts.text + "',system-ui,sans-serif;--dw:" + d.disp.weight + ';--dt:' + d.disp.track + ';--dl:' + d.disp.lead +
-    ';--dc:' + d.disp.case + ';--ds:' + d.disp.scale + ';--r:' + d.shape.radius + 'px;--rb:' + d.shape.button + 'px;--ri:' + d.shape.image + 'px;--deepMut:' + D.mix(pal.deepInk, pal.deep, 0.32) + ';--deepLine:' + D.mix(pal.deepInk, pal.deep, 0.78);
-  return ':root{' + v + ';color-scheme:' + (d.dark ? 'dark' : 'light') + '}' + BASE + (d.texture === 'grain' ? 'body::after{opacity:.06}' : d.texture === 'paper' ? 'body::after{opacity:.045}' : 'body::after{display:none}');
+    ';--deep:' + pal.deep + ';--deepInk:' + pal.deepInk + ";--fd:'" + L.fonts.display + "',Georgia,serif;--ft:'" + L.fonts.text + "',system-ui,sans-serif;--dw:" + ds.weight + ';--dt:' + ds.track + ';--dl:' + ds.lead +
+    ';--dc:' + ds.case + ';--ds:' + ds.scale + ';--r:' + sh.radius + 'px;--rb:' + sh.button + 'px;--ri:' + sh.image + 'px;--sp:' + L.spacing + ';--deepMut:' + D.mix(pal.deepInk, pal.deep, 0.32) + ';--deepLine:' + D.mix(pal.deepInk, pal.deep, 0.78);
+  let x = '';
+  x += L.texture === 'grain' ? 'body::after{opacity:.06}' : L.texture === 'paper' ? 'body::after{opacity:.045}' : 'body::after{display:none}';
+  if (L.dark) x += 'body::after{mix-blend-mode:screen;opacity:.035}';
+  if (L.italicHead) x += '.disp{font-style:italic}.disp em{font-style:normal}';
+  // buttons: the booking card, phone bar and forms always keep a solid button, so the main action never fades
+  const keep = ':not(.card .btn):not(.mbar .btn):not(.fn-form .btn)';
+  if (L.buttons === 'outline') x += '.btn' + keep + ':not(.gh){background:transparent!important;color:inherit!important;border:1.5px solid currentColor!important}.btn' + keep + ':hover{background:color-mix(in srgb,currentColor 9%,transparent)!important;box-shadow:none!important}';
+  if (L.buttons === 'link') x += '.btn' + keep + '{background:none!important;color:inherit!important;border:0!important;border-bottom:1.5px solid currentColor!important;border-radius:0!important;padding:0 2px!important;min-height:44px;box-shadow:none!important}.btn' + keep + ':hover{transform:none;gap:16px}.pill{padding-right:26px}';
+  if (L.images === 'framed') x += IMGS + '{padding:clamp(6px,.8vw,12px)!important;background:#FFFFFF!important;box-shadow:0 1px 2px rgba(0,0,0,.06),0 22px 44px -26px rgba(0,0,0,.42)}.frame::before{display:none}';
+  if (L.images === 'shadow') x += IMGS + '{box-shadow:0 34px 70px -34px rgba(0,0,0,.5)}';
+  if (L.bands === 'flat') x += '.sec.alt{background:var(--bg);border-top:1px solid var(--line)}.sec.alt+.sec:not(.alt):not(.dk){border-top:1px solid var(--line)}';
+  if (L.bands === 'bold') x += '.sec.alt{background:' + pal.deep + ';color:' + pal.deepInk + ';--bg:' + pal.deep + ';--bg2:' + D.mix(pal.deep, pal.deepInk, 0.08) + ';--ink:' + pal.deepInk + ';--mut:var(--deepMut);--line:var(--deepLine);--acT:var(--acD)}.sec.alt .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}.sec.alt .mono{background:var(--dBtn);color:var(--dBtnI)}';
+  return ':root{' + v + ';color-scheme:' + (L.dark ? 'dark' : 'light') + '}' + BASE + MORE + x;
 }
 const BASE = `
 *,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}
@@ -60,7 +74,7 @@ p{margin:0 0 1.1em}.mut{color:var(--mut)}.num{font-variant-numeric:tabular-nums 
 .btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -14px color-mix(in srgb,var(--ac) 80%,transparent)}
 .btn.gh{background:transparent;color:inherit;border-color:currentColor}.btn.gh:hover{background:color-mix(in srgb,currentColor 8%,transparent);box-shadow:none}
 .btn svg{width:18px;height:18px}
-.sec{padding-block:clamp(84px,11vw,168px);position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
+.sec{padding-block:calc(clamp(84px,11vw,168px) * var(--sp,1));position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
 .rule{height:1px;background:var(--line);border:0;margin:0}
 /* nav */
 .nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,color .4s}
@@ -204,6 +218,74 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js [data-rv]{opacity:1;transform:none}html{scroll-behavior:auto}}
 `;
 
+// Styles for the extra section layouts and nav styles.
+const MORE = `
+/* nav styles */
+.nav.n-cen .w{display:grid;grid-template-columns:1fr auto 1fr}.nav.n-cen ul{justify-self:start}.nav.n-cen .wm{justify-self:center}.nav.n-cen .btn{justify-self:end}
+.nav.n-min .w{height:86px}.nav.n-min .wm{font-size:calc(1.35rem * var(--ds));letter-spacing:.14em;text-transform:uppercase}
+@media(max-width:900px){.nav.n-cen .w{display:flex}}
+/* hero: centred */
+.h-cen{padding-top:clamp(130px,15vw,190px);text-align:center}.h-cen .eb{justify-content:center}.h-cen .eb::after{content:"";width:28px;height:1px;background:currentColor;opacity:.7}
+.h-cen .disp{max-width:15em;margin-inline:auto}.h-cen .lede{margin:28px auto 0}.h-cen .acts{justify-content:center;margin-top:36px}
+.h-cen .wide{margin:clamp(52px,7vw,96px) auto 0;padding-inline:clamp(20px,5vw,64px);max-width:1440px}.h-cen .wide img{width:100%;aspect-ratio:21/9;object-fit:cover;border-radius:var(--ri)}
+@media(max-width:760px){.h-cen .wide img{aspect-ratio:4/3}}
+/* hero: framed */
+.h-frm{padding:92px clamp(10px,1.6vw,22px) 0}.h-frm .ph{border-radius:max(var(--ri),2px);overflow:hidden;height:min(84svh,880px);min-height:520px}.h-frm .ph img{width:100%;height:100%;object-fit:cover}
+.h-frm .w{position:relative;z-index:2}.h-frm .panel{background:var(--bg);max-width:740px;margin-top:calc(-1 * clamp(150px,20vw,280px));padding:clamp(28px,4vw,60px) clamp(24px,4vw,60px) 0 0;border-radius:0 var(--r) 0 0;position:relative}
+.h-frm .panel::before{content:"";position:absolute;inset:0 0 0 -100vw;background:var(--bg);z-index:-1;border-radius:inherit}
+.h-frm .h1{font-size:calc(clamp(2.7rem,6vw,6rem) * var(--ds))}.h-frm .lede{margin-top:24px}.h-frm .acts{margin-top:32px}
+@media(max-width:760px){.h-frm .ph{height:62svh;min-height:380px}.h-frm .panel{margin-top:-70px;padding-top:28px}}
+/* hero: arch */
+.h-arch{padding-top:clamp(120px,13vw,160px);padding-bottom:clamp(60px,8vw,110px)}.h-arch .w{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(36px,6vw,96px);align-items:center}
+.h-arch .lede{margin-top:28px}.h-arch .acts{margin-top:40px}.h-arch .ar-w{position:relative;max-width:520px;justify-self:end;width:100%}
+.h-arch .main{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:999px 999px var(--ri) var(--ri)}
+.h-arch .sub{position:absolute;left:-14%;bottom:8%;width:38%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:8px solid var(--bg)}
+.h-arch .badge{position:absolute;right:-4%;top:12%;width:112px;height:112px;border-radius:50%;background:var(--ac);color:var(--acInk);display:grid;place-items:center;text-align:center;font:600 12px/1.25 var(--ft);letter-spacing:.06em;transform:rotate(-8deg)}
+.h-arch .badge b{display:block;font:var(--dw) 1.6rem/1 var(--fd)}
+@media(max-width:900px){.h-arch .w{grid-template-columns:1fr}.h-arch .ar-w{justify-self:center;max-width:420px}.h-arch .sub{left:-6%}}
+/* facts: tiles and one line */
+.facts.ft-tiles{border:0;padding-block:clamp(28px,4vw,56px)}.ft-tiles ul{gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.ft-tiles li,.ft-tiles li:first-child{border:0;padding:26px 24px;background:var(--bg2);border-radius:var(--r)}
+.facts.ft-inline{border-block:0;padding-block:clamp(24px,3vw,40px)}.ft-inline ul{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 0}.ft-inline li,.ft-inline li:first-child{border:0;padding:6px 22px;display:flex;align-items:baseline;gap:9px}
+.ft-inline li+li{border-left:1px solid var(--line)}.ft-inline b{display:inline;font-size:calc(1.6rem * var(--ds))}.ft-inline span{display:inline;margin:0}
+@media(max-width:700px){.ft-inline li+li{border-left:0;border-top:0}}
+/* story with a photo */
+.st-ph .w{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,110px);align-items:center}.st-ph .pic img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--ri)}.st-ph .h2{margin-bottom:28px}
+@media(max-width:900px){.st-ph .w{grid-template-columns:1fr}}
+/* highlight cards */
+.hl-cards .hd{margin-bottom:56px;max-width:720px}.hl-cards ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.hl-cards li{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}.hl-cards img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.hl-cards .bd{padding:28px 28px 30px}.hl-cards .n{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--acT);font-weight:600;display:block;margin-bottom:14px}.hl-cards h3{margin-bottom:12px}
+/* masonry gallery */
+.msn{columns:3 260px;column-gap:14px}.msn button{display:block;width:100%;padding:0;border:0;background:none;margin:0 0 14px;cursor:zoom-in;overflow:hidden;border-radius:var(--ri);break-inside:avoid}
+.msn img{width:100%;height:auto;transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}.msn button:nth-child(3n+1) img{aspect-ratio:4/5;object-fit:cover}.msn button:nth-child(3n+2) img{aspect-ratio:1;object-fit:cover}.msn button:nth-child(3n) img{aspect-ratio:3/2;object-fit:cover}.msn button:hover img{transform:scale(1.04)}
+/* amenity tiles */
+.am.am-t .w{grid-template-columns:1fr}.am.am-t .hd{margin-bottom:44px;max-width:720px}.am.am-t ul.tl{columns:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.am.am-t ul.tl li{border:1px solid var(--line);border-radius:var(--r);padding:20px 20px;background:color-mix(in srgb,var(--bg) 60%,transparent)}
+/* reviews: colour band and cards */
+.rv-band{text-align:center}.rv-band .eb{justify-content:center}.rv-band .score{justify-content:center}.rv-band blockquote{margin:0 auto;max-width:20em;font-size:calc(clamp(1.9rem,3.8vw,3.4rem) * var(--ds))}.rv-band figcaption{margin-top:28px;color:var(--deepMut)}
+.rv-band .stars{color:var(--acD)}.rv-band .more{margin:64px auto 0;max-width:1000px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:36px;text-align:left;border-top:1px solid var(--deepLine);padding-top:36px}.rv-band .more blockquote{font:400 16px/1.6 var(--ft);margin:10px 0;max-width:none}
+.rv-cards .row{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
+.rv-cards figure{flex:0 0 min(84vw,390px);scroll-snap-align:start;margin:0;padding:32px;border-radius:var(--r);background:var(--bg2);display:flex;flex-direction:column}.rv-cards blockquote{margin:16px 0 22px;flex:1}.rv-cards figcaption{font-weight:600;font-size:14px}
+/* area cards */
+.ar-c .hd{max-width:720px;margin-bottom:52px}.ar-c ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.ar-c li{padding:30px 28px;border-radius:var(--r);border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}.ar-c li .i{font:var(--dw) 2.4rem/1 var(--fd);color:var(--acT)}
+.ar-c li b{font:var(--dw) calc(1.55rem * var(--ds))/1.15 var(--fd);letter-spacing:var(--dt);text-transform:var(--dc)}.ar-c .far{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acT);font-weight:600}.ar-c li p{margin:0;color:var(--mut)}
+/* host: centred */
+.ho-c{text-align:center}.ho-c .w{display:block;max-width:880px}.ho-c .mono{margin:0 auto 30px}.ho-c .eb{justify-content:center}
+/* booking: centred on the page colour */
+.bk-c .w{display:block;max-width:900px}.bk-c .hd{text-align:center;max-width:680px;margin:0 auto 46px}.bk-c .eb{justify-content:center}.bk-c .card{border:1px solid var(--line);box-shadow:0 30px 70px -40px rgba(0,0,0,.35)}
+.bk-c .save{margin:22px auto 0;border-color:var(--line);display:inline-block}.bk-c .save b{color:var(--acT)}
+/* faq: columns and centred */
+.fq-cols .hd{max-width:720px;margin-bottom:52px}.fq-cols dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:34px 56px}.fq-cols dt{font:var(--dw) calc(1.3rem * var(--ds))/1.3 var(--fd);letter-spacing:var(--dt);margin-bottom:10px}.fq-cols dd{margin:0;color:var(--mut)}
+.fq-cols dl>div{border-top:1px solid var(--line);padding-top:22px}
+.fq-c .w{display:block;max-width:860px}.fq-c .hd{text-align:center;margin-bottom:46px}.fq-c .eb{justify-content:center}
+/* closing: split and minimal */
+.cl-split{display:grid;grid-template-columns:1fr 1fr;min-height:64vh;background:var(--deep);color:var(--deepInk)}.cl-split .pic img{width:100%;height:100%;object-fit:cover;border-radius:0}
+.cl-split .tx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(40px,7vw,110px)}.cl-split .disp{margin-bottom:34px;max-width:11em}.cl-split .disp em{color:var(--acD)}.cl-split .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}
+@media(max-width:820px){.cl-split{grid-template-columns:1fr}.cl-split .pic img{aspect-ratio:4/3}}
+.cl-min{text-align:center;background:var(--bg2)}.cl-min .disp{max-width:13em;margin:0 auto 34px}
+`;
+
 /* ---------- line art for type-led heroes (no photos yet) ---------- */
 function art(kind) {
   const s = 'fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"';
@@ -222,6 +304,7 @@ function headline(c, cls) {
 }
 const fmtInline = t => esc(t).replace(/\*([^*]{1,40})\*/, '<em>$1</em>').replace(/\*/g, '');
 const img = (ph, attrs) => ph ? '<img src="' + esc(ph.url) + '" alt="' + esc(ph.alt || ph.cap || '') + '" ' + (attrs || 'loading="lazy" decoding="async"') + '>' : '';
+const secHd = (eb, title, cls) => '<div class="hd' + (cls ? ' ' + cls : '') + '"><p class="eb" data-rv>' + esc(eb) + '</p><h2 class="disp h2" data-rv>' + fmtInline(title) + '</h2></div>';
 const ctaBtn = (c, ghost) => '<a class="btn' + (ghost ? ' gh' : '') + '" href="#book">' + esc(c || 'Check dates') + ARROW + '</a>';
 
 const R = {
@@ -237,15 +320,23 @@ const R = {
       '<figure class="img fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + '<figcaption><span>' + esc(ph[0].cap || f.name) + '</span><span>' + esc(f.town) + '</span></figcaption></figure></div></div></header>';
     if (v === 'mosaic' && ph.length >= 3) return '<header class="hero h-mos" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div>' +
       '<div class="mos fade">' + ph.slice(0, 3).map((x, i) => img(x, i ? 'loading="lazy"' : 'fetchpriority="high"')).join('') + '</div></div></header>';
+    if (v === 'centered' && ph[0]) return '<header class="hero h-cen" id="top"><div class="w">' + eb.replace('class="eb fade"', 'class="eb fade"') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div>' +
+      '<figure class="wide fade" style="margin-bottom:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + '</figure></header>';
+    if (v === 'framed' && ph[0]) return '<header class="hero h-frm" id="top"><div class="ph zoom">' + img(ph[0], 'fetchpriority="high" decoding="async"') + '</div><div class="w"><div class="panel">' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div></div></header>';
+    if (v === 'arch' && ph[0]) return '<header class="hero h-arch" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div>' +
+      '<div class="ar-w fade">' + img(ph[0], 'class="main" fetchpriority="high" decoding="async"') + (ph[1] ? img(ph[1], 'class="sub" loading="lazy"') : '') + '<span class="badge" aria-hidden="true"><span><b class="num">' + f.maxGuests + '</b>guests</span></span></div></div></header>';
     // type-led: no photographs yet (or the chosen layout needs more than we have)
     return '<header class="hero h-type" id="top"><div class="art fade">' + art(ctx.kindHint || f.kind) + '</div><div class="w">' + eb.replace('class="eb', 'class="eb') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + '<span class="note" style="color:var(--deepMut)">From <b class="num">' + money(f.nightly) + '</b> a night · no booking fees</span></div></div></header>';
   },
   facts(sec, f) {
     const cells = [[f.maxGuests, 'Guests'], [f.bedrooms, f.bedrooms === 1 ? 'Bedroom' : 'Bedrooms'], [f.baths, f.baths === 1 ? 'Bathroom' : 'Bathrooms'], [money(f.nightly), 'From, a night'], [f.pets ? 'Yes' : 'No', 'Dogs welcome'], [f.minNights, 'Night minimum']];
-    return '<section class="facts" aria-label="At a glance"><div class="w"><ul>' + cells.map(x => '<li data-rv><b class="num">' + esc(x[0]) + '</b><span>' + x[1] + '</span></li>').join('') + '</ul></div></section>';
+    const cls = sec.variant === 'tiles' ? ' ft-tiles' : sec.variant === 'inline' ? ' ft-inline' : '';
+    return '<section class="facts' + cls + '" aria-label="At a glance"><div class="w"><ul>' + cells.map(x => '<li data-rv><b class="num">' + esc(x[0]) + '</b><span>' + x[1] + '</span></li>').join('') + '</ul></div></section>';
   },
   story(sec, f, c) {
     const paras = (c.story && c.story.length ? c.story : [f.about]).filter(Boolean).map(x => '<p>' + esc(x) + '</p>').join('');
+    const sp = f.photos[1] || f.photos[0];
+    if (sec.variant === 'photo' && sp) return '<section class="sec st-ph" id="stay"><div class="w"><div class="pic" data-rv>' + img(sp) + '</div><div><p class="eb" data-rv>' + esc(c.storyEyebrow || 'The stay') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2><div class="txt" data-rv>' + paras + '</div></div></div></section>';
     if (sec.variant === 'pull') return '<section class="sec st-pull" id="stay"><div class="w"><p class="eb" data-rv>' + esc(c.storyEyebrow || 'The stay') + '</p><blockquote class="disp" data-rv>' + fmtInline(c.pull || c.storyTitle || f.headline) + '</blockquote><div class="txt' + ((c.story || []).join(' ').length > 520 ? ' cols' : '') + '" data-rv>' + paras + '</div></div></section>';
     return '<section class="sec st-lede" id="stay"><div class="w"><div><p class="eb" data-rv>' + esc(c.storyEyebrow || 'The stay') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2></div><div class="txt lede" style="max-width:none;color:var(--ink)" data-rv>' + paras + '</div></div></section>';
   },
@@ -255,12 +346,19 @@ const R = {
       const pics = f.photos.slice(1).concat(f.photos);
       return '<section class="sec hl-pan alt"><div class="w">' + items.slice(0, 3).map((h, i) => '<div class="row"><div class="pic" data-rv>' + img(pics[i]) + '</div><div data-rv><span class="n">' + String(i + 1).padStart(2, '0') + ' — ' + esc(h.eyebrow || '') + '</span><h3 class="disp">' + fmtInline(h.title) + '</h3><p class="lede">' + esc(h.text) + '</p></div></div>').join('') + '</div></section>';
     }
+    if (sec.variant === 'cards') {
+      const pics = f.photos.length >= 4 ? f.photos.slice(1).concat(f.photos) : [];
+      return '<section class="sec hl-cards alt"><div class="w">' + secHd(c.highlightsEyebrow || 'Why guests come back', c.highlightsTitle || 'What makes it') + '<ol>' +
+        items.map((h, i) => '<li data-rv>' + (pics[i] ? img(pics[i]) : '') + '<div class="bd"><span class="n">' + String(i + 1).padStart(2, '0') + (h.eyebrow ? ' · ' + esc(h.eyebrow) : '') + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut" style="margin:0">' + esc(h.text) + '</p></div></li>').join('') + '</ol></div></section>';
+    }
     return '<section class="sec hl-num"><div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.highlightsEyebrow || 'Why guests come back') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.highlightsTitle || 'What makes it') + '</h2></div></div><ol>' +
       items.map((h, i) => '<li data-rv><span class="n">' + String(i + 1).padStart(2, '0') + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut">' + esc(h.text) + '</p></li>').join('') + '</ol></div></section>';
   },
   gallery(sec, f, c) {
     if (f.photos.length < 4) return '';
     const hd = '<div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.galleryEyebrow || 'Look around') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.galleryTitle || 'Inside and out') + '</h2></div><span class="mut num" data-rv>' + plural(f.photos.length, 'photo') + '</span></div></div>';
+    if (sec.variant === 'masonry') return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="msn" data-rv>' + f.photos.slice(0, 15).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + '</button>').join('') + '</div></div>' +
+      '<dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
     if (sec.variant === 'strip') return '<section class="sec gal" id="gallery">' + hd + '<div class="strip" data-rv>' + f.photos.map(x => '<figure>' + img(x) + (x.cap ? '<figcaption>' + esc(x.cap) + '</figcaption>' : '') + '</figure>').join('') + '</div></section>';
     return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="grid" data-rv>' + f.photos.slice(0, 14).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + '</button>').join('') + '</div></div>' +
       '<dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
@@ -268,6 +366,8 @@ const R = {
   amenities(sec, f, c) {
     if (!f.amenities.length) return '';
     const tm = [[f.checkin, 'Check-in from'], [f.checkout, 'Checkout by'], [plural(f.minNights, 'night'), 'Minimum stay']];
+    const rules = (f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? '<li>Parking: ' + esc(f.parking) + '</li>' : '') + f.rules.map(r => '<li>' + esc(r) + '</li>').join('') + '</ul>' : '');
+    if (sec.variant === 'tiles') return '<section class="sec am am-t" id="details"><div class="w">' + secHd(c.amenitiesEyebrow || 'The details', c.amenitiesTitle || 'Everything you need') + '<div data-rv><ul class="tl">' + f.amenities.map(a => '<li>' + esc(a) + '</li>').join('') + '</ul><div class="tm">' + tm.map(x => '<div><b>' + esc(x[0]) + '</b><span>' + x[1] + '</span></div>').join('') + '</div>' + rules + '</div></div></section>';
     return '<section class="sec am alt" id="details"><div class="w"><div><p class="eb" data-rv>' + esc(c.amenitiesEyebrow || 'The details') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.amenitiesTitle || 'Everything you need') + '</h2></div><div data-rv><ul>' +
       f.amenities.map(a => '<li>' + esc(a) + '</li>').join('') + '</ul><div class="tm">' + tm.map(x => '<div><b>' + esc(x[0]) + '</b><span>' + x[1] + '</span></div>').join('') + '</div>' +
       (f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? '<li>Parking: ' + esc(f.parking) + '</li>' : '') + f.rules.map(r => '<li>' + esc(r) + '</li>').join('') + '</ul>' : '') + '</div></div></section>';
@@ -280,36 +380,52 @@ const R = {
     const note = f.live && rv.length ? '<p class="mut" style="font-size:13px;margin-top:20px">Every review is from a guest who stayed and chose to share it, whatever their rating.</p>' : '';
     if (sec.variant === 'feature' && rv.length) return '<section class="sec rv feat" id="reviews"><div class="w">' + hd + score + '<figure style="margin:0" data-rv><blockquote class="disp">“' + esc(rv[0].text) + '”</blockquote><figcaption>' + esc(rv[0].name) + ' · <span class="stars">' + '★'.repeat(rv[0].stars) + '</span></figcaption></figure>' +
       (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map(r => '<figure style="margin:0" data-rv><span class="stars">' + '★'.repeat(r.stars) + '</span><blockquote>' + esc(r.text) + '</blockquote><figcaption class="mut">' + esc(r.name) + '</figcaption></figure>').join('') + '</div>' : '') + note + '</div></section>';
+    if (sec.variant === 'band') return '<section class="sec rv rv-band dk" id="reviews"><div class="w"><p class="eb" data-rv>' + esc(c.reviewsEyebrow || 'Guests say') + '</p>' + score + (rv.length ? '<figure style="margin:0" data-rv><blockquote class="disp">“' + esc(rv[0].text) + '”</blockquote><figcaption>' + esc(rv[0].name) + ' · <span class="stars">' + '★'.repeat(rv[0].stars) + '</span></figcaption></figure>' : '') +
+      (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map(r => '<figure style="margin:0" data-rv><span class="stars">' + '★'.repeat(r.stars) + '</span><blockquote>' + esc(r.text) + '</blockquote><figcaption style="margin:0">' + esc(r.name) + '</figcaption></figure>').join('') + '</div>' : '') + note.replace('class="mut"', 'style="color:var(--deepMut);font-size:13px;margin-top:28px"').replace(' style="font-size:13px;margin-top:20px"', '') + '</div></section>';
+    if (sec.variant === 'cards' && rv.length) return '<section class="sec rv rv-cards" id="reviews"><div class="w">' + hd + score + '<div class="row" data-rv>' + rv.slice(0, 9).map(r => '<figure><span class="stars" aria-label="' + r.stars + ' out of 5">' + '★'.repeat(r.stars) + '</span><blockquote>' + esc(r.text) + '</blockquote><figcaption>' + esc(r.name) + '</figcaption></figure>').join('') + '</div>' + note + '</div></section>';
     return '<section class="sec rv" id="reviews"><div class="w">' + hd + score + (rv.length ? '<div class="wall">' + rv.slice(0, 9).map(fig).join('') + '</div>' : '') + note + '</div></section>';
   },
   area(sec, f, c) {
     if (!f.guide.length) return '';
+    if (sec.variant === 'cards') return '<section class="sec ar-c" id="area"><div class="w"><div class="hd"><p class="eb" data-rv>' + esc(c.areaEyebrow || 'Around ' + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || 'Days out, picked by your host') + '</h2>' + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + '</p>' : '') + '</div><ol>' +
+      f.guide.map((g, i) => '<li data-rv><span class="i num">' + String(i + 1).padStart(2, '0') + '</span><b>' + esc(g.place) + '</b>' + (g.far ? '<span class="far">' + esc(g.far) + '</span>' : '') + (g.tip ? '<p>' + esc(g.tip) + '</p>' : '') + '</li>').join('') + '</ol></div></section>';
     return '<section class="sec ar" id="area"><div class="w"><div><p class="eb" data-rv>' + esc(c.areaEyebrow || 'Around ' + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || 'Days out, picked by your host') + '</h2>' + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + '</p>' : '') + '</div><ol>' +
       f.guide.map(g => '<li data-rv><b>' + esc(g.place) + '</b>' + (g.far ? '<span class="far">' + esc(g.far) + '</span>' : '<span></span>') + (g.tip ? '<p>' + esc(g.tip) + '</p>' : '') + '</li>').join('') + '</ol></div></section>';
   },
   host(sec, f, c) {
     const note = c.hostNote || f.hostNote; if (!note && !f.owner) return '';
+    if (sec.variant === 'centered') return '<section class="sec ho ho-c"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || 'H')[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || 'Your host') + '</p><blockquote class="disp">“' + esc(note || 'Message me any time before or during your stay.') + '”</blockquote><p class="mut">' + esc((f.owner ? f.owner + ', ' : '') + f.business) + '</p></div></div></section>';
     return '<section class="sec ho alt"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || 'H')[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || 'Your host') + '</p><blockquote class="disp">“' + esc(note || 'Message me any time before or during your stay.') + '”</blockquote><p class="mut">' + esc((f.owner ? f.owner + ', ' : '') + f.business) + '</p></div></div></section>';
   },
   book(sec, f, c, ctx) {
     const save = Math.round((f.nightly * 3 + f.cleaning) * 0.142);
+    if (sec.variant === 'centered') return '<section class="sec bk bk-c alt" id="book"><div class="w"><div class="hd"><p class="eb" data-rv>' + esc(c.bookEyebrow || 'Book direct') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || 'Pick your dates') + '</h2><p class="lede" style="margin:24px auto 0" data-rv>' + esc(c.bookText || 'Book here with ' + (f.owner || 'your host') + ' and pay no platform booking fee.') + '</p>' +
+      '<div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div>' +
+      '<div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + '.</p></noscript></div></div></section>';
     return '<section class="sec bk dk" id="book"><div class="w"><div><p class="eb" data-rv>' + esc(c.bookEyebrow || 'Book direct') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || 'Pick your dates') + '</h2><p class="lede" style="margin-top:24px;color:var(--deepMut)" data-rv>' + esc(c.bookText || 'Book here with ' + (f.owner || 'your host') + ' and pay no platform booking fee.') + '</p>' +
       '<div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div>' +
       '<div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + '.</p></noscript></div></div></section>';
   },
   faq(sec, f, c) {
+    const qs = f.faqs.slice(0, 12);
+    if (sec.variant === 'columns') return '<section class="sec fq-cols" id="faq"><div class="w">' + secHd(c.faqEyebrow || 'Good to know', c.faqTitle || 'Questions guests ask') + '<dl data-rv>' + qs.map(([q, a]) => '<div><dt>' + esc(q) + '</dt><dd>' + esc(a) + '</dd></div>').join('') + '</dl></div></section>';
+    if (sec.variant === 'centered') return '<section class="sec fq fq-c" id="faq"><div class="w">' + secHd(c.faqEyebrow || 'Good to know', c.faqTitle || 'Questions guests ask') + '<div data-rv>' + qs.map(([q, a], i) => '<details' + (i === 0 ? ' open' : '') + '><summary>' + esc(q) + '</summary><p>' + esc(a) + '</p></details>').join('') + '</div></div></section>';
     return '<section class="sec fq" id="faq"><div class="w"><div><p class="eb" data-rv>' + esc(c.faqEyebrow || 'Good to know') + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.faqTitle || 'Questions guests ask') + '</h2></div><div data-rv>' +
       f.faqs.slice(0, 12).map(([q, a], i) => '<details' + (i === 0 ? ' open' : '') + '><summary>' + esc(q) + '</summary><p>' + esc(a) + '</p></details>').join('') + '</div></div></section>';
   },
   closing(sec, f, c) {
     const ph = f.photos[f.photos.length - 1];
+    if (sec.variant === 'split' && ph) return '<section class="cl-split"><div class="pic">' + img(ph) + '</div><div class="tx" data-rv><h2 class="disp h2">' + fmtInline(c.closing || 'Your dates are waiting') + '</h2>' + ctaBtn(c.cta) + '</div></section>';
+    if (sec.variant === 'minimal' || (sec.variant === 'split' && !ph)) return '<section class="sec cl-min"><div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || 'Your dates are waiting') + '</h2>' + ctaBtn(c.cta) + '</div></section>';
     return '<section class="cl' + (ph ? '' : ' np') + '">' + (ph ? img(ph) : '') + '<div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || 'Your dates are waiting') + '</h2>' + ctaBtn(c.cta) + '</div></section>';
   },
 };
 
-function nav(f, c, types, overlay) {
+function nav(f, c, types, overlay, kind) {
   const links = [['stay', 'The stay', 'story'], ['gallery', 'Gallery', 'gallery'], ['area', 'Area', 'area'], ['reviews', 'Reviews', 'reviews'], ['faq', 'FAQ', 'faq']].filter(x => types.includes(x[2]));
-  return '<nav class="nav' + (overlay ? ' ov' : ' solid') + '" id="nav" aria-label="Main"><div class="w"><a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + '</a><ul>' + links.map(x => '<li><a href="#' + x[0] + '">' + x[1] + '</a></li>').join('') + '</ul><a class="btn" href="#book">Check dates</a></div></nav>';
+  const wm = '<a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + '</a>', ul = '<ul>' + links.map(x => '<li><a href="#' + x[0] + '">' + x[1] + '</a></li>').join('') + '</ul>', bt = '<a class="btn" href="#book">Check dates</a>';
+  const cls = kind === 'centered' ? ' n-cen' : kind === 'minimal' ? ' n-min' : '';
+  return '<nav class="nav' + (overlay ? ' ov' : ' solid') + cls + '" id="nav" aria-label="Main"><div class="w">' + (kind === 'centered' ? ul + wm + bt : kind === 'minimal' ? wm + bt : wm + ul + bt) + '</div></nav>';
 }
 function footer(f, c, url) {
   return '<footer class="ft"><div class="w"><p class="disp big">' + esc(f.name) + '</p><div class="cols"><span>' + esc(f.area) + '</span><span>' + esc(c.footerLine || 'Book direct with your host. No platform fees.') + '</span><span>' + esc(f.business) + ' · <a href="' + esc(url.replace(/\/$/, '') + '/llms.txt') + '">llms.txt</a></span></div></div></footer>' +
@@ -359,30 +475,31 @@ draw()})();`;
 
 /* ---------- whole pages ---------- */
 function head(o) {
-  const d = D.DIRECTIONS[o.dir] || D.DIRECTIONS.linen;
+  const L = o.look || D.look({ direction: o.dir, accent: o.accent });
   return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">' +
     '<title>' + esc(o.title) + '</title><meta name="description" content="' + esc(o.description) + '">' + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : '') +
-    '<meta name="theme-color" content="' + esc(o.pal.bg) + '">' + (o.extra || '') +
-    '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + d.fonts.href + '&display=swap">' +
+    '<meta name="theme-color" content="' + esc(L.pal.bg) + '">' + (o.extra || '') +
+    '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + L.fonts.href + '&display=swap">' +
     (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : '') +
-    '<style>' + css(o.dir, o.pal) + '</style></head>';
+    '<style>' + css(L) + '</style></head>';
 }
 
 // Turns a validated spec into the full page for one home. ctx: { url, bookUrl, stripe, today, blocked, promos, preview, samplePhotos }
 function site(s, p, spec, ctx) {
-  const f = facts(s, p, ctx), c = spec.copy || {}, pal = D.palette(spec.direction, spec.accent);
+  const f = facts(s, p, ctx), c = spec.copy || {}, L = D.look(spec);
   let secs = (spec.sections || []).filter(x => R[x.type]);
   const heroSec = secs.find(x => x.type === 'hero');
   if (heroSec && heroSec.variant !== 'type' && !f.photos.length) heroSec.variant = 'type';
   if (heroSec && heroSec.variant === 'mosaic' && f.photos.length < 3) heroSec.variant = f.photos.length ? 'split' : 'type';
-  const body = secs.map(x => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx))).join('');
+  // each section is tagged with its type, so the console can scroll the preview to it
+  const body = secs.map(x => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx)).replace(/^<(\w+)/, '<$1 data-sec="' + x.type + '"')).join('');
   const types = secs.map(x => x.type);
   const overlay = heroSec && heroSec.variant === 'cinematic';
   const typeHero = heroSec && heroSec.variant === 'type';
   const title = c.seoTitle || seo.titleOf(p), description = c.seoDescription || seo.descOf(p);
   const boot = { book: { url: ctx.bookUrl, pid: p.id, nightly: f.nightly, weekend: f.weekend, cleaning: f.cleaning, pets: f.pets, petFee: f.petFee, minNights: f.minNights, maxGuests: f.maxGuests, today: ctx.today, blocked: ctx.blocked || [], promos: ctx.promos || {}, stripe: !!ctx.stripe, bank: ctx.bank && ctx.bank.on ? { days: ctx.bank.days || 7 } : null, business: f.business } };
-  return head({ dir: spec.direction, pal, title, description, robots: ctx.preview ? 'noindex' : null, preload: overlay || (heroSec && heroSec.variant !== 'type') ? (f.photos[0] || {}).url : null, extra: ctx.preview ? '' : seo.head(s, p, ctx.url) }) +
-    '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero) + '<main>' + body + '</main>' + footer(f, c, ctx.url) +
+  return head({ look: L, title, description, robots: ctx.preview ? 'noindex' : null, preload: overlay || (heroSec && heroSec.variant !== 'type') ? (f.photos[0] || {}).url : null, extra: ctx.preview ? '' : seo.head(s, p, ctx.url) }) +
+    '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero, L.nav) + '<main>' + body + '</main>' + footer(f, c, ctx.url) +
     (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)">' + ctx.banner + '</div>' : '') +
     '<script>window.__ST__=' + JSON.stringify(boot).replace(/</g, '\\u003c') + '</script><script>' + CLIENT + '</script></body></html>';
 }

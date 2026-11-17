@@ -117,7 +117,7 @@ function llms(s, p, url) {
 
 function robots(sitemapUrl) {
   return ['User-agent: *', 'Allow: /', 'Disallow: /app', 'Disallow: /trip/', 'Disallow: /api/', '', '# AI search and assistants are welcome to read and cite this site',
-    ...['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'PerplexityBot', 'Google-Extended', 'Applebot-Extended', 'Bingbot'].map(b => 'User-agent: ' + b + '\nAllow: /'), '', 'Sitemap: ' + sitemapUrl, ''].join('\n');
+    ...['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'Bingbot', 'DuckAssistBot', 'MistralAI-User', 'Meta-ExternalAgent', 'Amazonbot'].map(b => 'User-agent: ' + b + '\nAllow: /'), '', 'Sitemap: ' + sitemapUrl, ''].join('\n');
 }
 function sitemap(urls) {
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map(u => '  <url><loc>' + esc(u.loc) + '</loc>' + (u.lastmod ? '<lastmod>' + u.lastmod + '</lastmod>' : '') + '</url>').join('\n') + '\n</urlset>\n';
