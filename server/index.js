@@ -66,11 +66,13 @@ const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
 const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
 const campaignsAdmin = require('./campaigns-admin');
+const flowsAdmin = require('./flows-admin');
 const adminUi = require('./admin-shell');
 const social = require('./social')({ db });
 const adminContent = require('./admin-content');
 const adminUsers = require('./admin-users');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
+const flows = require('./flows')({ db, cfg, msg, auth, ws, leads, hostMail, stripe, log }); // sales automation flows, /admin/flows
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
 
@@ -314,6 +316,7 @@ async function stripeWebhook(req, res) {
         await hostMail.paymentFailed(r.id, o, card);
       }
     }
+    if (ev.type === 'customer.subscription.updated') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await flows.cancelling(r.id, o); } // cancel requested: offer a pause
     if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
   } catch (e) { log('webhook', ev.type, e.message); }
   json(res, { received: true });
@@ -534,6 +537,17 @@ async function route(req, res) {
     if (mm[4] === 'o.gif') return send(res, 200, Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'), 'image/gif', { 'cache-control': 'no-store' });
     return redirect(res, r.to || cfg.baseUrl);
   }
+  // Pause instead of cancel (server/flows.js): a signed link from the "before you go" email.
+  if ((mm = p.match(/^\/u\/pause\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)$/))) {
+    if (!flows.pauseOk(mm[1], mm[2])) return notFound(res);
+    if (m === 'POST') {
+      const f = await formBody(req), months = Math.max(1, Math.min(3, +f.months || 1)), r = await flows.pause(mm[1], months);
+      if (r.alert) await flows.pauseFailed(mm[1], months);
+      return send(res, 200, pages.plain({ title: r.ok ? 'Paused' : 'Pause', body: r.ok ? '<h1>Your plan is paused.</h1><p>Nothing will be charged until ' + E(new Date(r.until).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })) + ', when it starts again by itself. Your site, guest list and settings are all kept, and your plan is no longer set to cancel.</p><p><a href="/app/billing">See your billing</a></p>' : '<h1>Nearly there.</h1><p>' + E(r.error) + '</p>' }));
+    }
+    return send(res, 200, pages.plain({ title: 'Pause your plan', body: '<h1>Pause instead of cancelling</h1><p>Pick how long. Nothing is charged while your plan is paused, and your site, guest list and settings stay exactly as they are. It starts again by itself, and you can still cancel anytime.</p>' +
+      '<form method="post">' + [1, 2, 3].map(n => '<p><label><input type="radio" name="months" value="' + n + '"' + (n === 1 ? ' checked' : '') + '> ' + n + ' month' + (n > 1 ? 's' : '') + '</label></p>').join('') + '<button type="submit">Pause my plan</button></form>' }));
+  }
   if ((mm = p.match(/^\/u\/lead\/(\d+)\/([A-Za-z0-9_-]+)$/))) {
     if (!auth.verify(mm[2], 'lead', mm[1])) return notFound(res);
     if (m === 'POST') { await leads.unsubscribe(+mm[1]); if (u.searchParams.get('c')) await campaigns.unsubscribed(u.searchParams.get('c'), 'l' + mm[1]); return send(res, 200, pages.plain({ title: 'Unsubscribed', body: '<h1>You are unsubscribed.</h1><p>We will not email you again about our guides, tips or offers.</p>' })); }
@@ -656,6 +670,8 @@ async function route(req, res) {
     }
     return notFound(res);
   }
+  if (p === '/admin/flows/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await flows.run(+b.at || Date.now(), true) }); } // test servers only
+  if (p === '/admin/flows' || p.startsWith('/admin/flows/')) { if (!await isAdmin(req)) return notFound(res); return await flowsAdmin({ flows, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody })(req, res, p, m); }
   if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
   if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) { if (!await isAdmin(req)) return notFound(res); return await campaignsAdmin({ campaigns, leads, cfg, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody, me })(req, res, p, m, u); }
   if (p === '/admin/emails' || p.startsWith('/admin/emails/') || p === '/admin/social') { if (!await isAdmin(req)) return notFound(res); return await adminContent({ cfg, msg, leads, campaigns, social, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email })(req, res, p, m, u); }
@@ -730,6 +746,7 @@ async function route(req, res) {
       return redirect(res, await mustPay(req, w) ? '/app/pay?msg=pending' : '/app?welcome=1');
     }
     if (w.catchUp()) ws.persist(w, { rollover: true });
+    if (p === '/app' || p === '/app/phone') { flows.seen(w.id).catch(() => {}); } // for the quiet-host check
     if (p === '/app' || p === '/app/phone') return send(res, 200, pages.page({ title: w.state.account.business + ' · Bookingbooster', robots: 'noindex', app: true, boot: await hostBoot(w, p === '/app/phone' ? 'mobile' : 'app'), banner: testNotes().length && u.searchParams.get('welcome') ? '<b>Test mode</b> ' + E(testNotes().join(', ')) + ' are not switched on for this server yet.' : (await isAdmin(req) ? '<b>Team</b> <a href="/admin">Open the team admin</a>: leads and outreach, email campaigns and templates, host accounts, Stripe.' : null) }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
     if (p === '/app/billing') return send(res, 200, await billingPage(w, u.searchParams));
     if (p === '/app/account' && m === 'GET') return send(res, 200, await accountPage(w, s, u.searchParams.get('msg')));
@@ -1109,6 +1126,7 @@ async function runTick(t) {
   bg('leads', leads.run(t));
   bg('host email', hostMail.run(t));
   bg('campaigns', campaigns.run(t));
+  bg('flows', flows.run(t));
   bg('stripe', stripeAuto.ensure(t)); // creates the Stripe prices and webhooks once a key is set
   for (const id of await ws.liveIds()) {
     try {
