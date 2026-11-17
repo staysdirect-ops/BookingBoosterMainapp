@@ -62,7 +62,7 @@ function aiPrompt(tpl, f, o) {
 
 /* ---------- rendering a funnel step ---------- */
 function page(s, p, fn, step, ctx) {
-  const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || 'linen', pal = D.palette(dir, fn.accent || ctx.accent), c = (fn.copy || {})[step] || {};
+  const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || 'linen', L = D.look({ direction: dir, accent: fn.accent || ctx.accent, style: fn.style || ctx.style }), c = (fn.copy || {})[step] || {};
   const ph = f.photos[0];
   const book = ctx.siteUrl + (ctx.siteUrl.includes('?') ? '&' : '?') + (fn.code ? 'promo=' + encodeURIComponent(fn.code) + '&' : '') + 'utm_source=funnel&utm_campaign=' + encodeURIComponent(fn.id) + '#book';
   const h1 = '<h1 class="disp h1" style="font-size:calc(clamp(2.6rem,6vw,5.6rem) * var(--ds))">' + fmtInline(c.headline || '') + '</h1>';
@@ -88,7 +88,7 @@ function page(s, p, fn, step, ctx) {
       '<p class="mut" style="font-size:14px;margin-top:22px">From <b class="num">' + money(f.nightly) + '</b> a night · sleeps ' + f.maxGuests + (f.rating && f.reviewCount ? ' · rated ' + Number(f.rating).toFixed(2) + ' by ' + f.reviewCount + ' guests' : '') + '</p></div>' + pic + '</div></section>';
   }
   const navb = '<nav class="nav solid" aria-label="Main"><div class="w"><a class="wm" href="' + esc(ctx.siteUrl) + '">' + esc(f.short) + '</a><a class="btn" href="' + esc(book) + '">Check dates</a></div></nav>';
-  return head({ dir, pal, title: (c.headline || fn.name || f.name).replace(/\*/g, '') + ' · ' + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === 'thanks' ? 'noindex' : null, preload: ph && ph.url }) +
+  return head({ look: L, title: (c.headline || fn.name || f.name).replace(/\*/g, '') + ' · ' + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === 'thanks' ? 'noindex' : null, preload: ph && ph.url }) +
     '<body>' + navb + '<main>' + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + ' · ' + esc(f.area) + '</span><span>' + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' +
     (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + '</div>' : '') +
     '<script>document.documentElement.classList.add("js")</script></body></html>';
