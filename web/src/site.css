@@ -655,3 +655,24 @@
 .s-acct .s-ob-sub { margin: 0; }
 .s-terms { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); }
 .s-terms input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+
+/* Onboarding: "I already have a domain" */
+.x-site .s-dmode { margin: 4px 0 18px; }
+.x-site .s-own { display: grid; gap: 14px; margin-top: 20px; }
+.x-site .s-own-ok { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--primary-soft); border: 1px solid var(--primary); }
+.x-site .s-own-ok .ic { width: 18px; height: 18px; flex: none; color: var(--primary); margin-top: 2px; }
+.x-site .s-own-ok p { margin: 0; font-size: 14px; line-height: 1.45; }
+.x-site .s-own-h { font-size: 16px; margin: 6px 0 0; }
+.x-site .s-own-recs { display: grid; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.x-site .s-own-r { display: grid; grid-template-columns: 64px 140px minmax(0, 1fr); gap: 12px; padding: 10px 14px; align-items: start; font-size: 13.5px; border-top: 1px solid var(--line); }
+.x-site .s-own-r:first-child { border-top: 0; }
+.x-site .s-own-th { background: var(--surface-2); font-size: 12px; color: var(--muted); font-weight: 600; }
+.x-site .s-own-t { font-weight: 700; }
+.x-site .s-own-r b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.x-site .s-own-r b.s-own-later { font-weight: 400; color: var(--muted); font-style: italic; }
+.x-site .s-own-r em { display: block; font-style: normal; color: var(--muted); font-size: 12.5px; }
+.x-site .s-own-next { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.x-site .s-own-next b { display: block; font-size: 14.5px; }
+.x-site .s-own-next span { color: var(--muted); font-size: 13.5px; overflow-wrap: anywhere; }
+.x-site .s-own-next span span { color: var(--fg); }
+@media (max-width: 560px) { .x-site .s-own-r { grid-template-columns: 52px minmax(0, 1fr); } .x-site .s-own-r > span:last-child { grid-column: 1 / -1; } .x-site .s-own-th > span:last-child { display: none; } }

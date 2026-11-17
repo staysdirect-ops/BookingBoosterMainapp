@@ -81,6 +81,21 @@
   BB.transferDays = function (s) { const k = (s || S()).account.bank; return Math.max(1, Math.min(30, (k && +k.days) || 3)); };
   // Due in the host's number of days, but never later than the day before arrival (or today, for a last-minute stay).
   BB.transferDue = function (b) { const t = S().today, due = D.add(t, BB.transferDays()), last = D.add(b.checkIn, -1); return due < last ? due : (last > t ? last : t); };
+  // How guests pay on the host's own sites: 'card' (Stripe), 'transfer' (bank transfer) or 'both' (the default).
+  // Bank transfer only counts once the bank details are complete, so a host can never be left with no way to get paid.
+  BB.GUEST_PAY = ['both', 'card', 'transfer'];
+  BB.guestPay = function (s) {
+    s = s || S(); const want = BB.GUEST_PAY.includes(s.account.guestPay) ? s.account.guestPay : 'both';
+    const transfer = want !== 'card' && BB.bankReady(s), card = want !== 'transfer' || !transfer;
+    return { want, card, transfer, mode: card && transfer ? 'both' : card ? 'card' : 'transfer' };
+  };
+  BB.act.setGuestPay = function (mode) {
+    if (!BB.GUEST_PAY.includes(mode)) return { ok: false, error: 'Choose card, bank transfer, or both.' };
+    if (mode !== 'card' && !BB.bankReady()) return { ok: false, error: 'Add your bank details and turn on bank transfer first.' };
+    S().account.guestPay = mode;
+    BB.log('payment', 'Payments', mode === 'card' ? 'Guests now pay by card through Stripe only.' : mode === 'transfer' ? 'Guests now book and pay by bank transfer only.' : 'Guests can now choose to pay by card or by bank transfer.', null, ['Payments']);
+    BB.store.commit({ type: 'account' }); return { ok: true };
+  };
   BB.act.saveBankTransfer = function (patch) {
     const a = S().account, k = Object.assign({}, a.bank || {});
     patch = patch || {};
@@ -98,7 +113,7 @@
   };
   // A guest books on the site and pays by bank transfer: the stay is booked, unpaid, with an invoice due in a few days.
   BB.act.bookByTransfer = function (input) {
-    if (!BB.bankReady()) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
+    if (!BB.guestPay().transfer) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
     return BB.act.createBooking(Object.assign({}, input, { pay: 'manual', channel: 'direct', payBy: 'transfer', pending: false, request: false }));
   };
   // Host sends an invoice with bank details for any unpaid direct booking (a phone booking, or an accepted request).

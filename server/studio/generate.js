@@ -6,19 +6,33 @@
 const D = require('./design');
 const { facts } = require('./render');
 
-const VIBES = { calm: 'calm and restful', luxe: 'luxurious and design-led', family: 'warm, joyful and family-friendly', rustic: 'rustic, honest and cosy', coastal: 'bright and coastal', urban: 'elegant and urban', adventurous: 'outdoorsy and adventurous', romantic: 'romantic, for couples' };
-const VIBE_DIR = { calm: 'linen', luxe: 'nocturne', family: 'sunlit', rustic: 'meadow', coastal: 'harbour', urban: 'georgian', adventurous: 'fell', romantic: 'linen' };
+const VIBES = { calm: 'calm and restful', luxe: 'luxurious and design-led', family: 'warm, joyful and family-friendly', rustic: 'rustic, honest and cosy', coastal: 'bright and coastal', urban: 'elegant and urban', adventurous: 'outdoorsy and adventurous', romantic: 'romantic, for couples',
+  cosy: 'dark, cosy and wintry', minimal: 'minimal and Scandinavian', playful: 'playful and contemporary', grand: 'grand and traditional', wellness: 'soft, restorative, spa-like', glamorous: 'glamorous and sunny' };
+const VIBE_DIR = { calm: 'linen', luxe: 'nocturne', family: 'sunlit', rustic: 'meadow', coastal: 'harbour', urban: 'georgian', adventurous: 'fell', romantic: 'ember', cosy: 'ember', minimal: 'nordic', playful: 'atelier', grand: 'manor', wellness: 'saltmarsh', glamorous: 'riviera' };
+// Page templates that suit each direction best, in order of preference. The rules builder picks one per home.
+const DIR_TEMPLATES = { linen: ['magazine', 'classic', 'minimal'], fell: ['classic', 'bold', 'cosy'], harbour: ['classic', 'showcase', 'cosy'], georgian: ['magazine', 'boutique', 'classic'], nocturne: ['bold', 'magazine', 'showcase'],
+  modernist: ['showcase', 'bold', 'minimal'], meadow: ['cosy', 'classic', 'showcase'], sunlit: ['cosy', 'showcase', 'classic'], nordic: ['minimal', 'showcase', 'classic'], riviera: ['boutique', 'magazine', 'bold'],
+  atelier: ['showcase', 'cosy', 'bold'], manor: ['magazine', 'boutique', 'classic'], saltmarsh: ['boutique', 'minimal', 'cosy'], ember: ['bold', 'cosy', 'boutique'] };
 
 /* ---------- picking a direction by rules ---------- */
 function guessDirection(f, brief) {
   if (brief && D.DIRECTIONS[brief.direction]) return brief.direction;
   if (brief && VIBE_DIR[brief.vibe]) return VIBE_DIR[brief.vibe];
   const t = (f.name + ' ' + f.about + ' ' + f.area + ' ' + f.amenities.join(' ')).toLowerCase();
+  if (/manor|rectory|grange|hall\b|estate|country house/.test(t)) return 'manor';
   if (/barn|farm|shepherd|hut|meadow|orchard/.test(t)) return 'meadow';
   if (/sea|beach|harbour|coast|bay|cove|surf/.test(t)) return 'harbour';
   if (/contemporary|modern|architect|glass|concrete/.test(t)) return 'modernist';
-  if (/spa|sauna|luxury|boutique/.test(t)) return 'nocturne';
+  if (/wellness|yoga|retreat|\bspa\b/.test(t)) return 'saltmarsh';
+  if (/scandi|nordic|minimalist/.test(t)) return 'nordic';
+  if (/sauna|luxury|boutique/.test(t)) return 'nocturne';
   return { cabin: 'fell', lake: 'harbour', city: 'georgian' }[f.theme] || 'linen';
+}
+// A hero layout from the direction's favourites that works with the photos the home has, varied per home.
+function pickHero(dir, n, key, tries) {
+  if (!n) return 'type';
+  const ok = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes.filter(h => (h !== 'mosaic' || n >= 3) && (h !== 'arch' || n >= 2));
+  return ok.length ? ok[(D.seed(key) + (tries || 0)) % ok.length] : 'split';
 }
 function heroFor(dir, n) {
   const order = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes;
@@ -60,6 +74,32 @@ function rulesCopy(f, dir) {
     seoDescription: trunc((f.headline ? f.headline + ' ' : '') + 'Sleeps ' + f.maxGuests + ' in ' + f.town + '. Book direct from £' + f.nightly + ' a night with no platform fees.', 160),
   };
 }
+// The looks the host's other homes already use, so a new design can avoid repeating them.
+function usedLooks(s, pid) {
+  return Object.entries(((s && s.studio) || {}).sites || {}).filter(([k]) => k !== pid).map(([, x]) => x.published || x.draft).filter(Boolean).map(x => ({ direction: x.direction, style: x.style || {}, template: x.template || '' }));
+}
+// Builds the sections for a page template, keeping only sections that have something to show.
+function fromTemplate(f, tpl, hero) {
+  const T = D.TEMPLATES[tpl] || D.TEMPLATES.classic, n = f.photos.length, v = Object.assign({}, T.v);
+  if (hero) v.hero = hero;
+  if (!n) v.hero = 'type'; else if (v.hero === 'mosaic' && n < 3) v.hero = 'split';
+  if (v.highlights === 'panels' && n < 4) v.highlights = 'numbered';
+  const secs = [{ type: 'hero', variant: v.hero }, { type: 'facts', variant: v.facts }, { type: 'story', variant: v.story }, { type: 'highlights', variant: v.highlights }];
+  if (n >= 6) secs.splice(T.gallery || secs.length, 0, { type: 'gallery', variant: v.gallery });
+  if (f.amenities.length) secs.push({ type: 'amenities', variant: v.amenities });
+  if (f.reviews.length || (f.rating && f.reviewCount)) secs.push({ type: 'reviews', variant: v.reviews === 'cards' && f.reviews.length < 3 ? 'feature' : v.reviews });
+  if (f.guide.length) secs.push({ type: 'area', variant: v.area });
+  secs.push({ type: 'host', variant: v.host }, { type: 'book', variant: v.book }, { type: 'faq', variant: v.faq }, { type: 'closing', variant: v.closing });
+  return secs;
+}
+// Picks a template for this home that its siblings are not already using.
+function templateFor(dir, key, used, n) {
+  const prefs = (DIR_TEMPLATES[dir] || ['classic']).concat(Object.keys(D.TEMPLATES));
+  const taken = new Set((used || []).map(u => u.template));
+  const free = prefs.filter((t, i) => prefs.indexOf(t) === i && !taken.has(t));
+  const list = free.length ? free : prefs;
+  return list[(D.seed(key) + (n || 0)) % Math.min(list.length, 3)];
+}
 function layoutFor(f, dir, hero) {
   const n = f.photos.length;
   const secs = [{ type: 'hero', variant: hero }, { type: 'facts', variant: 'ruled' }, { type: 'story', variant: dir === 'linen' || dir === 'georgian' ? 'pull' : 'lede' }, { type: 'highlights', variant: n >= 4 ? 'panels' : 'numbered' }];
@@ -77,6 +117,8 @@ function normalize(raw, f, fallback) {
   const r = raw || {}; const out = { v: 1 };
   out.direction = D.DIRECTIONS[r.direction] ? r.direction : fallback.direction;
   out.accent = D.hexOk(r.accent) ? r.accent.toUpperCase() : null;
+  out.style = D.cleanStyle(r.style !== undefined ? r.style : fallback.style);
+  out.template = D.TEMPLATES[r.template] ? r.template : (fallback.template || null);
   const seen = new Set(); let secs = [];
   for (const s of Array.isArray(r.sections) ? r.sections : []) {
     if (!s || !D.SECTIONS[s.type] || seen.has(s.type)) continue; seen.add(s.type);
@@ -118,8 +160,10 @@ function schema() {
     story: { type: 'array', items: s },
     highlights: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['eyebrow', 'title', 'text'], properties: { eyebrow: s, title: s, text: s } } },
   }) };
-  return { type: 'object', additionalProperties: false, required: ['rationale', 'direction', 'accent', 'heroVariant', 'sections', 'copy'], properties: {
-    rationale: s, direction: { type: 'string', enum: Object.keys(D.DIRECTIONS) }, accent: s, heroVariant: { type: 'string', enum: D.SECTIONS.hero },
+  const opt = keys => ({ type: 'string', enum: [''].concat(keys) });
+  const style = { type: 'object', additionalProperties: false, required: D.STYLE_KEYS, properties: Object.assign({ font: opt(Object.keys(D.FONTS)), palette: opt(Object.keys(D.PALETTES)) }, Object.fromEntries(Object.keys(D.STYLE).map(k => [k, opt(Object.keys(D.STYLE[k]))]))) };
+  return { type: 'object', additionalProperties: false, required: ['rationale', 'direction', 'accent', 'style', 'heroVariant', 'sections', 'copy'], properties: {
+    rationale: s, direction: { type: 'string', enum: Object.keys(D.DIRECTIONS) }, accent: s, style, heroVariant: { type: 'string', enum: D.SECTIONS.hero },
     sections: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['type', 'variant'], properties: { type: { type: 'string', enum: Object.keys(D.SECTIONS) }, variant: s } } },
     copy,
   } };
@@ -128,8 +172,14 @@ const SYSTEM = () => 'You are the art director and copywriter at a small, award-
   'You do not write code. You choose from a tested design system and write the words; the studio\'s renderer builds the page.\n\n' +
   'Design principles you work to:\n' + D.PRINCIPLES.map((x, i) => (i + 1) + '. ' + x).join('\n') + '\n\n' +
   'Art directions (pick exactly one, the one that fits this home and the host\'s brief best; do not default to the first):\n' + Object.entries(D.DIRECTIONS).map(([k, d]) => '- ' + k + ': ' + d.name + ' — ' + d.mood + ' Fonts: ' + d.fonts.display + ' with ' + d.fonts.text + '. Default accent ' + d.pal.accent + ' on ' + d.pal.bg + '.').join('\n') + '\n\n' +
+  'style: optional overrides on top of the direction, so no two sites look alike. Use an empty string to keep what the direction does. ' +
+  'font (pairings): ' + Object.entries(D.FONTS).map(([k, x]) => k + ' = ' + x.display + ' & ' + x.text + ' (' + x.feel + ')').join('; ') + '. ' +
+  'palette: ' + Object.entries(D.PALETTES).map(([k, x]) => k + ' = ' + x.name + (x.dark ? ' (dark)' : '')).join('; ') + '. ' +
+  Object.entries(D.STYLE).map(([k, v]) => k + ': ' + Object.keys(v).join('/')).join('; ') + '. ' +
+  '(corners: shape of cards, buttons and photos; buttons: solid, outline or underlined link; spacing: space between sections; scale: headline size; headings: case or italic; texture: background texture; nav: the top bar layout; images: photo treatment; bands: how alternate sections are coloured.) ' +
+  'Choose a combination that suits the home and is clearly different from the host\'s other sites when they are listed. Keep it coherent: change two to five things, not everything.\n\n' +
   'Sections and their layouts (type: variants): ' + Object.entries(D.SECTIONS).map(([k, v]) => k + ': ' + v.join('/')).join('; ') + '. ' +
-  'hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".\n\n' +
+  'hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm: mix layouts (for example a band of reviews, cards for the area, a split closing) rather than the first layout of every section. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, arch hero looks best with 2+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".\n\n' +
   'accent: a hex colour (#RRGGBB) that suits the photos and the place, or an empty string to keep the direction\'s accent. It must read on the direction\'s background.\n\n' +
   'Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only. Never invent prices, distances, awards, ratings, reviews, amenities or features that are not in the facts. ' +
   'headline: under nine words, one promise; you may put a line break as \\n (max 3 lines) and wrap one word in *asterisks* to set it in italic accent. Titles may also use *one* emphasised word. ' +
@@ -138,7 +188,7 @@ const SYSTEM = () => 'You are the art director and copywriter at a small, award-
   'Banned words and phrases: ' + D.CLICHES.join(', ') + '.\n\n' +
   'rationale: two sentences on why this direction and layout suit this home.';
 
-function userPrompt(f, brief, previous, avoid) {
+function userPrompt(f, brief, previous, avoid, used) {
   const fx = {
     name: f.name, area: f.area, kind: f.kind, sleeps: f.maxGuests, bedrooms: f.bedrooms, bathrooms: f.baths, fromPerNight: '£' + f.nightly, cleaning: '£' + f.cleaning, minimumNights: f.minNights,
     dogs: f.pets ? 'welcome' + (f.petFee ? ', £' + f.petFee + ' per stay' : '') : 'not allowed', checkIn: f.checkin, checkout: f.checkout, parking: f.parking,
@@ -151,7 +201,8 @@ function userPrompt(f, brief, previous, avoid) {
     '- Feel: ' + (VIBES[b.vibe] || 'your call') + '\n- Guests they want: ' + (str(b.audience, 200) || 'not said') + '\n' + (b.direction && D.DIRECTIONS[b.direction] ? '- They chose the direction: ' + b.direction + '\n' : '') +
     (b.notes ? '- Notes from the host: ' + str(b.notes, 600) + '\n' : '') +
     (avoid && avoid.length ? '- Try a different direction from: ' + avoid.join(', ') + '\n' : '') +
-    (previous ? '\nTheir current site spec (revise it; keep what works):\n' + JSON.stringify({ direction: previous.direction, accent: previous.accent, sections: previous.sections, copy: previous.copy }) + '\n' : '') +
+    (used && used.length ? '- The host\'s other homes already use these looks, so make this one clearly different (another direction, or at least another font, palette and layout): ' + JSON.stringify(used.slice(0, 8)) + '\n' : '') +
+    (previous ? '\nTheir current site spec (revise it; keep what works):\n' + JSON.stringify({ direction: previous.direction, accent: previous.accent, style: previous.style || {}, sections: previous.sections, copy: previous.copy }) + '\n' : '') +
     (b.instruction ? '\nWhat the host asked you to change: ' + str(b.instruction, 600) + '\n' : '') +
     '\nReturn the site spec.';
 }
@@ -177,22 +228,25 @@ module.exports = function (cfg) {
   async function design(s, p, brief, opts) {
     opts = opts || {};
     const f = facts(s, p, opts);
-    const dir = guessDirection(f, brief && !brief.instruction ? brief : null);
-    const fallback = { direction: dir, sections: layoutFor(f, dir, heroFor(dir, f.photos.length)), copy: rulesCopy(f, dir) };
+    const used = usedLooks(s, p.id), tries = (opts.avoid || []).length;
+    let dir = guessDirection(f, brief && !brief.instruction ? brief : null);
+    if (opts.avoid && opts.avoid.length) { const keys = Object.keys(D.DIRECTIONS).filter(k => !opts.avoid.includes(k)); dir = keys[(D.seed(p.id) + tries * 5) % keys.length]; }
+    const build = d => { const tpl = templateFor(d, p.id, used, tries); return { direction: d, template: tpl, style: D.varyStyle(d, p.id, used, tries), sections: fromTemplate(f, tpl, pickHero(d, f.photos.length, p.id, tries)), copy: rulesCopy(f, d) }; };
+    const fallback = build(dir);
     if (!enabled) {
-      const spec = normalize(Object.assign({}, fallback, opts.previous && brief && brief.instruction ? { direction: opts.previous.direction } : {}), f, fallback);
-      if (opts.avoid && opts.avoid.length) { const keys = Object.keys(D.DIRECTIONS).filter(k => !opts.avoid.includes(k)); spec.direction = keys[(opts.avoid.length * 3) % keys.length]; spec.sections = layoutFor(f, spec.direction, heroFor(spec.direction, f.photos.length)); }
+      const keep = opts.previous && brief && brief.instruction;
+      const spec = normalize(keep ? Object.assign({}, fallback, { direction: opts.previous.direction, style: opts.previous.style || {}, sections: opts.previous.sections, template: opts.previous.template }) : fallback, f, fallback);
       spec.by = 'rules'; spec.qa = D.qa(spec, f); return spec;
     }
     const content = [];
     // Claude looks at up to four of the host's photos (public addresses only) to choose the direction and accent
     f.photos.filter(x => /^https:\/\//.test(x.url)).slice(0, 4).forEach(x => content.push({ type: 'image', source: { type: 'url', url: x.url } }));
-    content.push({ type: 'text', text: userPrompt(f, brief, opts.previous, opts.avoid) });
+    content.push({ type: 'text', text: userPrompt(f, brief, opts.previous, opts.avoid, used) });
     let spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
     let checks = D.qa(spec, f);
     const fixable = checks.filter(x => !x.ok && x.fix && !/photo/i.test(x.label));
     if (fixable.length) { // one review round: send the failed checks back and ask for a corrected spec
-      content[content.length - 1] = { type: 'text', text: userPrompt(f, brief, spec, opts.avoid) + '\n\nYour last version failed these design checks. Fix them and keep everything else: ' + fixable.map(x => x.label + ' (' + x.fix + ')').join('; ') };
+      content[content.length - 1] = { type: 'text',  text: userPrompt(f, brief, spec, opts.avoid, used) + '\n\nYour last version failed these design checks. Fix them and keep everything else: ' + fixable.map(x => x.label + ' (' + x.fix + ')').join('; ') };
       try { spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback); checks = D.qa(spec, f); } catch (_) { /* keep the first version */ }
     }
     spec.by = 'ai'; spec.qa = checks; return spec;
@@ -204,3 +258,7 @@ module.exports.rulesCopy = rulesCopy;
 module.exports.layoutFor = layoutFor;
 module.exports.guessDirection = guessDirection;
 module.exports.heroFor = heroFor;
+module.exports.fromTemplate = fromTemplate;
+module.exports.pickHero = pickHero;
+module.exports.usedLooks = usedLooks;
+module.exports.DIR_TEMPLATES = DIR_TEMPLATES;
