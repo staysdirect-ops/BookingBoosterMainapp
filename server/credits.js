@@ -20,7 +20,7 @@ const PRICES = {
 const DEAREST = [10, 50, 1];
 const priceOf = model => PRICES[String(model || '').replace(/-\d{8}$/, '')] || DEAREST;
 
-const FEATURES = { reply: 'Reply drafts', studio: 'Site builder', funnel: 'Funnels', other: 'AI' };
+const FEATURES = { reply: 'Reply drafts', studio: 'Site builder', funnel: 'Funnels', seo: 'Search writer', other: 'AI' };
 
 module.exports = function ({ cfg, db, log }) {
   const C = cfg.credits;

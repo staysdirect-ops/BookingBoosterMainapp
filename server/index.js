@@ -56,6 +56,7 @@ async function payUrl(w, b, back) {
 const secrets = require('./secrets')(db, cfg);
 const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
+const seoTools = require('./seo-tools')(cfg);
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
@@ -136,6 +137,37 @@ function publicBoot(w, mode, extra) {
 function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
+// Search health tools in the console: what the site sends crawlers, AI-written drafts and IndexNow pings.
+// Live accounts only call Claude and IndexNow; the demo gets the same files and rule-based drafts.
+async function seoApi(req, res, p, m, w, live, headers) {
+  const s = w.state; const j = m === 'POST' ? await jsonBody(req, 2e4) : {};
+  const u = new URL(req.url, 'http://x'); const pid = j.propertyId || u.searchParams.get('propertyId');
+  const prop = s.properties.find(x => x.id === pid) || s.properties[0]; if (!prop) throw err(404, 'Add a home first.');
+  const site = live ? urls.site(w, prop) : 'https://' + prop.domain + '/';
+  const root = site.replace(/^(https?:\/\/[^/]+).*$/, '$1') + '/', onPath = site.includes('/s/' + w.slug + '/');
+  const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : root + key + '.txt';
+  if (p === '/api/seo/files' && m === 'GET') {
+    return json(res, { site, sitemap: onPath ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : root + 'sitemap.xml', robots: root + 'robots.txt', llmsUrl: onPath ? site + '/llms.txt' : root + 'llms.txt', keyUrl,
+      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live }, 200, headers);
+  }
+  if (p === '/api/seo/write' && m === 'POST') {
+    const what = String(j.what || ''); if (!['summary', 'area', 'meta', 'faqs'].includes(what)) throw err(400, 'Unknown draft');
+    if (!live || !seoTools.enabled) return json(res, { draft: null, by: 'rules' }, 200, headers);
+    if (!auth.limit('seo-write:' + w.id, 60, 3600e3)) throw err(429, 'Too many drafts this hour. Try again later.');
+    try { await credits.check(w.id); } catch (e) { if (e.code === 'ai_credit') return json(res, { draft: null, by: 'rules', credit: { empty: true, message: e.message, url: e.topupUrl } }); throw e; }
+    try { return json(res, { draft: await seoTools.write(s, prop, what, credits.meter(w.id, 'seo'), Array.isArray(j.questions) ? j.questions : []), by: 'claude' }); }
+    catch (e) { log('seo write', e.message); return json(res, { draft: null, by: 'rules', error: 'Claude could not write this just now, so here is a draft from your facts.' }); }
+  }
+  if (p === '/api/seo/ping' && m === 'POST') {
+    if (!live) return json(res, { ok: true, message: 'In the demo nothing is sent. In your account this asks Bing and the other IndexNow engines to recrawl now.' }, 200, headers);
+    if (!auth.limit('seo-ping:' + w.id, 10, 86400e3)) throw err(429, 'You have asked 10 times today. Search engines will pick up changes from your sitemap too.');
+    const host = new URL(site).host; const list = onPath ? s.properties.map(x => cfg.baseUrl + '/s/' + w.slug + '/' + x.id) : [site, root + 'llms.txt'];
+    const r = await seoTools.ping(host, key, keyUrl, list);
+    await ws.withWs(w.id, BB => { BB.log('site', 'Search health', (r.ok ? 'Asked Bing and other IndexNow engines to recrawl ' : 'Could not ask IndexNow to recrawl ') + prop.domain + '. ' + r.message, prop.id, ['Search health', 'IndexNow']); BB.store.commit({}); });
+    return json(res, Object.assign(r, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+  }
+  return false;
+}
 function sitePage(res, w, p, canonical, host, req) {
   const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today);
   const built = studio.publishedSite(w, p, canonical); // a site designed and published in the Site builder
@@ -515,8 +547,9 @@ async function route(req, res) {
     if (await hiddenFrom(req, w)) return comingSoon(res, w);
     const canonical = 'https://' + host.replace(/:\d+$/, '') + '/';
     if (p === '/robots.txt') return send(res, 200, seo.robots(canonical + 'sitemap.xml'), 'text/plain; charset=utf-8');
-    if (p === '/sitemap.xml') return send(res, 200, seo.sitemap([{ loc: canonical, lastmod: w.state.today }, { loc: canonical + 'llms.txt' }]), 'application/xml');
+    if (p === '/sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, [[prop, canonical]], [canonical + 'llms.txt']), 'application/xml');
     if (p === '/llms.txt') return send(res, 200, seo.llms(w.state, prop, canonical), 'text/plain; charset=utf-8');
+    if (p === '/' + seo.indexNowKey(cfg.secret, w.id) + '.txt') return send(res, 200, seo.indexNowKey(cfg.secret, w.id), 'text/plain; charset=utf-8');
     if (p === '/' || p === '/book') return await sitePage(res, w, prop, canonical, host.replace(/:\d+$/, ''), req);
     return notFound(res);
   }
@@ -525,12 +558,13 @@ async function route(req, res) {
   if ((mm = p.match(/^\/s\/([a-z0-9-]+)(?:\/([^/]+))?(\/llms\.txt|\/sitemap\.xml)?\/?$/))) {
     const r = await ws.bySlug(mm[1]); if (!r) return notFound(res);
     const w = await ws.open(r.id); w.catchUp();
+    if (mm[2] === seo.indexNowKey(cfg.secret, w.id) + '.txt' && !mm[3]) return send(res, 200, seo.indexNowKey(cfg.secret, w.id), 'text/plain; charset=utf-8');
     const prop = mm[2] && mm[2] !== 'sitemap.xml' && mm[2] !== 'llms.txt' ? w.state.properties.find(x => x.id === decodeURIComponent(mm[2])) : w.state.properties[0];
     if (!prop) return notFound(res);
     if (await hiddenFrom(req, w)) return comingSoon(res, w);
     const canonical = cfg.baseUrl + '/s/' + w.slug + '/' + prop.id;
     if (mm[3] === '/llms.txt' || mm[2] === 'llms.txt') return send(res, 200, seo.llms(w.state, prop, canonical), 'text/plain; charset=utf-8');
-    if (mm[3] === '/sitemap.xml' || mm[2] === 'sitemap.xml') return send(res, 200, seo.sitemap(w.state.properties.map(x => ({ loc: cfg.baseUrl + '/s/' + w.slug + '/' + x.id, lastmod: w.state.today }))), 'application/xml');
+    if (mm[3] === '/sitemap.xml' || mm[2] === 'sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, w.state.properties.map(x => [x, cfg.baseUrl + '/s/' + w.slug + '/' + x.id])), 'application/xml');
     if (!mm[2]) return redirect(res, canonical);
     return await sitePage(res, w, prop, canonical, null, req);
   }
@@ -582,6 +616,7 @@ async function route(req, res) {
     if (p === '/api/demo/state') return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers);
     if (p === '/api/demo/stream') return await stream(res, u, wid, headers);
     if (p === '/api/demo/act' && m === 'POST') { const j = await jsonBody(req, 2e6); const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []); return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers); }
+    if (p.startsWith('/api/demo/seo/')) { const w = await ws.open(wid); if (await seoApi(req, res, p.replace('/api/demo/', '/api/'), m, w, false, headers)) return; }
     if (p.startsWith('/api/demo/studio/') || p.startsWith('/api/demo/funnels/')) { const w = await ws.open(wid); if (await studio.host(req, res, p, m, w, headers)) return; }
     if (p.startsWith('/demo/studio/') || p.startsWith('/demo/funnel/')) { const w = await ws.open(wid); if (studio.preview(res, w, p, u.searchParams, true)) return; }
     if (p === '/api/demo/reset' && m === 'POST') { await ws.resetDemo(wid); return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers); }
@@ -739,6 +774,7 @@ async function route(req, res) {
       try { await credits.check(w.id); } catch (e) { if (e.code === 'ai_credit') return json(res, { text: null, credit: { empty: true, message: e.message, url: e.topupUrl } }); throw e; }
       try { return json(res, { text: await assist.draft(w.state, t, credits.meter(w.id, 'reply')) }); } catch (e) { log('assist', e.message); return json(res, { text: null }); }
     }
+    if (p.startsWith('/api/seo/') && await seoApi(req, res, p, m, w, true)) return;
     if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
