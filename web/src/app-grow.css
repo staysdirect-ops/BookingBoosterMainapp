@@ -622,3 +622,20 @@
 .ag .ag-dns-w { grid-column: 2 / -1; grid-row: 3; }
 .ag .ag-dns-t { align-self: start; }
 @media (max-width: 480px) { .ag .ag-dns-r { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px 8px; padding: 10px; } .ag .ag-dns-v > b { font-size: 12px; } }
+
+/* Own domain: progress, notes and registrar steps */
+.ag .ag-dsteps { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.ag .ag-dsteps li { display: flex; gap: 10px; align-items: flex-start; }
+.ag .ag-dsteps b { display: block; font-size: 14px; }
+.ag .ag-dsteps small { display: block; font-size: 12.5px; color: var(--muted); }
+.ag .ag-dst-i { width: 22px; height: 22px; flex: none; border-radius: 50%; border: 2px solid var(--line-2); display: grid; place-items: center; margin-top: 1px; }
+.ag .ag-dsteps li.ok .ag-dst-i { background: var(--good, #178a4c); border-color: var(--good, #178a4c); color: #fff; }
+.ag .ag-dsteps li.ok .ag-dst-i .ic { width: 13px; height: 13px; }
+.ag .ag-dsteps li.wait .ag-dst-i { border-color: var(--primary); }
+.ag .ag-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--primary); border-right-color: transparent; animation: agSpin .8s linear infinite; }
+@keyframes agSpin { to { transform: rotate(360deg); } }
+.ag .ag-dom > .ag-note.warn { background: var(--warn-soft); }
+.ag .ag-dom > .ag-note.warn .ic { color: var(--warn); }
+.ag .ag-dom > .ag-note { margin: 0 0 12px; }
+.ag .ag-dg { margin: 0 0 14px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+.ag .ag-dom .ag-fine { margin: 12px 0 0; font-size: 13px; }

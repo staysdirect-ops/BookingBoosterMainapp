@@ -52,4 +52,4 @@ button{font:inherit;font-weight:600;padding:13px 18px;border-radius:10px;border:
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px}
 .au.wide{max-width:1180px}.au.read{max-width:720px}.au.read li{margin-bottom:6px}.wide table td,.wide table th{padding:8px 10px 8px 0}.wide td form{margin-top:6px;gap:4px}.wide td input{padding:7px 10px;font-size:13px;border-radius:8px}.wide td button{padding:7px 14px;font-size:13px}.wide td summary{cursor:pointer;color:var(--p);font-weight:600}.wide td.act{min-width:260px}.wide button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}@media(min-width:760px){.wide details.card>form{grid-template-columns:1fr 1fr}.wide details.card>form>p,.wide details.card>form>button{grid-column:1/-1}}`;
 
-module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle };
+module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle, FONTS };

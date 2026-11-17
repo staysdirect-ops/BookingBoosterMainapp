@@ -46,3 +46,27 @@ test('a domain stays offline until its records are in place, then goes live', as
   assert.notEqual(off.siteUrls[p.id], 'https://gull-cottage.co.uk/', JSON.stringify([off.error, off.state && off.state.properties[0].domain]));
   assert.doesNotMatch((await get('gull-cottage.co.uk')).body, /Gull Cottage/);
 });
+
+test('a domain the host already owns: Cloudflare proxy is flagged, then the padlock is reported once it is live', async () => {
+  const { p } = await t.home();
+  const r = (await t.call('/app/domain', { body: { propertyId: p.id, domain: 'fell-barn.co.uk' } })).body.domain;
+  const txt = r.records.find(x => x.type === 'TXT').value;
+  assert.equal(r.proxied, false);
+
+  // records behind Cloudflare's orange cloud: we only see Cloudflare's addresses
+  setDns({ 'fell-barn.co.uk': { a: ['104.21.3.4'] }, 'www.fell-barn.co.uk': { a: ['172.67.1.2'] }, '_bookingbooster.fell-barn.co.uk': { txt: [txt] } });
+  let c = (await t.call('/app/domain/check', { body: { propertyId: p.id } })).body.domain;
+  assert.equal(c.live, false); assert.equal(c.proxied, true); assert.equal(c.https, false);
+  assert.equal(c.records.find(x => x.type === 'A').seen, 'A 104.21.3.4', 'shows what is there now');
+
+  // proxy off: live, and the padlock is checked
+  setDns({ 'fell-barn.co.uk': { a: ['203.0.113.7'] }, 'www.fell-barn.co.uk': { cname: ['sites.booking-booster.co.uk'] }, '_bookingbooster.fell-barn.co.uk': { txt: [txt] }, https: { 'fell-barn.co.uk': true } });
+  c = (await t.call('/app/domain/check', { body: { propertyId: p.id } })).body.domain;
+  assert.equal(c.live, true); assert.equal(c.proxied, false); assert.equal(c.https, true);
+  await t.call('/app/domain', { body: { propertyId: p.id, domain: '' } });
+});
+
+test('sign-up shows where the records point before an account exists', async () => {
+  const r = await t.call('/start');
+  assert.match(r.body, /"dns":\{"target":"sites\.booking-booster\.co\.uk","ips":\["203\.0\.113\.7"\]\}/);
+});
