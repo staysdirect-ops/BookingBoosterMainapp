@@ -211,14 +211,19 @@ function ics(text, pageUrl) {
 // An event's own page with no data: its title and the first date range written on it ("9–11 July 2027").
 const MONTHS = 'jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?';
 const MI = m => ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(m.slice(0, 3).toLowerCase()) + 1;
-const RANGE = new RegExp('(\\d{1,2})(?:st|nd|rd|th)?(?:\\s+(' + MONTHS + '))?(?:\\s+(\\d{4}))?\\s*(?:-|–|—|to|until|and)\\s*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\\s+)?(\\d{1,2})(?:st|nd|rd|th)?\\s+(' + MONTHS + ')\\s+(\\d{4})', 'i');
+const ORD = '(?:\\s?(?:st|nd|rd|th)\\b)?';
+// "9 - 11 July 2027", "20th – 22nd November 2026", "23rd, 24th & 25th May 2026", "Season (20 Nov 2026 - 22 Nov 2026)"
+const RANGE = new RegExp('\\b(\\d{1,2})' + ORD + '(?:\\s+(' + MONTHS + '))?(?:\\s+(\\d{4}))?(?:\\s*,\\s*\\d{1,2}' + ORD + ')*\\s*(?:-|–|—|to|until|and|&)\\s*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\\s+)?(\\d{1,2})' + ORD + '\\s+(' + MONTHS + ')\\s+(\\d{4})', 'gi');
 function textEvent(html, pageUrl) {
-  const body = decode(html.replace(/<(script|style|nav|header|footer)[\s\S]*?<\/\1>/gi, ' ')), m = body.match(RANGE); if (!m) return [];
-  const p2 = n => String(n).padStart(2, '0');
-  const end = m[6] + '-' + p2(MI(m[5])) + '-' + p2(m[4]);
-  let sm = m[2] ? MI(m[2]) : MI(m[5]), sy = +(m[3] || m[6]); if (!m[3] && sm > MI(m[5])) sy--;
-  const start = sy + '-' + p2(sm) + '-' + p2(m[1]);
-  if (!ISO.test(start) || !ISO.test(end) || end < start || (new Date(end) - new Date(start)) / 864e5 > 31) return []; // a season or opening times, not an event
+  const body = decode(html.replace(/<(script|style|nav|header|footer)\b[\s\S]*?<\/\1>/gi, ' ')), p2 = n => String(n).padStart(2, '0');
+  let start = '', end = '';
+  for (const m of body.matchAll(RANGE)) { // the first range that makes sense; seasons and opening times run longer than a month
+    const e = m[6] + '-' + p2(MI(m[5])) + '-' + p2(m[4]);
+    let sm = m[2] ? MI(m[2]) : MI(m[5]), sy = +(m[3] || m[6]); if (!m[3] && sm > MI(m[5])) sy--;
+    const s = sy + '-' + p2(sm) + '-' + p2(m[1]);
+    if (ISO.test(s) && ISO.test(e) && !isNaN(new Date(s)) && !isNaN(new Date(e)) && e >= s && (new Date(e) - new Date(s)) / 864e5 <= 31) { start = s; end = e; break; }
+  }
+  if (!start) return [];
   const og = html.match(/<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i) || html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || html.match(/<title>([\s\S]*?)<\/title>/i);
   const name = og ? decode(og[1]).split(/\s+[|–-]\s+/)[0] : ''; if (!name) return [];
   return [{ name, start, end, url: pageUrl, kind: classify([], name + ' ' + body.slice(0, 2000)), attendance: null, how: 'text', venue: '', postcode: G.outcode(body), lat: null, lng: null }];
@@ -255,29 +260,42 @@ async function crawl(src, o) {
   if (rb.all === false) return { ok: false, error: 'We are staying away: ' + rb.why + '.', pages: 0, events: [] };
   if (!allowed(rb, src.url)) return { ok: false, error: 'This site’s robots.txt asks crawlers not to read that page, so we don’t.', pages: 0, events: [], blocked: true };
   const gap = Math.max(1500, Math.min(rb.delay != null ? rb.delay * 1000 : 0, 60000)), seen = new Set(), found = [];
-  const queue = [{ url: src.url, depth: 0 }]; let pages = 0, last = 0, err = '';
+  const queue = [{ url: src.url, depth: 0 }], codes = {}; let pages = 0, last = 0, err = '', read = 0, empty = 0;
+  const note = k => { codes[k] = (codes[k] || 0) + 1; };
   const baseDir = (() => { const u = new URL(src.url); return u.pathname.replace(/[^/]*$/, ''); })();
   while (queue.length && pages < maxPages && Date.now() < until) {
     const q = queue.shift(), key = normUrl(q.url); if (seen.has(key)) continue; seen.add(key);
     if (!allowed(rb, q.url)) continue;
     const wait = last + gap - Date.now(); if (wait > 0) { if (Date.now() + wait > until) break; await sleep(wait); }
     last = Date.now(); pages++;
-    let page; try { page = await get(q.url, opt); } catch (e) { if (!q.depth) err = e.message; continue; }
-    if (page.status !== 200) { if (!q.depth && q.feed !== true) err = 'The page answered ' + page.status + '.'; continue; }
+    let page; try { page = await get(q.url, opt); } catch (e) { note('failed: ' + String(e.message).slice(0, 60)); if (!q.depth) err = e.message; continue; }
+    if (page.status !== 200) {
+      note(String(page.status)); if (!q.depth && q.feed !== true) err = 'The page answered ' + page.status + '.';
+      if (page.status === 429 || page.status === 503) { err = err || 'The site asked us to slow down (' + page.status + '), so we stopped for today.'; break; } // back off
+      continue;
+    }
+    read++;
     const x = extract(page, src.url), evs = x.events;
+    if (x.noindex) note('noindex');
     if (q.depth === 1 && !evs.length && !x.noindex) evs.push(...textEvent(page.text, page.url));
+    if (!evs.length) empty++;
     found.push(...evs);
     if (q.depth === 0) {
       x.feeds.slice(0, 3).forEach(f => queue.unshift({ url: f, depth: 2, feed: true }));
       x.links.filter(l => l.next).slice(0, 5).forEach(l => queue.push({ url: l.url, depth: 0 }));
       // an event's own page often has the end date and venue the listing leaves out
       const known = new Set(found.map(e => normUrl(e.url)));
+      // one event's page usually ends in an id ("...-p307631", "/events/1234"); read those before section pages
+      const leaf = l => /\d/.test(new URL(l.url).pathname.split('/').filter(Boolean).pop() || '') && !new URL(l.url).search ? 0 : 1;
       x.links.filter(l => !l.next && normUrl(l.url) !== key && (EVENTY.test(l.url) || new URL(l.url).pathname.startsWith(baseDir)) && new URL(l.url).pathname.length > baseDir.length && !known.has(normUrl(l.url)))
-        .slice(0, 40).forEach(l => queue.push({ url: l.url, depth: 1 }));
+        .map((l, i) => [leaf(l), i, l]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 40).forEach(([, , l]) => queue.push({ url: l.url, depth: 1 }));
     }
   }
-  if (!pages) return { ok: false, error: err || 'Nothing could be read.', pages, events: [] };
-  return { ok: !err || found.length > 0, error: found.length ? '' : err, pages, events: tidy(found, o.today) };
+  const stats = { tried: pages, read, empty, codes };
+  if (!pages) return { ok: false, error: err || 'Nothing could be read.', pages, events: [], stats };
+  // say why a page that was read gave nothing, so the host (and we) can see it
+  const failed = pages - read, why = !found.length && !err ? (failed ? failed + ' of ' + pages + ' pages could not be read (' + Object.entries(codes).filter(([k]) => k !== 'noindex').map(([k, n]) => k + (n > 1 ? ' ×' + n : '')).join(', ') + ').' : 'We read ' + read + ' page' + (read === 1 ? '' : 's') + ' but found no event dates on them.') : '';
+  return { ok: !err || found.length > 0, error: found.length ? '' : (err || why), pages, events: tidy(found, o.today), stats };
 }
 // One copy of each event, nothing over, nothing silly.
 function tidy(list, today) {
@@ -313,8 +331,8 @@ module.exports = function Finder({ kv, cfg, log }) {
     const old = (await read('events:src:' + src.id)) || {};
     // a failed read keeps what we found last time, so one bad day does not empty the list
     const keep = r.ok ? r.events : (r.blocked ? [] : (old.events || []).filter(e => e.end >= today()));
-    await write('events:src:' + src.id, { at: new Date().toISOString(), ok: r.ok, error: r.error || '', pages: r.pages, events: keep });
-    log && log('events', 'read', src.url, r.pages + ' pages', keep.length + ' events', r.error || '');
+    await write('events:src:' + src.id, { at: new Date().toISOString(), ok: r.ok, error: r.error || '', pages: r.pages, stats: r.stats || null, events: keep });
+    log && log('events', 'read', src.url, r.pages + ' pages', keep.length + ' events', r.error || '', JSON.stringify(r.stats || {}));
     return Object.assign({}, r, { events: keep });
   }
 
@@ -372,7 +390,7 @@ module.exports = function Finder({ kv, cfg, log }) {
     for (const s of list) {
       if (!s.seed && !s.by.length) continue;
       const x = (await read('events:src:' + s.id)) || {}, age = x.at ? Date.now() - new Date(x.at) : Infinity;
-      if (age > (x.ok === false ? 6 : 22) * 36e5) pick.push([age, s]);
+      if (age > (x.ok === false || !(x.events || []).length ? 6 : 22) * 36e5) pick.push([age, s]); // nothing found: try again sooner
     }
     pick.sort((a, b) => b[0] - a[0]); let n = 0;
     for (const [, s] of pick.slice(0, limit || 3)) { if (Date.now() > stop) break; try { await run(s); n++; } catch (e) { log && log('events', s.url, e.message); } }
