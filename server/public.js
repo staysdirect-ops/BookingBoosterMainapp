@@ -14,11 +14,17 @@ function propPublic(p, full) {
 // Booking sites only learn that bank transfer is on. The bank details themselves go to a guest who chose it, on their trip link.
 const bankReady = s => { const k = s.account.bank; return !!(k && k.on && k.holder && ((k.sortCode && k.account) || k.iban)); };
 const bankDays = s => Math.max(1, Math.min(30, +(s.account.bank && s.account.bank.days) || 3));
+// The host's choice of how guests pay, resolved the same way as BB.guestPay in the console.
+function guestPay(s) {
+  const want = ['both', 'card', 'transfer'].includes(s.account.guestPay) ? s.account.guestPay : 'both';
+  const transfer = want !== 'card' && bankReady(s), card = want !== 'transfer' || !transfer;
+  return card && transfer ? 'both' : card ? 'card' : 'transfer';
+}
 const BANK_PUBLIC = ['holder', 'bankName', 'sortCode', 'account', 'iban', 'bic', 'note'];
 function base(s) {
   return {
     v: 1, live: !!s.live, demo: !!s.demo, today: s.today, clock: s.clock,
-    account: { business: s.account.business, owner: String(s.account.owner || '').split(' ')[0], bank: bankReady(s) ? { on: true, days: bankDays(s) } : null },
+    account: { business: s.account.business, owner: String(s.account.owner || '').split(' ')[0], bank: bankReady(s) && guestPay(s) !== 'card' ? { on: true, days: bankDays(s) } : null, guestPay: guestPay(s) },
     guests: [], threads: [], campaigns: [], automations: [], events: [], notifications: [], seq: s.seq,
     integrations: s.integrations.filter(i => ['stripe', 'lock', 'email', 'sms'].includes(i.id)).map(i => ({ id: i.id, name: i.name, connected: i.connected })),
     ai: { questions: [], tasks: [] },
@@ -69,8 +75,8 @@ function tripState(s, bookingId) {
   const t = s.threads.find(x => x.bookingId === b.id); if (t) o.threads = [JSON.parse(JSON.stringify(Object.assign({}, t, { messages: t.messages.filter(m => m.from !== 'note') })))];
   const p = s.properties.find(x => x.id === b.propertyId);
   o.properties = o.properties.map(x => x.id === b.propertyId ? propPublic(p, !!(b.checkin && b.checkin.done) || b.checkIn <= s.today) : x);
-  if (b.payBy === 'transfer' && s.account.bank) { const k = s.account.bank; o.account.bank = Object.assign({ on: bankReady(s), days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map(f => [f, k[f] || '']))); }
+  if (b.payBy === 'transfer' && s.account.bank) { const k = s.account.bank; o.account.bank = Object.assign({ on: bankReady(s) && guestPay(s) !== 'card', days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map(f => [f, k[f] || '']))); }
   o.trip = b.id;
   return o;
 }
-module.exports = { siteState, tripState, fnv };
+module.exports = { siteState, tripState, fnv, guestPay };
