@@ -66,6 +66,7 @@ const campaignsAdmin = require('./campaigns-admin');
 const adminUi = require('./admin-shell');
 const social = require('./social')({ db });
 const adminContent = require('./admin-content');
+const adminUsers = require('./admin-users');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
@@ -561,7 +562,20 @@ async function route(req, res) {
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
-  if (m === 'GET' && (p === '/admin/leads' || p === '/admin/hosts' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
+  if (m === 'GET' && (p === '/admin/leads' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
+  if (p === '/admin/hosts' || p.startsWith('/admin/hosts/')) {
+    if (!await isAdmin(req)) return notFound(res);
+    const U = usersAdmin(req), hm = p.match(/^\/admin\/hosts\/([A-Za-z0-9_-]+)(\/reset)?$/);
+    if (p === '/admin/hosts' && m === 'GET') return await U.listPage(res, u.searchParams);
+    if (p === '/admin/hosts/export.csv' && m === 'GET') return await U.csv(res);
+    if (hm && !hm[2] && m === 'GET') return await U.detailPage(res, hm[1]);
+    if (hm && hm[2] && m === 'POST') { // the team sends the host the same reset link as /forgot
+      const r0 = await db.prepare('SELECT email FROM users WHERE workspace_id = ? ORDER BY created_at LIMIT 1').get(hm[1]); const r = r0 && await auth.startReset(r0.email);
+      if (r) { const link = cfg.baseUrl + '/reset?t=' + r.token; await msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: 'Reset your Bookingbooster password', text: 'The Bookingbooster team sent you a link to set a new password. It works for one hour: ' + link + '\n\nIf you did not ask for this, ignore this email.', meta: { template: 'reset', team: true } }); log('admin', 'password reset sent for', hm[1]); }
+      return await U.detailPage(res, hm[1], r ? 'Password reset link sent to ' + r.user.email + '. It works for one hour.' : '', r ? '' : 'This account has no sign-in email.');
+    }
+    return notFound(res);
+  }
   if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
   if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) { if (!await isAdmin(req)) return notFound(res); return await campaignsAdmin({ campaigns, leads, cfg, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody, me })(req, res, p, m, u); }
   if (p === '/admin/emails' || p.startsWith('/admin/emails/') || p === '/admin/social') { if (!await isAdmin(req)) return notFound(res); return await adminContent({ cfg, msg, leads, campaigns, social, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email })(req, res, p, m, u); }
@@ -760,6 +774,8 @@ const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_
 const isAdminEmail = async email => { email = String(email || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
   const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email); };
 const isAdmin = async req => { const u = await me(req); return isAdminEmail(u && u.email); };
+const usersAdmin = req => adminUsers({ db, ws, cfg, credits, urls, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email,
+  admins: async () => { const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return [...new Set(cfg.admins.concat(r ? String(r.v).toLowerCase().split(/[\s,]+/).filter(Boolean) : []))]; } });
 async function adminPage(req, res, note, section, err) {
   if (!await isAdmin(req)) return notFound(res);
   section = section || 'overview';
@@ -863,6 +879,7 @@ async function adminPost(req, res, p) {
     const pounds = Math.round(Number(f.pounds) * 100) / 100; const r = await ws.row(mm[1]);
     if (!r || !(pounds > 0) || pounds > 20000) return await adminPage(req, res, '', 'hosts', 'Enter an amount between £0.01 and £20,000.');
     await credits.topup(mm[1], pounds, null, 'grant'); log('credits', mm[1], 'team added £' + pounds);
+    if (f.back === 'detail') return await usersAdmin(req).detailPage(res, mm[1], 'Added ' + credits.money(pounds) + ' of AI credit.');
     return await adminPage(req, res, 'Added ' + credits.money(pounds) + ' of AI credit to ' + (r.slug || mm[1]) + '.', 'hosts');
   }
   if ((mm = p.match(/^\/admin\/leads\/(\d+)\/(audit|proposal|stop)$/))) {

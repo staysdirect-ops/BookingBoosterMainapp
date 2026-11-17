@@ -147,3 +147,21 @@ test('one admin: write an email in one step, every template previews as it goes 
   assert.equal((await fetch(t.base + '/admin/social')).status, 404, 'team only');
   assert.equal((await fetch(t.base + '/admin/emails')).status, 404, 'team only');
 });
+
+test('users: every host account with its sites, billing and bookings, one account in full, and team actions', async () => {
+  let r = await t.call('/admin/hosts');
+  assert.match(r.body, /<h2 class="disp">Users<\/h2>/); assert.match(r.body, /host@example\.co\.uk/); assert.match(r.body, /Team admin/);
+  const id = r.body.match(/href="\/admin\/hosts\/([A-Za-z0-9_-]+)"/)[1];
+  assert.match((await t.call('/admin/hosts?q=nobody-matches-this')).body, /Nobody matches/);
+  r = await t.call('/admin/hosts/' + id);
+  assert.equal(r.status, 200); for (const s of ['Latest bookings', 'Emails and texts sent', 'Sites', 'AI credit', 'People who can sign in', 'Send a password reset']) assert.ok(r.body.includes(s), s);
+  r = await form('/admin/hosts/' + id + '/reset', {});
+  assert.match(r.body, /Password reset link sent to host@example\.co\.uk/);
+  assert.ok(to('host@example.co.uk').some(m => /Reset your Bookingbooster password/.test(m.subject)));
+  r = await form('/admin/credits/' + id, { pounds: '5', back: 'detail' });
+  assert.match(r.body, /Added £5\.00 of AI credit/); assert.match(r.body, /People who can sign in/);
+  r = await t.call('/admin/hosts/export.csv');
+  assert.match(r.headers.get('content-type'), /text\/csv/); assert.match(r.body, /^business,owner,email/);
+  assert.equal((await t.call('/admin/hosts/nope')).status, 404);
+  assert.equal((await fetch(t.base + '/admin/hosts/' + id)).status, 404, 'team only');
+});

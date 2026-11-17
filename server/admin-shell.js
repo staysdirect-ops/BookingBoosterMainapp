@@ -26,7 +26,7 @@ const icon = (k, cls) => '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24
 const MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 const NAV = [
-  ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['hosts', '/admin/hosts', 'home', 'Host accounts']]],
+  ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['hosts', '/admin/hosts', 'home', 'Users']]],
   ['Marketing', [['campaigns', '/admin/campaigns', 'mail', 'Email campaigns'], ['emails', '/admin/emails', 'doc', 'Email templates'], ['social', '/admin/social', 'share', 'Social posts']]],
   ['Settings', [['settings', '/admin/settings', 'gear', 'Stripe, links and backups']]],
 ];
@@ -54,8 +54,8 @@ const CSS = `
 .x-app .a-tbl td.wrap{max-width:360px;font-size:13px;color:var(--muted)}
 .x-app .a-tbl td form{margin:0}
 .x-app .adm-inline{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}.x-app .adm-inline form{display:inline}
-.x-app .adm-list{display:grid;gap:0}.x-app .adm-list>div{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.x-app .adm-list>div:last-child{border-bottom:0}
-.x-app .adm-list b{font-weight:600}.x-app .adm-list small{display:block;color:var(--muted);font-size:12.5px}
+.x-app .adm-list{display:grid;gap:0}.x-app .adm-list>div{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.x-app .adm-list>div:last-child{border-bottom:0}
+.x-app .adm-list .pill{flex:none}.x-app .adm-list b{font-weight:600}.x-app .adm-list small{display:block;color:var(--muted);font-size:12.5px}
 .x-app .adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:16px}
 .x-app .adm-stack{display:grid;gap:16px;align-content:start}
 .x-app .adm-cols{display:grid;gap:16px;align-items:start}@container xapp (min-width:1100px){.x-app .adm-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.x-app .adm-sticky{position:sticky;top:84px}}
