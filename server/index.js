@@ -558,6 +558,8 @@ async function route(req, res) {
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
+  if (p === '/llms-full.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()) + '\n---\n\n' + answers.fullText(cfg.baseUrl), 'text/plain; charset=utf-8');
+  if (p === '/' + ownIndexKey() + '.txt') return send(res, 200, ownIndexKey(), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
   if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
@@ -970,12 +972,24 @@ async function runTick(t) {
     } catch (e) { log('job', id, e.message); }
   }
   if (last.domains === t) bg('domains', checkDomains());
-  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); }
+  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists
   await Promise.all(jobs); await ws.settle();
   return { ok: true, ical, daily };
 }
 if (require.main === module) setInterval(() => { tick().catch(e => log('tick', e.message)); }, 60e3).unref();
+
+// IndexNow for our own site: when the marketing and answer pages change, tell Bing (and Yandex, Seznam, Naver) to recrawl them.
+// Bing results feed ChatGPT search and Copilot. The key file is served at /<key>.txt. Skipped for local and test addresses.
+function ownIndexKey() { return crypto.createHmac('sha256', String(cfg.secret)).update('indexnow:own').digest('hex').slice(0, 32); }
+async function pingOwnPages() {
+  const u = new URL(cfg.baseUrl); if (u.protocol !== 'https:' || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+  const urls = [cfg.baseUrl + '/', cfg.baseUrl + '/help', cfg.baseUrl + '/llms.txt', cfg.baseUrl + '/llms-full.txt'].concat(answers.list().map(x => cfg.baseUrl + x.path));
+  const sig = crypto.createHash('sha1').update(mkt.llms(cfg.baseUrl, publicCompany()) + answers.fullText(cfg.baseUrl)).digest('hex');
+  const row = await kvGet.get('indexnow:own'); if (row && row.v === sig) return;
+  const r = await fetch('https://api.indexnow.org/indexnow', { method: 'POST', signal: AbortSignal.timeout(15000), headers: { 'content-type': 'application/json; charset=utf-8' }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + '/' + ownIndexKey() + '.txt', urlList: urls }) });
+  log('indexnow', 'own pages', r.status); if (r.status === 200 || r.status === 202) await kvSet.run('indexnow:own', sig);
+}
 
 // ID photos are deleted 30 days after checkout (or when the booking is cancelled).
 async function purgeIds() {

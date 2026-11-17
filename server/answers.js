@@ -23,6 +23,41 @@ const GUIDES = [
   ['repeat-guest-swipe-file.pdf', 'Repeat guest swipe file', 'Email and text examples that bring past guests back.'],
 ];
 
+// Every kind of search work: name, what it is, what it means for a holiday let and what Bookingbooster does. [name, def, host, group, ours]
+const TERMS = [
+  ['On-page SEO', 'The words and HTML of each page: titles, descriptions, headings, keywords and internal links.', 'A title that says what and where ("Hot tub cabin in Troutbeck"), a description with the price, and words that match what guests search.', 'classic', 'Titles, descriptions and headings are written for every page. Hosts can set their own and see a Google preview.'],
+  ['Off-page SEO', 'Signals from outside your site, mainly links from other websites, brand mentions and digital PR.', 'Links from your local tourism site, local blogs, "best stays" round-ups and your own listings.', 'classic', 'We show which sites AI assistants cite for your area and add every listing and mention to your structured data.'],
+  ['Technical SEO', 'How easily search engines can crawl and index a site: speed, mobile, structure, sitemaps and structured data.', 'Pages that load fast on a phone, can be read without JavaScript, and say in structured data that this is a holiday rental with a price and rules.', 'classic', 'Automatic: server-rendered pages, HTTPS, canonical tags, robots.txt, image sitemaps, VacationRental and LodgingBusiness schema, and IndexNow pings.'],
+  ['Local SEO', 'Showing up in the Google Maps pack and "near me" searches, driven by your Google Business Profile, reviews and local citations.', 'A verified Google Business Profile in the right category, a map pin, steady reviews, and the same name and address everywhere.', 'classic', 'Map pin, address and reviews go into the schema. A guided Google Business Profile checklist covers the rest.'],
+  ['Content SEO', 'Planning and writing content around what people actually search for.', 'An about text that answers who it suits and what is nearby, plus a local area guide for "things to do near" searches.', 'classic', 'Keyword ideas built from your home, and an area guide and summary drafted from your facts for you to approve.'],
+  ['Image and video SEO', 'Ranking in Google Images, YouTube and video results.', 'Photos with descriptive captions, which become alt text, and a short walkthrough video on YouTube.', 'classic', 'Captions become alt text and image sitemap entries. A YouTube link adds video structured data.'],
+  ['SXO (search experience optimisation)', 'SEO combined with conversion work, so visitors who land from search actually book.', 'The price up front, instant booking, real reviews and a note from the host on the page a searcher lands on.', 'classic', 'Live prices, instant card booking, guest reviews and a host note are on every page.'],
+  ['AEO (answer engine optimisation)', 'Being the direct answer: featured snippets, People Also Ask, voice answers and AI Overviews. In practice, clear questions and answers plus structured data.', 'An answer-first summary of the home and short answers to the questions guests ask, starting with yes or no.', 'ai', 'An answer-first summary, FAQ ideas with answers drafted from your facts, FAQPage and speakable structured data.'],
+  ['GEO (generative engine optimisation)', 'Being named and cited inside answers written by AI assistants such as ChatGPT, Perplexity, Gemini, Claude and Copilot.', 'Facts an assistant can check and quote, a page it is allowed to read, and a link it can give that books with you.', 'ai', 'llms.txt for every home, AI crawlers welcomed in robots.txt, and weekly checks of real answers with the sites they cite.'],
+  ['LLMO (large language model optimisation)', 'Helping AI models recognise your business as one consistent entity, mostly through consistent mentions across the web.', 'The same home name, place and facts on your site, listings, Google Maps and social profiles, linked together.', 'ai', 'Your listings and profiles become sameAs links in your structured data, and we track whether answers link to your own site.'],
+  ['AIO (AI Overview optimisation)', 'Showing in Google’s AI summary at the top of results. Some people use AIO loosely to mean AI optimisation in general.', 'Pages that already rank and answer the question in their first lines.', 'ai', 'Google answers are checked with each AI run, and your summary sits straight under the main heading, where AI Overviews read first.'],
+  ['AI SEO', 'An umbrella label for AEO, GEO, LLMO and AIO. It is also used for doing normal SEO with AI tools, so check which one someone means.', 'Both meanings help: be the answer, and use AI to write and check faster.', 'ai', 'Both: we optimise for AI answers, and hosts can draft their SEO writing with Claude.'],
+  ['Ecommerce SEO', 'Product and category pages, product schema and faceted navigation for online shops.', 'Partly applies: each home is a bookable product with a price and availability, but there are no categories or filters to manage.', 'part', 'Offer structured data with the nightly price, and a checkout on the page.'],
+  ['International SEO', 'Targeting several countries or languages with hreflang tags and country domains.', 'Partly applies: most UK holiday lets serve guests in English and price in pounds, so one en-GB version is right.', 'part', 'Pages are marked en-GB with prices in pounds.'],
+  ['ASO (app store optimisation)', 'Ranking apps in the App Store and Google Play.', 'Does not apply to a holiday let unless you publish your own app.', 'part', 'Our guest app installs from your own site, so there is no store listing to optimise.'],
+];
+const DEFS = list => '<dl>' + list.map(([n, d, h, g, o]) => '<dt id="' + n.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '') + '"><strong>' + esc(n) + '</strong></dt><dd><p>' + esc(d) + '</p><p><em>For a holiday let:</em> ' + esc(h) + '</p><p><em>With Bookingbooster:</em> ' + esc(o) + '</p></dd>').join('') + '</dl>';
+const CHECKLIST = [
+  ['Give the home its own website on its own domain.', 'Search engines and AI assistants can read, trust and link a page you own.', 'Technical, GEO'],
+  ['Claim and verify a Google Business Profile.', 'Pick "Holiday home", "Cottage" or the closest category and link your booking site.', 'Local'],
+  ['Write an answer-first summary.', '40 to 60 words: what it is, where, who it sleeps, the price and the best feature, right under the main heading.', 'AEO, AIO, GEO'],
+  ['Add structured data.', 'VacationRental or LodgingBusiness, FAQPage, reviews and an offer with the nightly price.', 'Technical, AEO'],
+  ['Answer the questions guests ask.', 'Dogs, parking, Wi-Fi, check-in, families, accessibility. Start each answer with the answer.', 'AEO, GEO'],
+  ['Publish a local area guide.', 'Walks, pubs and days out with distances, for "things to do near" searches.', 'Content, Local, AIO'],
+  ['Caption every photo.', 'Captions become alt text for Google Images. Aim for 8 or more photos.', 'Image'],
+  ['Link your listings and profiles.', 'Airbnb, Vrbo, Google Maps, Instagram: the same name everywhere, linked with sameAs.', 'LLMO, Local, Off-page'],
+  ['Publish llms.txt and welcome AI crawlers.', 'A plain-text fact sheet for assistants, and a robots.txt that lets GPTBot, ClaudeBot and PerplexityBot in.', 'GEO'],
+  ['Submit your sitemap and ping IndexNow.', 'Google Search Console for Google, IndexNow for Bing, whose results feed ChatGPT search and Copilot.', 'Technical'],
+  ['Collect reviews steadily.', 'Ask every guest. Reviews feed local rankings and give models text about you.', 'Local, LLMO'],
+  ['Get mentioned locally.', 'Your tourism board, local blogs and press. These are the sites AI answers cite.', 'Off-page, LLMO'],
+  ['Check AI answers every week.', 'Ask ChatGPT, Perplexity, Gemini and Google the questions guests ask, and note who they name and cite.', 'GEO, AIO'],
+];
+
 const PRICE_LINE = '£' + P.month + ' a month, or £' + P.year.toLocaleString('en-GB') + ' a year, with no setup fee and no commission on bookings. Prices include VAT and cover up to ' + P.homes + ' homes. Every plan includes £' + P.aiCredit + ' of AI credit a month.';
 
 const PAGES = {
@@ -64,6 +99,35 @@ const PAGES = {
       ['How long does it take to show up in AI answers?', 'It varies. Assistants that search the web live, such as ChatGPT search and Perplexity, can find a new, well-structured page within days or weeks of it being indexed. Answers built from training data change more slowly.'],
     ],
   },
+  '/seo-for-holiday-lets': {
+    title: 'SEO, AEO, GEO and AI search for holiday lets, explained · Bookingbooster',
+    h1: 'SEO, AEO, GEO and AI search for holiday lets: every type explained',
+    description: 'Plain-English definitions of every kind of search optimisation, from on-page and local SEO to AEO, GEO, LLMO and Google AI Overviews, and what each one means for a UK holiday let.',
+    lead: 'Search optimisation now means more than ranking on Google. Guests find holiday lets through Google results, Google Maps, AI Overviews and assistants such as ChatGPT, Perplexity, Gemini, Claude and Copilot. Each needs slightly different work. Here is every type in plain English, what it means for a holiday let, and what Bookingbooster does for you.',
+    sections: [
+      ['Classic search', DEFS(TERMS.filter(t => t[3] === 'classic'))],
+      ['AI-era search', DEFS(TERMS.filter(t => t[3] === 'ai'))],
+      ['Types that only partly apply to holiday lets', DEFS(TERMS.filter(t => t[3] === 'part'))],
+    ],
+    faq: [
+      ['What is the difference between SEO, AEO and GEO?', 'SEO gets your pages ranked in search results. AEO (answer engine optimisation) gets your content quoted as the direct answer, in featured snippets, voice answers and AI Overviews. GEO (generative engine optimisation) gets you named and linked inside answers written by chatbots such as ChatGPT, Perplexity, Gemini and Claude. Good SEO is the base for both.'],
+      ['Which type of SEO matters most for a holiday let?', 'Local SEO and AEO. Guests search by place ("cottage with hot tub in the Lake District") and increasingly ask AI assistants. A Google Business Profile, a fast site with clear facts and structured data, and answers to the questions guests ask cover most of what matters.'],
+      ['What is LLMO?', 'LLMO (large language model optimisation) is helping AI models recognise your business as a real, consistent entity. For a holiday let that means the same name, place and facts on your website, your listings, Google Maps and social profiles, linked together, plus mentions on local and travel sites.'],
+      ['Do I need to do all of this myself?', 'No. With Bookingbooster the technical work (structured data, sitemaps, llms.txt, crawler access, IndexNow) is automatic. The Search health screen scores each home across every type above, drafts the writing from your facts, and gives you a short checklist for the parts only you can do, such as your Google Business Profile.'],
+    ],
+  },
+  '/holiday-let-seo-checklist': {
+    title: 'Holiday let SEO and AI search checklist · Bookingbooster',
+    h1: 'The holiday let SEO and AI search checklist',
+    description: 'A step-by-step checklist to get a UK holiday let found on Google, Google Maps and in AI answers from ChatGPT, Perplexity, Gemini and Google AI Overviews.',
+    lead: 'Work through these steps in order. The first ones matter most. Each one says which kind of search it helps, so you know why it is there.',
+    sections: [['The checklist', '<ol>' + CHECKLIST.map(([h, why, tags]) => '<li><strong>' + esc(h) + '</strong> ' + esc(why) + ' <em>(' + esc(tags) + ')</em></li>').join('') + '</ol>'],
+      ['Check your score', '<p>Every Bookingbooster host gets a Search health score for each home. It runs these checks for you, orders the fixes by how much each one adds, and drafts the writing from your own facts. It also asks ChatGPT, Gemini, Perplexity and Google the questions guests ask about your area each week, and shows which sites they cite.</p>']],
+    faq: [
+      ['How long does holiday let SEO take to work?', 'Technical fixes and a Google Business Profile can show in weeks. Rankings for competitive searches and mentions in AI answers usually take two to six months of steady work: good pages, reviews and links from local sites.'],
+      ['Should my holiday let have its own website if it is on Airbnb?', 'Yes, if you want to be found directly. AI assistants and Google can cite and link your own site, and a guest who books there pays no platform fee. Keep your listings and link them to your site so search engines know they are the same home.'],
+    ],
+  },
   '/guides': {
     title: 'Free guides for UK holiday let hosts · Bookingbooster',
     h1: 'Free guides for UK holiday let hosts',
@@ -82,11 +146,14 @@ function jsonLd(base, path, pg) {
     { '@type': 'Organization', '@id': home + '#org', name: 'Bookingbooster', url: home, logo: base + '/assets/icons/icon-512.png', sameAs: mkt.SOCIAL.map(x => x[1]) },
   ];
   if (pg.faq.length) graph.push({ '@type': 'FAQPage', '@id': url + '#faq', mainEntity: pg.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) });
+  if (path === '/seo-for-holiday-lets') graph.push({ '@type': 'DefinedTermSet', '@id': url + '#terms', name: 'Search optimisation for holiday lets', hasDefinedTerm: TERMS.map(([n, d]) => ({ '@type': 'DefinedTerm', name: n, description: d, url: url + '#' + n.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '') })) });
+  if (path === '/holiday-let-seo-checklist') graph.push({ '@type': 'ItemList', '@id': url + '#steps', name: pg.h1, itemListOrder: 'https://schema.org/ItemListOrderAscending', itemListElement: CHECKLIST.map(([h, why], i) => ({ '@type': 'ListItem', position: i + 1, name: h, description: why })) });
+  graph[0].speakable = { '@type': 'SpeakableSpecification', cssSelector: ['article > p:first-of-type'] };
   if (path === '/guides') graph.push({ '@type': 'ItemList', name: pg.h1, itemListElement: GUIDES.map(([f, t], i) => ({ '@type': 'ListItem', position: i + 1, name: t, url: base + '/guides/' + f })) });
   return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-const NAV = [['/', 'Home and pricing'], ['/direct-booking-website', 'Direct booking websites'], ['/ai-search-for-holiday-lets', 'Getting found in AI search'], ['/guides', 'Free guides']];
+const NAV = [['/', 'Home and pricing'], ['/direct-booking-website', 'Direct booking websites'], ['/ai-search-for-holiday-lets', 'Getting found in AI search'], ['/seo-for-holiday-lets', 'SEO, AEO and GEO explained'], ['/holiday-let-seo-checklist', 'SEO checklist'], ['/guides', 'Free guides']];
 
 function render(base, path) {
   const pg = PAGES[path]; if (!pg) return null;
@@ -102,7 +169,13 @@ function render(base, path) {
   return { title: pg.title, head, body };
 }
 
+// The full text of every answer page, for /llms-full.txt.
+function fullText(base) {
+  const strip = h => String(h).replace(/<\/(p|li|dt|dd|tr|h\d)>/g, '\n').replace(/<br>/g, '\n').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\n{3,}/g, '\n\n').trim();
+  return Object.entries(PAGES).map(([path, pg]) => '# ' + pg.h1 + '\n\nSource: ' + base + path + '\n\n' + pg.lead + '\n\n' + pg.sections.map(([h, html]) => '## ' + h + '\n\n' + strip(html)).join('\n\n') +
+    (pg.faq.length ? '\n\n## Questions\n\n' + pg.faq.map(([q, a]) => '### ' + q + '\n\n' + a).join('\n\n') : '')).join('\n\n---\n\n') + '\n';
+}
 // For llms.txt and the sitemap.
 const list = () => Object.entries(PAGES).map(([path, pg]) => ({ path, title: pg.h1, description: pg.description }));
 
-module.exports = { PAGES, GUIDES, render, list };
+module.exports = { PAGES, GUIDES, TERMS, CHECKLIST, render, list, fullText };
