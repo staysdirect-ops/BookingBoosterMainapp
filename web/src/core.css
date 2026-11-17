@@ -136,3 +136,15 @@ button { cursor: pointer; }
 .ai-name .ai-logo { vertical-align: 0; }
 .ai-logos { display: inline-flex; align-items: center; gap: .6em; flex-wrap: wrap; }
 .ai-tm { font-size: 11px; line-height: 1.45; color: var(--muted); margin: 12px 0 0; font-weight: 400; }
+
+/* Own-domain DNS guide (sign-up and console) */
+.dg { display: grid; gap: 10px; }
+.dg-q { margin: 0; font-weight: 600; font-size: 14px; }
+.dg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dg-chip { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); cursor: pointer; }
+.dg-chip:hover { background: var(--surface-2); }
+.dg-chip.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+.dg-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; line-height: 1.45; }
+.dg-tip { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 13px; color: var(--muted); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.dg-tip .ic { width: 16px; height: 16px; flex: none; color: var(--primary); margin-top: 1px; }
+.dg-tip b { color: var(--fg); }

@@ -73,6 +73,7 @@
     const t = ev.target;
     const n = t.closest('[data-ag-nav]');
     if (n) { ev.preventDefault(); const v = n.dataset.agNav, id = n.dataset.agId || null; if (v === 'property') BB.go('property', { propertyId: id }); else nav(inst, v, id); return; }
+    const rg = t.closest('[data-dns-reg]'); if (rg) { ev.preventDefault(); inst.set({ dom_reg: inst.st.dom_reg === rg.dataset.dnsReg ? '' : rg.dataset.dnsReg }); return; }
     const a = t.closest('[data-ag]'); if (!a) return;
     const k = a.dataset.ag, v = a.dataset.v, st = inst.st;
     const H = HANDLERS[k]; if (H) { ev.preventDefault(); H(inst, v, a, st); }
@@ -574,23 +575,39 @@
         : '<p class="muted ag-p">Until you add photos, your site shows a drawing of your home. Photos make the biggest difference to bookings.</p>') +
       '<label class="btn ag-upl' + (up ? ' busy' : '') + '">' + I('image') + (up ? 'Uploading ' + up + '…' : 'Add photos') + '<input type="file" accept="image/jpeg,image/png,image/webp" multiple data-agphotos="' + esc(p.id) + '" hidden></label></section>';
   }
-  // A host's own domain: they type it, we show the DNS records to add, and it goes live once those are in place.
+  // A host's own domain: they type it, we show the DNS records to add (with steps for their registrar), it goes live
+  // once those are in place, and then the padlock (HTTPS certificate) is set up for them.
   function domainCard(inst, p) {
     const st = inst.st, custom = p._autoDomain ? '' : (p.domain || ''), c = (st.dom || {})[p.id], busy = st.dom_busy === p.id;
-    const live = !!custom && (BB.BOOT.siteUrls || {})[p.id] === 'https://' + custom + '/';
-    if (custom && !live && !c && !busy && !(st.dom_tried || {})[p.id]) { st.dom_tried = Object.assign({}, st.dom_tried, { [p.id]: 1 }); setTimeout(() => domainCall(inst, p.id, '/app/domain/check', {}), 0); }
+    const live = !!custom && ((BB.BOOT.siteUrls || {})[p.id] === 'https://' + custom + '/' || !!(c && c.live));
+    if (custom && !c && !busy && !(st.dom_tried || {})[p.id]) { st.dom_tried = Object.assign({}, st.dom_tried, { [p.id]: 1 }); setTimeout(() => domainCall(inst, p.id, '/app/domain/check', {}), 0); }
     const err = st.dom_err && st.dom_err.pid === p.id ? '<p class="ag-err" role="alert">' + esc(st.dom_err.m) + '</p>' : '';
-    const head = '<section class="a-card ag-card ag-dom"><div class="a-card-h"><h3>Your web address</h3><span class="ag-meta">' + (live ? 'Connected' : custom ? 'Waiting for your DNS records' : 'Optional') + '</span></div>';
+    const secure = live && c && c.https === true;
+    const head = '<section class="a-card ag-card ag-dom"><div class="a-card-h"><h3>Your web address</h3><span class="ag-meta">' + (secure ? 'Connected and secure' : live ? 'Connected' : custom ? 'Waiting for your DNS records' : 'Optional') + '</span></div>';
     if (!custom || st.dom_edit === p.id) return head + '<form data-agform="dom" data-pid="' + esc(p.id) + '" class="ag-form">' +
-      '<p class="muted ag-p">' + (custom ? 'Type the new address.' : 'Your site is live at <b class="mono">' + esc(p.domain) + '</b>. To use a domain you own, type it here. It stays registered wherever you bought it.') + '</p>' +
-      '<label class="field"><span>Domain</span><input name="domain" placeholder="larchcabin.co.uk" value="' + esc(custom) + '" autocomplete="off" spellcheck="false" inputmode="url"></label>' + err +
-      '<div class="ag-row"><button class="btn primary"' + (busy ? ' disabled' : '') + '>' + I('globe') + (busy ? 'Saving…' : 'Connect') + '</button>' + (custom ? '<button type="button" class="btn ghost" data-ag="dom-cancel">Cancel</button>' : '') + '</div></form></section>';
-    const tools = '<div class="ag-row"><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>';
-    if (live) return head + '<div class="ag-banner good">' + I('check') + '<p>Guests book at <b class="mono">https://' + esc(custom) + '</b>. The www address goes to the same site.</p></div>' + tools + '</section>';
-    const recs = c ? '<div class="ag-dns" role="table" aria-label="DNS records">' + c.records.map(r => '<div class="ag-dns-r" role="row"><span class="mono ag-dns-t">' + r.type + '</span><span><small>Name</small><b class="mono">' + esc(r.name) + '</b></span><span class="ag-dns-v"><small>Value</small><b class="mono" data-dnsv>' + esc(r.value) + '</b><button type="button" class="btn sm ghost" data-ag="dom-copy" data-v="' + esc(r.value) + '">Copy</button></span><span class="ag-dns-s ' + (r.ok ? 'ok' : '') + '">' + (r.ok ? I('check') + 'Found' : 'Not seen yet') + '</span><small class="ag-dns-w">' + esc(r.why) + '</small></div>').join('') + '</div>' : '<p class="muted ag-p">' + (busy ? 'Looking up your DNS records…' : '') + '</p>';
-    return head + '<p class="muted ag-p">Add these records where you bought <b class="mono">' + esc(custom) + '</b> (for example 123 Reg, GoDaddy, IONOS or Cloudflare). Your site switches over by itself once we can see them. That is often within an hour, and can take up to a day.</p>' +
-      (c && c.elsewhere ? '<p class="ag-note">' + I('bolt') + '<span>Another Bookingbooster account has this address. The TXT record proves it is yours and moves it to you.</span></p>' : '') + recs + err +
-      '<div class="ag-row"><button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking…' : 'Check now') + '</button><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div></section>';
+      '<p class="muted ag-p">' + (custom ? 'Type the new address.' : 'Your site is live at <b class="mono">' + esc(p.domain) + '</b>. Already own a domain, at GoDaddy, 123-reg, IONOS, Namecheap, Cloudflare or anywhere else? Type it here. It stays registered where you bought it, and any email on it keeps working.') + '</p>' +
+      '<label class="field"><span>Domain you own</span><input name="domain" placeholder="larchcabin.co.uk" value="' + esc(custom) + '" autocomplete="off" spellcheck="false" inputmode="url"></label>' + err +
+      '<div class="ag-row"><button class="btn primary"' + (busy ? ' disabled' : '') + '>' + I('globe') + (busy ? 'Saving…' : 'Connect my domain') + '</button>' + (custom ? '<button type="button" class="btn ghost" data-ag="dom-cancel">Cancel</button>' : '') + '</div></form></section>';
+    const tools = '<div class="ag-row">' + (live && !secure ? '<button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking…' : 'Check again') + '</button>' : '') + '<button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>';
+    // Three steps the host can see: pointing, proved, padlock.
+    const pointed = !!c && c.records.some(r => r.type !== 'TXT' && r.ok), proved = !!c && c.proved;
+    const step = (ok, wait, t, d) => '<li class="' + (ok ? 'ok' : wait ? 'wait' : '') + '"><span class="ag-dst-i">' + (ok ? I('check') : wait ? '<i class="ag-spin"></i>' : '') + '</span><span><b>' + t + '</b><small>' + d + '</small></span></li>';
+    const steps = c || live ? '<ol class="ag-dsteps" aria-label="Progress">' +
+      step(live || pointed, false, 'Points at your booking site', live || pointed ? 'Found your www or main address record' : 'Waiting for the CNAME' + (c && c.records.some(r => r.type === 'A') ? ' or A record' : '') + ' below') +
+      step(live || proved, false, 'Proved it is yours', live || proved ? 'Found your TXT record' : 'Waiting for the TXT record below') +
+      step(secure, live && !secure, 'Secure padlock (HTTPS)', secure ? 'Guests see https://' + esc(custom) : live ? 'Setting up your free certificate. This usually takes a few minutes.' : 'Added for you, free, once the first two are done') +
+      '</ol>' : '';
+    if (live) return head + (secure ? '<div class="ag-banner good">' + I('check') + '<p>Guests book at <b class="mono">https://' + esc(custom) + '</b>. The www address goes to the same site.</p></div>' : '') + steps + err + tools + '</section>';
+    const recs = c ? '<div class="ag-dns" role="table" aria-label="DNS records">' + c.records.map(r => '<div class="ag-dns-r" role="row"><span class="mono ag-dns-t">' + r.type + '</span><span><small>Name</small><b class="mono">' + esc(r.name) + '</b></span><span class="ag-dns-v"><small>Value</small><b class="mono" data-dnsv>' + esc(r.value) + '</b><button type="button" class="btn sm ghost" data-ag="dom-copy" data-v="' + esc(r.value) + '">Copy</button></span><span class="ag-dns-s ' + (r.ok ? 'ok' : '') + '">' + (r.ok ? I('check') + 'Found' : 'Not seen yet') + '</span><small class="ag-dns-w">' + esc(r.why) + (!r.ok && r.seen ? '. Right now we see ' + esc(r.seen) + ', so change that one rather than adding a second.' : '') + '</small></div>').join('') + '</div>' : '<p class="muted ag-p">' + (busy ? 'Looking up your DNS records…' : '') + '</p>';
+    const noApex = c && !c.records.some(r => r.type === 'A');
+    return head + '<p class="muted ag-p">Add these records where you bought <b class="mono">' + esc(custom) + '</b>. Your site switches over by itself once we can see them, and we add the padlock for you. That is often within an hour, and can take up to a day.</p>' +
+      steps +
+      (c && c.proxied ? '<p class="ag-note warn">' + I('bolt') + '<span>Your domain is behind Cloudflare’s proxy (the orange cloud). In Cloudflare, set <b>Proxy status</b> to <b>DNS only</b> on the <b>@</b> and <b>www</b> records so we can see them and set up your padlock.</span></p>' : '') +
+      (c && c.elsewhere ? '<p class="ag-note">' + I('bolt') + '<span>Another Bookingbooster account has this address. The TXT record proves it is yours and moves it to you.</span></p>' : '') + recs +
+      (noApex ? '<p class="ag-note">' + I('globe') + '<span>For the main address (<b class="mono">' + esc(custom) + '</b> without www), turn on <b>domain forwarding</b> to <b class="mono">https://www.' + esc(custom) + '</b> where you bought it.</span></p>' : '') +
+      '<div class="ag-dg">' + BB.dnsGuide(st.dom_reg || '', custom) + '</div>' + err +
+      '<div class="ag-row"><button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking…' : 'Check now') + '</button><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>' +
+      '<p class="muted ag-p ag-fine">Stuck? <a href="mailto:' + esc(BB.BOOT.support || 'help@booking-booster.co.uk') + '?subject=' + encodeURIComponent('Help connecting ' + custom) + '">Email us</a> and we will add the records with you.</p></section>';
   }
   async function domainCall(inst, pid, url, body) {
     inst.set({ dom_busy: pid, dom_err: null });
