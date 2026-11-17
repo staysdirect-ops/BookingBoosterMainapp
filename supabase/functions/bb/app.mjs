@@ -8872,7 +8872,7 @@ body.p-lock { overflow: hidden; }
                st === 'busy' ? '<span class="s-conn-ok"><i class="s-spin"></i>Connecting\u2026</span>' :
                st === 'auth' ? '' : '<button class="btn sm primary" data-conn="' + k + '" data-c="auth">Connect</button>') + '</div>' +
               (st === 'auth' ? '<div class="s-oauth"><p><b>' + name + '</b> will let Bookingbooster:</p><ul>' + perms.map(p => '<li>' + icon('check') + p + '</li>').join('') + '</ul>' +
-                '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">Simulated sign-in for the prototype.</p></div>' : '') +
+                '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">' + (REAL() ? 'You connect your real account securely from your console once you have signed up.' : 'Simulated sign-in for the demo.') + '</p></div>' : '') +
               '</div>';
           }).join('') +
           '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional \xB7 \xA3' + ADDON.price + ' a month</span></b><em>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
@@ -16734,7 +16734,18 @@ var require_effects = __commonJS({
         const text = g.name + " asked to book " + p.name + ", " + fmt(b.checkIn) + " to " + fmt(b.checkOut) + ", " + b.adults + " adult" + (b.adults === 1 ? "" : "s") + (b.children ? " and " + b.children + " children" : "") + (b.pets ? " and a dog" : "") + ", " + money(b.total) + ". The dates are held until you accept or decline.";
         await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: "Booking request: " + p.name + ", " + fmt(b.checkIn), text: text + "\n\nOpen your console: " + url, html: simple(p, vars(w, b, p, g), text, { label: "Accept or decline", url }), meta: { template: "host-request", bookingId: b.id } });
       }
-      async function hostEmail(w, d) {
+      const unpaid = async (w) => {
+        if (!stripe.enabled || w.kind !== "live") return false;
+        const r = await ws.row(w.id);
+        return !r || !r.billing_status || r.billing_status === "trial";
+      };
+      async function siteLive(wid) {
+        const w = await ws.open(wid);
+        if (!w) return;
+        for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true);
+      }
+      async function hostEmail(w, d, paid) {
+        if (!paid && await unpaid(w)) return;
         const s = w.state;
         const p = s.properties.find((x) => x.id === d.propertyId);
         if (!p) return;
@@ -16766,7 +16777,7 @@ var require_effects = __commonJS({
           }
         }
       }
-      return Object.assign(run, { calendars, aiCheck });
+      return Object.assign(run, { calendars, aiCheck, siteLive });
     };
   }
 });
@@ -18732,7 +18743,10 @@ var require_server = __commonJS({
         a.billing = "active";
         BB.store.commit({});
       });
-      if (first) ws.defer(welcome(wid), "welcome");
+      if (first) {
+        ws.defer(welcome(wid), "welcome");
+        ws.defer(effects.siteLive(wid), "site-live");
+      }
     }
     var PAY_OPEN = ["/app/pay", "/app/pay/done", "/app/billing", "/app/billing/start", "/app/billing/portal", "/app/account"];
     async function mustPay(req, w) {
@@ -19061,6 +19075,7 @@ var require_server = __commonJS({
         const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/help" }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + "/privacy" }, { loc: cfg.baseUrl + "/terms" }] : []);
         for (const id of await ws.liveIds()) {
           const w = await ws.open(id);
+          if (unpaid(w)) continue;
           for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today });
         }
         return send(res, 200, seo.sitemap(list.filter((x) => x.loc.startsWith(cfg.baseUrl))), "application/xml");
