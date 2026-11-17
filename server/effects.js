@@ -149,7 +149,7 @@ module.exports = function (ctx) {
     await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: 'Booking request: ' + p.name + ', ' + fmt(b.checkIn), text: text + '\n\nOpen your console: ' + url, html: simple(p, vars(w, b, p, g), text, { label: 'Accept or decline', url }), meta: { template: 'host-request', bookingId: b.id } });
   }
   // An unpaid sign-up's site is still offline ("opening soon"), so its "site is live" email waits for the first payment (siteLive).
-  const unpaid = async w => { if (!stripe.enabled || w.kind !== 'live') return false; const r = await ws.row(w.id); return !r || !r.billing_status || r.billing_status === 'trial'; };
+  const unpaid = async w => { if (!stripe.enabled || w.kind !== 'live') return false; const r = await ws.row(w.id); return !r || !r.billing_status || r.billing_status === 'trial' || r.billing_status === 'cancelled'; };
   async function siteLive(wid) { const w = await ws.open(wid); if (!w) return; for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true); }
   async function hostEmail(w, d, paid) {
     if (!paid && await unpaid(w)) return;

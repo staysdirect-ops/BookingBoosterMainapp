@@ -10282,7 +10282,20 @@ body.p-lock { overflow: hidden; }
   // Payment confirmed by Stripe (webhook). Turns a pending booking into a confirmed, paid one.
   BB.act.paymentConfirmed = function (id, info) {
     const b = BB.q.booking(id); if (!b) return;
-    const was = b.status; b.paid = true; if (b.status === 'pending') b.status = 'confirmed';
+    if (info && info.intent && b.payment && b.payment.intent === info.intent && (b.paid || b.lateRefund)) return; // Stripe sent the same event again
+    // The payment landed after the 30 minute hold was released (Stripe's own session lasts a minute longer, and webhooks
+    // can arrive late). Take the stay back if the nights are still free; otherwise, or if it was cancelled on purpose, refund the card.
+    if (b.status === 'cancelled') {
+      b.payment = Object.assign({}, b.payment || {}, info || {});
+      if (!b.expired || !BB.q.isAvailable(b.propertyId, b.checkIn, b.checkOut, b.id)) {
+        b.lateRefund = true; BB.fx('payment.refund', { bookingId: id });
+        BB.log('payment', 'Stripe', first(gOf(b).name) + ' paid ' + money(b.total) + ' after ' + b.id + ' was released, and the dates are no longer free. The payment is being refunded to their card.', id, ['Booking site', 'Stripe']);
+        BB.notify('Late payment refunded \xB7 ' + money(b.total), gOf(b).name + ' paid after the hold ran out. Stripe is refunding it.', id);
+        BB.store.commit({ type: 'booking', id }); return;
+      }
+      b.status = 'pending'; delete b.expired;
+    }
+    const was = b.status; b.paid = true; if (b.status === 'pending') { b.status = 'confirmed'; delete b.holdUntil; }
     b.payment = Object.assign({}, b.payment || {}, info || {});
     BB.log('payment', 'Stripe', 'Charged ' + money(b.total) + ' to ' + first(gOf(b).name) + "'s card. Payout lands in 2 days.", id, ['Booking site', 'Stripe']);
     if (was === 'pending') { BB.runAutomations('booking.created', b); BB.notify('Payment received \xB7 ' + money(b.total), gOf(b).name + ' paid for ' + P(b.propertyId).short + '.', id); }
@@ -10290,7 +10303,7 @@ body.p-lock { overflow: hidden; }
   };
   BB.act.expirePending = function (id) {
     const b = BB.q.booking(id); if (!b || b.status !== 'pending') return;
-    b.status = 'cancelled'; BB.log('booking', 'Booking site', 'Released ' + D.fmt(b.checkIn) + '\u2013' + D.fmt(b.checkOut) + ' at ' + P(b.propertyId).short + ': ' + gOf(b).name + ' did not finish paying.', id);
+    b.status = 'cancelled'; b.expired = true; BB.log('booking', 'Booking site', 'Released ' + D.fmt(b.checkIn) + '\u2013' + D.fmt(b.checkOut) + ' at ' + P(b.propertyId).short + ': ' + gOf(b).name + ' did not finish paying.', id);
     BB.store.commit({ type: 'booking', id });
   };
   BB.act.unsubscribe = function (gid) { const g = BB.q.guest(gid); if (!g || !g.subscribed) return; g.subscribed = false; g.unsubscribedAt = S().today; BB.log('campaign', 'Guest list', g.name + ' unsubscribed from emails.', gid); BB.store.commit({ type: 'guest', id: gid }); };
@@ -15328,14 +15341,14 @@ var require_stripe = __commonJS({
         async refund(paymentIntent, amount) {
           return api("POST", "/refunds", { payment_intent: paymentIntent, amount: amount ? pence(amount) : void 0, reverse_transfer: true, refund_application_fee: true });
         },
-        async subscribe({ customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
+        async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
           const P = cfg.stripe.prices, yearly = annual && P[plan + "Annual"];
           const price = yearly ? P[plan + "Annual"] : P[plan];
           if (!price) throw new Error("No Stripe price is set for the " + plan + " plan.");
           const add = yearly ? P.addonAnnual : P.addon;
           const items = [{ price, quantity: 1 }];
           if (addon && add) items.push({ price: add, quantity: 1 });
-          const s = await api("POST", "/checkout/sessions", { mode: "subscription", customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
+          const s = await api("POST", "/checkout/sessions", { mode: "subscription", customer: customer || void 0, customer_email: customer ? void 0 : customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
           return { id: s.id, url: s.url };
         },
         // AI credit top-up: a one-off card payment to Bookingbooster (not to the host's own Stripe account).
@@ -18867,7 +18880,7 @@ var require_effects = __commonJS({
       const unpaid = async (w) => {
         if (!stripe.enabled || w.kind !== "live") return false;
         const r = await ws.row(w.id);
-        return !r || !r.billing_status || r.billing_status === "trial";
+        return !r || !r.billing_status || r.billing_status === "trial" || r.billing_status === "cancelled";
       };
       async function siteLive(wid) {
         const w = await ws.open(wid);
@@ -22213,10 +22226,10 @@ var require_server = __commonJS({
       const base = "/api/public/" + w.slug;
       return Object.assign({ mode, version: w.version, bookUrl: base + "/book", stripe: stripeReady(w) }, extra);
     }
+    var offPlan = (st) => !st || st === "trial" || st === "cancelled";
     function unpaid(w) {
       if (!stripe.enabled || w.kind !== "live") return false;
-      const st = (w.row || {}).billing_status;
-      return !st || st === "trial";
+      return offPlan((w.row || {}).billing_status);
     }
     async function hiddenFrom(req, w) {
       if (!unpaid(w)) return false;
@@ -22501,10 +22514,20 @@ var require_server = __commonJS({
         }
         if (ev.type === "customer.subscription.deleted") {
           const r = await db.prepare("SELECT id FROM workspaces WHERE stripe_customer = ?").get(o.customer);
-          if (r) await ws.setMeta(r.id, { billing_status: "cancelled" });
+          let other = false;
+          if (r) {
+            try {
+              const l = await stripe.api("GET", "/subscriptions", { customer: o.customer, status: "all", limit: 20 });
+              other = (l.data || []).some((x) => x.id !== o.id && ["active", "trialing", "past_due"].includes(x.status));
+            } catch (e) {
+              log("webhook", "subscriptions", e.message);
+            }
+          }
+          if (r && !other) await ws.setMeta(r.id, { billing_status: "cancelled" });
         }
       } catch (e) {
         log("webhook", ev.type, e.message);
+        return json(res, { error: "not processed, retry" }, 500);
       }
       json(res, { received: true });
     }
@@ -22568,7 +22591,7 @@ var require_server = __commonJS({
     }
     async function planCheckout(w) {
       const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
-      return stripe.subscribe({ customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + "/app/pay/done?session={CHECKOUT_SESSION_ID}", cancelUrl: cfg.baseUrl + "/app/pay", meta: { workspace: w.id, kind: "plan", plan } });
+      return stripe.subscribe({ customer: r.stripe_customer || void 0, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + "/app/pay/done?session={CHECKOUT_SESSION_ID}", cancelUrl: cfg.baseUrl + "/app/pay", meta: { workspace: w.id, kind: "plan", plan } });
     }
     async function planPaid(wid, customer, plan) {
       const r = await ws.row(wid);
@@ -22589,12 +22612,13 @@ var require_server = __commonJS({
     async function mustPay(req, w) {
       if (!stripe.enabled || w.kind !== "live") return false;
       const r = await ws.row(w.id);
-      if (r && r.billing_status && r.billing_status !== "trial") return false;
+      if (r && !offPlan(r.billing_status)) return false;
       return !await isAdmin(req);
     }
     function payPage(w, note) {
-      const s = w.state, price = 200, due = s.account.annual ? "\xA3" + price * 10 + " for your first year" : "\xA3" + price + " for your first month";
-      return authPage("Start your plan", "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>" + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
+      const s = w.state, price = 200, ended = (w.row || {}).billing_status === "cancelled";
+      const due = s.account.annual ? "\xA3" + price * 10 + (ended ? " for the year" : " for your first year") : "\xA3" + price + (ended ? " for the month" : " for your first month");
+      return authPage(ended ? "Restart your plan" : "Start your plan", (ended ? "<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay " + due + " to restart your plan. Everything you set up is still here.</p>" : "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>") + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
     }
     async function welcome(wid) {
       const w = await ws.open(wid);
@@ -23106,7 +23130,7 @@ Disallow: /
         if (p === "/app/billing/start" && m === "POST") {
           if (!stripe.enabled) return redirect(res, "/app/billing?msg=stripe");
           const r = await ws.row(w.id);
-          if (r.stripe_customer && r.billing_status && r.billing_status !== "trial") return redirect(res, "/app/billing");
+          if (r.stripe_customer && !offPlan(r.billing_status)) return redirect(res, "/app/billing");
           return redirect(res, (await planCheckout(w)).url);
         }
         if (p === "/app/billing/topup" && m === "POST") {
@@ -23526,7 +23550,7 @@ Disallow: /
       const s = w.state;
       const price = 200;
       const status = { trial: "Not paid yet. Your booking site goes live to guests once your plan is paid", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
-      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>' : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === "cancelled" ? "Restart your plan" : "Start your plan") + "</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
     }
     async function creditCard(w, sp) {
       const c = await credits.summary(w.id), rows = await credits.recent(w.id, 12), M = credits.money;
