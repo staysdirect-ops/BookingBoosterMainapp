@@ -274,6 +274,16 @@
 .x-site .s-social a:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
 .x-site .s-social svg { width: 20px; height: 20px; display: block; }
 
+/* "Explore AI summary" in the footer: brand marks in full colour on white chips, so no logo is recoloured */
+.x-site .s-ai-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 18px; }
+.x-site .s-ai-sum b { font: 500 11.5px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+.x-site .s-ai-sum ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; }
+.x-site .s-ai-sum a { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 0 var(--yel); transition: box-shadow .15s, transform .15s; }
+.x-site .s-ai-sum a:hover { box-shadow: 0 0 0 3px var(--yel); transform: translateY(-1px); }
+.x-site .s-ai-sum a:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
+.x-site .s-ai-sum svg { width: 20px; height: 20px; display: block; }
+@media (prefers-reduced-motion: reduce) { .x-site .s-ai-sum a { transition: none; } .x-site .s-ai-sum a:hover { transform: none; } }
+
 /* fixes */
 .x-site .s-myth-grid span { display: block; width: fit-content; }
 .x-site .s-head .s-pill + .s-h2 { margin-top: 20px; }
