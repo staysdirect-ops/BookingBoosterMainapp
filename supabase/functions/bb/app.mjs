@@ -19244,16 +19244,23 @@ var require_crawler = __commonJS({
     }
     var MONTHS = "jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?";
     var MI = (m) => ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].indexOf(m.slice(0, 3).toLowerCase()) + 1;
-    var RANGE = new RegExp("(\\d{1,2})(?:st|nd|rd|th)?(?:\\s+(" + MONTHS + "))?(?:\\s+(\\d{4}))?\\s*(?:-|\u2013|\u2014|to|until|and)\\s*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\\s+)?(\\d{1,2})(?:st|nd|rd|th)?\\s+(" + MONTHS + ")\\s+(\\d{4})", "i");
+    var ORD = "(?:\\s?(?:st|nd|rd|th)\\b)?";
+    var RANGE = new RegExp("\\b(\\d{1,2})" + ORD + "(?:\\s+(" + MONTHS + "))?(?:\\s+(\\d{4}))?(?:\\s*,\\s*\\d{1,2}" + ORD + ")*\\s*(?:-|\u2013|\u2014|to|until|and|&)\\s*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\\s+)?(\\d{1,2})" + ORD + "\\s+(" + MONTHS + ")\\s+(\\d{4})", "gi");
     function textEvent(html, pageUrl) {
-      const body = decode(html.replace(/<(script|style|nav|header|footer)[\s\S]*?<\/\1>/gi, " ")), m = body.match(RANGE);
-      if (!m) return [];
-      const p2 = (n) => String(n).padStart(2, "0");
-      const end = m[6] + "-" + p2(MI(m[5])) + "-" + p2(m[4]);
-      let sm = m[2] ? MI(m[2]) : MI(m[5]), sy = +(m[3] || m[6]);
-      if (!m[3] && sm > MI(m[5])) sy--;
-      const start = sy + "-" + p2(sm) + "-" + p2(m[1]);
-      if (!ISO.test(start) || !ISO.test(end) || end < start || (new Date(end) - new Date(start)) / 864e5 > 31) return [];
+      const body = decode(html.replace(/<(script|style|nav|header|footer)\b[\s\S]*?<\/\1>/gi, " ")), p2 = (n) => String(n).padStart(2, "0");
+      let start = "", end = "";
+      for (const m of body.matchAll(RANGE)) {
+        const e = m[6] + "-" + p2(MI(m[5])) + "-" + p2(m[4]);
+        let sm = m[2] ? MI(m[2]) : MI(m[5]), sy = +(m[3] || m[6]);
+        if (!m[3] && sm > MI(m[5])) sy--;
+        const s = sy + "-" + p2(sm) + "-" + p2(m[1]);
+        if (ISO.test(s) && ISO.test(e) && !isNaN(new Date(s)) && !isNaN(new Date(e)) && e >= s && (new Date(e) - new Date(s)) / 864e5 <= 31) {
+          start = s;
+          end = e;
+          break;
+        }
+      }
+      if (!start) return [];
       const og = html.match(/<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i) || html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || html.match(/<title>([\s\S]*?)<\/title>/i);
       const name = og ? decode(og[1]).split(/\s+[|–-]\s+/)[0] : "";
       if (!name) return [];
@@ -19295,8 +19302,11 @@ var require_crawler = __commonJS({
       if (rb.all === false) return { ok: false, error: "We are staying away: " + rb.why + ".", pages: 0, events: [] };
       if (!allowed(rb, src.url)) return { ok: false, error: "This site\u2019s robots.txt asks crawlers not to read that page, so we don\u2019t.", pages: 0, events: [], blocked: true };
       const gap = Math.max(1500, Math.min(rb.delay != null ? rb.delay * 1e3 : 0, 6e4)), seen = /* @__PURE__ */ new Set(), found = [];
-      const queue = [{ url: src.url, depth: 0 }];
-      let pages = 0, last = 0, err = "";
+      const queue = [{ url: src.url, depth: 0 }], codes = {};
+      let pages = 0, last = 0, err = "", read = 0, empty = 0;
+      const note = (k) => {
+        codes[k] = (codes[k] || 0) + 1;
+      };
       const baseDir = (() => {
         const u = new URL(src.url);
         return u.pathname.replace(/[^/]*$/, "");
@@ -19317,25 +19327,37 @@ var require_crawler = __commonJS({
         try {
           page = await get(q.url, opt);
         } catch (e) {
+          note("failed: " + String(e.message).slice(0, 60));
           if (!q.depth) err = e.message;
           continue;
         }
         if (page.status !== 200) {
+          note(String(page.status));
           if (!q.depth && q.feed !== true) err = "The page answered " + page.status + ".";
+          if (page.status === 429 || page.status === 503) {
+            err = err || "The site asked us to slow down (" + page.status + "), so we stopped for today.";
+            break;
+          }
           continue;
         }
+        read++;
         const x = extract(page, src.url), evs = x.events;
+        if (x.noindex) note("noindex");
         if (q.depth === 1 && !evs.length && !x.noindex) evs.push(...textEvent(page.text, page.url));
+        if (!evs.length) empty++;
         found.push(...evs);
         if (q.depth === 0) {
           x.feeds.slice(0, 3).forEach((f) => queue.unshift({ url: f, depth: 2, feed: true }));
           x.links.filter((l) => l.next).slice(0, 5).forEach((l) => queue.push({ url: l.url, depth: 0 }));
           const known = new Set(found.map((e) => normUrl(e.url)));
-          x.links.filter((l) => !l.next && normUrl(l.url) !== key && (EVENTY.test(l.url) || new URL(l.url).pathname.startsWith(baseDir)) && new URL(l.url).pathname.length > baseDir.length && !known.has(normUrl(l.url))).slice(0, 40).forEach((l) => queue.push({ url: l.url, depth: 1 }));
+          const leaf = (l) => /\d/.test(new URL(l.url).pathname.split("/").filter(Boolean).pop() || "") && !new URL(l.url).search ? 0 : 1;
+          x.links.filter((l) => !l.next && normUrl(l.url) !== key && (EVENTY.test(l.url) || new URL(l.url).pathname.startsWith(baseDir)) && new URL(l.url).pathname.length > baseDir.length && !known.has(normUrl(l.url))).map((l, i) => [leaf(l), i, l]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 40).forEach(([, , l]) => queue.push({ url: l.url, depth: 1 }));
         }
       }
-      if (!pages) return { ok: false, error: err || "Nothing could be read.", pages, events: [] };
-      return { ok: !err || found.length > 0, error: found.length ? "" : err, pages, events: tidy(found, o.today) };
+      const stats = { tried: pages, read, empty, codes };
+      if (!pages) return { ok: false, error: err || "Nothing could be read.", pages, events: [], stats };
+      const failed = pages - read, why = !found.length && !err ? failed ? failed + " of " + pages + " pages could not be read (" + Object.entries(codes).filter(([k]) => k !== "noindex").map(([k, n]) => k + (n > 1 ? " \xD7" + n : "")).join(", ") + ")." : "We read " + read + " page" + (read === 1 ? "" : "s") + " but found no event dates on them." : "";
+      return { ok: !err || found.length > 0, error: found.length ? "" : err || why, pages, events: tidy(found, o.today), stats };
     }
     function tidy(list, today) {
       const by = /* @__PURE__ */ new Map();
@@ -19382,8 +19404,8 @@ var require_crawler = __commonJS({
         const r = await crawl(src, { ua, allowPrivate, today: today(), maxPages: quick ? 6 : 25, budgetMs: quick ? 25e3 : 12e4 });
         const old = await read("events:src:" + src.id) || {};
         const keep = r.ok ? r.events : r.blocked ? [] : (old.events || []).filter((e) => e.end >= today());
-        await write("events:src:" + src.id, { at: (/* @__PURE__ */ new Date()).toISOString(), ok: r.ok, error: r.error || "", pages: r.pages, events: keep });
-        log && log("events", "read", src.url, r.pages + " pages", keep.length + " events", r.error || "");
+        await write("events:src:" + src.id, { at: (/* @__PURE__ */ new Date()).toISOString(), ok: r.ok, error: r.error || "", pages: r.pages, stats: r.stats || null, events: keep });
+        log && log("events", "read", src.url, r.pages + " pages", keep.length + " events", r.error || "", JSON.stringify(r.stats || {}));
         return Object.assign({}, r, { events: keep });
       }
       async function forHost(wid, loc, radius) {
@@ -19454,7 +19476,7 @@ var require_crawler = __commonJS({
         for (const s of list) {
           if (!s.seed && !s.by.length) continue;
           const x = await read("events:src:" + s.id) || {}, age = x.at ? Date.now() - new Date(x.at) : Infinity;
-          if (age > (x.ok === false ? 6 : 22) * 36e5) pick.push([age, s]);
+          if (age > (x.ok === false || !(x.events || []).length ? 6 : 22) * 36e5) pick.push([age, s]);
         }
         pick.sort((a, b) => b[0] - a[0]);
         let n = 0;

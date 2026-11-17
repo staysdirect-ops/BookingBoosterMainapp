@@ -101,6 +101,22 @@ test('postcodes are placed with our own table, and the same event on two sites i
   assert.deepEqual(m.map(e => e.name + ' @ ' + e.venue), ['First Aid at Work @ Maidstone College', 'First Aid at Work @ Ashford Hub', 'Kent County Show @ Kent Showground']);
 });
 
+test('a crawl says why it found nothing, reads event pages before section pages, and stops when asked to slow down', { timeout: 30000 }, async () => {
+  const hits = [];
+  const srv = http.createServer((q, r) => { hits.push(q.url);
+    if (q.url === '/robots.txt') { r.writeHead(404); return r.end(); }
+    if (q.url === '/whats-on') { r.writeHead(200, { 'content-type': 'text/html' }); return r.end('<a href="/whats-on/festivals">Festivals</a><a href="/whats-on/show-p123">Show</a><a href="/whats-on/fair-p456">Fair</a><a href="/whats-on/talks">Talks</a>'); }
+    if (q.url === '/whats-on/show-p123') { r.writeHead(403); return r.end(); }
+    if (q.url === '/whats-on/fair-p456') { r.writeHead(429); return r.end(); }
+    r.writeHead(200, { 'content-type': 'text/html' }); r.end('<h1>Section</h1>'); });
+  await new Promise(ok => srv.listen(0, ok)); const base = 'http://localhost:' + srv.address().port;
+  try {
+    const r = await C.crawl({ url: base + '/whats-on' }, { ua: 'BookingboosterEvents/1.0 (test)', allowPrivate: true, today: '2026-11-17' });
+    assert.deepEqual(hits, ['/robots.txt', '/whats-on', '/whats-on/show-p123', '/whats-on/fair-p456'], 'event pages first, then stop at 429');
+    assert.deepEqual(r.stats.codes, { 403: 1, 429: 1 }); assert.match(r.error, /slow down \(429\)/);
+  } finally { srv.close(); }
+});
+
 // A small public website on this machine: a what's-on page, an event page with no data, a course page, a calendar
 // feed, a page robots.txt keeps us out of, and a second site that keeps our crawler out altogether.
 function venueSite(opts) {
