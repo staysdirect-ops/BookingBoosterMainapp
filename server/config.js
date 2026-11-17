@@ -66,6 +66,8 @@ module.exports = {
   ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || 'gpt-4o-mini', gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || 'gemini-2.0-flash', perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || 'sonar', anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || 'claude-sonnet-5-5', studioModel: E.ANTHROPIC_STUDIO_MODEL || 'claude-opus-5-5', studioEffort: E.ANTHROPIC_STUDIO_EFFORT || 'medium', serpapi: E.SERPAPI_KEY },
   // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
   credits: { enabled: E.AI_CREDITS !== 'off', monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
+  // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
+  google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
   nuki: { token: E.NUKI_API_TOKEN },
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
   icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15),

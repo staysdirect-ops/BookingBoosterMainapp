@@ -1309,7 +1309,7 @@ var require_bb_embedded_files = __commonJS({
             '<div class="ag-site t-' + p.theme + '" style="--hc:' + esc(p.color) + '"><div class="ag-site-bar"><i></i><i></i><i></i><span class="mono">' + esc(p.domain) + '</span></div>' + hero(p) +
               '<div class="ag-site-in"><b class="ag-site-h">' + esc(p.headline) + '</b><small>' + esc(p.sub) + '</small><div class="ag-site-book"><span><b class="num">' + money(p.nightly) + '</b> night \xB7 book direct</span><span class="ag-site-btn">Check dates</span></div></div></div>' +
             '<section class="a-card ag-card"><div class="a-card-h"><h3>Traffic</h3><span class="ag-meta">Last 30 days</span></div><div class="ag-stats3"><div><small>Visitors</small><b class="num">' + vis.toLocaleString() + '</b></div><div><small>From search</small><b class="num">' + pct(s.website.fromSearch) + '</b></div><div><small>Visit to booking</small><b class="num">' + pct(s.website.conversion, 1) + '</b></div></div>' +
-              '<div class="ag-gsc ' + (gsc ? 'ok' : 'off') + '">' + I(gsc ? 'check' : 'plug') + '<div><b>Google Search Console</b><small>' + (gsc ? 'Verified \xB7 ' + pages.length + ' pages indexed \xB7 sitemap sent ' + esc(BB.ago(BB.q.integration('gsc').lastSync)) : S().live ? 'Coming soon. Search engines already find your pages through your sitemap.' : 'Disconnected. We cannot see rankings or ask Google to recrawl.') + '</small></div>' + (gsc ? BB.pill('good', 'Healthy') : S().live ? BB.pill('muted', 'Soon') : '<button class="btn sm" data-ag-nav="connections">Connect</button>') + '</div></section>' +
+              '<div class="ag-gsc ' + (gsc ? 'ok' : 'off') + '">' + I(gsc ? 'check' : 'plug') + '<div><b>Google Search Console</b><small>' + (gsc ? 'Verified \xB7 ' + pages.length + ' pages indexed \xB7 sitemap sent ' + esc(BB.ago(BB.q.integration('gsc').lastSync)) : S().live ? (((p0.indexing || {}).google || {}).state === 'submitted' ? 'Submitted for you, no Google login needed. See Search health for clicks and searches.' : 'Submitted for you automatically. See Search health.') : 'Disconnected. We cannot see rankings or ask Google to recrawl.') + '</small></div>' + (gsc ? BB.pill('good', 'Healthy') : S().live ? (((p0.indexing || {}).google || {}).state === 'submitted' ? BB.pill('good', 'Submitted') : '<button class="btn sm" data-ag-nav="seo">Open</button>') : '<button class="btn sm" data-ag-nav="connections">Connect</button>') + '</div></section>' +
             '<section class="a-card ag-card ag-pad0"><div class="a-card-h ag-pad"><h3>Pages we generate</h3><span class="ag-meta">' + pages.length + ' pages</span></div>' +
               '<div class="ag-pages" role="tablist" aria-label="Pages">' + pages.map(x => '<button type="button" role="tab" aria-selected="' + (x[0] === pg[0]) + '" data-ag="ws-page" data-v="' + x[0] + '"><b>' + x[1] + '</b><small class="mono">' + x[2] + '</small>' + (gsc ? '<span class="ag-ix">Indexed</span>' : '') + '</button>').join('') + '</div>' +
               '<div class="ag-serp"><span class="eyebrow">Google result preview</span><div class="ag-serp-r"><div class="ag-serp-u"><span class="ag-fav" style="background:' + esc(p.color) + '"></span><div><b>' + esc(p.name) + '</b><small>https://' + esc(p0.domain) + (pg[2] === '/' ? '' : ' \u203A ' + esc(pg[2].slice(1))) + '</small></div></div><p class="ag-serp-t">' + esc(pg[3].slice(0, 62)) + (pg[3].length > 62 ? '\u2026' : '') + '</p><p class="ag-serp-d">' + (pg[0] === 'reviews' ? '<span class="ag-serp-s">\u2605\u2605\u2605\u2605\u2605 Rating: ' + p.rating + ' \xB7 ' + p.reviews + ' reviews \xB7 </span>' : '') + esc(pg[4].trim().slice(0, 156)) + (pg[4].length > 156 ? '\u2026' : '') + '</p></div>' +
@@ -1441,7 +1441,7 @@ var require_bb_embedded_files = __commonJS({
     },
   }, hooks);
 })();
-` }, "/app/web/src/app-seo.css": { "t": "/* Search health view (web/src/app-seo.js) */\n.ag.sh { display: grid; gap: 18px; }\n.sh .t-good { color: var(--good); } .sh .t-warn { color: var(--warn); } .sh .t-bad { color: var(--bad); }\n.sh .sh-card { min-width: 0; }\n.sh .sh-card > .sh-help, .sh .sh-card > .sh-ta, .sh .sh-card > .sh-row, .sh .sh-card > ul, .sh .sh-card > form, .sh .sh-card > .tblwrap, .sh .sh-card > p, .sh .sh-card > .field, .sh .sh-card > .sh-serp, .sh .sh-card > details, .sh .sh-card > .btn, .sh .sh-card > .sh-ping, .sh .sh-card > .sh-types, .sh .sh-card > pre, .sh .sh-card > .eyebrow { margin-top: 12px; }\n.sh .sh-help { color: var(--muted); font-size: 13.5px; line-height: 1.5; margin: 0; }\n.sh .sh-ta { width: 100%; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical; min-width: 0; }\n.sh .sh-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }\n.sh .sh-sp { flex: 1; }\n.sh .sh-by { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }\n.sh .sh-by.ai { color: var(--info); }\n.sh .sh-by .ic { width: 14px; height: 14px; }\n.sh .sh-link { background: none; border: 0; padding: 0; color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; margin-left: 6px; }\n.sh .ag-ptabs .sh-pscore { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 700 17px var(--mono); background: var(--surface-2); }\n.sh .sh-pscore.t-good { background: var(--good-soft); } .sh .sh-pscore.t-warn { background: var(--warn-soft); } .sh .sh-pscore.t-bad { background: var(--bad-soft); }\n\n/* score and category tiles */\n.sh .sh-top { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 18px; align-items: stretch; }\n.sh .sh-score-in { display: flex; align-items: center; gap: 18px; height: 100%; }\n.sh .sh-score-in .disp { display: block; font-size: 28px; margin: 6px 0 4px; }\n.sh .sh-score-in p { margin: 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-g-good .fg { stroke: var(--good); } .sh .sh-g-warn .fg { stroke: var(--warn); } .sh .sh-g-bad .fg { stroke: var(--bad); }\n.sh .sh-cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }\n.sh .sh-cat { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-content: start; text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; min-width: 0; }\n.sh .sh-cat:hover { border-color: var(--line-2); }\n.sh .sh-cat.on { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent); }\n.sh .sh-cat span { font-size: 12.5px; font-weight: 600; line-height: 1.3; }\n.sh .sh-cat b { font-size: 18px; }\n.sh .sh-cat i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-cat i em { display: block; height: 100%; border-radius: 3px; background: currentColor; }\n.sh .sh-cat small { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px; }\n\n/* checks */\n.sh .sh-checks { list-style: none; padding: 0; margin: 12px 0 0; display: grid; }\n.sh .sh-ck { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 10px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }\n.sh .sh-ck:first-child { border-top: 0; }\n.sh .sh-ck b { display: block; font-size: 14.5px; }\n.sh .sh-ck small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }\n.sh .sh-ck p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-st { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; align-self: start; }\n.sh .sh-st .ic { width: 16px; height: 16px; }\n.sh .s-ok .sh-st { background: var(--good-soft); color: var(--good); }\n.sh .s-auto .sh-st { background: var(--info-soft); color: var(--info); }\n.sh .s-warn .sh-st { background: var(--warn-soft); color: var(--warn); }\n.sh .s-fail .sh-st { background: var(--bad-soft); color: var(--bad); }\n.sh .sh-gain { font: 600 12.5px var(--mono); color: var(--good); white-space: nowrap; }\n\n.sh .sh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }\n.sh .field > span em { font-style: normal; font-size: 12px; margin-left: 6px; }\n.sh .sh-serp { margin-top: 12px; }\n\n/* faq ideas, keywords */\n.sh .sh-ideas { list-style: none; padding: 0; display: grid; gap: 14px; }\n.sh .sh-ideas li { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }\n.sh .sh-ideas li:first-child { border-top: 0; padding-top: 0; }\n.sh .sh-ideas b { font-size: 14px; }\n.sh .sh-kw td { padding: 9px 8px; }\n.sh .sh-kw td small { display: block; font-size: 12px; margin-top: 2px; }\n.sh .sh-kw .ic { width: 16px; height: 16px; }\n.sh .sh-kwa { white-space: nowrap; text-align: right; }\n.sh .sh-kwa .btn + .btn { margin-left: 6px; }\n\n/* listings, gbp, sources, files */\n.sh .sh-links { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-links li { display: flex; align-items: center; gap: 8px; min-width: 0; }\n.sh .sh-links a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--fg); }\n.sh .sh-inl { display: flex; gap: 8px; }\n.sh .sh-inl input { flex: 1; min-width: 0; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; }\n.sh .sh-card > form + form { margin-top: 8px; }\n.sh .sh-tip { display: flex; gap: 8px; font-size: 12.5px; color: var(--muted); align-items: flex-start; }\n.sh .sh-tip .ic { width: 15px; height: 15px; flex: none; margin-top: 1px; }\n.sh .sh-gbp { list-style: none; padding: 0; display: grid; gap: 10px; }\n.sh .sh-gbp li { display: flex; gap: 12px; align-items: flex-start; }\n.sh .sh-gbp b { display: block; font-size: 14px; }\n.sh .sh-gbp small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-tick { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--line-2); background: var(--surface); display: grid; place-items: center; color: transparent; padding: 0; cursor: pointer; }\n.sh .sh-tick .ic { width: 15px; height: 15px; }\n.sh .sh-tick.on { background: var(--good); border-color: var(--good); color: #fff; }\n.sh .sh-src { list-style: none; padding: 0; display: grid; gap: 8px; }\n.sh .sh-src li { display: grid; grid-template-columns: minmax(0, 1.4fr) auto minmax(40px, 1fr) 24px auto; gap: 10px; align-items: center; font-size: 13px; }\n.sh .sh-src li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.sh .sh-src i { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-src i em { display: block; height: 100%; background: var(--info); border-radius: 3px; }\n.sh .sh-src li.own i em { background: var(--good); }\n.sh .sh-src .pill { font-size: 11px; }\n.sh .sh-logos .ai-logo, .sh .sh-logos svg, .sh .sh-logos img { width: 16px; height: 16px; }\n.sh .sh-files { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-files li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; min-width: 0; }\n.sh .sh-files a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--primary); font-size: 12px; }\n.sh .sh-ping { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--surface-2); }\n.sh .sh-ping b { display: block; font-size: 14px; }\n.sh .sh-ping small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-steps summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }\n.sh .sh-steps ol { margin: 8px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.55; color: var(--muted); }\n.sh .sh-steps a { color: var(--primary); }\n.sh .sh-types { display: flex; flex-wrap: wrap; gap: 6px; }\n.sh .sh-pre { max-height: 300px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 11.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; margin: 6px 0 0; }\n.sh .sh-cover td { padding: 10px 8px; font-size: 13.5px; vertical-align: top; }\n.sh .sh-cover td:first-child { white-space: nowrap; }\n.sh .sh-cover td:nth-child(2) { white-space: nowrap; }\n\n@media (max-width: 1180px) { .sh .sh-cats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }\n@media (max-width: 980px) { .sh .sh-top, .sh .sh-grid { grid-template-columns: 1fr; } }\n@media (max-width: 640px) {\n  .sh .sh-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  .sh .sh-ck { grid-template-columns: 28px 1fr; }\n  .sh .sh-ck .sh-gain { grid-column: 2; justify-self: start; }\n  .sh .sh-ck .btn, .sh .sh-ck .pill { grid-column: 2; justify-self: start; }\n  .sh .sh-score-in { flex-direction: column; align-items: flex-start; }\n  .sh .sh-cover td:first-child { white-space: normal; }\n  .sh .sh-cover tr { display: grid; grid-template-columns: 1fr auto; } .sh .sh-cover td:nth-child(3) { grid-column: 1 / -1; padding-top: 0; }\n  .sh .sh-kw thead { display: none; } .sh .sh-kw tr { display: grid; grid-template-columns: 1fr auto auto; } .sh .sh-kw td.sh-kwa { grid-column: 1 / -1; text-align: left; padding-top: 0; }\n  .sh .sh-src li { grid-template-columns: minmax(0, 1fr) auto 24px; } .sh .sh-src i, .sh .sh-src .sh-eng { display: none; }\n  .sh .sh-ping { flex-direction: column; align-items: flex-start; }\n}\n" }, "/app/web/src/app-seo.js": { "t": `/* Bookingbooster: the Search health view in the host console (Get found). One home at a time: a score across every
+` }, "/app/web/src/app-seo.css": { "t": "/* Search health view (web/src/app-seo.js) */\n.ag.sh { display: grid; gap: 18px; }\n.sh .t-good { color: var(--good); } .sh .t-warn { color: var(--warn); } .sh .t-bad { color: var(--bad); }\n.sh .sh-card { min-width: 0; }\n.sh .sh-card > .sh-help, .sh .sh-card > .sh-ta, .sh .sh-card > .sh-row, .sh .sh-card > ul, .sh .sh-card > form, .sh .sh-card > .tblwrap, .sh .sh-card > p, .sh .sh-card > .field, .sh .sh-card > .sh-serp, .sh .sh-card > details, .sh .sh-card > .btn, .sh .sh-card > .sh-ping, .sh .sh-card > .sh-types, .sh .sh-card > pre, .sh .sh-card > .eyebrow { margin-top: 12px; }\n.sh .sh-help { color: var(--muted); font-size: 13.5px; line-height: 1.5; margin: 0; }\n.sh .sh-ta { width: 100%; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical; min-width: 0; }\n.sh .sh-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }\n.sh .sh-sp { flex: 1; }\n.sh .sh-by { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }\n.sh .sh-by.ai { color: var(--info); }\n.sh .sh-by .ic { width: 14px; height: 14px; }\n.sh .sh-link { background: none; border: 0; padding: 0; color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; margin-left: 6px; }\n.sh .ag-ptabs .sh-pscore { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 700 17px var(--mono); background: var(--surface-2); }\n.sh .sh-pscore.t-good { background: var(--good-soft); } .sh .sh-pscore.t-warn { background: var(--warn-soft); } .sh .sh-pscore.t-bad { background: var(--bad-soft); }\n\n/* score and category tiles */\n.sh .sh-top { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 18px; align-items: stretch; }\n.sh .sh-score-in { display: flex; align-items: center; gap: 18px; height: 100%; }\n.sh .sh-score-in .disp { display: block; font-size: 28px; margin: 6px 0 4px; }\n.sh .sh-score-in p { margin: 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-g-good .fg { stroke: var(--good); } .sh .sh-g-warn .fg { stroke: var(--warn); } .sh .sh-g-bad .fg { stroke: var(--bad); }\n.sh .sh-cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }\n.sh .sh-cat { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-content: start; text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; min-width: 0; }\n.sh .sh-cat:hover { border-color: var(--line-2); }\n.sh .sh-cat.on { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent); }\n.sh .sh-cat span { font-size: 12.5px; font-weight: 600; line-height: 1.3; }\n.sh .sh-cat b { font-size: 18px; }\n.sh .sh-cat i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-cat i em { display: block; height: 100%; border-radius: 3px; background: currentColor; }\n.sh .sh-cat small { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px; }\n\n/* checks */\n.sh .sh-checks { list-style: none; padding: 0; margin: 12px 0 0; display: grid; }\n.sh .sh-ck { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 10px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }\n.sh .sh-ck:first-child { border-top: 0; }\n.sh .sh-ck b { display: block; font-size: 14.5px; }\n.sh .sh-ck small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }\n.sh .sh-ck p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-st { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; align-self: start; }\n.sh .sh-st .ic { width: 16px; height: 16px; }\n.sh .s-ok .sh-st { background: var(--good-soft); color: var(--good); }\n.sh .s-auto .sh-st { background: var(--info-soft); color: var(--info); }\n.sh .s-warn .sh-st { background: var(--warn-soft); color: var(--warn); }\n.sh .s-fail .sh-st { background: var(--bad-soft); color: var(--bad); }\n.sh .sh-gain { font: 600 12.5px var(--mono); color: var(--good); white-space: nowrap; }\n\n.sh .sh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }\n.sh .field > span em { font-style: normal; font-size: 12px; margin-left: 6px; }\n.sh .sh-serp { margin-top: 12px; }\n\n/* faq ideas, keywords */\n.sh .sh-ideas { list-style: none; padding: 0; display: grid; gap: 14px; }\n.sh .sh-ideas li { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }\n.sh .sh-ideas li:first-child { border-top: 0; padding-top: 0; }\n.sh .sh-ideas b { font-size: 14px; }\n.sh .sh-kw td { padding: 9px 8px; }\n.sh .sh-kw td small { display: block; font-size: 12px; margin-top: 2px; }\n.sh .sh-kw .ic { width: 16px; height: 16px; }\n.sh .sh-kwa { white-space: nowrap; text-align: right; }\n.sh .sh-kwa .btn + .btn { margin-left: 6px; }\n\n/* listings, gbp, sources, files */\n.sh .sh-links { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-links li { display: flex; align-items: center; gap: 8px; min-width: 0; }\n.sh .sh-links a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--fg); }\n.sh .sh-inl { display: flex; gap: 8px; }\n.sh .sh-inl input { flex: 1; min-width: 0; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; }\n.sh .sh-card > form + form { margin-top: 8px; }\n.sh .sh-tip { display: flex; gap: 8px; font-size: 12.5px; color: var(--muted); align-items: flex-start; }\n.sh .sh-tip .ic { width: 15px; height: 15px; flex: none; margin-top: 1px; }\n.sh .sh-gbp { list-style: none; padding: 0; display: grid; gap: 10px; }\n.sh .sh-gbp li { display: flex; gap: 12px; align-items: flex-start; }\n.sh .sh-gbp b { display: block; font-size: 14px; }\n.sh .sh-gbp small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-tick { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--line-2); background: var(--surface); display: grid; place-items: center; color: transparent; padding: 0; cursor: pointer; }\n.sh .sh-tick .ic { width: 15px; height: 15px; }\n.sh .sh-tick.on { background: var(--good); border-color: var(--good); color: #fff; }\n.sh .sh-src { list-style: none; padding: 0; display: grid; gap: 8px; }\n.sh .sh-src li { display: grid; grid-template-columns: minmax(0, 1.4fr) auto minmax(40px, 1fr) 24px auto; gap: 10px; align-items: center; font-size: 13px; }\n.sh .sh-src li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.sh .sh-src i { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-src i em { display: block; height: 100%; background: var(--info); border-radius: 3px; }\n.sh .sh-src li.own i em { background: var(--good); }\n.sh .sh-src .pill { font-size: 11px; }\n.sh .sh-logos .ai-logo, .sh .sh-logos svg, .sh .sh-logos img { width: 16px; height: 16px; }\n.sh .sh-files { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-files li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; min-width: 0; }\n.sh .sh-files a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--primary); font-size: 12px; }\n.sh .sh-ping { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--surface-2); }\n.sh .sh-ping b { display: block; font-size: 14px; }\n.sh .sh-ping small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-steps summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }\n.sh .sh-steps ol { margin: 8px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.55; color: var(--muted); }\n.sh .sh-steps a { color: var(--primary); }\n.sh .sh-types { display: flex; flex-wrap: wrap; gap: 6px; }\n.sh .sh-pre { max-height: 300px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 11.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; margin: 6px 0 0; }\n.sh .sh-cover td { padding: 10px 8px; font-size: 13.5px; vertical-align: top; }\n.sh .sh-cover td:first-child { white-space: nowrap; }\n.sh .sh-cover td:nth-child(2) { white-space: nowrap; }\n\n.sh .sh-ixl .sh-ix { grid-template-columns: 28px 1fr; padding: 8px 0; }\n.sh .sh-perf { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); display: grid; gap: 10px; }\n.sh .sh-perf-k { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }\n.sh .sh-perf-k small { display: block; color: var(--muted); font-size: 11.5px; }\n.sh .sh-perf-k b { font-size: 18px; }\n.sh .sh-q td, .sh .sh-q th { padding: 6px 8px; font-size: 13px; }\n@media (max-width: 1180px) { .sh .sh-cats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }\n@media (max-width: 980px) { .sh .sh-top, .sh .sh-grid { grid-template-columns: 1fr; } }\n@media (max-width: 640px) {\n  .sh .sh-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  .sh .sh-ck { grid-template-columns: 28px 1fr; }\n  .sh .sh-ck .sh-gain { grid-column: 2; justify-self: start; }\n  .sh .sh-ck .btn, .sh .sh-ck .pill { grid-column: 2; justify-self: start; }\n  .sh .sh-score-in { flex-direction: column; align-items: flex-start; }\n  .sh .sh-cover td:first-child { white-space: normal; }\n  .sh .sh-cover tr { display: grid; grid-template-columns: 1fr auto; } .sh .sh-cover td:nth-child(3) { grid-column: 1 / -1; padding-top: 0; }\n  .sh .sh-kw thead { display: none; } .sh .sh-kw tr { display: grid; grid-template-columns: 1fr auto auto; } .sh .sh-kw td.sh-kwa { grid-column: 1 / -1; text-align: left; padding-top: 0; }\n  .sh .sh-src li { grid-template-columns: minmax(0, 1fr) auto 24px; } .sh .sh-src i, .sh .sh-src .sh-eng { display: none; }\n  .sh .sh-ping { flex-direction: column; align-items: flex-start; }\n}\n" }, "/app/web/src/app-seo.js": { "t": `/* Bookingbooster: the Search health view in the host console (Get found). One home at a time: a score across every
    kind of search work that applies to a holiday let, the fixes worth doing first, and the tools to do them.
    Rules live in seo-rules.js (shared with the server). Drafts come from Claude when the server has a key, otherwise
    from the home's own facts. Registers into BB.appViews; app.js owns the frame and routing. */
@@ -1533,6 +1533,7 @@ var require_bb_embedded_files = __commonJS({
     'sh-track-top': inst => { const p = home(inst); const list = BB.seo.keywords(p).filter(k => k.intent !== 'Plan').slice(0, 5).map(k => k.q); const n = BB.act.trackAiQuestions(p.id, list); BB.toast(n ? 'Tracking ' + n + ' new questions' : 'All already tracked', n ? 'good' : undefined); },
     'sh-link-del': (inst, v) => { const p = home(inst); const l = (BB.seo.seoOf(p).sameAs || []).filter((x, i) => i !== +v); BB.act.updateSeo(p.id, { sameAs: l }); },
     'sh-gbp': (inst, v) => { const p = home(inst); const g = Object.assign({}, BB.seo.seoOf(p).gbp); g[v] = !g[v]; BB.act.updateSeo(p.id, { gbp: g }); },
+    'sh-submit': async (inst, v, el) => { el.disabled = true; el.textContent = 'Submitting\u2026'; try { const j = await BB.api.call(API() + 'seo/submit', { propertyId: home(inst).id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } inst.render(); },
     'sh-ping': async (inst, v, el) => { const p = home(inst); el.disabled = true; try { const j = await BB.api.call(API() + 'seo/ping', { propertyId: p.id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } el.disabled = false; },
     'sh-files': inst => inst.set({ sh_show: inst.st.sh_show === 'files' ? null : 'files' }),
     'sh-copy': (inst, v) => { try { navigator.clipboard.writeText(v); BB.toast('Copied'); } catch (_) {} },
@@ -1554,6 +1555,24 @@ var require_bb_embedded_files = __commonJS({
     if (k === 'video') { const u = String(st.sh_video || '').trim(); const o = BB.act.updateSeo(p.id, { videoUrl: u }); if (u && !(o && o.videoUrl)) { BB.toast('Paste a YouTube or Vimeo link'); return; } st.sh_video = undefined; BB.toast(u ? 'Video linked' : 'Video removed', 'good'); }
     if (k === 'pin') { const m = String(st.sh_pin || '').match(/(-?\\d+\\.\\d+)\\s*,\\s*(-?\\d+\\.\\d+)/); if (!m || !BB.act.setMapPin(p.id, m[1], m[2])) { BB.toast('Paste the pin as two numbers, like 54.4281, -2.9037'); return; } st.sh_pin = undefined; BB.toast('Map pin saved', 'good'); }
     inst.render();
+  }
+  // Where each search engine stands for this home, and Google's own numbers when Search Console has them.
+  function indexStatus(p, files, live) {
+    const ix = p.indexing || {}, g = ix.google || {}, n = ix.indexnow || {}, perf = ix.perf;
+    const when = t => t ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const row = (name, st, txt) => '<li class="sh-ck sh-ix s-' + st + '"><span class="sh-st">' + I(STI[st]) + '</span><div><b>' + name + '</b><small>' + txt + '</small></div></li>';
+    const gRow = !live ? row('Google Search Console', 'auto', 'Verified and submitted for you in a real account, with no Google login.')
+      : g.state === 'submitted' ? row('Google Search Console', 'ok', 'Verified and sitemap submitted ' + when(g.at) + '. We resubmit daily.')
+      : g.state === 'error' ? row('Google Search Console', 'warn', 'Google said: ' + esc(g.error || 'not yet') + '. We retry daily.')
+      : files.google ? row('Google Search Console', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
+      : row('Google Search Console', 'warn', 'Automatic submission is not switched on for this server yet. Google still finds your sitemap through robots.txt.');
+    const nRow = !live ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'auto', 'Pinged whenever your page changes.')
+      : n.state === 'sent' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'ok', 'Told about your latest changes ' + when(n.at) + '.')
+      : n.state === 'error' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', esc(n.message || 'Not accepted yet') + ' We retry when the page changes.')
+      : row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', 'Goes out tonight, or press Submit now.');
+    const pf = perf ? '<div class="sh-perf"><span class="eyebrow">Google search, ' + esc(perf.from) + ' to ' + esc(perf.to) + '</span><div class="sh-perf-k"><div><small>Clicks</small><b class="num">' + perf.clicks.toLocaleString('en-GB') + '</b></div><div><small>Impressions</small><b class="num">' + perf.impressions.toLocaleString('en-GB') + '</b></div><div><small>Click rate</small><b class="num">' + perf.ctr + '%</b></div><div><small>Avg position</small><b class="num">' + (perf.position || '\u2013') + '</b></div></div>' +
+      (perf.queries.length ? '<table class="tbl sh-q"><thead><tr><th>Top searches</th><th>Clicks</th><th>Shown</th><th>Pos.</th></tr></thead><tbody>' + perf.queries.map(q => '<tr><td>' + esc(q.q) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + q.position + '</td></tr>').join('') + '</tbody></table>' : '<p class="muted">No searches yet. New sites usually show up within 2 to 4 weeks.</p>') + '</div>' : '';
+    return '<ul class="sh-checks sh-ixl">' + gRow + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
   }
   function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
   const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';
@@ -1627,8 +1646,9 @@ var require_bb_embedded_files = __commonJS({
           card('cites', 'Sites AI assistants cite', 'GEO \xB7 LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
             : '<p class="muted">' + (live ? 'Shown after the next AI check. We record every site each answer cites.' : 'Run an AI check to see the sites answers cite.') + '</p>') +
           card('index', 'Indexing', 'Technical', (files.sitemap ? '<ul class="sh-files"><li><span>Sitemap with images</span><a class="mono" href="' + esc(files.sitemap) + '" target="_blank" rel="noopener">' + esc(files.sitemap.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>robots.txt</span><a class="mono" href="' + esc(files.robots) + '" target="_blank" rel="noopener">' + esc(files.robots.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>llms.txt</span><a class="mono" href="' + esc(files.llmsUrl) + '" target="_blank" rel="noopener">' + esc(files.llmsUrl.replace(/^https?:\\/\\//, '')) + '</a></li></ul>' : '<p class="muted">' + (files.loading ? 'Loading\u2026' : 'Sitemap, robots.txt and llms.txt are published with your site.') + '</p>') +
-            '<div class="sh-ping"><div><b>Ask Bing to recrawl now</b><small>IndexNow tells Bing, Yandex, Seznam and Naver your page changed. Bing results feed ChatGPT search and Copilot. Google does not use IndexNow; it reads your sitemap.</small></div><button class="btn sm primary" data-sh="sh-ping"' + (api() ? '' : ' disabled') + '>' + I('send') + 'Send</button></div>' +
-            '<details class="sh-steps"><summary>Add the site to Google Search Console and Bing Webmaster Tools</summary><ol><li>Open <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a> and add a URL-prefix property for your site address.</li><li>Verify with the HTML tag method, or with a DNS record if you use your own domain.</li><li>Under Sitemaps, submit the sitemap address above.</li><li>In <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">Bing Webmaster Tools</a>, choose "Import from Google Search Console". It copies everything in one step.</li></ol></details>' +
+            indexStatus(p, files, live) +
+            '<div class="sh-ping"><div><b>Submit to search engines now</b><small>' + (live ? 'We do this every day by ourselves. Google gets the sitemap through our Search Console account, and Bing, Yandex, Seznam and Naver hear about changes through IndexNow. Your guests never see any of it, and you never sign in.' : 'In your account this runs every day by itself: Google Search Console through our account, and IndexNow for Bing and others. No logins.') + '</small></div><button class="btn sm primary" data-sh="sh-submit"' + (api() ? '' : ' disabled') + '>' + I('send') + 'Submit now</button></div>' +
+            '<details class="sh-steps"><summary>Also want it in your own Search Console? (optional)</summary><ol><li>Open <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a> and add a URL-prefix property for your site address.</li><li>Verify with the HTML tag method, or with a DNS record if you use your own domain.</li><li>Under Sitemaps, submit the sitemap address above.</li><li>In <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">Bing Webmaster Tools</a>, choose "Import from Google Search Console". It copies everything in one step.</li></ol></details>' +
             '<button class="btn sm" data-sh="sh-files">' + I('search') + (st.sh_show === 'files' ? 'Hide what crawlers see' : 'See what crawlers and AI read') + '</button>' +
             (st.sh_show === 'files' ? (files.jsonld ? '<div class="sh-types">' + files.jsonld['@graph'].map(n => BB.pill('info', n['@type'])).join('') + '</div><span class="eyebrow">llms.txt</span><pre class="sh-pre">' + esc(files.llms) + '</pre><span class="eyebrow">Structured data</span><pre class="sh-pre">' + esc(JSON.stringify(files.jsonld, null, 2)) + '</pre>' : '<p class="muted">' + esc(files.error || 'Loading\u2026') + '</p>') : '')) +
         '</div>' +
@@ -7075,7 +7095,8 @@ body.p-lock { overflow: hidden; }
     add('technical', 'canonical', 'Canonical address, HTTPS and mobile', 'auto', 1, 'One canonical address per home, served over HTTPS, built for phones first.', '', null);
     add('technical', 'published', 'Site is published', p.published === false ? 'fail' : 'ok', 3, p.published === false ? 'Hidden from search' : 'Live', 'Publish the site so search engines can see it.', { kind: 'nav', view: 'website' });
     add('technical', 'geo', 'Map pin (latitude and longitude)', p.lat && p.lng ? 'ok' : 'warn', 2, p.lat && p.lng ? p.lat + ', ' + p.lng : 'Not set', 'Add the map pin so maps and AI assistants place the home exactly. Paste it from Google Maps.', { kind: 'scroll', to: 'listed' });
-    add('technical', 'gsc', 'Search Console connected', conn('gsc') ? 'ok' : 'warn', 1, conn('gsc') ? 'Rankings tracked' : 'Not connected', 'Verify the site in Google Search Console and Bing Webmaster Tools, then submit the sitemap. The steps are below.', { kind: 'scroll', to: 'index' });
+    const gs = ((p.indexing || {}).google || {}).state;
+    add('technical', 'gsc', 'Submitted to Google Search Console', conn('gsc') || gs === 'submitted' ? 'ok' : 'warn', 2, gs === 'submitted' ? 'Sitemap submitted for you' : conn('gsc') ? 'Rankings tracked' : gs === 'error' ? 'Google could not take it yet' : 'Not submitted yet', gs === 'error' ? 'We retry every day. Check that the site is published and loads.' : 'Press Submit now under Indexing. We verify the site and send the sitemap for you, no Google login needed.', { kind: 'scroll', to: 'index' });
 
     // Local
     add('local', 'address', 'Full address with postcode', POSTCODE.test(p.address || '') ? 'ok' : p.address ? 'warn' : 'fail', 3, p.address ? (POSTCODE.test(p.address) ? 'Postcode found' : 'No postcode') : 'No address', 'Add the full address with the postcode. Guests get it after booking; it also lets us place your map pin and keep your details the same everywhere.', { kind: 'nav', view: 'website' });
@@ -7250,6 +7271,13 @@ body.p-lock { overflow: hidden; }
     return n;
   };
 
+  // Results from the server's search engine submissions (Google Search Console, IndexNow). Server only.
+  BB.act.setIndexing = function (pid, patch) {
+    const p = BB.q.property(pid); if (!p || !patch) return;
+    const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
+    if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    BB.store.commit({ type: 'property', id: pid, quiet: true });
+  };
   // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
   function sources(pid) {
     const tally = {};
@@ -13198,6 +13226,8 @@ var require_config = __commonJS({
       ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
       // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
       credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
+      // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
+      google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
       nuki: { token: E.NUKI_API_TOKEN },
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
       icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15)
@@ -15036,6 +15066,102 @@ var require_seo_tools = __commonJS({
         }
       }
       return { enabled, write, ping, facts };
+    };
+  }
+});
+
+// server/google-search.js
+var require_google_search = __commonJS({
+  "server/google-search.js"(exports, module) {
+    var crypto = __require("crypto");
+    module.exports = function(cfg, kv, log) {
+      const G = cfg.google || {};
+      let sa = null;
+      try {
+        const raw = String(G.serviceAccount || "").trim();
+        if (raw) sa = JSON.parse(raw.startsWith("{") ? raw : Buffer.from(raw, "base64").toString("utf8"));
+      } catch (e) {
+        log && log("google", "GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON");
+      }
+      const enabled = !!(sa && sa.client_email && sa.private_key);
+      const OAUTH = G.oauthUrl || "https://oauth2.googleapis.com/token", API = (G.apiBase || "https://www.googleapis.com").replace(/\/$/, "");
+      const SCOPES = "https://www.googleapis.com/auth/siteverification https://www.googleapis.com/auth/webmasters";
+      const b64u = (b) => Buffer.from(b).toString("base64").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+      let tok = null;
+      async function token() {
+        if (tok && tok.exp > Date.now() + 6e4) return tok.v;
+        const now = Math.floor(Date.now() / 1e3);
+        const head = b64u(JSON.stringify({ alg: "RS256", typ: "JWT" })), claim = b64u(JSON.stringify({ iss: sa.client_email, scope: SCOPES, aud: OAUTH, iat: now, exp: now + 3600 }));
+        const sig = b64u(crypto.sign("RSA-SHA256", Buffer.from(head + "." + claim), sa.private_key));
+        const r = await fetch(OAUTH, { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: head + "." + claim + "." + sig }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || !j.access_token) throw new Error("Google sign-in failed: " + (j.error_description || j.error || r.status));
+        tok = { v: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1e3 };
+        return tok.v;
+      }
+      async function call(method, path, body) {
+        const r = await fetch(API + path, { method, signal: AbortSignal.timeout(2e4), headers: { authorization: "Bearer " + await token(), "content-type": "application/json" }, body: body ? JSON.stringify(body) : void 0 });
+        const t = await r.text();
+        let j = {};
+        try {
+          j = t ? JSON.parse(t) : {};
+        } catch (_) {
+        }
+        if (!r.ok) {
+          const e = new Error(j.error && (j.error.message || j.error.status) || "Google answered " + r.status);
+          e.status = r.status;
+          throw e;
+        }
+        return j;
+      }
+      const key = (origin) => "gsv:" + origin;
+      const memo = /* @__PURE__ */ new Map();
+      async function metaFor(origin) {
+        if (!enabled) return "";
+        if (memo.has(origin)) return memo.get(origin);
+        const row = await kv.get(key(origin));
+        const v = row ? row.v : "";
+        memo.set(origin, v);
+        return v;
+      }
+      async function metaTag(origin) {
+        const v = await metaFor(origin);
+        return v ? '<meta name="google-site-verification" content="' + v.replace(/[^\w-]/g, "") + '">' : "";
+      }
+      async function verify(origin) {
+        const site = { type: "SITE", identifier: origin + "/" };
+        if (!await metaFor(origin)) {
+          const j = await call("POST", "/siteVerification/v1/token", { verificationMethod: "META", site });
+          const m = String(j.token || "").match(/content="([^"]+)"/);
+          const v = m ? m[1] : String(j.token || "");
+          if (!v) throw new Error("Google gave no verification token");
+          await kv.set(key(origin), v);
+          memo.set(origin, v);
+        }
+        await call("POST", "/siteVerification/v1/webResource?verificationMethod=META", { site });
+      }
+      const enc = encodeURIComponent;
+      async function submit(origin, sitemapUrl) {
+        const property = origin + "/";
+        const done = await kv.get("gsc:" + origin);
+        if (!done) {
+          await verify(origin);
+          await call("PUT", "/webmasters/v3/sites/" + enc(property));
+          await kv.set("gsc:" + origin, (/* @__PURE__ */ new Date()).toISOString());
+        }
+        await call("PUT", "/webmasters/v3/sites/" + enc(property) + "/sitemaps/" + enc(sitemapUrl));
+        return { property };
+      }
+      async function performance(origin, pagePrefix) {
+        const end = new Date(Date.now() - 2 * 864e5), start = new Date(end.getTime() - 27 * 864e5), d = (x) => x.toISOString().slice(0, 10);
+        const base = { startDate: d(start), endDate: d(end), dimensionFilterGroups: [{ filters: [{ dimension: "page", operator: "contains", expression: pagePrefix }] }] };
+        const path = "/webmasters/v3/sites/" + enc(origin + "/") + "/searchAnalytics/query";
+        const tot = ((await call("POST", path, base)).rows || [])[0] || {};
+        const q = (await call("POST", path, Object.assign({ dimensions: ["query"], rowLimit: 10 }, base))).rows || [];
+        const r1 = (n) => Math.round((n || 0) * 10) / 10;
+        return { from: d(start), to: d(end), clicks: tot.clicks || 0, impressions: tot.impressions || 0, ctr: r1(100 * (tot.ctr || 0)), position: r1(tot.position), queries: q.map((x) => ({ q: String(x.keys[0]).slice(0, 100), clicks: x.clicks || 0, impressions: x.impressions || 0, position: r1(x.position) })) };
+      }
+      return { enabled, metaTag, submit, performance, account: enabled ? sa.client_email : null };
     };
   }
 });
@@ -18972,6 +19098,7 @@ var require_server = __commonJS({
     var visits = require_visits()(cfg.secret);
     var assist = require_assist()(cfg);
     var seoTools = require_seo_tools()(cfg);
+    var google = require_google_search()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
@@ -19125,6 +19252,39 @@ var require_server = __commonJS({
     function comingSoon(res, w) {
       return send(res, 503, pages.plain({ title: "Coming soon", body: "<h1>" + E(w.state.account.business) + " is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>" }), "text/html; charset=utf-8", { "retry-after": "86400", "x-robots-tag": "noindex", "cache-control": "no-store" });
     }
+    function sitemapOf(w, site) {
+      return site.includes("/s/" + w.slug + "/") ? cfg.baseUrl + "/s/" + w.slug + "/sitemap.xml" : new URL(site).origin + "/sitemap.xml";
+    }
+    async function autoIndex(w, o) {
+      const s = w.state, out = [], now = (/* @__PURE__ */ new Date()).toISOString();
+      for (const prop of s.properties.filter((x) => x.published !== false)) {
+        const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
+        if (google.enabled) {
+          try {
+            await google.submit(origin, sm);
+            patch.google = { state: "submitted", sitemap: sm, at: now, account: google.account };
+            try {
+              patch.perf = await google.performance(origin, site.includes("/s/") ? site : origin + "/");
+            } catch (e) {
+              if (e.status !== 403) log("gsc perf", e.message);
+            }
+            out.push({ ok: true, message: prop.name + ": sitemap submitted to Google." });
+          } catch (e) {
+            patch.google = { state: "error", sitemap: sm, at: now, error: String(e.message).slice(0, 200) };
+            out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' });
+          }
+        }
+        const sig = crypto.createHash("sha1").update(seo.llms(s, prop, site)).digest("hex").slice(0, 16);
+        if (o && o.force || (cur.indexnow || {}).sig !== sig) {
+          const key = seo.indexNowKey(cfg.secret, w.id), onPath = site.includes("/s/" + w.slug + "/");
+          const r = await seoTools.ping(new URL(site).host, key, onPath ? cfg.baseUrl + "/s/" + w.slug + "/" + key + ".txt" : origin + "/" + key + ".txt", [site, onPath ? site + "/llms.txt" : origin + "/llms.txt"]);
+          patch.indexnow = { state: r.ok ? "sent" : "error", at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
+          out.push({ ok: r.ok, message: prop.name + ": " + r.message });
+        }
+        if (Object.keys(patch).length) await ws.withWs(w.id, (BB) => BB.act.setIndexing(prop.id, patch), { quiet: true });
+      }
+      return out;
+    }
     async function seoApi(req, res, p, m, w, live, headers) {
       const s = w.state;
       const j = m === "POST" ? await jsonBody(req, 2e4) : {};
@@ -19147,7 +19307,8 @@ var require_server = __commonJS({
           title: seo.titleOf(prop),
           description: seo.descOf(prop),
           writer: live && seoTools.enabled,
-          indexNow: live
+          indexNow: live,
+          google: live && google.enabled
         }, 200, headers);
       }
       if (p === "/api/seo/write" && m === "POST") {
@@ -19168,6 +19329,12 @@ var require_server = __commonJS({
           return json(res, { draft: null, by: "rules", error: "Claude could not write this just now, so here is a draft from your facts." });
         }
       }
+      if (p === "/api/seo/submit" && m === "POST") {
+        if (!live) return json(res, { ok: true, message: "In the demo nothing is sent. In your account we submit every site to Google and Bing for you, every day." }, 200, headers);
+        if (!auth.limit("seo-submit:" + w.id, 6, 864e5)) throw err(429, "Already submitted several times today. We also resubmit every day by ourselves.");
+        const out = await autoIndex(w, { force: true });
+        return json(res, Object.assign({ ok: out.every((x) => x.ok), message: out.map((x) => x.message).join(" ") }, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+      }
       if (p === "/api/seo/ping" && m === "POST") {
         if (!live) return json(res, { ok: true, message: "In the demo nothing is sent. In your account this asks Bing and the other IndexNow engines to recrawl now." }, 200, headers);
         if (!auth.limit("seo-ping:" + w.id, 10, 864e5)) throw err(429, "You have asked 10 times today. Search engines will pick up changes from your sitemap too.");
@@ -19182,16 +19349,17 @@ var require_server = __commonJS({
       }
       return false;
     }
-    function sitePage(res, w, p, canonical, host, req) {
+    async function sitePage(res, w, p, canonical, host, req) {
       const s = w.state;
       if (req && w.kind === "live") visits.count(req, w.id, p.id, s.today);
+      const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : "";
       const built = studio.publishedSite(w, p, canonical);
-      if (built) return send(res, 200, built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
+      if (built) return send(res, 200, gsv ? built.replace("<head>", "<head>" + gsv) : built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
       const st = pub.siteState(s, p.id);
       send(res, 200, pages.page({
         title: seo.titleOf(p),
         description: seo.descOf(p),
-        head: seo.head(s, p, canonical),
+        head: gsv + seo.head(s, p, canonical),
         content: seo.content(s, p, canonical),
         boot: publicBoot(w, "site", { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
         banner: stripeReady(w) ? null : w.kind === "live" ? null : "<b>Demo</b> No real bookings are taken here."
@@ -19757,7 +19925,7 @@ var require_server = __commonJS({
         return send(res, 200, pages.page({
           title: p === "/start" ? "Start your booking site \xB7 Bookingbooster" : mkt.TITLE,
           description: mkt.DESCRIPTION,
-          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) : ""),
+          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
           boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
@@ -19959,7 +20127,7 @@ var require_server = __commonJS({
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);
           const name = String(j.name || "");
-          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending"].includes(name)) throw err(403, "That action is not available in a live account.");
+          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
           if (name === "toggleIntegration" && j.args) {
             const iid = j.args[0], cur = w.state.integrations.find((i) => i.id === iid);
             if (!cur) throw err(404, "Unknown connection");
@@ -20343,6 +20511,7 @@ var require_server = __commonJS({
           const exp = w.state.bookings.filter((b) => b.status === "pending" && b.holdUntil && b.holdUntil < t).map((b) => b.id);
           if (rolled || exp.length) await ws.withWs(id, (BB) => exp.forEach((bid) => BB.act.expirePending(bid)), { scheduler: true });
           if (ical2) bg("ical", effects.calendars(w));
+          if (daily && w.kind === "live") bg("index", autoIndex(w).catch((e) => log("index", id, e.message)));
           if (daily && ai.available().length) {
             const c = w.state.ai.checkedAt;
             if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg("ai", effects.aiCheck(w));

@@ -99,6 +99,12 @@
 .sh .sh-cover td:first-child { white-space: nowrap; }
 .sh .sh-cover td:nth-child(2) { white-space: nowrap; }
 
+.sh .sh-ixl .sh-ix { grid-template-columns: 28px 1fr; padding: 8px 0; }
+.sh .sh-perf { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); display: grid; gap: 10px; }
+.sh .sh-perf-k { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.sh .sh-perf-k small { display: block; color: var(--muted); font-size: 11.5px; }
+.sh .sh-perf-k b { font-size: 18px; }
+.sh .sh-q td, .sh .sh-q th { padding: 6px 8px; font-size: 13px; }
 @media (max-width: 1180px) { .sh .sh-cats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 980px) { .sh .sh-top, .sh .sh-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {

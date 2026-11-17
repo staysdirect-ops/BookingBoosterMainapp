@@ -57,6 +57,7 @@ const secrets = require('./secrets')(db, cfg);
 const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
 const seoTools = require('./seo-tools')(cfg);
+const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
@@ -137,6 +138,33 @@ function publicBoot(w, mode, extra) {
 function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
+// Search engines, with no sign-in for the host: every live home's site is submitted to Google Search Console through our
+// service account (verified with a meta tag we serve), and Bing, Yandex, Seznam and Naver hear about changes via IndexNow.
+// Runs daily from the scheduler and when the host presses Submit now. Results are saved on the home (p.indexing).
+function sitemapOf(w, site) { return site.includes('/s/' + w.slug + '/') ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : new URL(site).origin + '/sitemap.xml'; }
+async function autoIndex(w, o) {
+  const s = w.state, out = [], now = new Date().toISOString();
+  for (const prop of s.properties.filter(x => x.published !== false)) {
+    const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
+    if (google.enabled) {
+      try { await google.submit(origin, sm); patch.google = { state: 'submitted', sitemap: sm, at: now, account: google.account };
+        try { patch.perf = await google.performance(origin, site.includes('/s/') ? site : origin + '/'); } catch (e) { if (e.status !== 403) log('gsc perf', e.message); }
+        out.push({ ok: true, message: prop.name + ': sitemap submitted to Google.' }); }
+      catch (e) { patch.google = { state: 'error', sitemap: sm, at: now, error: String(e.message).slice(0, 200) }; out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' }); }
+    }
+    // IndexNow only when the page's words changed, as the protocol asks.
+    const sig = crypto.createHash('sha1').update(seo.llms(s, prop, site)).digest('hex').slice(0, 16);
+    if ((o && o.force) || (cur.indexnow || {}).sig !== sig) {
+      const key = seo.indexNowKey(cfg.secret, w.id), onPath = site.includes('/s/' + w.slug + '/');
+      const r = await seoTools.ping(new URL(site).host, key, onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : origin + '/' + key + '.txt', [site, onPath ? site + '/llms.txt' : origin + '/llms.txt']);
+      patch.indexnow = { state: r.ok ? 'sent' : 'error', at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
+      out.push({ ok: r.ok, message: prop.name + ': ' + r.message });
+    }
+    if (Object.keys(patch).length) await ws.withWs(w.id, BB => BB.act.setIndexing(prop.id, patch), { quiet: true });
+  }
+  return out;
+}
+
 // Search health tools in the console: what the site sends crawlers, AI-written drafts and IndexNow pings.
 // Live accounts only call Claude and IndexNow; the demo gets the same files and rule-based drafts.
 async function seoApi(req, res, p, m, w, live, headers) {
@@ -148,7 +176,7 @@ async function seoApi(req, res, p, m, w, live, headers) {
   const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : root + key + '.txt';
   if (p === '/api/seo/files' && m === 'GET') {
     return json(res, { site, sitemap: onPath ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : root + 'sitemap.xml', robots: root + 'robots.txt', llmsUrl: onPath ? site + '/llms.txt' : root + 'llms.txt', keyUrl,
-      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live }, 200, headers);
+      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled }, 200, headers);
   }
   if (p === '/api/seo/write' && m === 'POST') {
     const what = String(j.what || ''); if (!['summary', 'area', 'meta', 'faqs'].includes(what)) throw err(400, 'Unknown draft');
@@ -157,6 +185,12 @@ async function seoApi(req, res, p, m, w, live, headers) {
     try { await credits.check(w.id); } catch (e) { if (e.code === 'ai_credit') return json(res, { draft: null, by: 'rules', credit: { empty: true, message: e.message, url: e.topupUrl } }); throw e; }
     try { return json(res, { draft: await seoTools.write(s, prop, what, credits.meter(w.id, 'seo'), Array.isArray(j.questions) ? j.questions : []), by: 'claude' }); }
     catch (e) { log('seo write', e.message); return json(res, { draft: null, by: 'rules', error: 'Claude could not write this just now, so here is a draft from your facts.' }); }
+  }
+  if (p === '/api/seo/submit' && m === 'POST') {
+    if (!live) return json(res, { ok: true, message: 'In the demo nothing is sent. In your account we submit every site to Google and Bing for you, every day.' }, 200, headers);
+    if (!auth.limit('seo-submit:' + w.id, 6, 86400e3)) throw err(429, 'Already submitted several times today. We also resubmit every day by ourselves.');
+    const out = await autoIndex(w, { force: true });
+    return json(res, Object.assign({ ok: out.every(x => x.ok), message: out.map(x => x.message).join(' ') }, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
   }
   if (p === '/api/seo/ping' && m === 'POST') {
     if (!live) return json(res, { ok: true, message: 'In the demo nothing is sent. In your account this asks Bing and the other IndexNow engines to recrawl now.' }, 200, headers);
@@ -168,13 +202,15 @@ async function seoApi(req, res, p, m, w, live, headers) {
   }
   return false;
 }
-function sitePage(res, w, p, canonical, host, req) {
+async function sitePage(res, w, p, canonical, host, req) {
   const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today);
+  // A site on its own address carries our Google verification tag on its home page, so we can submit it to Search Console.
+  const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : '';
   const built = studio.publishedSite(w, p, canonical); // a site designed and published in the Site builder
-  if (built) return send(res, 200, built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+  if (built) return send(res, 200, gsv ? built.replace('<head>', '<head>' + gsv) : built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   const st = pub.siteState(s, p.id);
   send(res, 200, pages.page({
-    title: seo.titleOf(p), description: seo.descOf(p), head: seo.head(s, p, canonical), content: seo.content(s, p, canonical),
+    title: seo.titleOf(p), description: seo.descOf(p), head: gsv + seo.head(s, p, canonical), content: seo.content(s, p, canonical),
     boot: publicBoot(w, 'site', { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
     banner: stripeReady(w) ? null : (w.kind === 'live' ? null : '<b>Demo</b> No real bookings are taken here.'),
   }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
@@ -579,7 +615,7 @@ async function route(req, res) {
       annual: q('annual') === '1', addon: q('addon') === '1', email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
-      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
+      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
       boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
@@ -706,7 +742,7 @@ async function route(req, res) {
     if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');
-      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyAiResults', 'paymentConfirmed', 'expirePending'].includes(name)) throw err(403, 'That action is not available in a live account.');
+      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing'].includes(name)) throw err(403, 'That action is not available in a live account.');
       if (name === 'toggleIntegration' && j.args) {
         const iid = j.args[0], cur = w.state.integrations.find(i => i.id === iid);
         if (!cur) throw err(404, 'Unknown connection');
@@ -1000,6 +1036,7 @@ async function runTick(t) {
       const exp = w.state.bookings.filter(b => b.status === 'pending' && b.holdUntil && b.holdUntil < t).map(b => b.id);
       if (rolled || exp.length) await ws.withWs(id, BB => exp.forEach(bid => BB.act.expirePending(bid)), { scheduler: true });
       if (ical) bg('ical', effects.calendars(w));
+      if (daily && w.kind === 'live') bg('index', autoIndex(w).catch(e => log('index', id, e.message)));
       if (daily && ai.available().length) { const c = w.state.ai.checkedAt; if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg('ai', effects.aiCheck(w)); }
     } catch (e) { log('job', id, e.message); }
   }

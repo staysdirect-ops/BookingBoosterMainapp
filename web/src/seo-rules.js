@@ -108,7 +108,8 @@
     add('technical', 'canonical', 'Canonical address, HTTPS and mobile', 'auto', 1, 'One canonical address per home, served over HTTPS, built for phones first.', '', null);
     add('technical', 'published', 'Site is published', p.published === false ? 'fail' : 'ok', 3, p.published === false ? 'Hidden from search' : 'Live', 'Publish the site so search engines can see it.', { kind: 'nav', view: 'website' });
     add('technical', 'geo', 'Map pin (latitude and longitude)', p.lat && p.lng ? 'ok' : 'warn', 2, p.lat && p.lng ? p.lat + ', ' + p.lng : 'Not set', 'Add the map pin so maps and AI assistants place the home exactly. Paste it from Google Maps.', { kind: 'scroll', to: 'listed' });
-    add('technical', 'gsc', 'Search Console connected', conn('gsc') ? 'ok' : 'warn', 1, conn('gsc') ? 'Rankings tracked' : 'Not connected', 'Verify the site in Google Search Console and Bing Webmaster Tools, then submit the sitemap. The steps are below.', { kind: 'scroll', to: 'index' });
+    const gs = ((p.indexing || {}).google || {}).state;
+    add('technical', 'gsc', 'Submitted to Google Search Console', conn('gsc') || gs === 'submitted' ? 'ok' : 'warn', 2, gs === 'submitted' ? 'Sitemap submitted for you' : conn('gsc') ? 'Rankings tracked' : gs === 'error' ? 'Google could not take it yet' : 'Not submitted yet', gs === 'error' ? 'We retry every day. Check that the site is published and loads.' : 'Press Submit now under Indexing. We verify the site and send the sitemap for you, no Google login needed.', { kind: 'scroll', to: 'index' });
 
     // Local
     add('local', 'address', 'Full address with postcode', POSTCODE.test(p.address || '') ? 'ok' : p.address ? 'warn' : 'fail', 3, p.address ? (POSTCODE.test(p.address) ? 'Postcode found' : 'No postcode') : 'No address', 'Add the full address with the postcode. Guests get it after booking; it also lets us place your map pin and keep your details the same everywhere.', { kind: 'nav', view: 'website' });
@@ -283,6 +284,13 @@
     return n;
   };
 
+  // Results from the server's search engine submissions (Google Search Console, IndexNow). Server only.
+  BB.act.setIndexing = function (pid, patch) {
+    const p = BB.q.property(pid); if (!p || !patch) return;
+    const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
+    if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    BB.store.commit({ type: 'property', id: pid, quiet: true });
+  };
   // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
   function sources(pid) {
     const tally = {};
