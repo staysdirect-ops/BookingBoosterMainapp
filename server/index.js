@@ -288,7 +288,7 @@ async function planPaid(wid, customer, plan) {
   const r = await ws.row(wid); const first = !r || !r.billing_status || r.billing_status === 'trial';
   await ws.setMeta(wid, { billing_status: 'active', stripe_customer: customer, plan });
   await ws.withWs(wid, BB => { const a = BB.store.get().account; if (plan) a.plan = plan; a.billing = 'active'; BB.store.commit({}); });
-  if (first) ws.defer(welcome(wid), 'welcome');
+  if (first) { ws.defer(welcome(wid), 'welcome'); ws.defer(effects.siteLive(wid), 'site-live'); } // the "site is live" email waits for payment too
 }
 // Hosts who have not paid yet only see the payment page, their billing and their account. Team members are let through.
 const PAY_OPEN = ['/app/pay', '/app/pay/done', '/app/billing', '/app/billing/start', '/app/billing/portal', '/app/account'];
@@ -552,7 +552,7 @@ async function route(req, res) {
   if (p === '/sitemap.xml') {
     // Privacy and terms join the sitemap once a solicitor has reviewed them (LEGAL_REVIEWED); until then they say Draft and stay out of search.
     const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
-    for (const id of await ws.liveIds()) { const w = await ws.open(id); for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
+    for (const id of await ws.liveIds()) { const w = await ws.open(id); if (unpaid(w)) continue; for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
