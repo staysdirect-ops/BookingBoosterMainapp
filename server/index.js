@@ -123,7 +123,7 @@ let marketingState = null;
 const marketing = () => marketingState || (marketingState = seedDemo());
 async function hostBoot(w, surface) {
   const s = w.state;
-  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain,
+  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain, support: cfg.company.support,
     ...hostLinks(w), aiEngines: ai.available(), test: testNotes() };
 }
 const SOON = ['cleaner', 'google', 'gsc', 'analytics', 'pricelabs']; // shown in live accounts as coming soon
@@ -550,7 +550,7 @@ async function route(req, res) {
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
       head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
-      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
   if (p === '/sitemap.xml') {
@@ -734,6 +734,7 @@ async function route(req, res) {
       if (c.live && !(row && row.workspace_id === w.id && row.verified)) { await ws.claimDomain(h, w.id, prop.id); domains.certify(h); log('domain live', w.id, h); }
       c.live = !!(await ws.domain(h) || {}).verified && (await ws.domain(h)).workspace_id === w.id;
       c.elsewhere = !c.live && !!row && row.workspace_id !== w.id;
+      c.https = c.live ? await domains.https(h) : false;
       return json(res, Object.assign({ state: (await ws.open(w.id)).state, version: await ws.version(w.id), domain: c }, hostLinks(await ws.open(w.id))));
     }
     if (p === '/app/nuki' && m === 'POST') {

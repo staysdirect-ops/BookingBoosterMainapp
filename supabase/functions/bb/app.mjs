@@ -642,6 +642,23 @@ var require_bb_embedded_files = __commonJS({
 .ag .ag-dns-w { grid-column: 2 / -1; grid-row: 3; }
 .ag .ag-dns-t { align-self: start; }
 @media (max-width: 480px) { .ag .ag-dns-r { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px 8px; padding: 10px; } .ag .ag-dns-v > b { font-size: 12px; } }
+
+/* Own domain: progress, notes and registrar steps */
+.ag .ag-dsteps { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.ag .ag-dsteps li { display: flex; gap: 10px; align-items: flex-start; }
+.ag .ag-dsteps b { display: block; font-size: 14px; }
+.ag .ag-dsteps small { display: block; font-size: 12.5px; color: var(--muted); }
+.ag .ag-dst-i { width: 22px; height: 22px; flex: none; border-radius: 50%; border: 2px solid var(--line-2); display: grid; place-items: center; margin-top: 1px; }
+.ag .ag-dsteps li.ok .ag-dst-i { background: var(--good, #178a4c); border-color: var(--good, #178a4c); color: #fff; }
+.ag .ag-dsteps li.ok .ag-dst-i .ic { width: 13px; height: 13px; }
+.ag .ag-dsteps li.wait .ag-dst-i { border-color: var(--primary); }
+.ag .ag-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--primary); border-right-color: transparent; animation: agSpin .8s linear infinite; }
+@keyframes agSpin { to { transform: rotate(360deg); } }
+.ag .ag-dom > .ag-note.warn { background: var(--warn-soft); }
+.ag .ag-dom > .ag-note.warn .ic { color: var(--warn); }
+.ag .ag-dom > .ag-note { margin: 0 0 12px; }
+.ag .ag-dg { margin: 0 0 14px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+.ag .ag-dom .ag-fine { margin: 12px 0 0; font-size: 13px; }
 ` }, "/app/web/src/app-grow.js": { "t": `/* Bookingbooster prototype: host console views for Grow (guests, campaigns, automations), Get found (website, AI visibility)
    and Settings (connections). Registers into BB.appViews; app.js owns the frame, routing and event forwarding. */
 (function () {
@@ -717,6 +734,7 @@ var require_bb_embedded_files = __commonJS({
     const t = ev.target;
     const n = t.closest('[data-ag-nav]');
     if (n) { ev.preventDefault(); const v = n.dataset.agNav, id = n.dataset.agId || null; if (v === 'property') BB.go('property', { propertyId: id }); else nav(inst, v, id); return; }
+    const rg = t.closest('[data-dns-reg]'); if (rg) { ev.preventDefault(); inst.set({ dom_reg: inst.st.dom_reg === rg.dataset.dnsReg ? '' : rg.dataset.dnsReg }); return; }
     const a = t.closest('[data-ag]'); if (!a) return;
     const k = a.dataset.ag, v = a.dataset.v, st = inst.st;
     const H = HANDLERS[k]; if (H) { ev.preventDefault(); H(inst, v, a, st); }
@@ -1218,23 +1236,39 @@ var require_bb_embedded_files = __commonJS({
         : '<p class="muted ag-p">Until you add photos, your site shows a drawing of your home. Photos make the biggest difference to bookings.</p>') +
       '<label class="btn ag-upl' + (up ? ' busy' : '') + '">' + I('image') + (up ? 'Uploading ' + up + '\u2026' : 'Add photos') + '<input type="file" accept="image/jpeg,image/png,image/webp" multiple data-agphotos="' + esc(p.id) + '" hidden></label></section>';
   }
-  // A host's own domain: they type it, we show the DNS records to add, and it goes live once those are in place.
+  // A host's own domain: they type it, we show the DNS records to add (with steps for their registrar), it goes live
+  // once those are in place, and then the padlock (HTTPS certificate) is set up for them.
   function domainCard(inst, p) {
     const st = inst.st, custom = p._autoDomain ? '' : (p.domain || ''), c = (st.dom || {})[p.id], busy = st.dom_busy === p.id;
-    const live = !!custom && (BB.BOOT.siteUrls || {})[p.id] === 'https://' + custom + '/';
-    if (custom && !live && !c && !busy && !(st.dom_tried || {})[p.id]) { st.dom_tried = Object.assign({}, st.dom_tried, { [p.id]: 1 }); setTimeout(() => domainCall(inst, p.id, '/app/domain/check', {}), 0); }
+    const live = !!custom && ((BB.BOOT.siteUrls || {})[p.id] === 'https://' + custom + '/' || !!(c && c.live));
+    if (custom && !c && !busy && !(st.dom_tried || {})[p.id]) { st.dom_tried = Object.assign({}, st.dom_tried, { [p.id]: 1 }); setTimeout(() => domainCall(inst, p.id, '/app/domain/check', {}), 0); }
     const err = st.dom_err && st.dom_err.pid === p.id ? '<p class="ag-err" role="alert">' + esc(st.dom_err.m) + '</p>' : '';
-    const head = '<section class="a-card ag-card ag-dom"><div class="a-card-h"><h3>Your web address</h3><span class="ag-meta">' + (live ? 'Connected' : custom ? 'Waiting for your DNS records' : 'Optional') + '</span></div>';
+    const secure = live && c && c.https === true;
+    const head = '<section class="a-card ag-card ag-dom"><div class="a-card-h"><h3>Your web address</h3><span class="ag-meta">' + (secure ? 'Connected and secure' : live ? 'Connected' : custom ? 'Waiting for your DNS records' : 'Optional') + '</span></div>';
     if (!custom || st.dom_edit === p.id) return head + '<form data-agform="dom" data-pid="' + esc(p.id) + '" class="ag-form">' +
-      '<p class="muted ag-p">' + (custom ? 'Type the new address.' : 'Your site is live at <b class="mono">' + esc(p.domain) + '</b>. To use a domain you own, type it here. It stays registered wherever you bought it.') + '</p>' +
-      '<label class="field"><span>Domain</span><input name="domain" placeholder="larchcabin.co.uk" value="' + esc(custom) + '" autocomplete="off" spellcheck="false" inputmode="url"></label>' + err +
-      '<div class="ag-row"><button class="btn primary"' + (busy ? ' disabled' : '') + '>' + I('globe') + (busy ? 'Saving\u2026' : 'Connect') + '</button>' + (custom ? '<button type="button" class="btn ghost" data-ag="dom-cancel">Cancel</button>' : '') + '</div></form></section>';
-    const tools = '<div class="ag-row"><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>';
-    if (live) return head + '<div class="ag-banner good">' + I('check') + '<p>Guests book at <b class="mono">https://' + esc(custom) + '</b>. The www address goes to the same site.</p></div>' + tools + '</section>';
-    const recs = c ? '<div class="ag-dns" role="table" aria-label="DNS records">' + c.records.map(r => '<div class="ag-dns-r" role="row"><span class="mono ag-dns-t">' + r.type + '</span><span><small>Name</small><b class="mono">' + esc(r.name) + '</b></span><span class="ag-dns-v"><small>Value</small><b class="mono" data-dnsv>' + esc(r.value) + '</b><button type="button" class="btn sm ghost" data-ag="dom-copy" data-v="' + esc(r.value) + '">Copy</button></span><span class="ag-dns-s ' + (r.ok ? 'ok' : '') + '">' + (r.ok ? I('check') + 'Found' : 'Not seen yet') + '</span><small class="ag-dns-w">' + esc(r.why) + '</small></div>').join('') + '</div>' : '<p class="muted ag-p">' + (busy ? 'Looking up your DNS records\u2026' : '') + '</p>';
-    return head + '<p class="muted ag-p">Add these records where you bought <b class="mono">' + esc(custom) + '</b> (for example 123 Reg, GoDaddy, IONOS or Cloudflare). Your site switches over by itself once we can see them. That is often within an hour, and can take up to a day.</p>' +
-      (c && c.elsewhere ? '<p class="ag-note">' + I('bolt') + '<span>Another Bookingbooster account has this address. The TXT record proves it is yours and moves it to you.</span></p>' : '') + recs + err +
-      '<div class="ag-row"><button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking\u2026' : 'Check now') + '</button><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div></section>';
+      '<p class="muted ag-p">' + (custom ? 'Type the new address.' : 'Your site is live at <b class="mono">' + esc(p.domain) + '</b>. Already own a domain, at GoDaddy, 123-reg, IONOS, Namecheap, Cloudflare or anywhere else? Type it here. It stays registered where you bought it, and any email on it keeps working.') + '</p>' +
+      '<label class="field"><span>Domain you own</span><input name="domain" placeholder="larchcabin.co.uk" value="' + esc(custom) + '" autocomplete="off" spellcheck="false" inputmode="url"></label>' + err +
+      '<div class="ag-row"><button class="btn primary"' + (busy ? ' disabled' : '') + '>' + I('globe') + (busy ? 'Saving\u2026' : 'Connect my domain') + '</button>' + (custom ? '<button type="button" class="btn ghost" data-ag="dom-cancel">Cancel</button>' : '') + '</div></form></section>';
+    const tools = '<div class="ag-row">' + (live && !secure ? '<button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking\u2026' : 'Check again') + '</button>' : '') + '<button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>';
+    // Three steps the host can see: pointing, proved, padlock.
+    const pointed = !!c && c.records.some(r => r.type !== 'TXT' && r.ok), proved = !!c && c.proved;
+    const step = (ok, wait, t, d) => '<li class="' + (ok ? 'ok' : wait ? 'wait' : '') + '"><span class="ag-dst-i">' + (ok ? I('check') : wait ? '<i class="ag-spin"></i>' : '') + '</span><span><b>' + t + '</b><small>' + d + '</small></span></li>';
+    const steps = c || live ? '<ol class="ag-dsteps" aria-label="Progress">' +
+      step(live || pointed, false, 'Points at your booking site', live || pointed ? 'Found your www or main address record' : 'Waiting for the CNAME' + (c && c.records.some(r => r.type === 'A') ? ' or A record' : '') + ' below') +
+      step(live || proved, false, 'Proved it is yours', live || proved ? 'Found your TXT record' : 'Waiting for the TXT record below') +
+      step(secure, live && !secure, 'Secure padlock (HTTPS)', secure ? 'Guests see https://' + esc(custom) : live ? 'Setting up your free certificate. This usually takes a few minutes.' : 'Added for you, free, once the first two are done') +
+      '</ol>' : '';
+    if (live) return head + (secure ? '<div class="ag-banner good">' + I('check') + '<p>Guests book at <b class="mono">https://' + esc(custom) + '</b>. The www address goes to the same site.</p></div>' : '') + steps + err + tools + '</section>';
+    const recs = c ? '<div class="ag-dns" role="table" aria-label="DNS records">' + c.records.map(r => '<div class="ag-dns-r" role="row"><span class="mono ag-dns-t">' + r.type + '</span><span><small>Name</small><b class="mono">' + esc(r.name) + '</b></span><span class="ag-dns-v"><small>Value</small><b class="mono" data-dnsv>' + esc(r.value) + '</b><button type="button" class="btn sm ghost" data-ag="dom-copy" data-v="' + esc(r.value) + '">Copy</button></span><span class="ag-dns-s ' + (r.ok ? 'ok' : '') + '">' + (r.ok ? I('check') + 'Found' : 'Not seen yet') + '</span><small class="ag-dns-w">' + esc(r.why) + (!r.ok && r.seen ? '. Right now we see ' + esc(r.seen) + ', so change that one rather than adding a second.' : '') + '</small></div>').join('') + '</div>' : '<p class="muted ag-p">' + (busy ? 'Looking up your DNS records\u2026' : '') + '</p>';
+    const noApex = c && !c.records.some(r => r.type === 'A');
+    return head + '<p class="muted ag-p">Add these records where you bought <b class="mono">' + esc(custom) + '</b>. Your site switches over by itself once we can see them, and we add the padlock for you. That is often within an hour, and can take up to a day.</p>' +
+      steps +
+      (c && c.proxied ? '<p class="ag-note warn">' + I('bolt') + '<span>Your domain is behind Cloudflare\u2019s proxy (the orange cloud). In Cloudflare, set <b>Proxy status</b> to <b>DNS only</b> on the <b>@</b> and <b>www</b> records so we can see them and set up your padlock.</span></p>' : '') +
+      (c && c.elsewhere ? '<p class="ag-note">' + I('bolt') + '<span>Another Bookingbooster account has this address. The TXT record proves it is yours and moves it to you.</span></p>' : '') + recs +
+      (noApex ? '<p class="ag-note">' + I('globe') + '<span>For the main address (<b class="mono">' + esc(custom) + '</b> without www), turn on <b>domain forwarding</b> to <b class="mono">https://www.' + esc(custom) + '</b> where you bought it.</span></p>' : '') +
+      '<div class="ag-dg">' + BB.dnsGuide(st.dom_reg || '', custom) + '</div>' + err +
+      '<div class="ag-row"><button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking\u2026' : 'Check now') + '</button><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>' +
+      '<p class="muted ag-p ag-fine">Stuck? <a href="mailto:' + esc(BB.BOOT.support || 'help@booking-booster.co.uk') + '?subject=' + encodeURIComponent('Help connecting ' + custom) + '">Email us</a> and we will add the records with you.</p></section>';
   }
   async function domainCall(inst, pid, url, body) {
     inst.set({ dom_busy: pid, dom_err: null });
@@ -3365,6 +3399,18 @@ button { cursor: pointer; }
 .ai-name .ai-logo { vertical-align: 0; }
 .ai-logos { display: inline-flex; align-items: center; gap: .6em; flex-wrap: wrap; }
 .ai-tm { font-size: 11px; line-height: 1.45; color: var(--muted); margin: 12px 0 0; font-weight: 400; }
+
+/* Own-domain DNS guide (sign-up and console) */
+.dg { display: grid; gap: 10px; }
+.dg-q { margin: 0; font-weight: 600; font-size: 14px; }
+.dg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dg-chip { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); cursor: pointer; }
+.dg-chip:hover { background: var(--surface-2); }
+.dg-chip.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+.dg-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; line-height: 1.45; }
+.dg-tip { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 13px; color: var(--muted); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.dg-tip .ic { width: 16px; height: 16px; flex: none; color: var(--primary); margin-top: 1px; }
+.dg-tip b { color: var(--fg); }
 ` }, "/app/web/src/guest.css": { "t": `/* Guest app: the property's own brand inside a phone. Theme colors come in as --g-acc/--g-soft/--g-deep/--g-disp on .g-app. */
 .x-guest { padding: 28px 16px 48px; }
 .x-guest.emb { padding: 0; }
@@ -8274,6 +8320,27 @@ body.p-lock { overflow: hidden; }
 .s-acct .s-ob-sub { margin: 0; }
 .s-terms { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); }
 .s-terms input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+
+/* Onboarding: "I already have a domain" */
+.x-site .s-dmode { margin: 4px 0 18px; }
+.x-site .s-own { display: grid; gap: 14px; margin-top: 20px; }
+.x-site .s-own-ok { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--primary-soft); border: 1px solid var(--primary); }
+.x-site .s-own-ok .ic { width: 18px; height: 18px; flex: none; color: var(--primary); margin-top: 2px; }
+.x-site .s-own-ok p { margin: 0; font-size: 14px; line-height: 1.45; }
+.x-site .s-own-h { font-size: 16px; margin: 6px 0 0; }
+.x-site .s-own-recs { display: grid; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.x-site .s-own-r { display: grid; grid-template-columns: 64px 140px minmax(0, 1fr); gap: 12px; padding: 10px 14px; align-items: start; font-size: 13.5px; border-top: 1px solid var(--line); }
+.x-site .s-own-r:first-child { border-top: 0; }
+.x-site .s-own-th { background: var(--surface-2); font-size: 12px; color: var(--muted); font-weight: 600; }
+.x-site .s-own-t { font-weight: 700; }
+.x-site .s-own-r b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.x-site .s-own-r b.s-own-later { font-weight: 400; color: var(--muted); font-style: italic; }
+.x-site .s-own-r em { display: block; font-style: normal; color: var(--muted); font-size: 12.5px; }
+.x-site .s-own-next { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.x-site .s-own-next b { display: block; font-size: 14.5px; }
+.x-site .s-own-next span { color: var(--muted); font-size: 13.5px; overflow-wrap: anywhere; }
+.x-site .s-own-next span span { color: var(--fg); }
+@media (max-width: 560px) { .x-site .s-own-r { grid-template-columns: 52px minmax(0, 1fr); } .x-site .s-own-r > span:last-child { grid-column: 1 / -1; } .x-site .s-own-th > span:last-child { display: none; } }
 ` }, "/app/web/src/site.js": { "t": `/* Bookingbooster prototype: our own marketing website (bookingbooster.com, selling to hosts) and the host signup wizard.
    Surface 'site'. opts.view: 'home' | 'onboard' | 'pricing'. Reads live numbers from the shared store and ends onboarding
    with BB.act.addProperty, so the new home shows up in the console, the property site and the activity feed. */
@@ -8712,7 +8779,7 @@ body.p-lock { overflow: hidden; }
 
   function newOb(planId) {
     return { step: 1, url: '', urlErr: '', source: 'airbnb', importN: 0, imported: false, importedFrom: '', d: { name: '', area: '', nightly: '', sleeps: '', bedrooms: '', pets: false }, dErr: '',
-      theme: 'cabin', dq: '', dState: 'idle', dRes: null, dErr2: '', domain: '', conn: { stripe: 'off', lock: 'off' }, addon: false, plan: planId || 'growth', annual: false, launchN: -1, launched: null };
+      theme: 'cabin', dq: '', dState: 'idle', dRes: null, dErr2: '', domain: '', dMode: 'new', own: '', ownErr: '', reg: '', conn: { stripe: 'off', lock: 'off' }, addon: false, plan: planId || 'growth', annual: false, launchN: -1, launched: null };
   }
   function parseListing(u) {
     let url; try { url = new URL(/^https?:\\/\\//i.test(u.trim()) ? u.trim() : 'https://' + u.trim()); } catch (_) { return null; }
@@ -8734,6 +8801,30 @@ body.p-lock { overflow: hidden; }
     if (r.err) { ob.dErr2 = r.err; ob.dState = 'idle'; inst.render(); return; }
     ob.dErr2 = ''; ob.dState = 'checking'; inst.render();
     later(inst, 750, () => { ob.dState = 'done'; ob.dRes = r.list; if (!ob.domain) { const first = r.list.find(x => x.ok); if (first) ob.domain = first.d; } inst.render(); });
+  }
+  // "I already have a domain": tidy what they typed into a bare address, the same way the server does.
+  function cleanOwn(v) { return String(v || '').trim().toLowerCase().replace(/^[a-z]+:\\/\\//, '').replace(/[/?#].*$/, '').replace(/:\\d+$/, '').replace(/^www\\./, '').replace(/\\.$/, ''); }
+  function ownProblem(h) {
+    if (!h) return 'Type the domain you own, like larchcabin.co.uk.';
+    if (h.length > 80 || !/^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,}$/.test(h)) return 'That does not look like a domain. Type it like larchcabin.co.uk.';
+    if (/(^|\\.)(bookingbooster\\.site|booking-booster\\.co\\.uk)$/.test(h)) return 'That is one of our addresses. Type a domain you own, like larchcabin.co.uk.';
+    return '';
+  }
+  function ownDomain(ob, sub) {
+    const h = ob.domain, dns = (BB.BOOT && BB.BOOT.dns) || {}, target = dns.target || 'sites.booking-booster.co.uk', ips = dns.ips || [];
+    const recs = [['TXT', '_bookingbooster', 'Your own code, shown in your console after sign-up', 'Proves the domain is yours'], ['CNAME', 'www', target, 'Sends www.' + h + ' to your booking site']]
+      .concat(ips.length ? [['A', '@', ips.join(', '), 'Sends ' + h + ' to your booking site']] : []);
+    return '<div class="s-own">' +
+      '<div class="s-own-ok">' + icon('check') + '<p><b class="mono">' + esc(h) + '</b> stays registered where you bought it, and any email on it keeps working. You only add a few DNS records so it points at your booking site.</p></div>' +
+      '<h2 class="s-own-h">The records you will add</h2>' +
+      '<div class="s-own-recs" role="table" aria-label="DNS records"><div class="s-own-r s-own-th" role="row"><span role="columnheader">Type</span><span role="columnheader">Name</span><span role="columnheader">Value</span></div>' +
+        recs.map(r => '<div class="s-own-r" role="row"><span class="mono s-own-t" role="cell">' + r[0] + '</span><span class="mono" role="cell">' + esc(r[1]) + '</span><span role="cell"><b class="' + (r[0] === 'TXT' ? 's-own-later' : 'mono') + '">' + esc(r[2]) + '</b><em>' + esc(r[3]) + '</em></span></div>').join('') + '</div>' +
+      BB.dnsGuide(ob.reg, h) +
+      '<h2 class="s-own-h">What happens next</h2><ol class="s-own-next">' +
+        '<li><b>Your site goes live today</b><span>On your free address, <span class="mono">' + esc(sub) + '</span>, so you can take bookings straight away.</span></li>' +
+        '<li><b>You add the records</b><span>Your console shows the exact values with copy buttons. We check every few minutes and switch your site over by itself once we see them.</span></li>' +
+        '<li><b>We set up the padlock</b><span>A free security certificate (HTTPS) is added automatically, so guests see <span class="mono">https://' + esc(h) + '</span>.</span></li>' +
+      '</ol></div>';
   }
   function startImport(inst) {
     const ob = inst.st.ob; ob.importN = 0; ob.imported = false; ob.importedFrom = ob.url;
@@ -8851,7 +8942,16 @@ body.p-lock { overflow: hidden; }
         '<form data-form="next" class="s-ob-form">' + navRow('Use the ' + THEMES[ob.theme].label + ' look') + '</form>';
       case 4: {
         const sub = slug(d.name) + '.bookingbooster.site';
-        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' +
+        const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Domain">' + [['new', 'search', 'Get a new domain'], ['own', 'globe', 'I already have a domain']].map(([k, ic, t]) => '<button type="button" role="tab" aria-selected="' + (ob.dMode === k) + '" data-dmode="' + k + '">' + icon(ic) + t + '</button>').join('') + '</div>';
+        if (ob.dMode === 'own') {
+          const ok = !!ob.domain && ob.domain === cleanOwn(ob.own) && !ownProblem(ob.domain);
+          return '<h1 class="s-ob-h">Use your own domain.</h1><p class="s-ob-sub">Already bought one, at GoDaddy, 123-reg, IONOS or anywhere else? Keep it where it is. Your booking site moves onto it, and you pay nothing extra.</p>' + tabs +
+            '<form data-form="own" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Your domain</span><span class="s-inwrap">' + icon('globe') + '<input id="s-ob-own-' + u + '" data-ob="own" value="' + esc(ob.own) + '" placeholder="larchcabin.co.uk" autocomplete="off" spellcheck="false" inputmode="url"></span></label><button class="btn ink lg" type="submit">' + (ok ? 'Update' : 'Use this domain') + '</button></form>' +
+            (ob.ownErr ? '<p class="s-err" role="alert">' + esc(ob.ownErr) + '</p>' : '') +
+            (ok ? ownDomain(ob, sub) : '<p class="s-fine">Type it without www, like <b>larchcabin.co.uk</b>. Next we show you exactly what to change, step by step.</p>') +
+            '<form data-form="next" class="s-ob-form">' + navRow(ok ? 'Use ' + ob.domain : 'Type your domain to continue', !ok) + '</form>';
+        }
+        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' + tabs +
           '<form data-form="domain" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Search for a domain</span><span class="s-inwrap">' + icon('search') + '<input id="s-ob-dq-' + u + '" data-ob="dq" value="' + esc(ob.dq) + '" autocomplete="off" spellcheck="false"></span></label><button class="btn ink lg" type="submit"' + (ob.dState === 'checking' ? ' disabled' : '') + '>' + (ob.dState === 'checking' ? 'Checking\u2026' : 'Check') + '</button></form>' +
           (ob.dErr2 ? '<p class="s-err" role="alert">' + esc(ob.dErr2) + '</p>' : '') +
           '<div class="s-doms" aria-live="polite">' + (ob.dState === 'checking' ? '<p class="s-dom-wait"><i class="s-spin"></i>Checking availability\u2026</p>' : (ob.dRes || []).map(r =>
@@ -8898,7 +8998,7 @@ body.p-lock { overflow: hidden; }
           '<dl class="s-review">' +
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' \xB7 ' + $(+d.nightly) + ' a night \xB7 sleeps ' + esc(d.sleeps) + ' \xB7 ' + esc(d.bedrooms) + ' bedrooms \xB7 ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
-            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (/bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
+            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
@@ -8935,7 +9035,7 @@ body.p-lock { overflow: hidden; }
     return '<div class="s-ob s-done"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home">' + BB.lockup() + '</button><span class="s-done-tag">' + BB.pill('good', 'Live') + '</span></div></header>' +
       '<div class="s-w s-done-in">' +
         '<div class="s-done-copy"><span class="s-burst">' + icon('check') + '</span><p class="eyebrow">' + esc(p.name) + '</p><h1 class="s-ob-h s-done-h">Your site is live.</h1>' +
-        '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> at <b class="s-dom-live">' + esc(p.domain) + '</b> right now, with no platform fee. We also told your console, so it is ready when you log in.</p>' +
+        (ob.dMode === 'own' ? '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> on your free address right now, with no platform fee. Add the DNS records shown in your console and your site moves to <b class="s-dom-live">' + esc(p.domain) + '</b> by itself.</p>' : '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> at <b class="s-dom-live">' + esc(p.domain) + '</b> right now, with no platform fee. We also told your console, so it is ready when you log in.</p>') +
         '<div class="s-cta"><button class="btn primary lg"' + go('property', { propertyId: p.id }) + '>' + icon('out') + 'Open your site</button><button class="btn lg"' + go('app', { view: 'website' }) + '>' + icon('dash') + 'Go to your console</button></div>' +
         '<div class="s-done-stats"><span><b class="num">' + p.reviews + '</b>reviews imported</span><span><b class="num">6</b>SEO pages for ' + esc(town(p.area)) + '</span><span><b class="num">' + $(Math.round(p.nightly * 0.155 * 3)) + '</b>kept on a 3-night stay</span></div>' +
         '<button class="btn ghost s-again" data-act="again">' + icon('plus') + 'Add another home</button></div>' +
@@ -9005,6 +9105,15 @@ body.p-lock { overflow: hidden; }
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
       });
       BB.on(root, 'click', '[data-theme-pick]', el => { inst.st.ob.theme = el.dataset.themePick; inst.render(); });
+      BB.on(root, 'click', '[data-dmode]', el => {
+        const ob = inst.st.ob, k = el.dataset.dmode; if (ob.dMode === k) return;
+        ob.dMode = k; ob.domain = ''; ob.ownErr = '';
+        if (k === 'own') { const h = cleanOwn(ob.own); if (h && !ownProblem(h)) ob.domain = h; }
+        else if (ob.dRes) { const first = ob.dRes.find(x => x.ok); if (first) ob.domain = first.d; }
+        else { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); return; }
+        inst.render();
+      });
+      BB.on(root, 'click', '[data-dns-reg]', el => { const ob = inst.st.ob; ob.reg = ob.reg === el.dataset.dnsReg ? '' : el.dataset.dnsReg; inst.render(); });
       BB.on(root, 'click', '[data-dom]', el => { inst.st.ob.domain = el.dataset.dom; inst.render(); });
       BB.on(root, 'click', '[data-pick-plan]', el => { inst.st.ob.plan = el.dataset.pickPlan; inst.render(); });
       BB.on(root, 'click', '[data-obbill]', el => { inst.st.ob.annual = el.dataset.obbill === 'y'; inst.render(); });
@@ -9025,7 +9134,7 @@ body.p-lock { overflow: hidden; }
       BB.on(root, 'input', '[data-ac]', el => { const a = inst.st.ob.acct; a[el.dataset.ac] = el.type === 'checkbox' ? el.checked : el.value; if (inst.st.ob.acctErr) { inst.st.ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'change', '[data-ac="terms"]', el => { inst.st.ob.acct.terms = el.checked; });
       BB.on(root, 'input', '[data-ob]', el => { inst.st.ob[el.dataset.ob] = el.value; if (el.dataset.ob === 'url' && inst.st.ob.urlErr) { inst.st.ob.urlErr = ''; inst.render(); } });
-      BB.on(root, 'input', '[data-d]', el => { inst.st.ob.d[el.dataset.d] = el.value; inst.st.ob.dErr = ''; if (el.dataset.d === 'name') { inst.st.ob.dq = ''; inst.st.ob.dRes = null; inst.st.ob.domain = ''; } inst.render(); });
+      BB.on(root, 'input', '[data-d]', el => { inst.st.ob.d[el.dataset.d] = el.value; inst.st.ob.dErr = ''; if (el.dataset.d === 'name') { inst.st.ob.dq = ''; inst.st.ob.dRes = null; if (inst.st.ob.dMode !== 'own') inst.st.ob.domain = ''; } inst.render(); });
 
       root.addEventListener('submit', ev => {
         const f = ev.target.closest('[data-form]'); if (!f) return; ev.preventDefault();
@@ -9039,10 +9148,11 @@ body.p-lock { overflow: hidden; }
         }
         if (kind === 'details') { const e = validDetails(ob.d); if (e) { ob.dErr = e; inst.render(); return; } ob.step = 3; inst.render(); scrollTopOb(); return; }
         if (kind === 'domain') { checkDomain(inst); return; }
+        if (kind === 'own') { const h = cleanOwn(ob.own), e = ownProblem(h); ob.ownErr = e; ob.domain = e ? '' : h; if (!e) ob.own = h; inst.render(); return; }
         if (kind === 'next') {
           if (ob.step === 4 && !ob.domain) return;
           if (ob.step === 5 && ob.conn.stripe !== 'on') return;
-          ob.step++; if (ob.step === 4 && !ob.dRes) { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
+          ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
         if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
@@ -10072,6 +10182,23 @@ body.p-lock { overflow: hidden; }
   };
 
   /* Copy with fallback to selecting the text */
+  /* A host's own domain: where to add DNS records at the common registrars. Shared by sign-up and the console.
+     BB.dnsGuide(pick, domain) returns the registrar chips and the steps for the one picked ('' shows the chips only). */
+  BB.REGISTRARS = [
+    ['godaddy', 'GoDaddy', ['Sign in at godaddy.com and open <b>My Products</b>.', 'Next to your domain, choose <b>DNS</b> (or <b>Manage DNS</b>).', 'Choose <b>Add New Record</b> for each record above. GoDaddy usually already has an A record for <b>@</b> marked \u201CParked\u201D and a CNAME for <b>www</b>. Edit those two instead of adding new ones.'], 'Type <b>@</b> in Name for your main address.'],
+    ['123reg', '123-reg', ['Sign in at 123-reg.co.uk and open your <b>Control Panel</b>.', 'Pick your domain, then <b>Manage DNS</b>, then the <b>Advanced DNS</b> tab.', 'Add each record above. If there is already an A record for <b>@</b> or <b>www</b> pointing at a 123-reg holding page, delete it first.'], 'Type <b>@</b> in Hostname for your main address.'],
+    ['ionos', 'IONOS', ['Sign in at ionos.co.uk and open <b>Domains &amp; SSL</b>.', 'Click your domain, then the <b>DNS</b> tab.', 'Choose <b>Add record</b> for each record above. If IONOS says a record conflicts with an existing one, choose to replace it.'], 'Type <b>@</b> in Host name for your main address.'],
+    ['namecheap', 'Namecheap', ['Sign in at namecheap.com and open <b>Domain List</b>.', 'Choose <b>Manage</b> next to your domain, then the <b>Advanced DNS</b> tab.', 'Delete the default <b>URL Redirect</b> record and the <b>www</b> parking page record, then use <b>Add New Record</b> for each record above.'], 'Type <b>@</b> in Host for your main address. Nameservers must be set to Namecheap BasicDNS.'],
+    ['cloudflare', 'Cloudflare', ['Sign in at dash.cloudflare.com and pick your domain.', 'Open <b>DNS</b>, then <b>Records</b>, then <b>Add record</b> for each record above.', 'Set <b>Proxy status</b> to <b>DNS only</b> (grey cloud) on the <b>@</b> and <b>www</b> records. With the orange cloud on we cannot see them and cannot set up your padlock.'], 'Type <b>@</b> in Name for your main address.'],
+    ['other', 'Somewhere else', ['Sign in where you bought the domain and look for <b>DNS</b>, <b>DNS settings</b>, <b>Zone editor</b> or <b>Advanced DNS</b>.', 'If your domain uses another company\u2019s nameservers (for example Cloudflare, Wix or Squarespace), add the records there instead.', 'Add each record above, and remove any old A record for <b>@</b> or CNAME for <b>www</b> that points somewhere else.'], 'Most registrars use <b>@</b> for your main address. If the Name box already shows your domain after it, type only the first part, like <b>www</b>.'],
+  ];
+  BB.dnsGuide = function (pick, domain) {
+    const r = BB.REGISTRARS.find(x => x[0] === pick);
+    return '<div class="dg"><p class="dg-q">Where did you buy ' + (domain ? '<b class="mono">' + BB.esc(domain) + '</b>' : 'your domain') + '?</p>' +
+      '<div class="dg-chips" role="radiogroup" aria-label="Where you bought your domain">' + BB.REGISTRARS.map(x => '<button type="button" class="dg-chip' + (x[0] === pick ? ' on' : '') + '" role="radio" aria-checked="' + (x[0] === pick) + '" data-dns-reg="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>' +
+      (r ? '<ol class="dg-steps">' + r[2].map(t => '<li>' + t + '</li>').join('') + '</ol><p class="dg-tip">' + BB.icon('spark') + '<span>' + r[3] + ' Changes usually show within an hour, and can take up to a day.</span></p>' : '') + '</div>';
+  };
+
   BB.copy = async function (text, el) { try { await navigator.clipboard.writeText(text); BB.toast('Copied'); } catch (_) { if (el) { const r = document.createRange(); r.selectNodeContents(el); getSelection().removeAllRanges(); getSelection().addRange(r); } } };
 
   /* Icons: 24px stroke icons */
@@ -15203,6 +15330,12 @@ var require_leads = __commonJS({
 var require_domains = __commonJS({
   "server/domains.js"(exports, module) {
     var dns = __require("node:dns").promises;
+    var tls = __require("node:tls");
+    var CF = [[104, 16, 31], [172, 64, 71], [188, 114, 114], [162, 158, 159], [141, 101, 101], [108, 162, 162], [190, 93, 93], [197, 234, 234], [198, 41, 41], [173, 245, 245], [103, 21, 22], [103, 22, 22], [103, 31, 31], [131, 0, 0]];
+    var cloudflare = (ip) => {
+      const [a, b] = String(ip).split(".").map(Number);
+      return CF.some(([x, lo, hi]) => a === x && b >= lo && b <= hi);
+    };
     module.exports = function({ cfg, auth, log }) {
       const mainHost = new URL(cfg.baseUrl).hostname;
       const target = (cfg.domains.target || mainHost).toLowerCase();
@@ -15245,7 +15378,7 @@ var require_domains = __commonJS({
         if (cn.some((c) => c === target)) return { ok: true, seen: "CNAME " + cn.join(", ") };
         const a = await look("a", name), ips = await ourIps();
         if (a.length && ips.length && a.every((x) => ips.includes(x))) return { ok: true, seen: "A " + a.join(", ") };
-        return { ok: false, seen: cn.length ? "CNAME " + cn.join(", ") : a.length ? "A " + a.join(", ") : "" };
+        return { ok: false, seen: cn.length ? "CNAME " + cn.join(", ") : a.length ? "A " + a.join(", ") : "", proxied: a.length > 0 && a.every(cloudflare) };
       }
       async function check(wid, h) {
         const [apex, www, txt, ips] = await Promise.all([points(h), points("www." + h), look("txt", txtName(h)), ourIps()]);
@@ -15257,10 +15390,11 @@ var require_domains = __commonJS({
           apex,
           www,
           proved,
+          proxied: !!(apex.proxied || www.proxied),
           records: [
             { type: "TXT", name: "_bookingbooster", value: want, ok: proved, why: "Proves the address is yours" },
-            { type: "CNAME", name: "www", value: target, ok: www.ok, why: "Sends www." + h + " to your booking site" },
-            ips.length ? { type: "A", name: "@", value: ips.join(", "), ok: apex.ok, why: "Sends " + h + " to your booking site" } : null
+            { type: "CNAME", name: "www", value: target, ok: www.ok, seen: www.ok ? "" : www.seen, why: "Sends www." + h + " to your booking site" },
+            ips.length ? { type: "A", name: "@", value: ips.join(", "), ok: apex.ok, seen: apex.ok ? "" : apex.seen, why: "Sends " + h + " to your booking site" } : null
           ].filter(Boolean)
         };
       }
@@ -15281,7 +15415,33 @@ var require_domains = __commonJS({
           }
         }
       }
-      return { clean, problem, check, certify, target, txtName, txtValue };
+      function https(h) {
+        if (cfg.domains.fakeDns) return Promise.resolve(cfg.domains.fakeDns.https ? !!cfg.domains.fakeDns.https[h] : null);
+        return new Promise((res) => {
+          let done = false;
+          const end = (v) => {
+            if (done) return;
+            done = true;
+            try {
+              s.destroy();
+            } catch (_) {
+            }
+            res(v);
+          };
+          const s = tls.connect({ host: h, port: 443, servername: h, timeout: 8e3 }, () => end(s.authorized));
+          s.on("error", () => end(false));
+          s.on("timeout", () => end(false));
+        });
+      }
+      async function targets() {
+        let ips = [];
+        try {
+          ips = await ourIps();
+        } catch (_) {
+        }
+        return { target, ips };
+      }
+      return { clean, problem, check, certify, https, targets, target, txtName, txtValue };
     };
   }
 });
@@ -19125,6 +19285,7 @@ var require_server = __commonJS({
         soon: SOON,
         aiDrafts: assist.enabled,
         guestFromDomain: cfg.email.guestFromDomain,
+        support: cfg.company.support,
         ...hostLinks(w),
         aiEngines: ai.available(),
         test: testNotes()
@@ -19737,7 +19898,7 @@ var require_server = __commonJS({
           description: mkt.DESCRIPTION,
           head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
-          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", payFirst: stripe.enabled, loggedIn: !!await me(req) }
+          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
       }
       if (p === "/robots.txt") return send(res, 200, seo.robots(cfg.baseUrl + "/sitemap.xml"), "text/plain; charset=utf-8");
@@ -20028,6 +20189,7 @@ var require_server = __commonJS({
           }
           c.live = !!(await ws.domain(h) || {}).verified && (await ws.domain(h)).workspace_id === w.id;
           c.elsewhere = !c.live && !!row && row.workspace_id !== w.id;
+          c.https = c.live ? await domains.https(h) : false;
           return json(res, Object.assign({ state: (await ws.open(w.id)).state, version: await ws.version(w.id), domain: c }, hostLinks(await ws.open(w.id))));
         }
         if (p === "/app/nuki" && m === "POST") {

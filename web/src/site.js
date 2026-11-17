@@ -436,7 +436,7 @@
 
   function newOb(planId) {
     return { step: 1, url: '', urlErr: '', source: 'airbnb', importN: 0, imported: false, importedFrom: '', d: { name: '', area: '', nightly: '', sleeps: '', bedrooms: '', pets: false }, dErr: '',
-      theme: 'cabin', dq: '', dState: 'idle', dRes: null, dErr2: '', domain: '', conn: { stripe: 'off', lock: 'off' }, addon: false, plan: planId || 'growth', annual: false, launchN: -1, launched: null };
+      theme: 'cabin', dq: '', dState: 'idle', dRes: null, dErr2: '', domain: '', dMode: 'new', own: '', ownErr: '', reg: '', conn: { stripe: 'off', lock: 'off' }, addon: false, plan: planId || 'growth', annual: false, launchN: -1, launched: null };
   }
   function parseListing(u) {
     let url; try { url = new URL(/^https?:\/\//i.test(u.trim()) ? u.trim() : 'https://' + u.trim()); } catch (_) { return null; }
@@ -458,6 +458,30 @@
     if (r.err) { ob.dErr2 = r.err; ob.dState = 'idle'; inst.render(); return; }
     ob.dErr2 = ''; ob.dState = 'checking'; inst.render();
     later(inst, 750, () => { ob.dState = 'done'; ob.dRes = r.list; if (!ob.domain) { const first = r.list.find(x => x.ok); if (first) ob.domain = first.d; } inst.render(); });
+  }
+  // "I already have a domain": tidy what they typed into a bare address, the same way the server does.
+  function cleanOwn(v) { return String(v || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').replace(/[/?#].*$/, '').replace(/:\d+$/, '').replace(/^www\./, '').replace(/\.$/, ''); }
+  function ownProblem(h) {
+    if (!h) return 'Type the domain you own, like larchcabin.co.uk.';
+    if (h.length > 80 || !/^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/.test(h)) return 'That does not look like a domain. Type it like larchcabin.co.uk.';
+    if (/(^|\.)(bookingbooster\.site|booking-booster\.co\.uk)$/.test(h)) return 'That is one of our addresses. Type a domain you own, like larchcabin.co.uk.';
+    return '';
+  }
+  function ownDomain(ob, sub) {
+    const h = ob.domain, dns = (BB.BOOT && BB.BOOT.dns) || {}, target = dns.target || 'sites.booking-booster.co.uk', ips = dns.ips || [];
+    const recs = [['TXT', '_bookingbooster', 'Your own code, shown in your console after sign-up', 'Proves the domain is yours'], ['CNAME', 'www', target, 'Sends www.' + h + ' to your booking site']]
+      .concat(ips.length ? [['A', '@', ips.join(', '), 'Sends ' + h + ' to your booking site']] : []);
+    return '<div class="s-own">' +
+      '<div class="s-own-ok">' + icon('check') + '<p><b class="mono">' + esc(h) + '</b> stays registered where you bought it, and any email on it keeps working. You only add a few DNS records so it points at your booking site.</p></div>' +
+      '<h2 class="s-own-h">The records you will add</h2>' +
+      '<div class="s-own-recs" role="table" aria-label="DNS records"><div class="s-own-r s-own-th" role="row"><span role="columnheader">Type</span><span role="columnheader">Name</span><span role="columnheader">Value</span></div>' +
+        recs.map(r => '<div class="s-own-r" role="row"><span class="mono s-own-t" role="cell">' + r[0] + '</span><span class="mono" role="cell">' + esc(r[1]) + '</span><span role="cell"><b class="' + (r[0] === 'TXT' ? 's-own-later' : 'mono') + '">' + esc(r[2]) + '</b><em>' + esc(r[3]) + '</em></span></div>').join('') + '</div>' +
+      BB.dnsGuide(ob.reg, h) +
+      '<h2 class="s-own-h">What happens next</h2><ol class="s-own-next">' +
+        '<li><b>Your site goes live today</b><span>On your free address, <span class="mono">' + esc(sub) + '</span>, so you can take bookings straight away.</span></li>' +
+        '<li><b>You add the records</b><span>Your console shows the exact values with copy buttons. We check every few minutes and switch your site over by itself once we see them.</span></li>' +
+        '<li><b>We set up the padlock</b><span>A free security certificate (HTTPS) is added automatically, so guests see <span class="mono">https://' + esc(h) + '</span>.</span></li>' +
+      '</ol></div>';
   }
   function startImport(inst) {
     const ob = inst.st.ob; ob.importN = 0; ob.imported = false; ob.importedFrom = ob.url;
@@ -575,7 +599,16 @@
         '<form data-form="next" class="s-ob-form">' + navRow('Use the ' + THEMES[ob.theme].label + ' look') + '</form>';
       case 4: {
         const sub = slug(d.name) + '.bookingbooster.site';
-        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' +
+        const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Domain">' + [['new', 'search', 'Get a new domain'], ['own', 'globe', 'I already have a domain']].map(([k, ic, t]) => '<button type="button" role="tab" aria-selected="' + (ob.dMode === k) + '" data-dmode="' + k + '">' + icon(ic) + t + '</button>').join('') + '</div>';
+        if (ob.dMode === 'own') {
+          const ok = !!ob.domain && ob.domain === cleanOwn(ob.own) && !ownProblem(ob.domain);
+          return '<h1 class="s-ob-h">Use your own domain.</h1><p class="s-ob-sub">Already bought one, at GoDaddy, 123-reg, IONOS or anywhere else? Keep it where it is. Your booking site moves onto it, and you pay nothing extra.</p>' + tabs +
+            '<form data-form="own" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Your domain</span><span class="s-inwrap">' + icon('globe') + '<input id="s-ob-own-' + u + '" data-ob="own" value="' + esc(ob.own) + '" placeholder="larchcabin.co.uk" autocomplete="off" spellcheck="false" inputmode="url"></span></label><button class="btn ink lg" type="submit">' + (ok ? 'Update' : 'Use this domain') + '</button></form>' +
+            (ob.ownErr ? '<p class="s-err" role="alert">' + esc(ob.ownErr) + '</p>' : '') +
+            (ok ? ownDomain(ob, sub) : '<p class="s-fine">Type it without www, like <b>larchcabin.co.uk</b>. Next we show you exactly what to change, step by step.</p>') +
+            '<form data-form="next" class="s-ob-form">' + navRow(ok ? 'Use ' + ob.domain : 'Type your domain to continue', !ok) + '</form>';
+        }
+        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' + tabs +
           '<form data-form="domain" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Search for a domain</span><span class="s-inwrap">' + icon('search') + '<input id="s-ob-dq-' + u + '" data-ob="dq" value="' + esc(ob.dq) + '" autocomplete="off" spellcheck="false"></span></label><button class="btn ink lg" type="submit"' + (ob.dState === 'checking' ? ' disabled' : '') + '>' + (ob.dState === 'checking' ? 'Checking…' : 'Check') + '</button></form>' +
           (ob.dErr2 ? '<p class="s-err" role="alert">' + esc(ob.dErr2) + '</p>' : '') +
           '<div class="s-doms" aria-live="polite">' + (ob.dState === 'checking' ? '<p class="s-dom-wait"><i class="s-spin"></i>Checking availability…</p>' : (ob.dRes || []).map(r =>
@@ -622,7 +655,7 @@
           '<dl class="s-review">' +
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' · ' + $(+d.nightly) + ' a night · sleeps ' + esc(d.sleeps) + ' · ' + esc(d.bedrooms) + ' bedrooms · ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
-            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (/bookingbooster\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
+            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
@@ -659,7 +692,7 @@
     return '<div class="s-ob s-done"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home">' + BB.lockup() + '</button><span class="s-done-tag">' + BB.pill('good', 'Live') + '</span></div></header>' +
       '<div class="s-w s-done-in">' +
         '<div class="s-done-copy"><span class="s-burst">' + icon('check') + '</span><p class="eyebrow">' + esc(p.name) + '</p><h1 class="s-ob-h s-done-h">Your site is live.</h1>' +
-        '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> at <b class="s-dom-live">' + esc(p.domain) + '</b> right now, with no platform fee. We also told your console, so it is ready when you log in.</p>' +
+        (ob.dMode === 'own' ? '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> on your free address right now, with no platform fee. Add the DNS records shown in your console and your site moves to <b class="s-dom-live">' + esc(p.domain) + '</b> by itself.</p>' : '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> at <b class="s-dom-live">' + esc(p.domain) + '</b> right now, with no platform fee. We also told your console, so it is ready when you log in.</p>') +
         '<div class="s-cta"><button class="btn primary lg"' + go('property', { propertyId: p.id }) + '>' + icon('out') + 'Open your site</button><button class="btn lg"' + go('app', { view: 'website' }) + '>' + icon('dash') + 'Go to your console</button></div>' +
         '<div class="s-done-stats"><span><b class="num">' + p.reviews + '</b>reviews imported</span><span><b class="num">6</b>SEO pages for ' + esc(town(p.area)) + '</span><span><b class="num">' + $(Math.round(p.nightly * 0.155 * 3)) + '</b>kept on a 3-night stay</span></div>' +
         '<button class="btn ghost s-again" data-act="again">' + icon('plus') + 'Add another home</button></div>' +
@@ -729,6 +762,15 @@
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
       });
       BB.on(root, 'click', '[data-theme-pick]', el => { inst.st.ob.theme = el.dataset.themePick; inst.render(); });
+      BB.on(root, 'click', '[data-dmode]', el => {
+        const ob = inst.st.ob, k = el.dataset.dmode; if (ob.dMode === k) return;
+        ob.dMode = k; ob.domain = ''; ob.ownErr = '';
+        if (k === 'own') { const h = cleanOwn(ob.own); if (h && !ownProblem(h)) ob.domain = h; }
+        else if (ob.dRes) { const first = ob.dRes.find(x => x.ok); if (first) ob.domain = first.d; }
+        else { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); return; }
+        inst.render();
+      });
+      BB.on(root, 'click', '[data-dns-reg]', el => { const ob = inst.st.ob; ob.reg = ob.reg === el.dataset.dnsReg ? '' : el.dataset.dnsReg; inst.render(); });
       BB.on(root, 'click', '[data-dom]', el => { inst.st.ob.domain = el.dataset.dom; inst.render(); });
       BB.on(root, 'click', '[data-pick-plan]', el => { inst.st.ob.plan = el.dataset.pickPlan; inst.render(); });
       BB.on(root, 'click', '[data-obbill]', el => { inst.st.ob.annual = el.dataset.obbill === 'y'; inst.render(); });
@@ -749,7 +791,7 @@
       BB.on(root, 'input', '[data-ac]', el => { const a = inst.st.ob.acct; a[el.dataset.ac] = el.type === 'checkbox' ? el.checked : el.value; if (inst.st.ob.acctErr) { inst.st.ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'change', '[data-ac="terms"]', el => { inst.st.ob.acct.terms = el.checked; });
       BB.on(root, 'input', '[data-ob]', el => { inst.st.ob[el.dataset.ob] = el.value; if (el.dataset.ob === 'url' && inst.st.ob.urlErr) { inst.st.ob.urlErr = ''; inst.render(); } });
-      BB.on(root, 'input', '[data-d]', el => { inst.st.ob.d[el.dataset.d] = el.value; inst.st.ob.dErr = ''; if (el.dataset.d === 'name') { inst.st.ob.dq = ''; inst.st.ob.dRes = null; inst.st.ob.domain = ''; } inst.render(); });
+      BB.on(root, 'input', '[data-d]', el => { inst.st.ob.d[el.dataset.d] = el.value; inst.st.ob.dErr = ''; if (el.dataset.d === 'name') { inst.st.ob.dq = ''; inst.st.ob.dRes = null; if (inst.st.ob.dMode !== 'own') inst.st.ob.domain = ''; } inst.render(); });
 
       root.addEventListener('submit', ev => {
         const f = ev.target.closest('[data-form]'); if (!f) return; ev.preventDefault();
@@ -763,10 +805,11 @@
         }
         if (kind === 'details') { const e = validDetails(ob.d); if (e) { ob.dErr = e; inst.render(); return; } ob.step = 3; inst.render(); scrollTopOb(); return; }
         if (kind === 'domain') { checkDomain(inst); return; }
+        if (kind === 'own') { const h = cleanOwn(ob.own), e = ownProblem(h); ob.ownErr = e; ob.domain = e ? '' : h; if (!e) ob.own = h; inst.render(); return; }
         if (kind === 'next') {
           if (ob.step === 4 && !ob.domain) return;
           if (ob.step === 5 && ob.conn.stripe !== 'on') return;
-          ob.step++; if (ob.step === 4 && !ob.dRes) { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
+          ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
         if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
