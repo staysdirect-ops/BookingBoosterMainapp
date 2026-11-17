@@ -90,6 +90,11 @@
   H['ea-close'] = inst => inst.set({ ea_open: null });
   H['ea-tab'] = (inst, v) => inst.set({ ea_tab: v, ea_wd: null });
   H['ea-hide'] = (inst, v) => call(inst, 'hide', { id: v }, 'Hidden');
+  H['ea-pageform'] = inst => inst.set({ ea_pageform: !inst.st.ea_pageform });
+  H['ea-watch'] = async inst => { if (D.watching) return; const v = inst.st.ea_page || {}; if (!v.url) { BB.toast('Paste the link to a page with events on it.', 'bad'); return; }
+    D.watching = true; inst.render(); const j = await call(inst, 'watch', Object.assign({ propertyId: pid(inst) }, v)); D.watching = false;
+    if (j && j.page) { BB.toast(j.page.error ? j.page.error : 'Read it: ' + j.page.n + ' event' + (j.page.n === 1 ? '' : 's') + ' so far. Press Find events to see the ones that fit.', j.page.error ? 'bad' : 'good'); inst.set({ ea_pageform: false, ea_page: {} }); } else inst.render(); };
+  H['ea-unwatch'] = (inst, v) => call(inst, 'unwatch', { id: v }, 'We’ll stop reading that page for you');
   H['ea-addform'] = inst => inst.set({ ea_add: !inst.st.ea_add, ea_new: inst.st.ea_new || { kind: 'course' } });
   H['ea-add'] = async inst => { const n = inst.st.ea_new || {}; const j = await call(inst, 'add', Object.assign({ propertyId: pid(inst) }, n), 'Event added'); if (j) inst.set({ ea_add: false, ea_new: { kind: 'course' } }); };
   H['ea-dl'] = (inst, v) => { const cv = inst.root.querySelector('canvas[data-ea][data-f="' + v + '"]'); if (!cv) return;
@@ -117,7 +122,7 @@
     return '<div class="a-card ea-row"><div class="ea-date"><b>' + P(e.start).getUTCDate() + '</b><small>' + MON[P(e.start).getUTCMonth()] + '</small></div>' +
       '<div class="ea-main"><b>' + esc(e.name) + '</b><small>' + I(KIND_ICON[e.kind] || 'cal') + esc((D.list.meta.kinds || {})[e.kind] || 'Event') + ' · ' + range(e.start, e.end) + ' · ' + e.days + ' days' + (e.venue || e.town ? ' · ' + esc([e.venue, e.town].filter((x, i, l) => x && l.indexOf(x) === i && !(i && l[0].includes(x))).join(', ')) : '') + (e.attendance ? ' · about ' + Number(e.attendance).toLocaleString('en-GB') + ' people' : '') + '</small>' +
       (e.audience || e.why ? '<small class="muted">' + esc(e.audience || e.why) + '</small>' : '') +
-      '<small class="ea-src">' + esc(e.source === 'web' ? 'Found by web search' : e.source === 'sample' ? 'Sample event for the demo' : e.source === 'manual' ? 'Added by you' : 'From ' + ((D.list.meta.sources || []).find(x => x.id === e.source) || {}).name) + (e.url ? ' · <a href="' + esc(e.url) + '" target="_blank" rel="noopener">Check the dates</a>' : '') + '</small></div>' +
+      '<small class="ea-src">' + esc(e.source === 'sample' ? 'Sample event for the demo' : e.source === 'manual' ? 'Added by you' : 'Found by our event finder' + (e.site ? ' on ' + e.site : '')) + (e.url ? ' · <a href="' + esc(e.url) + '" target="_blank" rel="noopener">Check the dates</a>' : '') + '</small></div>' +
       '<div class="ea-act">' + fitPill(ft) + (ft.stay ? '<small class="muted">' + range(ft.stay.from, ft.stay.to) + ' · ' + BB.money(ft.value) + '</small>' : '') +
       (a ? '<button class="btn sm" data-ea="ea-open" data-v="' + a.id + '">' + I('chart') + 'Open ads</button>' : ft.stay ? '<button class="btn sm primary" data-ea="ea-make" data-v="' + e.id + '"' + (making ? ' disabled' : '') + '>' + I('spark') + (making ? 'Writing your ads…' : 'Create ads') + '</button>' : '') +
       '<button class="btn sm ghost" data-ea="ea-hide" data-v="' + e.id + '" aria-label="Hide ' + esc(e.name) + '">' + I('x') + '</button></div></div>';
@@ -126,18 +131,18 @@
     const st = inst.st, s = S(), L = D.list, home = pid(inst), pr = Object.assign({ radius: 25, minDays: 2, months: 6 }, L.prefs, st.ea_prefs || {});
     const scan = (L.scans || {})[home], evs = (L.events || []).filter(e => e.propertyId === home), open = evs.filter(e => e.fit.status !== 'booked'), full = evs.filter(e => e.fit.status === 'booked');
     const sel = (k, opts, lab) => '<label class="field"><span>' + lab + '</span><select data-eaf="pr.' + k + '">' + opts.map(([v, t]) => '<option value="' + v + '"' + (+pr[k] === v ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>';
-    const srcs = (L.meta.sources || []).map(x => '<span class="ea-chip' + (x.on ? ' on' : '') + '" title="' + esc(x.finds + ' ' + x.price + '.') + '">' + (x.on ? I('check') : '') + esc(x.name) + '</span>').join('');
     const n = new Set(ads().filter(a => a.propertyId === home).map(a => a.eventId)).size;
     return '<section class="a-card ag-card ea-find"><div class="ea-form">' +
       (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-eaf="home">' + s.properties.map(p => '<option value="' + p.id + '"' + (p.id === home ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
       sel('radius', [[10, 'Within 10 miles'], [25, 'Within 25 miles'], [50, 'Within 50 miles']], 'Area') + sel('minDays', [[2, '2 days or more'], [3, '3 days or more'], [5, '5 days or more']], 'How long') + sel('months', [[3, 'Next 3 months'], [6, 'Next 6 months'], [12, 'Next 12 months']], 'When') +
-      '<button class="btn primary" data-ea="ea-find"' + (D.busy ? ' disabled' : '') + '>' + I('search') + (D.busy ? 'Searching… this can take a minute' : 'Find events') + '</button></div>' +
-      '<div class="ea-srcs"><small class="muted">Sources</small>' + srcs + '</div>' +
-      (scan ? '<p class="muted ea-last">Last search ' + new Date(scan.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + (scan.place ? ' around ' + esc(scan.place) : '') + ': ' + scan.sources.map(x => esc(((L.meta.sources || []).find(q => q.id === x.id) || { name: 'Samples' }).name) + ' ' + (x.error ? 'did not answer' : x.n)).join(', ') + '.</p>' : '') + '</section>' +
+      '<button class="btn primary" data-ea="ea-find"' + (D.busy ? ' disabled' : '') + '>' + I('search') + (D.busy ? 'Searching…' : 'Find events') + '</button></div>' +
+      (L.located && L.located[home] === false && !L.meta.demo ? '<p class="ea-warn">' + I('bell') + 'Add your home’s postcode to its address so we know where to look. Until then we only read the pages you add below.</p>' : '') +
+      (scan ? '<p class="muted ea-last">Last search ' + new Date(scan.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + (scan.place ? ' around ' + esc(scan.place) : '') + ': ' + (scan.sources.length ? scan.sources.map(x => esc(x.name || 'Samples') + ' ' + (x.error ? '(' + esc(x.error) + ')' : x.n)).join(', ') : 'no pages near you yet, add one below') + '.</p>' : '') + '</section>' +
       '<div class="sb-kpis ea-kpis"><div><small>Events found</small><b class="num">' + evs.length + '</b></div><div><small>With free nights</small><b class="num">' + open.length + '</b></div><div><small>Free nights to sell</small><b class="num">' + open.reduce((t, e) => t + (e.fit.stay ? (P(e.fit.stay.to) - P(e.fit.stay.from)) / 864e5 : 0), 0) + '</b></div><div><small>Worth</small><b class="num">' + BB.money(open.reduce((t, e) => t + e.fit.value, 0)) + '</b></div><div><small>Ad packs</small><b class="num">' + n + '</b></div></div>' +
       (open.length ? '<div class="ea-list">' + open.map(e => eventRow(e, st)).join('') + '</div>'
         : '<div class="a-card ag-card sb-fempty"><span class="disp">Fill the nights other people’s <em>events</em> create</span><p class="muted">Courses, conferences, county shows and tournaments bring people who need a bed for a few nights. Find the ones near you, see which of your nights are still free, and get ready-made ads that say “we’re free that week”.</p><button class="btn primary" data-ea="ea-find">' + I('search') + 'Find events</button></div>') +
       (full.length ? '<details class="ea-full"><summary>' + full.length + ' event' + (full.length === 1 ? '' : 's') + ' you are already booked for</summary><div class="ea-list">' + full.map(e => eventRow(e, st)).join('') + '</div></details>' : '') +
+      pagesView(st, L, home) +
       '<section class="a-card ag-card"><div class="a-card-h"><h3>Know about one we missed?</h3><button class="btn sm ghost" data-ea="ea-addform">' + I(st.ea_add ? 'x' : 'plus') + (st.ea_add ? 'Cancel' : 'Add an event') + '</button></div>' +
       (st.ea_add ? (() => { const v = st.ea_new || {}; return '<p class="muted" style="margin:0 0 12px">A course at the local college, a contract at the hospital, a wedding fair: anything that brings people for two nights or more.</p><div class="ea-form">' +
         '<label class="field ea-wide"><span>Name</span><input data-eaf="new.name" id="ea-n-name" maxlength="120" placeholder="SMSTS site manager course" value="' + esc(v.name || '') + '"></label>' +
@@ -145,6 +150,23 @@
         '<label class="field"><span>First day</span><input type="date" data-eaf="new.start" id="ea-n-start" value="' + esc(v.start || '') + '"></label><label class="field"><span>Last day</span><input type="date" data-eaf="new.end" id="ea-n-end" value="' + esc(v.end || '') + '"></label>' +
         '<label class="field"><span>Venue</span><input data-eaf="new.venue" id="ea-n-venue" maxlength="100" value="' + esc(v.venue || '') + '"></label><label class="field ea-wide"><span>Link <em class="muted">optional</em></span><input data-eaf="new.url" id="ea-n-url" type="url" placeholder="https://" value="' + esc(v.url || '') + '"></label></div>' +
         '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-add">' + I('plus') + 'Add event</button></div>'; })() : '') + '</section>';
+  }
+
+  // The pages our own event finder reads near this home. Hosts add the what's-on pages they know.
+  function pagesView(st, L, home) {
+    if (L.meta.demo) return '';
+    const pages = L.pages || [], v = st.ea_page || {}, when = x => x.at ? new Date(x.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const row = x => '<div class="ea-page"><div><b>' + esc(x.name) + '</b><small class="muted">' + esc(x.site) + (x.place ? ' · ' + esc(x.place) : '') + (x.mine ? ' · added by you' : x.seed ? ' · starter page' : ' · added by another host') + '</small></div>' +
+      '<div class="ea-page-s">' + (!x.at ? BB.pill('muted', 'Not read yet') : x.error && !x.n ? BB.pill('warn', 'Could not read') : BB.pill('good', x.n + ' event' + (x.n === 1 ? '' : 's'))) + (x.at ? '<small class="muted">' + (x.error ? esc(x.error) + ' ' : '') + 'Read ' + when(x) + '</small>' : '') +
+      '<a class="btn sm ghost" href="' + esc(x.url) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(x.name) + '">' + I('out') + '</a>' + (x.mine ? '<button class="btn sm ghost" data-ea="ea-unwatch" data-v="' + esc(x.id) + '" aria-label="Stop reading ' + esc(x.name) + '">' + I('x') + '</button>' : '') + '</div></div>';
+    return '<section class="a-card ag-card ea-pages"><div class="a-card-h"><h3>Pages we read for you</h3><button class="btn sm ghost" data-ea="ea-pageform">' + I(st.ea_pageform ? 'x' : 'plus') + (st.ea_pageform ? 'Cancel' : 'Add a page') + '</button></div>' +
+      '<p class="muted" style="margin:0 0 12px;padding:0">We find events ourselves: we read public what’s-on, venue and course pages near your home about once a day and pull out the events, courses and shows. We follow each site’s rules for crawlers.</p>' +
+      (st.ea_pageform ? '<div class="ea-form"><label class="field ea-wide"><span>Page with events or course dates</span><input data-eaf="page.url" id="ea-p-url" type="url" placeholder="https://www.yourvenue.co.uk/whats-on" value="' + esc(v.url || '') + '"></label>' +
+        '<label class="field"><span>Name <em class="muted">optional</em></span><input data-eaf="page.name" id="ea-p-name" maxlength="80" placeholder="Kent Showground events" value="' + esc(v.name || '') + '"></label>' +
+        '<label class="field"><span>Postcode area <em class="muted">optional</em></span><input data-eaf="page.postcode" id="ea-p-pc" maxlength="8" placeholder="ME14" value="' + esc(v.postcode || '') + '"></label></div>' +
+        '<p class="muted" style="margin:6px 0 10px;padding:0">Good pages: a showground, conference centre or council “what’s on” page, a training provider’s course dates, a sports club’s fixtures, or a calendar (.ics) link.</p>' +
+        '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-watch"' + (D.watching ? ' disabled' : '') + '>' + I('search') + (D.watching ? 'Reading the page…' : 'Read this page') + '</button></div>' : '') +
+      (pages.length ? '<div class="ea-pagelist">' + pages.map(row).join('') + '</div>' : '<p class="muted">No pages near this home yet. Add the what’s-on pages you know, and we’ll read them every day.</p>') + '</section>';
   }
 
   function adView(inst, a) {
@@ -217,6 +239,7 @@
       if (k === 'home') { st.ea_home = el.value; inst.render(); return; }
       const [sc, f] = k.split('.');
       if (sc === 'pr') { st.ea_prefs = Object.assign({}, st.ea_prefs, { [f]: +el.value }); return; }
+      if (sc === 'page') { (st.ea_page = st.ea_page || {})[f] = el.value; return; }
       if (sc === 'new') { (st.ea_new = st.ea_new || {})[f] = el.value; if (f === 'start' && !st.ea_new.end) { st.ea_new.end = el.value; inst.render(); } return; }
       if (sc === 'wd') { const was = Object.keys(st.ea_wd || {}).length; (st.ea_wd = st.ea_wd || {})[f] = el.value; if (!was) inst.render(); }
     },

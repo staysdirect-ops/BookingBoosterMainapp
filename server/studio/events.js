@@ -2,11 +2,9 @@
 // conferences, trade shows, county shows, festivals, tournaments), check them against the home's calendar, and write
 // ready-to-run ads for Facebook, Instagram and Google that sell the free nights for that event.
 //
-// Where events come from (each one is optional, and the host can always add an event by hand):
-//   web           Claude with web search (ANTHROPIC_API_KEY). Best for courses, conferences and anything local.
-//   predicthq     PredictHQ (PREDICTHQ_TOKEN, paid). Conferences, expos, sport and festivals, with expected attendance.
-//   ticketmaster  Ticketmaster Discovery API (TICKETMASTER_API_KEY, free). Shows, festivals, sport and concerts.
-// Eventbrite is not here: its public event search API was switched off in 2020, so it cannot search by area.
+// Where events come from: our own event finder (crawler.js) reads public what's-on, venue and course pages and
+// calendar feeds near each home, keeps them in our own index and merges duplicates. No event APIs, no keys.
+// The host can always add an event by hand. The demo uses sample events.
 'use strict';
 const crypto = require('crypto');
 
@@ -24,10 +22,8 @@ const WHO = {
 };
 
 const SOURCES = {
-  web: { name: 'Web search by Claude', key: 'ANTHROPIC_API_KEY', price: 'About 1p a search from your AI credit', finds: 'Training courses, conferences, trade shows, county shows, festivals and anything else on the open web.' },
-  predicthq: { name: 'PredictHQ', key: 'PREDICTHQ_TOKEN', price: 'Paid, with a free trial', finds: 'Conferences, expos, sport and festivals, with expected attendance.' },
-  ticketmaster: { name: 'Ticketmaster', key: 'TICKETMASTER_API_KEY', price: 'Free key', finds: 'Shows, festivals, sport and concerts sold through Ticketmaster.' },
-  manual: { name: 'Added by you', key: '', price: 'Free', finds: 'Any event, course or contract you know about.' },
+  crawl: { name: 'Our event finder', price: 'Included', finds: 'Events, training courses, shows and conferences from public what’s-on, venue and course pages and calendar feeds that we read ourselves, about once a day.' },
+  manual: { name: 'Added by you', price: 'Included', finds: 'Any event, course or contract you know about.' },
 };
 
 /* ---------- dates ---------- */
@@ -53,18 +49,21 @@ function norm(e, source, propertyId) {
   const name = clean(e.name, 120); if (!name) return null;
   const url = /^https?:\/\/[^\s]+$/i.test(String(e.url || '')) ? String(e.url).slice(0, 400) : '';
   const att = parseInt(e.attendance, 10);
-  return { id: 'ev' + crypto.createHash('sha1').update(propertyId + '|' + name.toLowerCase() + '|' + start).digest('hex').slice(0, 10), propertyId, name, kind: KINDS[e.kind] ? e.kind : 'other', start, end, days: diff(start, end) + 1,
-    venue: clean(e.venue, 100), town: clean(e.town, 60), url, audience: clean(e.audience, 160), why: clean(e.why, 200), attendance: att > 0 ? att : null, source: SOURCES[source] || source === 'sample' ? source : 'manual' };
+  return { id: 'ev' + crypto.createHash('sha1').update(propertyId + '|' + base(name) + '|' + start).digest('hex').slice(0, 10), propertyId, name, kind: KINDS[e.kind] ? e.kind : 'other', start, end, days: diff(start, end) + 1,
+    venue: clean(e.venue, 100), town: clean(e.town, 60), url, audience: clean(e.audience, 160), why: clean(e.why, 200), attendance: att > 0 ? att : null, source: SOURCES[source] || source === 'sample' ? source : 'manual', site: clean(e.site, 80) };
 }
 
 // The same show listed once per day ("Kent County Show - Friday", "... - Saturday") becomes one event.
 const unday = n => n.replace(/\s*[-–:|(]\s*(day \d+|(mon|tues|wednes|thurs|fri|satur|sun)day.*|weekend.*|\d+ day.*)\)?$/i, '').trim();
-const base = n => unday(n).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const base = n => unday(n).toLowerCase().replace(/\b(19|20)\d\d\b/g, ' ').replace(/^\s*the\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
 function merge(list) {
   const out = [];
   list.slice().sort((a, b) => a.start.localeCompare(b.start)).forEach(e => {
-    const same = out.find(x => base(x.name) === base(e.name) && (x.venue || '') === (e.venue || '') && e.start <= add(x.end, 1));
-    if (same) { if (e.end > same.end) { same.end = e.end; same.days = diff(same.start, same.end) + 1; } same.name = unday(same.name) || same.name; same.url = same.url || e.url; same.attendance = same.attendance || e.attendance; return; }
+    // the same name on the same or next days is one event, unless two different venues in different towns are named
+    const place = x => (x.venue || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(), town = x => (x.town || '').toLowerCase();
+    const same = out.find(x => base(x.name) === base(e.name) && e.start <= add(x.end, 1) && (!place(x) || !place(e) || place(x) === place(e) || place(x).includes(place(e)) || place(e).includes(place(x)) || (town(x) && town(x) === town(e))));
+    if (same) { if (e.end > same.end) { same.end = e.end; same.days = diff(same.start, same.end) + 1; } same.name = [unday(same.name), unday(e.name)].filter(Boolean).sort((a, b) => a.length - b.length)[0] || same.name; same.url = same.url || e.url; same.attendance = same.attendance || e.attendance;
+      ['venue', 'town', 'audience', 'site'].forEach(f => { if (!same[f] && e[f]) same[f] = e[f]; }); return; }
     out.push(Object.assign({}, e));
   });
   return out;
@@ -86,74 +85,6 @@ function fit(ev, blocked, p, today) {
 }
 
 /* ---------- finding events ---------- */
-const PC = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
-async function locate(cfg, p) {
-  if (+p.lat && +p.lng) return { lat: +p.lat, lng: +p.lng, place: p.area || '' };
-  const m = String(p.address || '').match(PC) || String(p.area || '').match(PC);
-  const api = (cfg.events.postcodesBase || 'https://api.postcodes.io');
-  try {
-    if (m) {
-      const r = await fetch(api + '/postcodes/' + encodeURIComponent(m[1] + m[2]), { signal: AbortSignal.timeout(6000) });
-      if (r.ok) { const j = (await r.json()).result; if (j) return { lat: j.latitude, lng: j.longitude, place: j.admin_district || j.parish || '', postcode: m[1].toUpperCase() + ' ' + m[2].toUpperCase() }; }
-    }
-    const town = String(p.area || '').split(',')[0].trim();
-    if (town) {
-      const r = await fetch(api + '/places?limit=1&q=' + encodeURIComponent(town), { signal: AbortSignal.timeout(6000) });
-      if (r.ok) { const j = ((await r.json()).result || [])[0]; if (j) return { lat: j.latitude, lng: j.longitude, place: j.name_1 || town }; }
-    }
-  } catch (_) { /* fall through: web search still works from the town name */ }
-  return null;
-}
-
-async function ticketmaster(cfg, loc, o) {
-  const q = new URLSearchParams({ apikey: cfg.events.ticketmaster, latlong: loc.lat + ',' + loc.lng, radius: String(o.radius), unit: 'miles', countryCode: 'GB', startDateTime: o.from + 'T00:00:00Z', endDateTime: o.to + 'T23:59:59Z', size: '200', sort: 'date,asc' });
-  const r = await fetch((cfg.events.ticketmasterBase || 'https://app.ticketmaster.com') + '/discovery/v2/events.json?' + q, { signal: AbortSignal.timeout(10000) });
-  if (!r.ok) throw new Error('Ticketmaster answered ' + r.status);
-  const seg = { Sports: 'sport', Music: 'festival', 'Arts & Theatre': 'show', Miscellaneous: 'show' };
-  return ((((await r.json())._embedded) || {}).events || []).map(e => { const v = ((e._embedded || {}).venues || [])[0] || {}, c = ((e.classifications || [])[0] || {}).segment || {};
-    return { name: e.name, start: ((e.dates || {}).start || {}).localDate, end: ((e.dates || {}).end || {}).localDate, venue: v.name, town: (v.city || {}).name, url: e.url, kind: seg[c.name] || 'other' }; });
-}
-
-async function predicthq(cfg, loc, o) {
-  const q = new URLSearchParams({ within: o.radius + 'mi@' + loc.lat + ',' + loc.lng, 'active.gte': o.from, 'active.lte': o.to, category: 'conferences,expos,festivals,sports,community,performing-arts', limit: '200', sort: 'start' });
-  const r = await fetch((cfg.events.predicthqBase || 'https://api.predicthq.com') + '/v1/events/?' + q, { headers: { authorization: 'Bearer ' + cfg.events.predicthq, accept: 'application/json' }, signal: AbortSignal.timeout(10000) });
-  if (!r.ok) throw new Error('PredictHQ answered ' + r.status);
-  const cat = { conferences: 'conference', expos: 'expo', festivals: 'festival', sports: 'sport', community: 'show', 'performing-arts': 'show' };
-  return ((await r.json()).results || []).map(e => { const v = (e.entities || []).find(x => x.type === 'venue') || {};
-    return { name: e.title, start: String(e.start_local || e.start || '').slice(0, 10), end: String(e.predicted_end_local || e.end_local || e.end || '').slice(0, 10), venue: v.name, town: '', kind: cat[e.category] || 'other', attendance: e.phq_attendance, url: '' }; });
-}
-
-// Claude searches the web for events and courses, then answers with JSON. Only links it actually found are kept.
-function webPrompt(f, loc, o) {
-  return 'Find events near this UK holiday let that will bring people who need somewhere to stay for ' + o.minDays + ' or more nights in a row.\n\n' +
-    'The home: ' + JSON.stringify({ name: f.name, area: f.area, town: f.town, postcode: (loc && loc.postcode) || '', sleeps: f.maxGuests, bedrooms: f.bedrooms, about: String(f.about || '').slice(0, 500) }) + '\n' +
-    'Search area: within about ' + o.radius + ' miles of ' + (f.town || f.area) + '. Dates: ' + o.from + ' to ' + o.to + '.\n\n' +
-    'Look for, in this order: multi-day professional training courses held at local venues (construction and site safety such as SMSTS, SSSTS and NEBOSH, first aid at work, NHS and nursing, teaching, HGV and plant, trades), ' +
-    'conferences and trade shows at local event centres, county and agricultural shows, festivals, sports tournaments and championships, exams and assessment centres, university events such as graduations, and anything else that runs for ' + o.minDays + '+ consecutive days. ' +
-    'Check each one on its own page. Skip single-day events, online-only courses and anything you could not find a date for.\n\n' +
-    'Answer with JSON only, no other text: {"events":[{"name":"","kind":"course|conference|expo|show|festival|sport|exam|other","start":"YYYY-MM-DD","end":"YYYY-MM-DD","venue":"","town":"","url":"the page that confirms the dates","audience":"who travels for it, in a few words","attendance":0,"why":"one line on why its visitors need a place to stay"}]}. ' +
-    'At most 15 events, soonest first. For a course that runs every month, give the next three dates as separate events. attendance is your best estimate or 0.';
-}
-async function web(cfg, f, loc, o, onUsage) {
-  const key = cfg.ai.anthropic, root = cfg.ai.anthropicBase || 'https://api.anthropic.com', model = cfg.ai.studioModel || 'claude-opus-5-5';
-  const messages = [{ role: 'user', content: webPrompt(f, loc, o) }], seen = new Set(); let text = '';
-  for (let turn = 0; turn < 3; turn++) {
-    const body = { model, max_tokens: 16000, system: 'You are a careful local events researcher for UK holiday let hosts. You only report events you found on real pages, with their real dates.', messages,
-      tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 8, user_location: { type: 'approximate', country: 'GB', city: f.town || undefined } }], output_config: { effort: 'medium' }, fallbacks: 'default' };
-    const r = await fetch(root + '/v1/messages', { method: 'POST', signal: AbortSignal.timeout(170000), headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-beta': 'server-side-fallback-2026-07-01', 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error('Claude answered ' + r.status + ' ' + t.slice(0, 160)); }
-    const j = await r.json(); if (onUsage) await onUsage(j.model || model, j.usage);
-    if (j.stop_reason === 'refusal') throw new Error('Claude declined this search');
-    (j.content || []).forEach(c => { if (c.type === 'web_search_tool_result' && Array.isArray(c.content)) c.content.forEach(x => x.url && seen.add(x.url)); if (c.type === 'text') text += c.text; });
-    if (j.stop_reason !== 'pause_turn') break;
-    messages.push({ role: 'assistant', content: j.content }); text = '';
-  }
-  const a = text.indexOf('{'), b = text.lastIndexOf('}');
-  let out; try { out = JSON.parse(text.slice(a, b + 1)); } catch (_) { throw new Error('Claude did not return a usable list of events'); }
-  const hosts = new Set([...seen].map(u => { try { return new URL(u).host; } catch (_) { return ''; } }));
-  return (out.events || []).map(e => { let ok = false; try { ok = seen.has(e.url) || hosts.has(new URL(e.url).host); } catch (_) {} return Object.assign({}, e, { url: ok ? e.url : '' }); });
-}
-
 // Sample events for the demo homes, so the demo shows the whole flow without any keys. Dates follow the demo's today.
 function samples(p, today) {
   const at = (n, d) => ({ start: add(today, n), end: add(today, n + d - 1) });
@@ -165,22 +96,16 @@ function samples(p, today) {
   return (S[p.id] || []).map(x => Object.assign({ name: x[0], kind: x[1], venue: x[2], town: x[3], audience: x[4], url: '', why: 'Sample event for the demo' }, at(x[5], x[6])));
 }
 
-// Runs every source the platform has a key for, at once. Returns { events, sources: [{ id, n, error }], loc }.
-async function find(cfg, f, p, o, opts) {
+// Events near a home: sample events in the demo, otherwise what our own finder has read for this area.
+// Returns { events, sources: [{ id, name, n, error }], loc }.
+async function find(finder, wid, loc, p, o, opts) {
   opts = opts || {};
-  const loc = opts.demo ? null : await locate(cfg, p);
-  const jobs = [];
-  if (opts.demo) jobs.push(['sample', async () => samples(p, o.today)]);
-  else {
-    if (cfg.ai.anthropic && cfg.events.webSearch) jobs.push(['web', () => web(cfg, f, loc, o, opts.onUsage)]);
-    if (cfg.events.predicthq && loc) jobs.push(['predicthq', () => predicthq(cfg, loc, o)]);
-    if (cfg.events.ticketmaster && loc) jobs.push(['ticketmaster', () => ticketmaster(cfg, loc, o)]);
-  }
-  const res = await Promise.all(jobs.map(([id, fn]) => fn().then(list => ({ id, list }), e => ({ id, list: [], error: e.message }))));
-  let all = []; res.forEach(r => { all = all.concat(r.list.map(e => norm(e, r.id, p.id)).filter(Boolean)); });
   const keep = e => e.days >= o.minDays && e.end > o.today && e.start <= o.to;
-  const events = merge(all).filter(keep);
-  return { events, loc, sources: res.map(r => ({ id: r.id, n: merge(r.list.map(e => norm(e, r.id, p.id)).filter(Boolean)).filter(keep).length, error: r.error || '' })) };
+  if (opts.demo) { const ev = merge(samples(p, o.today).map(e => norm(e, 'sample', p.id)).filter(Boolean)).filter(keep); return { events: ev, loc: null, sources: [{ id: 'sample', name: 'Samples', n: ev.length, error: '' }] }; }
+  const r = await finder.near(wid, loc, o);
+  const by = new Map(); r.events.forEach(e => { const n = norm(e, 'crawl', p.id); if (n) (by.get(e.sourceId) || by.set(e.sourceId, []).get(e.sourceId)).push(n); });
+  const events = merge([].concat(...by.values())).filter(keep);
+  return { events, loc, sources: r.sources.map(s => ({ id: s.id, name: s.name, n: merge(by.get(s.id) || []).filter(keep).length, error: s.error })) };
 }
 
 /* ---------- the ads ---------- */
@@ -265,4 +190,4 @@ function plan(f, ev, ft, today, loc) {
       location: 'United Kingdom, set to "Presence or interest", so people searching for ' + (ev.town || f.town) + ' from anywhere see it', radius: loc ? { lat: loc.lat, lng: loc.lng } : null } };
 }
 
-module.exports = { KINDS, WHO, SOURCES, find, fit, merge, norm, rulesAds, adPrompt, adSchema, mergeAds, plan, range, add, diff, samples, locate, base };
+module.exports = { KINDS, WHO, SOURCES, find, fit, merge, norm, rulesAds, adPrompt, adSchema, mergeAds, plan, range, add, diff, samples, base };

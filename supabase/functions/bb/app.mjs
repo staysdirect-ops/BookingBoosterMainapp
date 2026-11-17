@@ -18,7 +18,7 @@ var __commonJS = (cb, mod) => function __require2() {
 // bb:bb-embedded-files
 var require_bb_embedded_files = __commonJS({
   "bb:bb-embedded-files"(exports, module) {
-    module.exports = { "/app/web/src/app-events.css": { "t": "/* Host console: Event ads (app-events.js). Lives inside .ag, so it reflows with the container. */\n.ea .ea-find { padding: 18px 20px; }\n.ea .ea-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 12px; align-items: end; }\n.ea .ea-form .btn { margin-bottom: 14px; justify-content: center; }\n.ea .ea-form .ea-wide { grid-column: span 2; }\n.ea .ea-srcs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }\n.ea .ea-srcs small { margin-right: 4px; }\n.ea .ea-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px dashed var(--line-2); color: var(--muted); }\n.ea .ea-chip.on { border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); }\n.ea .ea-chip .ic { width: 12px; height: 12px; color: var(--good); }\n.ea .ea-last { font-size: 12.5px; margin: 10px 0 0; padding: 0; }\n.ea .ea-kpis { margin: 16px 0; }\n.ea .ea-list { display: grid; gap: 10px; margin-bottom: 16px; }\n.ea .ea-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 16px; }\n.ea .ea-date { display: grid; place-items: center; text-align: center; width: 58px; height: 62px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-date b { font: 600 22px/1 var(--font-display, inherit); }\n.ea .ea-date small { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-main { display: grid; gap: 3px; min-width: 0; }\n.ea .ea-main > b { font-size: 15px; }\n.ea .ea-main small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12.5px; }\n.ea .ea-main small .ic { width: 13px; height: 13px; }\n.ea .ea-src { color: var(--muted); }\n.ea .ea-src a { color: inherit; text-decoration: underline; }\n.ea .ea-act { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; max-width: 320px; }\n.ea .ea-act small { font-size: 12px; }\n@container ag (max-width: 720px) { .ea .ea-row { grid-template-columns: 58px minmax(0, 1fr); } .ea .ea-act { grid-column: 1 / -1; justify-content: flex-start; max-width: none; } .ea .ea-form .ea-wide { grid-column: auto; } }\n.ea .ea-full { margin: 0 0 16px; }\n.ea .ea-full summary { cursor: pointer; font-size: 13px; color: var(--muted); margin-bottom: 10px; }\n/* ad pack */\n.ea .ea-tabs { margin: 4px 0 12px; flex-wrap: wrap; }\n.ea .ea-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 24px; align-items: start; }\n@container ag (max-width: 900px) { .ea .ea-two { grid-template-columns: minmax(0, 1fr); } }\n.ea .ea-cnt { font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); margin-left: 6px; }\n.ea .ea-cnt.bad, .ea .err { color: var(--bad); }\n.ea .ea-note { font-size: 12.5px; margin: 10px 0 0; overflow-wrap: anywhere; }\n.ea .ea-warn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); font-size: 13.5px; margin: 0 0 12px; }\n.ea .ea-warn .ic { width: 16px; height: 16px; flex: none; }\n.ea .lnk { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; color: inherit; }\n.ea .ea-fb { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }\n.ea .ea-fb-h { display: flex; gap: 10px; align-items: center; padding: 12px 14px 0; }\n.ea .ea-fb-h b { display: block; font-size: 14px; } .ea .ea-fb-h small { font-size: 12px; color: var(--muted); }\n.ea .ea-av { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: var(--primary-ink, #fff); font-weight: 700; flex: none; }\n.ea .ea-av.sm { width: 22px; height: 22px; font-size: 11px; }\n.ea .ea-fb > p { font-size: 14px; line-height: 1.45; margin: 10px 14px 12px; }\n.ea .ea-fb canvas { display: block; width: 100%; height: auto; }\n.ea .ea-fb-f { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-2); }\n.ea .ea-fb-f div { display: grid; gap: 2px; min-width: 0; } .ea .ea-fb-f small { font-size: 11.5px; color: var(--muted); } .ea .ea-fb-f b { font-size: 15px; }\n.ea .ea-imgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 260px)); gap: 18px; margin-top: 24px; align-items: start; }\n.ea .ea-imgs figure { margin: 0; display: grid; gap: 8px; }\n.ea .ea-imgs canvas { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }\n.ea .ea-imgs figcaption { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }\n.ea .ea-imgs .ea-note { grid-column: 1 / -1; }\n.ea .ea-g { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; font-family: Arial, system-ui, sans-serif; background: var(--surface); }\n.ea .ea-g small { font-weight: 700; font-size: 12px; }\n.ea .ea-g-u { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 6px 0; }\n.ea .ea-g b { display: block; color: #1a0dab; font-weight: 400; font-size: 19px; line-height: 1.3; }\n.ea .ea-g p { font-size: 14px; color: var(--ink-2, #4d5156); margin: 4px 0 0; }\n.ea .ea-plan { display: grid; gap: 18px; }\n.ea .ea-when { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }\n.ea .ea-when > div { display: grid; gap: 2px; padding: 14px 16px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-when small { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-when b { font-size: 20px; } .ea .ea-when span { font-size: 12.5px; }\n.ea .ea-tc { padding: 16px 18px; }\n.ea .ea-tc h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 15px; } .ea .ea-tc h4 .ic { width: 16px; height: 16px; }\n.ea .ea-tc dl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px 12px; margin: 0; font-size: 13.5px; }\n.ea .ea-tc dt { color: var(--muted); } .ea .ea-tc dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }\n.ea .ea-pv { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; height: 520px; }\n.ea .ea-pv iframe { width: 166%; height: 166%; border: 0; transform: scale(.6); transform-origin: 0 0; }\n.ea .ea-save { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }\n.ea .ea-status { display: flex; align-items: center; gap: 8px; margin: 14px 0; }\n" }, "/app/web/src/app-events.js": { "t": `/* Bookingbooster: Event ads in the host console (Grow \u2192 Event ads).
+    module.exports = { "/app/web/src/app-events.css": { "t": "/* Host console: Event ads (app-events.js). Lives inside .ag, so it reflows with the container. */\n.ea .ea-find { padding: 18px 20px; }\n.ea .ea-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 12px; align-items: end; }\n.ea .ea-form .btn { margin-bottom: 14px; justify-content: center; }\n.ea .ea-form .ea-wide { grid-column: span 2; }\n.ea .ea-pagelist { display: grid; gap: 8px; }\n.ea .ea-page { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.ea .ea-page > div:first-child { display: grid; gap: 2px; min-width: 0; }\n.ea .ea-page b, .ea .ea-page small { overflow-wrap: anywhere; }\n.ea .ea-page-s { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }\n@media (max-width: 640px) { .ea .ea-page { flex-direction: column; align-items: stretch; } .ea .ea-page-s { justify-content: flex-start; } }\n.ea .ea-last { font-size: 12.5px; margin: 10px 0 0; padding: 0; }\n.ea .ea-kpis { margin: 16px 0; }\n.ea .ea-list { display: grid; gap: 10px; margin-bottom: 16px; }\n.ea .ea-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 16px; }\n.ea .ea-date { display: grid; place-items: center; text-align: center; width: 58px; height: 62px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-date b { font: 600 22px/1 var(--font-display, inherit); }\n.ea .ea-date small { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-main { display: grid; gap: 3px; min-width: 0; }\n.ea .ea-main > b { font-size: 15px; }\n.ea .ea-main small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12.5px; }\n.ea .ea-main small .ic { width: 13px; height: 13px; }\n.ea .ea-src { color: var(--muted); }\n.ea .ea-src a { color: inherit; text-decoration: underline; }\n.ea .ea-act { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; max-width: 320px; }\n.ea .ea-act small { font-size: 12px; }\n@container ag (max-width: 720px) { .ea .ea-row { grid-template-columns: 58px minmax(0, 1fr); } .ea .ea-act { grid-column: 1 / -1; justify-content: flex-start; max-width: none; } .ea .ea-form .ea-wide { grid-column: auto; } }\n.ea .ea-full { margin: 0 0 16px; }\n.ea .ea-full summary { cursor: pointer; font-size: 13px; color: var(--muted); margin-bottom: 10px; }\n/* ad pack */\n.ea .ea-tabs { margin: 4px 0 12px; flex-wrap: wrap; }\n.ea .ea-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 24px; align-items: start; }\n@container ag (max-width: 900px) { .ea .ea-two { grid-template-columns: minmax(0, 1fr); } }\n.ea .ea-cnt { font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); margin-left: 6px; }\n.ea .ea-cnt.bad, .ea .err { color: var(--bad); }\n.ea .ea-note { font-size: 12.5px; margin: 10px 0 0; overflow-wrap: anywhere; }\n.ea .ea-warn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); font-size: 13.5px; margin: 0 0 12px; }\n.ea .ea-warn .ic { width: 16px; height: 16px; flex: none; }\n.ea .lnk { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; color: inherit; }\n.ea .ea-fb { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }\n.ea .ea-fb-h { display: flex; gap: 10px; align-items: center; padding: 12px 14px 0; }\n.ea .ea-fb-h b { display: block; font-size: 14px; } .ea .ea-fb-h small { font-size: 12px; color: var(--muted); }\n.ea .ea-av { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: var(--primary-ink, #fff); font-weight: 700; flex: none; }\n.ea .ea-av.sm { width: 22px; height: 22px; font-size: 11px; }\n.ea .ea-fb > p { font-size: 14px; line-height: 1.45; margin: 10px 14px 12px; }\n.ea .ea-fb canvas { display: block; width: 100%; height: auto; }\n.ea .ea-fb-f { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-2); }\n.ea .ea-fb-f div { display: grid; gap: 2px; min-width: 0; } .ea .ea-fb-f small { font-size: 11.5px; color: var(--muted); } .ea .ea-fb-f b { font-size: 15px; }\n.ea .ea-imgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 260px)); gap: 18px; margin-top: 24px; align-items: start; }\n.ea .ea-imgs figure { margin: 0; display: grid; gap: 8px; }\n.ea .ea-imgs canvas { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }\n.ea .ea-imgs figcaption { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }\n.ea .ea-imgs .ea-note { grid-column: 1 / -1; }\n.ea .ea-g { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; font-family: Arial, system-ui, sans-serif; background: var(--surface); }\n.ea .ea-g small { font-weight: 700; font-size: 12px; }\n.ea .ea-g-u { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 6px 0; }\n.ea .ea-g b { display: block; color: #1a0dab; font-weight: 400; font-size: 19px; line-height: 1.3; }\n.ea .ea-g p { font-size: 14px; color: var(--ink-2, #4d5156); margin: 4px 0 0; }\n.ea .ea-plan { display: grid; gap: 18px; }\n.ea .ea-when { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }\n.ea .ea-when > div { display: grid; gap: 2px; padding: 14px 16px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-when small { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-when b { font-size: 20px; } .ea .ea-when span { font-size: 12.5px; }\n.ea .ea-tc { padding: 16px 18px; }\n.ea .ea-tc h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 15px; } .ea .ea-tc h4 .ic { width: 16px; height: 16px; }\n.ea .ea-tc dl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px 12px; margin: 0; font-size: 13.5px; }\n.ea .ea-tc dt { color: var(--muted); } .ea .ea-tc dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }\n.ea .ea-pv { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; height: 520px; }\n.ea .ea-pv iframe { width: 166%; height: 166%; border: 0; transform: scale(.6); transform-origin: 0 0; }\n.ea .ea-save { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }\n.ea .ea-status { display: flex; align-items: center; gap: 8px; margin: 14px 0; }\n" }, "/app/web/src/app-events.js": { "t": `/* Bookingbooster: Event ads in the host console (Grow \u2192 Event ads).
    Finds events, training courses and conferences near each home that run for two or more days, shows which nights
    are still free for each one, and writes a ready-to-run ad pack: Facebook and Instagram ads with images drawn from the
    home's photo, a Google search ad with keywords, who to target and when, and a landing page with the dates and a code. */
@@ -110,6 +110,11 @@ var require_bb_embedded_files = __commonJS({
   H['ea-close'] = inst => inst.set({ ea_open: null });
   H['ea-tab'] = (inst, v) => inst.set({ ea_tab: v, ea_wd: null });
   H['ea-hide'] = (inst, v) => call(inst, 'hide', { id: v }, 'Hidden');
+  H['ea-pageform'] = inst => inst.set({ ea_pageform: !inst.st.ea_pageform });
+  H['ea-watch'] = async inst => { if (D.watching) return; const v = inst.st.ea_page || {}; if (!v.url) { BB.toast('Paste the link to a page with events on it.', 'bad'); return; }
+    D.watching = true; inst.render(); const j = await call(inst, 'watch', Object.assign({ propertyId: pid(inst) }, v)); D.watching = false;
+    if (j && j.page) { BB.toast(j.page.error ? j.page.error : 'Read it: ' + j.page.n + ' event' + (j.page.n === 1 ? '' : 's') + ' so far. Press Find events to see the ones that fit.', j.page.error ? 'bad' : 'good'); inst.set({ ea_pageform: false, ea_page: {} }); } else inst.render(); };
+  H['ea-unwatch'] = (inst, v) => call(inst, 'unwatch', { id: v }, 'We\u2019ll stop reading that page for you');
   H['ea-addform'] = inst => inst.set({ ea_add: !inst.st.ea_add, ea_new: inst.st.ea_new || { kind: 'course' } });
   H['ea-add'] = async inst => { const n = inst.st.ea_new || {}; const j = await call(inst, 'add', Object.assign({ propertyId: pid(inst) }, n), 'Event added'); if (j) inst.set({ ea_add: false, ea_new: { kind: 'course' } }); };
   H['ea-dl'] = (inst, v) => { const cv = inst.root.querySelector('canvas[data-ea][data-f="' + v + '"]'); if (!cv) return;
@@ -137,7 +142,7 @@ var require_bb_embedded_files = __commonJS({
     return '<div class="a-card ea-row"><div class="ea-date"><b>' + P(e.start).getUTCDate() + '</b><small>' + MON[P(e.start).getUTCMonth()] + '</small></div>' +
       '<div class="ea-main"><b>' + esc(e.name) + '</b><small>' + I(KIND_ICON[e.kind] || 'cal') + esc((D.list.meta.kinds || {})[e.kind] || 'Event') + ' \xB7 ' + range(e.start, e.end) + ' \xB7 ' + e.days + ' days' + (e.venue || e.town ? ' \xB7 ' + esc([e.venue, e.town].filter((x, i, l) => x && l.indexOf(x) === i && !(i && l[0].includes(x))).join(', ')) : '') + (e.attendance ? ' \xB7 about ' + Number(e.attendance).toLocaleString('en-GB') + ' people' : '') + '</small>' +
       (e.audience || e.why ? '<small class="muted">' + esc(e.audience || e.why) + '</small>' : '') +
-      '<small class="ea-src">' + esc(e.source === 'web' ? 'Found by web search' : e.source === 'sample' ? 'Sample event for the demo' : e.source === 'manual' ? 'Added by you' : 'From ' + ((D.list.meta.sources || []).find(x => x.id === e.source) || {}).name) + (e.url ? ' \xB7 <a href="' + esc(e.url) + '" target="_blank" rel="noopener">Check the dates</a>' : '') + '</small></div>' +
+      '<small class="ea-src">' + esc(e.source === 'sample' ? 'Sample event for the demo' : e.source === 'manual' ? 'Added by you' : 'Found by our event finder' + (e.site ? ' on ' + e.site : '')) + (e.url ? ' \xB7 <a href="' + esc(e.url) + '" target="_blank" rel="noopener">Check the dates</a>' : '') + '</small></div>' +
       '<div class="ea-act">' + fitPill(ft) + (ft.stay ? '<small class="muted">' + range(ft.stay.from, ft.stay.to) + ' \xB7 ' + BB.money(ft.value) + '</small>' : '') +
       (a ? '<button class="btn sm" data-ea="ea-open" data-v="' + a.id + '">' + I('chart') + 'Open ads</button>' : ft.stay ? '<button class="btn sm primary" data-ea="ea-make" data-v="' + e.id + '"' + (making ? ' disabled' : '') + '>' + I('spark') + (making ? 'Writing your ads\u2026' : 'Create ads') + '</button>' : '') +
       '<button class="btn sm ghost" data-ea="ea-hide" data-v="' + e.id + '" aria-label="Hide ' + esc(e.name) + '">' + I('x') + '</button></div></div>';
@@ -146,18 +151,18 @@ var require_bb_embedded_files = __commonJS({
     const st = inst.st, s = S(), L = D.list, home = pid(inst), pr = Object.assign({ radius: 25, minDays: 2, months: 6 }, L.prefs, st.ea_prefs || {});
     const scan = (L.scans || {})[home], evs = (L.events || []).filter(e => e.propertyId === home), open = evs.filter(e => e.fit.status !== 'booked'), full = evs.filter(e => e.fit.status === 'booked');
     const sel = (k, opts, lab) => '<label class="field"><span>' + lab + '</span><select data-eaf="pr.' + k + '">' + opts.map(([v, t]) => '<option value="' + v + '"' + (+pr[k] === v ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>';
-    const srcs = (L.meta.sources || []).map(x => '<span class="ea-chip' + (x.on ? ' on' : '') + '" title="' + esc(x.finds + ' ' + x.price + '.') + '">' + (x.on ? I('check') : '') + esc(x.name) + '</span>').join('');
     const n = new Set(ads().filter(a => a.propertyId === home).map(a => a.eventId)).size;
     return '<section class="a-card ag-card ea-find"><div class="ea-form">' +
       (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-eaf="home">' + s.properties.map(p => '<option value="' + p.id + '"' + (p.id === home ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
       sel('radius', [[10, 'Within 10 miles'], [25, 'Within 25 miles'], [50, 'Within 50 miles']], 'Area') + sel('minDays', [[2, '2 days or more'], [3, '3 days or more'], [5, '5 days or more']], 'How long') + sel('months', [[3, 'Next 3 months'], [6, 'Next 6 months'], [12, 'Next 12 months']], 'When') +
-      '<button class="btn primary" data-ea="ea-find"' + (D.busy ? ' disabled' : '') + '>' + I('search') + (D.busy ? 'Searching\u2026 this can take a minute' : 'Find events') + '</button></div>' +
-      '<div class="ea-srcs"><small class="muted">Sources</small>' + srcs + '</div>' +
-      (scan ? '<p class="muted ea-last">Last search ' + new Date(scan.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + (scan.place ? ' around ' + esc(scan.place) : '') + ': ' + scan.sources.map(x => esc(((L.meta.sources || []).find(q => q.id === x.id) || { name: 'Samples' }).name) + ' ' + (x.error ? 'did not answer' : x.n)).join(', ') + '.</p>' : '') + '</section>' +
+      '<button class="btn primary" data-ea="ea-find"' + (D.busy ? ' disabled' : '') + '>' + I('search') + (D.busy ? 'Searching\u2026' : 'Find events') + '</button></div>' +
+      (L.located && L.located[home] === false && !L.meta.demo ? '<p class="ea-warn">' + I('bell') + 'Add your home\u2019s postcode to its address so we know where to look. Until then we only read the pages you add below.</p>' : '') +
+      (scan ? '<p class="muted ea-last">Last search ' + new Date(scan.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + (scan.place ? ' around ' + esc(scan.place) : '') + ': ' + (scan.sources.length ? scan.sources.map(x => esc(x.name || 'Samples') + ' ' + (x.error ? '(' + esc(x.error) + ')' : x.n)).join(', ') : 'no pages near you yet, add one below') + '.</p>' : '') + '</section>' +
       '<div class="sb-kpis ea-kpis"><div><small>Events found</small><b class="num">' + evs.length + '</b></div><div><small>With free nights</small><b class="num">' + open.length + '</b></div><div><small>Free nights to sell</small><b class="num">' + open.reduce((t, e) => t + (e.fit.stay ? (P(e.fit.stay.to) - P(e.fit.stay.from)) / 864e5 : 0), 0) + '</b></div><div><small>Worth</small><b class="num">' + BB.money(open.reduce((t, e) => t + e.fit.value, 0)) + '</b></div><div><small>Ad packs</small><b class="num">' + n + '</b></div></div>' +
       (open.length ? '<div class="ea-list">' + open.map(e => eventRow(e, st)).join('') + '</div>'
         : '<div class="a-card ag-card sb-fempty"><span class="disp">Fill the nights other people\u2019s <em>events</em> create</span><p class="muted">Courses, conferences, county shows and tournaments bring people who need a bed for a few nights. Find the ones near you, see which of your nights are still free, and get ready-made ads that say \u201Cwe\u2019re free that week\u201D.</p><button class="btn primary" data-ea="ea-find">' + I('search') + 'Find events</button></div>') +
       (full.length ? '<details class="ea-full"><summary>' + full.length + ' event' + (full.length === 1 ? '' : 's') + ' you are already booked for</summary><div class="ea-list">' + full.map(e => eventRow(e, st)).join('') + '</div></details>' : '') +
+      pagesView(st, L, home) +
       '<section class="a-card ag-card"><div class="a-card-h"><h3>Know about one we missed?</h3><button class="btn sm ghost" data-ea="ea-addform">' + I(st.ea_add ? 'x' : 'plus') + (st.ea_add ? 'Cancel' : 'Add an event') + '</button></div>' +
       (st.ea_add ? (() => { const v = st.ea_new || {}; return '<p class="muted" style="margin:0 0 12px">A course at the local college, a contract at the hospital, a wedding fair: anything that brings people for two nights or more.</p><div class="ea-form">' +
         '<label class="field ea-wide"><span>Name</span><input data-eaf="new.name" id="ea-n-name" maxlength="120" placeholder="SMSTS site manager course" value="' + esc(v.name || '') + '"></label>' +
@@ -165,6 +170,23 @@ var require_bb_embedded_files = __commonJS({
         '<label class="field"><span>First day</span><input type="date" data-eaf="new.start" id="ea-n-start" value="' + esc(v.start || '') + '"></label><label class="field"><span>Last day</span><input type="date" data-eaf="new.end" id="ea-n-end" value="' + esc(v.end || '') + '"></label>' +
         '<label class="field"><span>Venue</span><input data-eaf="new.venue" id="ea-n-venue" maxlength="100" value="' + esc(v.venue || '') + '"></label><label class="field ea-wide"><span>Link <em class="muted">optional</em></span><input data-eaf="new.url" id="ea-n-url" type="url" placeholder="https://" value="' + esc(v.url || '') + '"></label></div>' +
         '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-add">' + I('plus') + 'Add event</button></div>'; })() : '') + '</section>';
+  }
+
+  // The pages our own event finder reads near this home. Hosts add the what's-on pages they know.
+  function pagesView(st, L, home) {
+    if (L.meta.demo) return '';
+    const pages = L.pages || [], v = st.ea_page || {}, when = x => x.at ? new Date(x.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const row = x => '<div class="ea-page"><div><b>' + esc(x.name) + '</b><small class="muted">' + esc(x.site) + (x.place ? ' \xB7 ' + esc(x.place) : '') + (x.mine ? ' \xB7 added by you' : x.seed ? ' \xB7 starter page' : ' \xB7 added by another host') + '</small></div>' +
+      '<div class="ea-page-s">' + (!x.at ? BB.pill('muted', 'Not read yet') : x.error && !x.n ? BB.pill('warn', 'Could not read') : BB.pill('good', x.n + ' event' + (x.n === 1 ? '' : 's'))) + (x.at ? '<small class="muted">' + (x.error ? esc(x.error) + ' ' : '') + 'Read ' + when(x) + '</small>' : '') +
+      '<a class="btn sm ghost" href="' + esc(x.url) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(x.name) + '">' + I('out') + '</a>' + (x.mine ? '<button class="btn sm ghost" data-ea="ea-unwatch" data-v="' + esc(x.id) + '" aria-label="Stop reading ' + esc(x.name) + '">' + I('x') + '</button>' : '') + '</div></div>';
+    return '<section class="a-card ag-card ea-pages"><div class="a-card-h"><h3>Pages we read for you</h3><button class="btn sm ghost" data-ea="ea-pageform">' + I(st.ea_pageform ? 'x' : 'plus') + (st.ea_pageform ? 'Cancel' : 'Add a page') + '</button></div>' +
+      '<p class="muted" style="margin:0 0 12px;padding:0">We find events ourselves: we read public what\u2019s-on, venue and course pages near your home about once a day and pull out the events, courses and shows. We follow each site\u2019s rules for crawlers.</p>' +
+      (st.ea_pageform ? '<div class="ea-form"><label class="field ea-wide"><span>Page with events or course dates</span><input data-eaf="page.url" id="ea-p-url" type="url" placeholder="https://www.yourvenue.co.uk/whats-on" value="' + esc(v.url || '') + '"></label>' +
+        '<label class="field"><span>Name <em class="muted">optional</em></span><input data-eaf="page.name" id="ea-p-name" maxlength="80" placeholder="Kent Showground events" value="' + esc(v.name || '') + '"></label>' +
+        '<label class="field"><span>Postcode area <em class="muted">optional</em></span><input data-eaf="page.postcode" id="ea-p-pc" maxlength="8" placeholder="ME14" value="' + esc(v.postcode || '') + '"></label></div>' +
+        '<p class="muted" style="margin:6px 0 10px;padding:0">Good pages: a showground, conference centre or council \u201Cwhat\u2019s on\u201D page, a training provider\u2019s course dates, a sports club\u2019s fixtures, or a calendar (.ics) link.</p>' +
+        '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-watch"' + (D.watching ? ' disabled' : '') + '>' + I('search') + (D.watching ? 'Reading the page\u2026' : 'Read this page') + '</button></div>' : '') +
+      (pages.length ? '<div class="ea-pagelist">' + pages.map(row).join('') + '</div>' : '<p class="muted">No pages near this home yet. Add the what\u2019s-on pages you know, and we\u2019ll read them every day.</p>') + '</section>';
   }
 
   function adView(inst, a) {
@@ -237,6 +259,7 @@ var require_bb_embedded_files = __commonJS({
       if (k === 'home') { st.ea_home = el.value; inst.render(); return; }
       const [sc, f] = k.split('.');
       if (sc === 'pr') { st.ea_prefs = Object.assign({}, st.ea_prefs, { [f]: +el.value }); return; }
+      if (sc === 'page') { (st.ea_page = st.ea_page || {})[f] = el.value; return; }
       if (sc === 'new') { (st.ea_new = st.ea_new || {})[f] = el.value; if (f === 'start' && !st.ea_new.end) { st.ea_new.end = el.value; inst.render(); } return; }
       if (sc === 'wd') { const was = Object.keys(st.ea_wd || {}).length; (st.ea_wd = st.ea_wd || {})[f] = el.value; if (!was) inst.render(); }
     },
@@ -13672,8 +13695,9 @@ var require_config = __commonJS({
         addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
       }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
       ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
-      // Event ads: where local events, courses and conferences come from (server/studio/events.js). All optional.
-      events: { ticketmaster: E.TICKETMASTER_API_KEY, ticketmasterBase: E.TICKETMASTER_API_BASE, predicthq: E.PREDICTHQ_TOKEN, predicthqBase: E.PREDICTHQ_API_BASE, postcodesBase: E.POSTCODES_API_BASE, webSearch: E.EVENT_WEB_SEARCH !== "off" },
+      // Event ads: our own event finder reads public what's-on and course pages in the background (server/studio/crawler.js).
+      events: { crawl: E.EVENT_CRAWL !== "off", seeds: E.EVENT_SEEDS || "" },
+      // EVENT_SEEDS: off, or a path to another starter list
       // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
       credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
       // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
@@ -18888,6 +18912,581 @@ var require_effects = __commonJS({
   }
 });
 
+// server/studio/outcodes.json
+var require_outcodes = __commonJS({
+  "server/studio/outcodes.json"(exports, module) {
+    module.exports = { AB10: [57.1351, -2.1173], AB11: [57.1388, -2.0909], AB12: [57.101, -2.1106], AB13: [57.108, -2.2378], AB14: [57.1008, -2.2707], AB15: [57.1387, -2.1652], AB16: [57.1611, -2.1554], AB21: [57.2096, -2.2003], AB22: [57.1872, -2.1191], AB23: [57.2124, -2.0878], AB24: [57.1628, -2.1123], AB25: [57.1531, -2.1124], AB30: [56.8468, -2.4771], AB31: [57.0748, -2.5262], AB32: [57.1555, -2.3174], AB33: [57.2246, -2.742], AB34: [57.0939, -2.812], AB35: [57.0383, -3.1487], AB36: [57.1972, -3.0659], AB37: [57.331, -3.3505], AB38: [57.4859, -3.2261], AB39: [56.9778, -2.2172], AB41: [57.3759, -2.1048], AB42: [57.5008, -1.8882], AB43: [57.6571, -2.0436], AB44: [57.6688, -2.4912], AB45: [57.6514, -2.5664], AB51: [57.2891, -2.4049], AB52: [57.344, -2.6065], AB53: [57.5254, -2.3941], AB54: [57.4536, -2.7633], AB55: [57.5239, -2.9902], AB56: [57.6744, -2.9256], AL1: [51.7484, -0.3224], AL10: [51.7596, -0.2292], AL2: [51.7206, -0.3335], AL3: [51.7778, -0.3706], AL4: [51.7713, -0.294], AL5: [51.8162, -0.3518], AL6: [51.831, -0.1974], AL7: [51.7967, -0.1857], AL8: [51.8033, -0.2086], AL9: [51.7447, -0.1979], B1: [52.4787, -1.9072], B10: [52.4697, -1.8513], B11: [52.4544, -1.8587], B12: [52.4598, -1.8822], B13: [52.4364, -1.8779], B14: [52.4176, -1.8882], B15: [52.4661, -1.9235], B16: [52.476, -1.9337], B17: [52.4608, -1.9603], B18: [52.4913, -1.9234], B19: [52.4967, -1.9042], B2: [52.4787, -1.8969], B20: [52.5138, -1.9175], B21: [52.5066, -1.9396], B23: [52.5281, -1.854], B24: [52.5191, -1.8276], B25: [52.4651, -1.8204], B26: [52.4606, -1.7895], B27: [52.4445, -1.822], B28: [52.4265, -1.8412], B29: [52.4374, -1.947], B3: [52.4805, -1.9013], B30: [52.4221, -1.9279], B31: [52.4077, -1.9721], B32: [52.4482, -1.9926], B33: [52.4804, -1.7865], B34: [52.4956, -1.7805], B35: [52.519, -1.7878], B36: [52.5037, -1.779], B37: [52.4785, -1.7408], B38: [52.3996, -1.9339], B4: [52.4823, -1.894], B40: [52.4586, -1.7218], B42: [52.5336, -1.9115], B43: [52.548, -1.9292], B44: [52.5452, -1.8835], B45: [52.3879, -2.0088], B46: [52.508, -1.6935], B47: [52.387, -1.8795], B48: [52.3556, -1.9486], B49: [52.217, -1.8668], B5: [52.4697, -1.8955], B50: [52.1685, -1.8538], B6: [52.5039, -1.8851], B60: [52.3259, -2.0499], B61: [52.3448, -2.0675], B62: [52.4563, -2.0324], B63: [52.4518, -2.0662], B64: [52.4724, -2.0677], B65: [52.4832, -2.0427], B66: [52.4931, -1.9647], B67: [52.486, -1.9764], B68: [52.4788, -2], B69: [52.5021, -2.028], B7: [52.4931, -1.8719], B70: [52.5201, -2.0029], B71: [52.5354, -1.9897], B72: [52.5515, -1.8215], B73: [52.5524, -1.8422], B74: [52.583, -1.8583], B75: [52.5784, -1.8081], B76: [52.5451, -1.7862], B77: [52.6185, -1.6676], B78: [52.606, -1.6736], B79: [52.6501, -1.6807], B8: [52.4903, -1.8409], B80: [52.2764, -1.8959], B9: [52.4778, -1.8483], B90: [52.4004, -1.8236], B91: [52.4138, -1.7824], B92: [52.4363, -1.7734], B93: [52.3805, -1.7429], B94: [52.3509, -1.7915], B95: [52.2852, -1.7801], B96: [52.2522, -1.9604], B97: [52.2989, -1.9545], B98: [52.3034, -1.9135], BA1: [51.3911, -2.3593], BA10: [51.1129, -2.4458], BA11: [51.2365, -2.3252], BA12: [51.1712, -2.1874], BA13: [51.262, -2.1792], BA14: [51.3186, -2.2009], BA15: [51.3509, -2.2643], BA16: [51.1249, -2.7431], BA2: [51.3596, -2.3763], BA20: [50.9375, -2.6419], BA21: [50.9511, -2.6336], BA22: [50.9681, -2.6367], BA3: [51.2747, -2.4731], BA4: [51.171, -2.5307], BA5: [51.2127, -2.6529], BA6: [51.1404, -2.7048], BA7: [51.0883, -2.5183], BA8: [50.9988, -2.4105], BA9: [51.0573, -2.4095], BB1: [53.7563, -2.4627], BB10: [53.7992, -2.2186], BB11: [53.7829, -2.252], BB12: [53.8035, -2.29], BB18: [53.9143, -2.1705], BB2: [53.7417, -2.5004], BB3: [53.6978, -2.465], BB4: [53.7038, -2.2894], BB5: [53.7548, -2.3716], BB6: [53.7924, -2.416], BB7: [53.8734, -2.3864], BB8: [53.8577, -2.1627], BB9: [53.837, -2.2143], BD1: [53.7955, -1.7525], BD10: [53.8314, -1.725], BD11: [53.7513, -1.6754], BD12: [53.7461, -1.7604], BD13: [53.7858, -1.8588], BD14: [53.7822, -1.8163], BD15: [53.8092, -1.836], BD16: [53.8487, -1.8328], BD17: [53.8468, -1.7674], BD18: [53.8315, -1.7766], BD19: [53.7271, -1.712], BD2: [53.8144, -1.7342], BD20: [53.8965, -1.9467], BD21: [53.8641, -1.9057], BD22: [53.8452, -1.9529], BD23: [53.9926, -2.0534], BD24: [54.0777, -2.2736], BD3: [53.7982, -1.7267], BD4: [53.7757, -1.7177], BD5: [53.7785, -1.7572], BD6: [53.7641, -1.7831], BD7: [53.783, -1.7814], BD8: [53.801, -1.7813], BD9: [53.8118, -1.7889], BH1: [50.7243, -1.8597], BH10: [50.7585, -1.8908], BH11: [50.7612, -1.9163], BH12: [50.7369, -1.9263], BH13: [50.7099, -1.9179], BH14: [50.7216, -1.9433], BH15: [50.7216, -1.9844], BH16: [50.7378, -2.0439], BH17: [50.7459, -1.9745], BH18: [50.7585, -1.9929], BH19: [50.611, -1.9689], BH2: [50.7216, -1.881], BH20: [50.6865, -2.1458], BH21: [50.8125, -1.973], BH22: [50.8052, -1.8879], BH23: [50.7457, -1.7533], BH24: [50.8438, -1.7855], BH25: [50.7517, -1.6569], BH3: [50.7351, -1.8795], BH31: [50.8754, -1.8721], BH4: [50.7207, -1.898], BH5: [50.7251, -1.8342], BH6: [50.7269, -1.8045], BH7: [50.735, -1.8314], BH8: [50.7404, -1.8512], BH9: [50.7495, -1.871], BL0: [53.6453, -2.3147], BL1: [53.59, -2.4442], BL2: [53.5875, -2.3943], BL3: [53.5649, -2.4319], BL4: [53.547, -2.4], BL5: [53.5493, -2.5147], BL6: [53.5914, -2.5394], BL7: [53.6296, -2.4219], BL8: [53.6048, -2.3265], BL9: [53.5914, -2.2856], BN1: [50.839, -0.1379], BN10: [50.7953, 23e-4], BN11: [50.8129, -0.376], BN12: [50.8135, -0.4242], BN13: [50.8304, -0.4052], BN14: [50.8318, -0.3796], BN15: [50.8301, -0.3243], BN16: [50.8145, -0.4938], BN17: [50.8141, -0.535], BN18: [50.8488, -0.5793], BN2: [50.824, -0.103], BN20: [50.7745, 0.2554], BN21: [50.7723, 0.2765], BN22: [50.7883, 0.2844], BN23: [50.7976, 0.3132], BN24: [50.8162, 0.3312], BN25: [50.7763, 0.1093], BN26: [50.821, 0.2235], BN27: [50.8715, 0.2643], BN3: [50.8342, -0.175], BN41: [50.8402, -0.2145], BN42: [50.8369, -0.2317], BN43: [50.8356, -0.2658], BN44: [50.8904, -0.3221], BN45: [50.8892, -0.1842], BN5: [50.9265, -0.2681], BN6: [50.9292, -0.1528], BN7: [50.8772, 1e-4], BN8: [50.9132, 0.0515], BN9: [50.7954, 0.0506], BR1: [51.4111, 0.0219], BR2: [51.3886, 0.0224], BR3: [51.403, -0.0302], BR4: [51.3756, -69e-4], BR5: [51.3898, 0.1044], BR6: [51.3657, 0.0932], BR7: [51.4102, 0.0722], BR8: [51.3975, 0.1766], BS1: [51.4531, -2.593], BS10: [51.5061, -2.6095], BS11: [51.4967, -2.6742], BS13: [51.4116, -2.6112], BS14: [51.4128, -2.5608], BS15: [51.4589, -2.5053], BS16: [51.485, -2.5099], BS2: [51.4594, -2.5801], BS20: [51.4792, -2.7518], BS21: [51.4344, -2.8489], BS22: [51.3601, -2.9294], BS23: [51.3427, -2.9707], BS24: [51.3277, -2.9316], BS25: [51.3204, -2.8252], BS26: [51.2797, -2.8546], BS27: [51.2713, -2.7699], BS28: [51.2251, -2.8135], BS29: [51.3308, -2.8771], BS3: [51.4378, -2.6014], BS30: [51.4447, -2.472], BS31: [51.4077, -2.4918], BS32: [51.5423, -2.5596], BS34: [51.5234, -2.5636], BS35: [51.5963, -2.5487], BS36: [51.5255, -2.4858], BS37: [51.5393, -2.4167], BS39: [51.3275, -2.5311], BS4: [51.4344, -2.5611], BS40: [51.3464, -2.6907], BS41: [51.4222, -2.6516], BS48: [51.4252, -2.748], BS49: [51.3798, -2.8177], BS5: [51.4614, -2.5499], BS6: [51.4701, -2.599], BS7: [51.4864, -2.5805], BS8: [51.4575, -2.6204], BS9: [51.4871, -2.6251], BS99: [51.4577, -2.5729], BT1: [54.5994, -5.9284], BT10: [54.5598, -5.9834], BT11: [54.5756, -5.9973], BT12: [54.5922, -5.9556], BT13: [54.6056, -5.9584], BT14: [54.6208, -5.9614], BT15: [54.6236, -5.9307], BT16: [54.591, -5.7975], BT17: [54.5542, -6.0169], BT18: [54.6415, -5.8208], BT19: [54.6517, -5.6666], BT2: [54.5931, -5.9293], BT20: [54.6581, -5.6641], BT21: [54.6383, -5.5445], BT22: [54.5032, -5.5189], BT23: [54.563, -5.7144], BT24: [54.4168, -5.8723], BT25: [54.3954, -6.1108], BT26: [54.452, -6.0609], BT27: [54.51, -6.0203], BT28: [54.523, -6.088], BT29: [54.6202, -6.1939], BT3: [54.62, -5.904], BT30: [54.334, -5.7044], BT31: [54.2778, -5.9699], BT32: [54.335, -6.2448], BT33: [54.221, -5.8938], BT34: [54.1547, -6.1803], BT35: [54.165, -6.4436], BT36: [54.6768, -5.9545], BT37: [54.6766, -5.9063], BT38: [54.7295, -5.798], BT39: [54.7449, -6.0171], BT4: [54.6023, -5.8667], BT40: [54.8466, -5.8215], BT41: [54.733, -6.26], BT42: [54.8546, -6.2821], BT43: [54.8902, -6.2656], BT44: [54.9742, -6.2839], BT45: [54.7604, -6.6394], BT46: [54.8657, -6.6639], BT47: [54.9739, -7.2115], BT48: [55.0093, -7.3273], BT49: [55.0477, -6.9515], BT5: [54.5887, -5.87], BT51: [55.0576, -6.68], BT52: [55.1342, -6.6528], BT53: [55.0852, -6.473], BT54: [55.2, -6.2579], BT55: [55.1797, -6.71], BT56: [55.1982, -6.6493], BT57: [55.2014, -6.5175], BT6: [54.5797, -5.8971], BT60: [54.2922, -6.6495], BT61: [54.3679, -6.6226], BT62: [54.4126, -6.4642], BT63: [54.4036, -6.3892], BT64: [54.4494, -6.3925], BT65: [54.445, -6.3658], BT66: [54.4551, -6.3329], BT67: [54.4871, -6.2683], BT68: [54.3663, -6.8474], BT69: [54.4243, -6.9484], BT7: [54.5816, -5.9236], BT70: [54.5149, -6.8867], BT71: [54.5132, -6.704], BT74: [54.3432, -7.6643], BT75: [54.3753, -7.3156], BT76: [54.4194, -7.1917], BT77: [54.4271, -7.117], BT78: [54.5716, -7.3737], BT79: [54.6242, -7.2007], BT8: [54.5399, -5.9041], BT80: [54.6446, -6.7487], BT81: [54.694, -7.6137], BT82: [54.8258, -7.4278], BT9: [54.5718, -5.9489], BT92: [54.2229, -7.4618], BT93: [54.4651, -7.8264], BT94: [54.376, -7.5408], CA1: [54.8854, -2.9105], CA10: [54.611, -2.6597], CA11: [54.6642, -2.7861], CA12: [54.6021, -3.1333], CA13: [54.66, -3.3659], CA14: [54.6345, -3.537], CA15: [54.7116, -3.481], CA16: [54.5741, -2.4827], CA17: [54.4784, -2.3504], CA18: [54.3541, -3.3896], CA19: [54.3865, -3.383], CA2: [54.8841, -2.9494], CA20: [54.4099, -3.4608], CA21: [54.4452, -3.5145], CA22: [54.48, -3.5312], CA23: [54.5147, -3.4924], CA24: [54.5149, -3.5418], CA25: [54.5224, -3.5174], CA26: [54.5444, -3.4811], CA27: [54.4909, -3.5919], CA28: [54.5432, -3.5769], CA3: [54.9076, -2.939], CA4: [54.8464, -2.8333], CA5: [54.8548, -3.0157], CA6: [54.9942, -2.8926], CA7: [54.807, -3.237], CA8: [54.9389, -2.6853], CA9: [54.8018, -2.4185], CB1: [52.1761, 0.1895], CB10: [52.0299, 0.2655], CB11: [51.9994, 0.2144], CB2: [52.1628, 0.1333], CB21: [52.1319, 0.2955], CB22: [52.1272, 0.129], CB23: [52.2135, -0.0221], CB24: [52.3154, 0.0276], CB25: [52.2608, 0.2361], CB3: [52.2132, 0.0245], CB4: [52.2431, 0.1152], CB5: [52.2387, 0.2102], CB6: [52.4039, 0.2243], CB7: [52.3661, 0.3209], CB8: [52.2308, 0.4266], CB9: [52.0821, 0.4419], CF10: [51.4739, -3.1765], CF11: [51.4728, -3.1923], CF14: [51.5195, -3.2022], CF15: [51.534, -3.2732], CF23: [51.5155, -3.1502], CF24: [51.4848, -3.1638], CF3: [51.5195, -3.1113], CF31: [51.5088, -3.5751], CF32: [51.5599, -3.5827], CF33: [51.5242, -3.691], CF34: [51.6102, -3.6509], CF35: [51.5221, -3.5179], CF36: [51.4846, -3.6982], CF37: [51.6026, -3.3329], CF38: [51.5603, -3.3316], CF39: [51.6015, -3.4238], CF40: [51.6201, -3.4504], CF41: [51.6476, -3.4816], CF42: [51.6668, -3.5213], CF43: [51.6579, -3.4487], CF44: [51.718, -3.4579], CF45: [51.6688, -3.3609], CF46: [51.665, -3.3], CF47: [51.7514, -3.3749], CF48: [51.7407, -3.3688], CF5: [51.4822, -3.2415], CF61: [51.4075, -3.4796], CF62: [51.4041, -3.3084], CF63: [51.4119, -3.2554], CF64: [51.4333, -3.1884], CF71: [51.4618, -3.454], CF72: [51.5299, -3.3985], CF81: [51.6998, -3.2431], CF82: [51.6513, -3.236], CF83: [51.5859, -3.2169], CH1: [53.2017, -2.9073], CH2: [53.2164, -2.8687], CH3: [53.1664, -2.8213], CH4: [53.1682, -2.938], CH41: [53.394, -3.0302], CH42: [53.3743, -3.0207], CH43: [53.383, -3.0585], CH44: [53.4155, -3.0368], CH45: [53.428, -3.0506], CH46: [53.4032, -3.1102], CH47: [53.3963, -3.1687], CH48: [53.3712, -3.1695], CH49: [53.3808, -3.1021], CH5: [53.2042, -3.0406], CH6: [53.25, -3.1452], CH60: [53.326, -3.0947], CH61: [53.3475, -3.1012], CH62: [53.3342, -2.9807], CH63: [53.3447, -3.011], CH64: [53.2878, -3.0472], CH65: [53.2773, -2.9014], CH66: [53.277, -2.9344], CH7: [53.1692, -3.1326], CH8: [53.2814, -3.2405], CM0: [51.6622, 0.8372], CM1: [51.7445, 0.4569], CM11: [51.6234, 0.4461], CM12: [51.6276, 0.4159], CM13: [51.6156, 0.3387], CM14: [51.6183, 0.2926], CM15: [51.6433, 0.3054], CM16: [51.6998, 0.1216], CM17: [51.7704, 0.1452], CM18: [51.7558, 0.1069], CM19: [51.76, 0.0751], CM2: [51.7214, 0.4875], CM20: [51.7748, 0.1048], CM21: [51.8118, 0.1472], CM22: [51.8616, 0.2222], CM23: [51.8718, 0.1602], CM24: [51.8988, 0.2066], CM3: [51.7193, 0.5845], CM4: [51.6739, 0.3923], CM5: [51.7208, 0.2486], CM6: [51.8768, 0.3668], CM7: [51.8975, 0.538], CM77: [51.8622, 0.5255], CM8: [51.8054, 0.6387], CM9: [51.741, 0.7016], CO1: [51.8889, 0.9096], CO10: [52.0571, 0.7236], CO11: [51.9413, 1.0789], CO12: [51.9312, 1.2543], CO13: [51.838, 1.2388], CO14: [51.8498, 1.2687], CO15: [51.7962, 1.1561], CO16: [51.8204, 1.1258], CO2: [51.8695, 0.8953], CO3: [51.8847, 0.8628], CO4: [51.9065, 0.9238], CO5: [51.8146, 0.8221], CO6: [51.9242, 0.7897], CO7: [51.8838, 1.0052], CO8: [51.9733, 0.768], CO9: [51.9688, 0.6104], CR0: [51.3722, -0.0746], CR2: [51.3498, -0.0799], CR3: [51.2869, -0.0796], CR4: [51.4042, -0.1581], CR5: [51.3121, -0.1389], CR6: [51.308, -0.0515], CR7: [51.3952, -0.1024], CR8: [51.3359, -0.1106], CR9: [51.3722, -0.0746], CT1: [51.2772, 1.0873], CT10: [51.3621, 1.4307], CT11: [51.3356, 1.4144], CT12: [51.3422, 1.3732], CT13: [51.2669, 1.3304], CT14: [51.2158, 1.3869], CT15: [51.1711, 1.2834], CT16: [51.14, 1.3027], CT17: [51.1285, 1.2961], CT18: [51.1145, 1.1508], CT19: [51.0879, 1.1704], CT2: [51.2926, 1.0826], CT20: [51.079, 1.1655], CT21: [51.0723, 1.0779], CT3: [51.2774, 1.2121], CT4: [51.2246, 1.068], CT5: [51.3532, 1.0364], CT6: [51.3642, 1.1305], CT7: [51.3712, 1.3006], CT8: [51.38, 1.3415], CT9: [51.383, 1.3906], CV1: [52.4094, -1.506], CV10: [52.5254, -1.5003], CV11: [52.5189, -1.4532], CV12: [52.474, -1.4729], CV13: [52.6122, -1.4136], CV2: [52.4227, -1.4647], CV21: [52.3677, -1.2744], CV22: [52.3552, -1.2863], CV23: [52.3616, -1.3083], CV3: [52.3931, -1.4812], CV31: [52.2782, -1.5236], CV32: [52.2962, -1.5307], CV33: [52.2574, -1.4842], CV34: [52.2829, -1.5792], CV35: [52.229, -1.5944], CV36: [52.0673, -1.625], CV37: [52.1853, -1.7133], CV4: [52.3979, -1.5649], CV47: [52.2335, -1.3849], CV5: [52.4123, -1.5501], CV6: [52.4319, -1.5072], CV7: [52.4438, -1.563], CV8: [52.3511, -1.5434], CV9: [52.5849, -1.5586], CW1: [53.1028, -2.4347], CW10: [53.1891, -2.446], CW11: [53.1426, -2.3648], CW12: [53.1645, -2.2109], CW2: [53.0812, -2.4464], CW3: [52.9995, -2.4053], CW4: [53.2065, -2.3474], CW5: [53.062, -2.5208], CW6: [53.162, -2.6656], CW7: [53.1905, -2.5269], CW8: [53.2533, -2.5636], CW9: [53.259, -2.5007], DA1: [51.4464, 0.2092], DA10: [51.4445, 0.3084], DA11: [51.4346, 0.3539], DA12: [51.4276, 0.3881], DA13: [51.3824, 0.3555], DA14: [51.4248, 0.1132], DA15: [51.4403, 0.0995], DA16: [51.4644, 0.1092], DA17: [51.4871, 0.1492], DA18: [51.4916, 0.1436], DA2: [51.4315, 0.2343], DA3: [51.3842, 0.3096], DA4: [51.3911, 0.2324], DA5: [51.4403, 0.147], DA6: [51.4548, 0.1405], DA7: [51.4655, 0.1467], DA8: [51.4757, 0.1774], DA9: [51.4477, 0.2797], DD1: [56.4611, -2.977], DD10: [56.7472, -2.4268], DD11: [56.5731, -2.5974], DD2: [56.4697, -3.0276], DD3: [56.4826, -2.9889], DD4: [56.4821, -2.9353], DD5: [56.4781, -2.8622], DD6: [56.4372, -2.9261], DD7: [56.5033, -2.7181], DD8: [56.6565, -2.9217], DD9: [56.748, -2.6672], DE1: [52.9199, -1.4749], DE11: [52.7737, -1.5538], DE12: [52.7252, -1.5528], DE13: [52.8074, -1.6884], DE14: [52.8046, -1.6395], DE15: [52.7991, -1.6084], DE21: [52.9332, -1.4316], DE22: [52.9335, -1.4956], DE23: [52.9011, -1.4945], DE24: [52.8902, -1.4515], DE3: [52.9085, -1.5405], DE4: [53.1271, -1.5636], DE45: [53.2146, -1.6765], DE5: [53.0446, -1.4018], DE55: [53.101, -1.3711], DE56: [53.0215, -1.4737], DE6: [52.9936, -1.7169], DE65: [52.8665, -1.6093], DE7: [52.9722, -1.3209], DE72: [52.8933, -1.3593], DE73: [52.8469, -1.4357], DE74: [52.8437, -1.3288], DE75: [53.0128, -1.3531], DG1: [55.0735, -3.5804], DG10: [55.3198, -3.4373], DG11: [55.1133, -3.3358], DG12: [54.9893, -3.2504], DG13: [55.1729, -3.0285], DG14: [55.0807, -2.9854], DG16: [54.9973, -3.0678], DG2: [55.0644, -3.6568], DG3: [55.2368, -3.7993], DG4: [55.3755, -3.9524], DG5: [54.922, -3.8102], DG6: [54.8372, -4.0556], DG7: [54.9674, -4.0122], DG8: [54.8726, -4.5157], DG9: [54.8781, -5.0212], DH1: [54.781, -1.5662], DH2: [54.8593, -1.5965], DH3: [54.8718, -1.5668], DH4: [54.8544, -1.4906], DH5: [54.8237, -1.4536], DH6: [54.7528, -1.4639], DH7: [54.7894, -1.6641], DH8: [54.8554, -1.8442], DH9: [54.8677, -1.707], DL1: [54.5302, -1.5364], DL10: [54.4138, -1.6903], DL11: [54.4384, -1.8751], DL12: [54.5724, -1.9845], DL13: [54.7162, -1.9534], DL14: [54.652, -1.69], DL15: [54.7096, -1.7284], DL16: [54.6985, -1.6043], DL17: [54.6812, -1.5409], DL2: [54.5286, -1.6013], DL3: [54.5321, -1.5703], DL4: [54.6303, -1.6437], DL5: [54.6175, -1.5756], DL6: [54.3704, -1.3888], DL7: [54.3376, -1.4847], DL8: [54.2927, -1.7849], DL9: [54.3752, -1.709], DN1: [53.5221, -1.1296], DN10: [53.4271, -0.9434], DN11: [53.4516, -1.0828], DN12: [53.4831, -1.2208], DN14: [53.7075, -0.9364], DN15: [53.6147, -0.6499], DN16: [53.5678, -0.6393], DN17: [53.5721, -0.7011], DN18: [53.6805, -0.4464], DN19: [53.6839, -0.3585], DN2: [53.5326, -1.1022], DN20: [53.5572, -0.5053], DN21: [53.4193, -0.7013], DN22: [53.3235, -0.9264], DN3: [53.5458, -1.0582], DN31: [53.5701, -0.0865], DN32: [53.5627, -0.0687], DN33: [53.5397, -0.0969], DN34: [53.557, -0.1112], DN35: [53.5549, -0.0358], DN36: [53.5109, -0.0364], DN37: [53.5403, -0.1346], DN38: [53.5611, -0.3919], DN39: [53.617, -0.3338], DN4: [53.5058, -1.1209], DN40: [53.6208, -0.2233], DN41: [53.5835, -0.1947], DN5: [53.5376, -1.1715], DN6: [53.5961, -1.1764], DN7: [53.5814, -1.0151], DN8: [53.6142, -0.9554], DN9: [53.5066, -0.8932], DT1: [50.7109, -2.4405], DT10: [50.937, -2.3331], DT11: [50.8609, -2.1805], DT2: [50.7495, -2.4537], DT3: [50.6407, -2.4667], DT4: [50.6092, -2.4636], DT5: [50.5472, -2.4404], DT6: [50.7389, -2.7753], DT7: [50.7286, -2.9466], DT8: [50.8163, -2.7581], DT9: [50.9409, -2.5153], DY1: [52.5165, -2.0958], DY10: [52.3859, -2.2248], DY11: [52.385, -2.2601], DY12: [52.3857, -2.3292], DY13: [52.3364, -2.2803], DY14: [52.3798, -2.4628], DY2: [52.4967, -2.081], DY3: [52.5299, -2.1283], DY4: [52.5327, -2.0531], DY5: [52.4805, -2.1222], DY6: [52.4984, -2.1635], DY7: [52.466, -2.2238], DY8: [52.4598, -2.1545], DY9: [52.4355, -2.1221], E1: [51.5177, -0.0584], E10: [51.5681, -0.0115], E11: [51.5677, 0.0144], E12: [51.5499, 0.054], E13: [51.527, 0.0271], E14: [51.5062, -0.0186], E15: [51.5391, 31e-4], E16: [51.5108, 0.0263], E17: [51.5862, -0.018], E18: [51.5918, 0.0271], E1W: [51.5078, -0.0574], E2: [51.5294, -0.0608], E3: [51.5279, -0.0248], E4: [51.622, -34e-4], E5: [51.5589, -0.0523], E6: [51.5256, 0.0558], E7: [51.5468, 0.0279], E8: [51.542, -0.0631], E9: [51.5426, -0.0429], EC1: [51.5229, -0.1014], EC1A: [51.5202, -0.103], EC1M: [51.5211, -0.1015], EC1N: [51.5203, -0.1073], EC1R: [51.5247, -0.1071], EC1V: [51.5255, -0.097], EC1Y: [51.5227, -0.0928], EC2: [51.52, -0.0886], EC2A: [51.5226, -0.0856], EC2M: [51.5181, -0.0858], EC2N: [51.5163, -0.0859], EC2P: [51.5167, -0.0936], EC2R: [51.5164, -0.0916], EC2V: [51.5155, -0.0931], EC2Y: [51.5201, -0.0958], EC3: [51.5136, -0.0831], EC3A: [51.5153, -0.0816], EC3M: [51.5127, -0.0831], EC3N: [51.5126, -0.0788], EC3P: [51.5202, -0.1016], EC3R: [51.5118, -0.0846], EC3V: [51.5136, -0.086], EC4: [51.5147, -0.1003], EC4A: [51.5158, -0.1075], EC4M: [51.5147, -0.1003], EC4N: [51.5146, -0.0931], EC4R: [51.5119, -0.0918], EC4V: [51.5129, -0.099], EC4Y: [51.514, -0.1076], EH1: [55.9524, -3.1884], EH10: [55.9208, -3.2098], EH11: [55.9339, -3.2487], EH12: [55.9426, -3.2714], EH13: [55.9079, -3.2414], EH14: [55.9093, -3.2831], EH15: [55.9469, -3.1114], EH16: [55.9222, -3.1539], EH17: [55.907, -3.1422], EH18: [55.8767, -3.1221], EH19: [55.8732, -3.1045], EH2: [55.9542, -3.1949], EH20: [55.879, -3.1558], EH21: [55.9385, -3.0455], EH22: [55.8844, -3.06], EH23: [55.8396, -3.0508], EH24: [55.8505, -3.1326], EH25: [55.8582, -3.1743], EH26: [55.8326, -3.2231], EH27: [55.8906, -3.4232], EH28: [55.9306, -3.3862], EH29: [55.9565, -3.3984], EH3: [55.9541, -3.1997], EH30: [55.9845, -3.3834], EH31: [56.0363, -2.8266], EH32: [55.968, -2.9485], EH33: [55.942, -2.9447], EH34: [55.9092, -2.8799], EH35: [55.9105, -2.9423], EH36: [55.8564, -2.8516], EH37: [55.8619, -2.9587], EH38: [55.7864, -2.9601], EH39: [56.0477, -2.7305], EH4: [55.9625, -3.2576], EH40: [55.9906, -2.6557], EH41: [55.9485, -2.7751], EH42: [55.9939, -2.5243], EH43: [55.6242, -3.0101], EH44: [55.6202, -3.0656], EH45: [55.6549, -3.1921], EH46: [55.7369, -3.3491], EH47: [55.8598, -3.6634], EH48: [55.9011, -3.6635], EH49: [55.9766, -3.5979], EH5: [55.9746, -3.2163], EH51: [56.0115, -3.6041], EH52: [55.9376, -3.4826], EH53: [55.8936, -3.4761], EH54: [55.8921, -3.524], EH55: [55.8475, -3.5718], EH6: [55.9714, -3.1746], EH7: [55.9607, -3.1646], EH8: [55.9491, -3.1627], EH9: [55.9336, -3.1846], EN1: [51.6536, -0.0671], EN10: [51.74, -0.0199], EN11: [51.765, -72e-4], EN2: [51.6585, -0.0914], EN3: [51.6585, -0.0379], EN4: [51.6479, -0.1598], EN5: [51.6493, -0.1945], EN6: [51.6994, -0.1766], EN7: [51.7103, -0.0661], EN8: [51.698, -0.0319], EN9: [51.6945, 0.0143], EX1: [50.7254, -3.5048], EX10: [50.6925, -3.2446], EX11: [50.746, -3.2871], EX12: [50.7058, -3.0807], EX13: [50.7865, -3.0073], EX14: [50.8127, -3.1896], EX15: [50.8768, -3.3391], EX16: [50.9226, -3.4912], EX17: [50.8118, -3.702], EX18: [50.9016, -3.8874], EX19: [50.8771, -4.0044], EX2: [50.71, -3.517], EX20: [50.75, -4.0188], EX21: [50.8051, -4.2086], EX22: [50.828, -4.3673], EX23: [50.8237, -4.5332], EX24: [50.7382, -3.0885], EX3: [50.6865, -3.4582], EX31: [51.0857, -4.0634], EX32: [51.0712, -4.0185], EX33: [51.1134, -4.1689], EX34: [51.1983, -4.1028], EX35: [51.2236, -3.8275], EX36: [51.0164, -3.7922], EX37: [50.9787, -3.9518], EX38: [50.9438, -4.1511], EX39: [51.0139, -4.2456], EX4: [50.7306, -3.5262], EX5: [50.7568, -3.4392], EX6: [50.6774, -3.5967], EX7: [50.5918, -3.4723], EX8: [50.6296, -3.4013], EX9: [50.6386, -3.3224], FK1: [55.9856, -3.7938], FK10: [56.1152, -3.7805], FK11: [56.1501, -3.8498], FK12: [56.1526, -3.8], FK13: [56.1508, -3.7403], FK14: [56.1654, -3.6604], FK15: [56.2025, -3.949], FK16: [56.1908, -4.0597], FK17: [56.2402, -4.2189], FK18: [56.3245, -4.3273], FK19: [56.3706, -4.3139], FK2: [56.005, -3.7546], FK20: [56.4065, -4.6306], FK21: [56.4657, -4.3197], FK3: [56.0109, -3.7196], FK4: [55.9973, -3.9066], FK5: [56.0256, -3.8181], FK6: [56.0215, -3.9142], FK7: [56.0969, -3.9164], FK8: [56.1307, -4.05], FK9: [56.1424, -3.9396], FY1: [53.8155, -3.0451], FY2: [53.8452, -3.0382], FY3: [53.8211, -3.0209], FY4: [53.7914, -3.0278], FY5: [53.8742, -3.0207], FY6: [53.8682, -2.981], FY7: [53.9164, -3.0263], FY8: [53.7503, -3.001], G1: [55.8604, -4.2467], G11: [55.8736, -4.3114], G12: [55.8801, -4.3006], G13: [55.8936, -4.3462], G14: [55.8809, -4.3486], G15: [55.9094, -4.3648], G2: [55.8638, -4.2549], G20: [55.8858, -4.2818], G21: [55.8806, -4.2207], G22: [55.89, -4.25], G23: [55.9019, -4.2843], G3: [55.8662, -4.2726], G31: [55.8575, -4.2082], G32: [55.8484, -4.1629], G33: [55.8735, -4.1659], G34: [55.8682, -4.1113], G4: [55.8684, -4.252], G40: [55.8482, -4.222], G41: [55.8381, -4.2822], G42: [55.8323, -4.2563], G43: [55.8182, -4.289], G44: [55.8144, -4.2552], G45: [55.8049, -4.2307], G46: [55.8045, -4.3057], G5: [55.8477, -4.2524], G51: [55.8573, -4.3136], G52: [55.8477, -4.3482], G53: [55.8216, -4.3514], G60: [55.922, -4.4536], G61: [55.919, -4.3301], G62: [55.9426, -4.3203], G63: [56.0424, -4.3649], G64: [55.9113, -4.216], G65: [55.9733, -4.0577], G66: [55.9402, -4.1536], G67: [55.9475, -3.9859], G68: [55.9534, -4.0102], G69: [55.8737, -4.102], G71: [55.8221, -4.0721], G72: [55.8041, -4.1286], G73: [55.8198, -4.2061], G74: [55.7691, -4.1729], G76: [55.7781, -4.2723], G77: [55.7734, -4.3294], G78: [55.7926, -4.4087], G81: [55.9131, -4.4066], G82: [55.9519, -4.574], G83: [56.012, -4.5844], G84: [56.0137, -4.7531], GL1: [51.8599, -2.2396], GL10: [51.7429, -2.2839], GL11: [51.6887, -2.3559], GL12: [51.6248, -2.3843], GL13: [51.6929, -2.4587], GL14: [51.8169, -2.4788], GL15: [51.7366, -2.5504], GL16: [51.7956, -2.6105], GL17: [51.8554, -2.5141], GL18: [51.9412, -2.4146], GL19: [51.9425, -2.2866], GL2: [51.8464, -2.2671], GL20: [52.003, -2.1297], GL3: [51.8645, -2.1772], GL4: [51.842, -2.2163], GL5: [51.7385, -2.2187], GL50: [51.8997, -2.08], GL51: [51.8988, -2.1076], GL52: [51.9159, -2.0582], GL53: [51.8808, -2.0668], GL54: [51.8969, -1.8634], GL55: [52.0604, -1.7681], GL56: [51.9884, -1.7044], GL6: [51.735, -2.1912], GL7: [51.7126, -1.8972], GL8: [51.6415, -2.1705], GL9: [51.5576, -2.2972], GU1: [51.2426, -0.5644], GU10: [51.1975, -0.7962], GU11: [51.2484, -0.7619], GU12: [51.2517, -0.7303], GU13: [51.2744, -0.8372], GU14: [51.2925, -0.7608], GU15: [51.3345, -0.7395], GU16: [51.311, -0.7287], GU17: [51.3296, -0.7856], GU18: [51.3481, -0.6702], GU19: [51.3591, -0.69], GU2: [51.2447, -0.5915], GU20: [51.3678, -0.6567], GU21: [51.3201, -0.5777], GU22: [51.3116, -0.5493], GU23: [51.2967, -0.5082], GU24: [51.3296, -0.6262], GU25: [51.4009, -0.5695], GU26: [51.1124, -0.7456], GU27: [51.0816, -0.7178], GU28: [50.9906, -0.6291], GU29: [50.9838, -0.7462], GU3: [51.246, -0.623], GU30: [51.0744, -0.8023], GU31: [50.9962, -0.9026], GU32: [51.0085, -0.9693], GU33: [51.0491, -0.8914], GU34: [51.139, -0.9836], GU35: [51.1162, -0.8469], GU4: [51.2431, -0.54], GU46: [51.3372, -0.8256], GU47: [51.3476, -0.788], GU5: [51.2024, -0.5155], GU51: [51.2834, -0.8399], GU52: [51.2645, -0.8375], GU6: [51.1408, -0.4817], GU7: [51.1891, -0.6104], GU8: [51.1508, -0.6401], GU9: [51.2182, -0.7928], GY1: [49.4586, -2.5368], GY2: [49.5787, -2.4936], GY3: [49.5288, -2.4582], GY4: [49.5288, -2.4582], GY5: [49.4826, -2.581], GY6: [49.5288, -2.4582], GY7: [49.5288, -2.4582], GY8: [49.5288, -2.4582], GY9: [49.5718, -2.2824], HA0: [51.5502, -0.3037], HA1: [51.5795, -0.3358], HA2: [51.5735, -0.3577], HA3: [51.5927, -0.3195], HA4: [51.5697, -0.4098], HA5: [51.5945, -0.3844], HA6: [51.6103, -0.4199], HA7: [51.6097, -0.3073], HA8: [51.6109, -0.2726], HA9: [51.559, -0.2861], HD1: [53.6464, -1.7882], HD2: [53.6679, -1.7745], HD3: [53.6527, -1.8275], HD4: [53.6266, -1.7958], HD5: [53.6472, -1.7458], HD6: [53.7012, -1.7819], HD7: [53.624, -1.876], HD8: [53.6012, -1.6796], HD9: [53.5799, -1.7946], HG1: [53.9998, -1.5331], HG2: [53.9872, -1.5256], HG3: [54.0307, -1.6168], HG4: [54.1564, -1.5666], HG5: [54.013, -1.4567], HP1: [51.7551, -0.4873], HP10: [51.6093, -0.7016], HP11: [51.6241, -0.7445], HP12: [51.6254, -0.7777], HP13: [51.6331, -0.7414], HP14: [51.6484, -0.8291], HP15: [51.6561, -0.7118], HP16: [51.7021, -0.7177], HP17: [51.7756, -0.8693], HP18: [51.8135, -0.9816], HP19: [51.8219, -0.8246], HP2: [51.7627, -0.4523], HP20: [51.819, -0.803], HP21: [51.8064, -0.8047], HP22: [51.806, -0.7656], HP23: [51.795, -0.66], HP27: [51.7194, -0.8302], HP3: [51.7369, -0.4705], HP4: [51.7669, -0.5666], HP5: [51.7125, -0.6074], HP6: [51.6782, -0.5984], HP7: [51.6649, -0.6089], HP8: [51.6429, -0.5734], HP9: [51.6103, -0.638], HR1: [52.0641, -2.6696], HR2: [52.0095, -2.7839], HR3: [52.0935, -3.0745], HR4: [52.0878, -2.7663], HR5: [52.192, -3.0271], HR6: [52.2326, -2.7703], HR7: [52.1863, -2.5208], HR8: [52.0445, -2.4433], HR9: [51.9082, -2.5815], HS1: [58.2135, -6.3814], HS2: [58.2492, -6.4677], HS3: [57.8788, -6.8539], HS4: [57.8696, -6.6906], HS5: [57.7999, -6.9612], HS6: [57.6008, -7.2994], HS7: [57.447, -7.3389], HS8: [57.2325, -7.3459], HS9: [56.9715, -7.4715], HU1: [53.7429, -0.3349], HU10: [53.7515, -0.4408], HU11: [53.8257, -0.2192], HU12: [53.7237, -0.131], HU13: [53.7245, -0.4357], HU14: [53.728, -0.5008], HU15: [53.7483, -0.6214], HU16: [53.7818, -0.4199], HU17: [53.8466, -0.4266], HU18: [53.9094, -0.1669], HU19: [53.7228, 0.0357], HU2: [53.7501, -0.3377], HU20: [53.7884, -0.5123], HU3: [53.7415, -0.3638], HU4: [53.7357, -0.4004], HU5: [53.7596, -0.3752], HU6: [53.7811, -0.3683], HU7: [53.7886, -0.3255], HU8: [53.7685, -0.299], HU9: [53.7557, -0.2859], HX1: [53.7211, -1.8697], HX2: [53.7373, -1.9045], HX3: [53.7265, -1.8439], HX4: [53.6798, -1.8804], HX5: [53.686, -1.8349], HX6: [53.6978, -1.9243], HX7: [53.7392, -2.0076], IG1: [51.5585, 0.0746], IG10: [51.6478, 0.0657], IG11: [51.5357, 0.0938], IG2: [51.5737, 0.0811], IG3: [51.5617, 0.1007], IG4: [51.5769, 0.0553], IG5: [51.5875, 0.0658], IG6: [51.5925, 0.0892], IG7: [51.6132, 0.0887], IG8: [51.6069, 0.0335], IG9: [51.6239, 0.04], IM1: [54.1505, -4.4817], IM2: [54.1789, -4.4686], IM3: [54.1722, -4.4516], IM4: [54.1841, -4.533], IM5: [54.1932, -4.7065], IM6: [54.2866, -4.5804], IM7: [54.3261, -4.4104], IM8: [54.278, -4.0847], IM9: [54.0918, -4.6835], IP1: [52.0664, 1.1415], IP10: [52.0189, 1.2694], IP11: [51.9703, 1.3343], IP12: [52.0924, 1.3726], IP13: [52.1848, 1.3211], IP14: [52.206, 1.0342], IP15: [52.1569, 1.5969], IP16: [52.204, 1.586], IP17: [52.2298, 1.5032], IP18: [52.3299, 1.6726], IP19: [52.3398, 1.4957], IP2: [52.045, 1.1356], IP20: [52.406, 1.3215], IP21: [52.3643, 1.2361], IP22: [52.3755, 1.0532], IP23: [52.3062, 1.1247], IP24: [52.4187, 0.759], IP25: [52.5859, 0.8389], IP26: [52.5073, 0.5774], IP27: [52.4298, 0.5861], IP28: [52.3263, 0.5492], IP29: [52.1925, 0.663], IP3: [52.0418, 1.1879], IP30: [52.2091, 0.8368], IP31: [52.2902, 0.8288], IP32: [52.2533, 0.718], IP33: [52.2418, 0.7085], IP4: [52.06, 1.1805], IP5: [52.061, 1.2418], IP6: [52.131, 1.1154], IP7: [52.0687, 0.949], IP8: [52.0617, 1.0828], IP9: [51.9907, 1.1493], IV1: [57.4874, -4.2306], IV10: [57.5854, -4.1262], IV11: [57.6776, -4.0376], IV12: [57.5742, -3.8646], IV13: [57.3428, -4.0124], IV14: [57.5856, -4.5478], IV15: [57.5996, -4.43], IV16: [57.6643, -4.337], IV17: [57.6998, -4.2604], IV18: [57.7017, -4.1548], IV19: [57.8048, -4.0616], IV2: [57.4683, -4.1911], IV20: [57.7865, -3.9075], IV21: [57.7238, -5.7202], IV22: [57.7416, -5.5068], IV23: [57.7732, -5.0102], IV24: [57.8913, -4.3551], IV25: [57.8914, -4.043], IV26: [57.9158, -5.1724], IV27: [58.2768, -4.8003], IV28: [58.0153, -4.1567], IV3: [57.4773, -4.245], IV30: [57.6547, -3.3273], IV31: [57.7171, -3.2893], IV32: [57.6316, -3.1104], IV36: [57.611, -3.6036], IV4: [57.4484, -4.5333], IV40: [57.2745, -5.6498], IV41: [57.2737, -5.736], IV42: [57.2395, -5.8288], IV43: [57.1555, -5.8102], IV44: [57.1149, -5.8737], IV45: [57.0671, -5.9051], IV46: [57.1141, -5.9844], IV47: [57.2947, -6.3428], IV48: [57.311, -6.0971], IV49: [57.2277, -5.9469], IV5: [57.4679, -4.4112], IV51: [57.4806, -6.2464], IV52: [57.3374, -5.6511], IV53: [57.3447, -5.5537], IV54: [57.431, -5.6154], IV55: [57.4587, -6.611], IV56: [57.3664, -6.4279], IV6: [57.5263, -4.4568], IV63: [57.3223, -4.5046], IV7: [57.5844, -4.3838], IV8: [57.5542, -4.2648], IV9: [57.5692, -4.1771], JE1: [49.1909, -2.1196], JE2: [49.2018, -2.1072], JE3: [49.1858, -2.1342], JE4: [49.1939, -2.091], KA1: [55.5958, -4.4951], KA10: [55.5495, -4.6475], KA11: [55.6174, -4.6251], KA12: [55.6192, -4.6634], KA13: [55.6553, -4.6992], KA14: [55.7404, -4.6716], KA15: [55.7486, -4.626], KA16: [55.6071, -4.3307], KA17: [55.6108, -4.2816], KA18: [55.4506, -4.2392], KA19: [55.3458, -4.6671], KA2: [55.5962, -4.5634], KA20: [55.6416, -4.7507], KA21: [55.6418, -4.7825], KA22: [55.6502, -4.807], KA23: [55.6913, -4.8545], KA24: [55.7098, -4.7141], KA25: [55.7526, -4.6884], KA26: [55.2189, -4.8331], KA27: [55.5388, -5.1716], KA28: [55.7545, -4.9229], KA29: [55.757, -4.8529], KA3: [55.6444, -4.495], KA30: [55.7972, -4.8622], KA4: [55.5989, -4.3826], KA5: [55.5099, -4.3867], KA6: [55.4158, -4.5043], KA7: [55.4474, -4.628], KA8: [55.4711, -4.6122], KA9: [55.4973, -4.6045], KT1: [51.4071, -0.2961], KT10: [51.3675, -0.3536], KT11: [51.3277, -0.4024], KT12: [51.3772, -0.4064], KT13: [51.3679, -0.4484], KT14: [51.3387, -0.4853], KT15: [51.3631, -0.4945], KT16: [51.3831, -0.514], KT17: [51.3408, -0.2483], KT18: [51.3167, -0.2621], KT19: [51.351, -0.268], KT2: [51.416, -0.2885], KT20: [51.2856, -0.2303], KT21: [51.311, -0.3011], KT22: [51.3007, -0.3373], KT23: [51.2814, -0.3696], KT24: [51.2687, -0.4288], KT3: [51.3993, -0.2561], KT4: [51.3776, -0.2425], KT5: [51.3917, -0.2866], KT6: [51.3892, -0.2996], KT7: [51.3896, -0.3269], KT8: [51.4009, -0.3624], KT9: [51.364, -0.302], KW1: [58.458, -3.1209], KW10: [57.9751, -3.975], KW11: [58.3051, -4.1299], KW12: [58.5063, -3.4915], KW13: [58.4552, -3.8956], KW14: [58.5891, -3.5552], KW15: [58.9803, -2.9586], KW16: [58.9596, -3.2728], KW17: [59.0419, -3.0022], KW2: [58.3489, -3.1636], KW3: [58.3074, -3.2783], KW5: [58.2875, -3.3816], KW6: [58.2491, -3.4415], KW7: [58.1864, -3.5002], KW8: [58.1161, -3.6636], KW9: [58.0137, -3.8569], KY1: [56.1281, -3.1375], KY10: [56.2302, -2.7001], KY11: [56.0471, -3.4145], KY12: [56.0767, -3.4927], KY13: [56.2087, -3.4317], KY14: [56.3105, -3.2399], KY15: [56.3006, -3.0505], KY16: [56.3418, -2.8186], KY2: [56.1223, -3.1824], KY3: [56.0635, -3.2304], KY4: [56.1142, -3.3607], KY5: [56.1455, -3.2942], KY6: [56.1968, -3.1976], KY7: [56.1972, -3.154], KY8: [56.1975, -3.0106], KY9: [56.2097, -2.8336], L1: [53.4025, -2.9793], L10: [53.474, -2.9267], L11: [53.448, -2.9141], L12: [53.4347, -2.8942], L13: [53.4174, -2.9194], L14: [53.4186, -2.8788], L15: [53.3976, -2.919], L16: [53.3988, -2.8874], L17: [53.3777, -2.9396], L18: [53.3806, -2.9066], L19: [53.3591, -2.9017], L2: [53.407, -2.9884], L20: [53.4528, -2.988], L21: [53.4707, -2.9989], L22: [53.4768, -3.0262], L23: [53.4912, -3.022], L24: [53.3434, -2.8367], L25: [53.3783, -2.863], L26: [53.3641, -2.8326], L27: [53.3874, -2.8376], L28: [53.4349, -2.8641], L29: [53.5068, -2.9832], L3: [53.4088, -2.9839], L30: [53.4844, -2.9706], L31: [53.5135, -2.9366], L32: [53.4779, -2.8891], L33: [53.4896, -2.8758], L34: [53.4361, -2.8144], L35: [53.4148, -2.7824], L36: [53.4144, -2.8396], L37: [53.5573, -3.0629], L38: [53.5242, -3.05], L39: [53.5614, -2.8954], L4: [53.4378, -2.9605], L40: [53.6023, -2.8403], L5: [53.425, -2.9753], L6: [53.419, -2.9496], L69: [53.4071, -2.9734], L7: [53.4055, -2.9478], L70: [53.4089, -2.9704], L8: [53.3901, -2.9625], L9: [53.4612, -2.952], LA1: [54.0466, -2.7988], LA10: [54.3143, -2.4935], LA11: [54.2003, -2.9245], LA12: [54.2035, -3.0825], LA13: [54.1179, -3.198], LA14: [54.1185, -3.2302], LA15: [54.1559, -3.1777], LA16: [54.1862, -3.2016], LA17: [54.2386, -3.1755], LA18: [54.2151, -3.2745], LA19: [54.2931, -3.3752], LA2: [54.0654, -2.6739], LA20: [54.294, -3.2047], LA21: [54.3645, -3.0728], LA22: [54.4228, -2.9865], LA23: [54.3712, -2.9114], LA3: [54.0506, -2.8768], LA4: [54.0696, -2.8512], LA5: [54.1429, -2.79], LA6: [54.1754, -2.6113], LA7: [54.2257, -2.7716], LA8: [54.3237, -2.7596], LA9: [54.3256, -2.7427], LD1: [52.2605, -3.3657], LD2: [52.1414, -3.3927], LD3: [51.9601, -3.3711], LD4: [52.1179, -3.5542], LD5: [52.1269, -3.6158], LD6: [52.3091, -3.508], LD7: [52.3524, -3.0851], LD8: [52.2674, -3.0435], LE1: [52.6338, -1.1281], LE10: [52.5364, -1.3674], LE11: [52.7693, -1.2158], LE12: [52.7664, -1.1922], LE13: [52.7657, -0.8854], LE14: [52.7838, -0.8953], LE15: [52.6559, -0.7004], LE16: [52.4862, -0.8924], LE17: [52.4669, -1.1771], LE18: [52.5833, -1.1114], LE19: [52.5772, -1.2105], LE2: [52.6094, -1.1153], LE3: [52.6288, -1.1799], LE4: [52.6634, -1.1231], LE5: [52.6362, -1.0852], LE6: [52.6624, -1.2414], LE65: [52.7482, -1.4681], LE67: [52.7162, -1.3604], LE7: [52.6774, -1.0681], LE8: [52.5526, -1.0973], LE9: [52.5701, -1.2873], LL11: [53.0631, -3.0343], LL12: [53.086, -2.9885], LL13: [53.0359, -2.959], LL14: [52.992, -3.0504], LL15: [53.1026, -3.3146], LL16: [53.1849, -3.4323], LL17: [53.2532, -3.4346], LL18: [53.3102, -3.4755], LL19: [53.3308, -3.4087], LL20: [52.9595, -3.1598], LL21: [52.9901, -3.4095], LL22: [53.2683, -3.5926], LL23: [52.9049, -3.6], LL24: [53.057, -3.7847], LL25: [53.0546, -3.8787], LL26: [53.1388, -3.7851], LL27: [53.1472, -3.8229], LL28: [53.2875, -3.7598], LL29: [53.2892, -3.7074], LL30: [53.3181, -3.8151], LL31: [53.2903, -3.8095], LL32: [53.2602, -3.8397], LL33: [53.2499, -3.9802], LL34: [53.2708, -3.9121], LL35: [52.5466, -4.0413], LL36: [52.6037, -4.0631], LL37: [52.6655, -4.0823], LL38: [52.6977, -4.0394], LL39: [52.7108, -4.0104], LL40: [52.7561, -3.8747], LL41: [52.9691, -3.9375], LL42: [52.7253, -4.0541], LL43: [52.7741, -4.0919], LL44: [52.7911, -4.0957], LL45: [52.8199, -4.0956], LL46: [52.8548, -4.1062], LL47: [52.9014, -4.0624], LL48: [52.9354, -4.0699], LL49: [52.9288, -4.1381], LL51: [52.9738, -4.2371], LL52: [52.9243, -4.2405], LL53: [52.8842, -4.4912], LL54: [53.0583, -4.2848], LL55: [53.1335, -4.2035], LL56: [53.1867, -4.1988], LL57: [53.2072, -4.11], LL58: [53.2802, -4.0986], LL59: [53.2342, -4.1593], LL60: [53.215, -4.2691], LL61: [53.1954, -4.2621], LL62: [53.2101, -4.3857], LL63: [53.2182, -4.4701], LL64: [53.2281, -4.5171], LL65: [53.3007, -4.5694], LL66: [53.3805, -4.4043], LL67: [53.411, -4.4557], LL68: [53.3982, -4.3767], LL69: [53.3858, -4.3188], LL70: [53.364, -4.2876], LL71: [53.3273, -4.3682], LL72: [53.3496, -4.2402], LL73: [53.3351, -4.244], LL74: [53.3165, -4.2325], LL75: [53.2834, -4.2188], LL76: [53.3002, -4.2376], LL77: [53.2601, -4.3105], LL78: [53.3168, -4.2625], LN1: [53.2588, -0.5862], LN10: [53.1586, -0.217], LN11: [53.3732, 0.025], LN12: [53.3293, 0.2662], LN13: [53.2652, 0.1848], LN2: [53.2543, -0.5084], LN3: [53.2433, -0.4189], LN4: [53.1502, -0.3849], LN5: [53.1713, -0.5562], LN6: [53.2032, -0.594], LN7: [53.4922, -0.3433], LN8: [53.3732, -0.3238], LN9: [53.2172, -0.1112], LS1: [53.7967, -1.5475], LS10: [53.7616, -1.5312], LS11: [53.7761, -1.5554], LS12: [53.7906, -1.5962], LS13: [53.8105, -1.634], LS14: [53.8278, -1.456], LS15: [53.8062, -1.4442], LS16: [53.8509, -1.6017], LS17: [53.8596, -1.5271], LS18: [53.8402, -1.6413], LS19: [53.8592, -1.6822], LS2: [53.8012, -1.546], LS20: [53.8736, -1.7125], LS21: [53.9113, -1.6788], LS22: [53.9318, -1.3938], LS23: [53.9037, -1.3546], LS24: [53.8699, -1.2517], LS25: [53.7858, -1.3306], LS26: [53.7523, -1.4479], LS27: [53.7484, -1.6027], LS28: [53.8016, -1.669], LS29: [53.9206, -1.8036], LS3: [53.8013, -1.5596], LS4: [53.8094, -1.5808], LS5: [53.8185, -1.602], LS6: [53.8193, -1.567], LS7: [53.8183, -1.5397], LS8: [53.8244, -1.5093], LS9: [53.7993, -1.508], LU1: [51.8748, -0.4237], LU2: [51.8915, -0.3955], LU3: [51.9083, -0.4429], LU4: [51.8987, -0.4665], LU5: [51.9083, -0.5127], LU6: [51.8771, -0.5355], LU7: [51.9092, -0.6639], M1: [53.4773, -2.2351], M11: [53.4783, -2.1793], M12: [53.4648, -2.2019], M13: [53.4603, -2.2139], M14: [53.4477, -2.2244], M15: [53.4656, -2.2501], M16: [53.4548, -2.2636], M17: [53.4691, -2.3179], M18: [53.4613, -2.1687], M19: [53.437, -2.1942], M2: [53.48, -2.2426], M20: [53.4252, -2.2303], M21: [53.4377, -2.271], M22: [53.3856, -2.2586], M23: [53.399, -2.2873], M24: [53.5511, -2.1962], M25: [53.5285, -2.2746], M26: [53.5616, -2.3337], M27: [53.5122, -2.3363], M28: [53.5147, -2.3967], M29: [53.5082, -2.4569], M3: [53.4836, -2.2502], M30: [53.4842, -2.3542], M31: [53.4193, -2.4214], M32: [53.4502, -2.3087], M33: [53.4205, -2.3251], M34: [53.4559, -2.1175], M35: [53.5071, -2.1523], M38: [53.5317, -2.421], M4: [53.4845, -2.2291], M40: [53.5035, -2.19], M41: [53.4509, -2.3629], M43: [53.4838, -2.1477], M44: [53.4409, -2.4261], M45: [53.5473, -2.2883], M46: [53.526, -2.4903], M5: [53.479, -2.2848], M6: [53.4916, -2.297], M60: [53.4864, -2.2276], M7: [53.5052, -2.2609], M8: [53.5088, -2.2383], M9: [53.5214, -2.2127], M90: [53.3631, -2.2765], ME1: [51.3722, 0.5002], ME10: [51.3426, 0.737], ME11: [51.4125, 0.7483], ME12: [51.4228, 0.8051], ME13: [51.3028, 0.8968], ME14: [51.2804, 0.5411], ME15: [51.2545, 0.5339], ME16: [51.2741, 0.4991], ME17: [51.2348, 0.6102], ME18: [51.2443, 0.423], ME19: [51.2931, 0.4112], ME2: [51.3914, 0.4854], ME20: [51.3047, 0.4592], ME3: [51.4332, 0.5467], ME4: [51.3805, 0.5308], ME5: [51.349, 0.5334], ME6: [51.3266, 0.4417], ME7: [51.379, 0.5566], ME8: [51.361, 0.5987], ME9: [51.333, 0.7249], MK1: [52.0052, -0.7266], MK10: [52.0391, -0.6979], MK11: [52.0523, -0.8405], MK12: [52.0574, -0.8155], MK13: [52.0526, -0.7836], MK14: [52.0596, -0.7615], MK15: [52.0574, -0.728], MK16: [52.0888, -0.7213], MK17: [51.9924, -0.7007], MK18: [51.9797, -0.969], MK19: [52.0722, -0.8516], MK2: [51.9899, -0.7241], MK3: [51.9965, -0.7531], MK4: [52.004, -0.7776], MK40: [52.138, -0.4714], MK41: [52.1511, -0.4461], MK42: [52.12, -0.4735], MK43: [52.1184, -0.5568], MK44: [52.194, -0.4256], MK45: [52.0246, -0.468], MK46: [52.1541, -0.6916], MK5: [52.0202, -0.783], MK6: [52.0297, -0.7419], MK7: [52.0192, -0.6898], MK8: [52.0357, -0.803], MK9: [52.0406, -0.7591], ML1: [55.7994, -3.9751], ML10: [55.6801, -4.0693], ML11: [55.6666, -3.7856], ML12: [55.5668, -3.5954], ML2: [55.7771, -3.9118], ML3: [55.7703, -4.0534], ML4: [55.8185, -4.0208], ML5: [55.8596, -4.0309], ML6: [55.867, -3.9626], ML7: [55.8301, -3.793], ML8: [55.7305, -3.841], ML9: [55.725, -3.9666], N1: [51.5372, -0.0965], N10: [51.5937, -0.1432], N11: [51.6134, -0.1381], N12: [51.6149, -0.1756], N13: [51.6191, -0.1018], N14: [51.6339, -0.1286], N15: [51.5819, -0.0817], N16: [51.5629, -0.0752], N17: [51.5979, -0.0709], N18: [51.6131, -0.0645], N19: [51.5646, -0.1271], N2: [51.5896, -0.168], N20: [51.6292, -0.1736], N21: [51.6361, -0.0982], N22: [51.5994, -0.1098], N3: [51.5998, -0.1921], N4: [51.5705, -0.1009], N5: [51.5534, -0.0973], N6: [51.5712, -0.1413], N7: [51.5528, -0.1161], N8: [51.5834, -0.1163], N9: [51.6283, -0.0566], NE1: [54.9726, -1.611], NE10: [54.9473, -1.5534], NE11: [54.9412, -1.6316], NE12: [55.0246, -1.5682], NE13: [55.0464, -1.6447], NE15: [54.9837, -1.7203], NE16: [54.9324, -1.691], NE17: [54.9138, -1.8159], NE18: [55.0379, -1.8607], NE19: [55.179, -2.0958], NE2: [54.987, -1.6046], NE20: [55.053, -1.7855], NE21: [54.9576, -1.7189], NE22: [55.1361, -1.5843], NE23: [55.0804, -1.5817], NE24: [55.1224, -1.5201], NE25: [55.0495, -1.4866], NE26: [55.052, -1.4568], NE27: [55.0325, -1.5103], NE28: [55.0001, -1.5185], NE29: [55.0116, -1.4636], NE3: [55.0104, -1.6325], NE30: [55.0214, -1.44], NE31: [54.9714, -1.511], NE32: [54.9676, -1.4829], NE33: [54.9908, -1.4279], NE34: [54.9719, -1.4204], NE35: [54.9523, -1.4597], NE36: [54.945, -1.4379], NE37: [54.913, -1.5257], NE38: [54.8941, -1.5244], NE39: [54.9236, -1.7581], NE4: [54.9736, -1.6422], NE40: [54.9658, -1.7719], NE41: [54.9758, -1.8188], NE42: [54.9624, -1.8547], NE43: [54.948, -1.9047], NE44: [54.9427, -1.9781], NE45: [54.9768, -2.0156], NE46: [54.9795, -2.1063], NE47: [54.9289, -2.2513], NE48: [55.1311, -2.2572], NE49: [54.967, -2.4593], NE5: [54.9962, -1.6873], NE6: [54.977, -1.564], NE61: [55.1805, -1.689], NE62: [55.1613, -1.5919], NE63: [55.1774, -1.5619], NE64: [55.1844, -1.5147], NE65: [55.3127, -1.751], NE66: [55.4286, -1.7313], NE67: [55.5336, -1.6926], NE68: [55.574, -1.6574], NE69: [55.6047, -1.7159], NE7: [54.9995, -1.5779], NE70: [55.5941, -1.8159], NE71: [55.5556, -2.0444], NE8: [54.9555, -1.6033], NE9: [54.9312, -1.5833], NE99: [54.9672, -1.6126], NG1: [52.954, -1.147], NG10: [52.9001, -1.2819], NG11: [52.8993, -1.1733], NG12: [52.911, -1.0541], NG13: [52.9477, -0.9209], NG14: [53.0152, -1.037], NG15: [53.0452, -1.2034], NG16: [53.0269, -1.2932], NG17: [53.1157, -1.2604], NG18: [53.1377, -1.1837], NG19: [53.1593, -1.1968], NG2: [52.935, -1.131], NG20: [53.2096, -1.1839], NG21: [53.1407, -1.1044], NG22: [53.1783, -0.9705], NG23: [53.1155, -0.8001], NG24: [53.0697, -0.7984], NG25: [53.0729, -0.9551], NG3: [52.9674, -1.1289], NG31: [52.9142, -0.6391], NG32: [52.9494, -0.6499], NG33: [52.8182, -0.5783], NG34: [52.9875, -0.391], NG4: [52.9706, -1.0856], NG5: [52.9971, -1.1432], NG6: [52.9975, -1.1908], NG7: [52.9578, -1.1752], NG8: [52.9643, -1.2123], NG9: [52.9258, -1.2353], NN1: [52.2415, -0.8868], NN10: [52.2915, -0.5967], NN11: [52.2403, -1.1783], NN12: [52.1274, -0.9978], NN13: [52.0324, -1.1471], NN14: [52.4095, -0.6915], NN15: [52.3845, -0.7054], NN16: [52.4053, -0.721], NN17: [52.5003, -0.6888], NN18: [52.4799, -0.7144], NN2: [52.2623, -0.8951], NN29: [52.2599, -0.6636], NN3: [52.2618, -0.8453], NN4: [52.2165, -0.8962], NN5: [52.2473, -0.9292], NN6: [52.3221, -0.9435], NN7: [52.2095, -0.9271], NN8: [52.3025, -0.6975], NN9: [52.3329, -0.5983], NP10: [51.5794, -3.045], NP11: [51.6425, -3.1303], NP12: [51.6688, -3.1974], NP13: [51.7341, -3.1398], NP15: [51.7255, -2.8862], NP16: [51.6495, -2.6881], NP18: [51.6064, -2.943], NP19: [51.5891, -2.9629], NP20: [51.5906, -3.0048], NP22: [51.7707, -3.2567], NP23: [51.7848, -3.1961], NP24: [51.7196, -3.2379], NP25: [51.8031, -2.7223], NP26: [51.5905, -2.7767], NP4: [51.7188, -3.0453], NP44: [51.6506, -3.0264], NP7: [51.8288, -3.0086], NP8: [51.86, -3.1459], NR1: [52.6267, 1.3101], NR10: [52.7364, 1.2458], NR11: [52.8417, 1.276], NR12: [52.7597, 1.4714], NR13: [52.6337, 1.4733], NR14: [52.5645, 1.3807], NR15: [52.5064, 1.2701], NR16: [52.476, 1.0616], NR17: [52.5154, 0.9966], NR18: [52.571, 1.1111], NR19: [52.6754, 0.9291], NR2: [52.6301, 1.2852], NR20: [52.7245, 0.9812], NR21: [52.841, 0.8526], NR22: [52.8937, 0.8679], NR23: [52.9487, 0.8597], NR24: [52.8585, 1.0514], NR25: [52.9197, 1.0854], NR26: [52.9351, 1.216], NR27: [52.9247, 1.3016], NR28: [52.822, 1.4007], NR29: [52.6926, 1.6393], NR3: [52.6433, 1.2951], NR30: [52.6187, 1.7293], NR31: [52.5761, 1.7109], NR32: [52.489, 1.7345], NR33: [52.4544, 1.7198], NR34: [52.4379, 1.5844], NR35: [52.4612, 1.4346], NR4: [52.6136, 1.2648], NR5: [52.6405, 1.2343], NR6: [52.6607, 1.2831], NR7: [52.6506, 1.3352], NR8: [52.678, 1.2119], NR9: [52.6357, 1.1097], NW1: [51.5325, -0.1429], NW10: [51.5395, -0.2464], NW11: [51.5783, -0.1958], NW2: [51.558, -0.2183], NW3: [51.5518, -0.1709], NW4: [51.5868, -0.2229], NW5: [51.5514, -0.1421], NW6: [51.5414, -0.1944], NW7: [51.6149, -0.2348], NW8: [51.5312, -0.1718], NW9: [51.5864, -0.2547], OL1: [53.5494, -2.1057], OL10: [53.5906, -2.2221], OL11: [53.606, -2.1738], OL12: [53.6357, -2.1649], OL13: [53.7003, -2.203], OL14: [53.7139, -2.0985], OL15: [53.6438, -2.0998], OL16: [53.6123, -2.1315], OL2: [53.5719, -2.1087], OL3: [53.5531, -2.0091], OL4: [53.5423, -2.0724], OL5: [53.5171, -2.0377], OL6: [53.4937, -2.0859], OL7: [53.4901, -2.1055], OL8: [53.5261, -2.1162], OL9: [53.5395, -2.1419], OX1: [51.7445, -1.2598], OX10: [51.6078, -1.1262], OX11: [51.5996, -1.2463], OX12: [51.5944, -1.4254], OX13: [51.6785, -1.3477], OX14: [51.6673, -1.2755], OX15: [52.0322, -1.4067], OX16: [52.0624, -1.3406], OX17: [52.0729, -1.2894], OX18: [51.7623, -1.5913], OX2: [51.7644, -1.2769], OX20: [51.8566, -1.3581], OX25: [51.9007, -1.2122], OX26: [51.9011, -1.1511], OX27: [51.9371, -1.1475], OX28: [51.7853, -1.4868], OX29: [51.794, -1.4315], OX3: [51.7613, -1.2146], OX33: [51.7581, -1.1465], OX39: [51.7004, -0.9132], OX4: [51.7298, -1.2151], OX44: [51.7005, -1.1302], OX49: [51.65, -0.9997], OX5: [51.8292, -1.2802], OX6: [51.9085, -1.1669], OX7: [51.9113, -1.5275], OX8: [51.7896, -1.4548], OX9: [51.7379, -0.9818], PA1: [55.8446, -4.4167], PA10: [55.8338, -4.5518], PA11: [55.8565, -4.5821], PA12: [55.7954, -4.6227], PA13: [55.8924, -4.6293], PA14: [55.9276, -4.6637], PA15: [55.9428, -4.748], PA16: [55.9435, -4.7961], PA17: [55.8651, -4.8816], PA18: [55.8893, -4.8866], PA19: [55.9528, -4.8224], PA2: [55.829, -4.4333], PA20: [55.8348, -5.0567], PA21: [55.9019, -5.2476], PA22: [55.9707, -5.1572], PA23: [55.9547, -4.9315], PA24: [56.1568, -4.905], PA25: [56.2155, -5.0402], PA26: [56.2576, -4.9369], PA27: [56.1542, -5.0836], PA28: [55.436, -5.603], PA29: [55.8048, -5.4774], PA3: [55.852, -4.4476], PA30: [56.0133, -5.448], PA31: [56.0525, -5.4627], PA32: [56.2028, -5.1166], PA33: [56.3698, -5.0557], PA34: [56.4021, -5.4993], PA35: [56.4051, -5.2239], PA36: [56.5203, -4.7702], PA37: [56.4682, -5.3868], PA38: [56.5919, -5.3343], PA4: [55.8746, -4.3962], PA41: [55.6747, -5.7412], PA42: [55.6396, -6.1862], PA43: [55.7559, -6.2832], PA44: [55.7978, -6.2927], PA45: [55.8193, -6.1656], PA46: [55.8623, -6.119], PA47: [55.6824, -6.5029], PA48: [55.738, -6.3833], PA49: [55.7826, -6.3931], PA5: [55.831, -4.5085], PA6: [55.8638, -4.5346], PA60: [55.8798, -5.9129], PA61: [56.0718, -6.2009], PA62: [56.3593, -5.8501], PA63: [56.3823, -5.7147], PA64: [56.4384, -5.6747], PA65: [56.4692, -5.728], PA66: [56.3291, -6.3538], PA67: [56.3136, -6.2323], PA68: [56.4362, -6.142], PA69: [56.3804, -6.0889], PA7: [55.9094, -4.4992], PA70: [56.3643, -6.0337], PA71: [56.4811, -5.9811], PA72: [56.5176, -5.9638], PA73: [56.4969, -6.1828], PA74: [56.5331, -6.2291], PA75: [56.6123, -6.1222], PA76: [56.334, -6.3932], PA77: [56.4947, -6.8835], PA78: [56.6245, -6.5445], PA8: [55.9014, -4.4523], PA9: [55.8095, -4.5518], PE1: [52.587, -0.2389], PE10: [52.7769, -0.3765], PE11: [52.8071, -0.1662], PE12: [52.7833, 0.0286], PE13: [52.669, 0.1387], PE14: [52.6388, 0.2111], PE15: [52.5359, 0.0865], PE16: [52.4538, 0.0502], PE19: [52.242, -0.2584], PE2: [52.5604, -0.2635], PE20: [52.932, -0.1014], PE21: [52.9748, -0.022], PE22: [53.0483, 0.0455], PE23: [53.1724, 0.0918], PE24: [53.1656, 0.268], PE25: [53.1526, 0.3362], PE26: [52.4529, -0.1132], PE27: [52.3336, -0.0757], PE28: [52.3578, -0.1863], PE29: [52.3334, -0.1785], PE3: [52.5876, -0.2757], PE30: [52.7598, 0.4188], PE31: [52.8754, 0.5665], PE32: [52.7302, 0.6276], PE33: [52.6481, 0.4689], PE34: [52.7245, 0.3399], PE35: [52.8253, 0.5115], PE36: [52.936, 0.5075], PE37: [52.6441, 0.6934], PE38: [52.5898, 0.377], PE4: [52.6126, -0.2659], PE5: [52.5787, -0.344], PE6: [52.6556, -0.2553], PE7: [52.5388, -0.198], PE8: [52.5269, -0.4418], PE9: [52.6542, -0.4801], PH1: [56.4211, -3.4754], PH10: [56.6084, -3.3605], PH11: [56.6394, -3.2344], PH12: [56.5755, -3.1525], PH13: [56.5375, -3.2734], PH14: [56.453, -3.1861], PH15: [56.6097, -3.9406], PH16: [56.707, -3.81], PH17: [56.6874, -4.3823], PH18: [56.7741, -3.8885], PH19: [56.9343, -4.255], PH2: [56.3869, -3.4044], PH20: [57.0538, -4.155], PH21: [57.0883, -4.0217], PH22: [57.1986, -3.8059], PH23: [57.2876, -3.8003], PH24: [57.2542, -3.7489], PH25: [57.2619, -3.6465], PH26: [57.3298, -3.6046], PH3: [56.3023, -3.7035], PH30: [56.7918, -4.6002], PH31: [56.8923, -4.8158], PH32: [57.1442, -4.6828], PH33: [56.8215, -5.1121], PH34: [56.9257, -4.9268], PH35: [57.0758, -4.9303], PH36: [56.7212, -5.8658], PH38: [56.8454, -5.7474], PH39: [56.9126, -5.8412], PH4: [56.2607, -3.7824], PH40: [56.9638, -5.7856], PH41: [57.0037, -5.8325], PH42: [56.9022, -6.1409], PH43: [57.0153, -6.2805], PH44: [57.0569, -6.5032], PH49: [56.675, -5.1098], PH5: [56.3293, -3.8277], PH50: [56.7145, -4.9643], PH6: [56.3716, -3.9949], PH7: [56.3733, -3.8266], PH8: [56.5625, -3.5981], PH9: [56.6511, -3.6915], PL1: [50.3707, -4.1532], PL10: [50.3454, -4.2111], PL11: [50.3725, -4.2503], PL12: [50.4193, -4.2483], PL13: [50.3571, -4.4746], PL14: [50.4635, -4.4646], PL15: [50.6322, -4.3999], PL16: [50.6456, -4.2676], PL17: [50.5162, -4.3051], PL18: [50.5152, -4.219], PL19: [50.556, -4.1545], PL2: [50.3886, -4.1624], PL20: [50.5012, -4.0999], PL21: [50.3857, -3.9175], PL22: [50.4027, -4.6515], PL23: [50.3365, -4.6351], PL24: [50.3546, -4.7092], PL25: [50.3404, -4.7787], PL26: [50.342, -4.8252], PL27: [50.5225, -4.8741], PL28: [50.5337, -4.9665], PL29: [50.5856, -4.8299], PL3: [50.3874, -4.1258], PL30: [50.4999, -4.7274], PL31: [50.4686, -4.7214], PL32: [50.6328, -4.6601], PL33: [50.6213, -4.7302], PL34: [50.6597, -4.7423], PL35: [50.6844, -4.6843], PL4: [50.3748, -4.128], PL5: [50.4101, -4.1662], PL6: [50.4173, -4.1159], PL7: [50.3916, -4.0444], PL8: [50.3355, -4.0124], PL9: [50.3539, -4.0877], PO1: [50.799, -1.0875], PO10: [50.8507, -0.9288], PO11: [50.7918, -0.9755], PO12: [50.7976, -1.1414], PO13: [50.8123, -1.1781], PO14: [50.8368, -1.2188], PO15: [50.862, -1.2184], PO16: [50.8499, -1.1589], PO17: [50.8896, -1.1682], PO18: [50.864, -0.8148], PO19: [50.8376, -0.7771], PO2: [50.816, -1.0772], PO20: [50.7828, -0.7856], PO21: [50.7836, -0.6962], PO22: [50.7983, -0.6476], PO3: [50.8159, -1.0588], PO30: [50.6908, -1.3133], PO31: [50.7529, -1.3053], PO32: [50.7509, -1.2798], PO33: [50.7214, -1.1698], PO34: [50.7156, -1.1118], PO35: [50.6866, -1.084], PO36: [50.6575, -1.1624], PO37: [50.6315, -1.177], PO38: [50.6041, -1.2411], PO39: [50.6803, -1.5385], PO4: [50.7898, -1.0621], PO40: [50.682, -1.5201], PO41: [50.6998, -1.4774], PO5: [50.7882, -1.0849], PO6: [50.8456, -1.0681], PO7: [50.8823, -1.0375], PO8: [50.9108, -1.0128], PO9: [50.8629, -0.9825], PR1: [53.7578, -2.7008], PR2: [53.7775, -2.7072], PR25: [53.694, -2.6922], PR26: [53.6874, -2.7405], PR3: [53.8683, -2.7164], PR4: [53.7533, -2.8327], PR5: [53.7311, -2.6564], PR6: [53.6675, -2.61], PR7: [53.6448, -2.6521], PR8: [53.6261, -3.0102], PR9: [53.6597, -2.9686], RG1: [51.4537, -0.9694], RG10: [51.4806, -0.8622], RG12: [51.4066, -0.749], RG14: [51.3996, -1.3214], RG17: [51.44, -1.4877], RG18: [51.4333, -1.2418], RG19: [51.3937, -1.241], RG2: [51.4265, -0.9542], RG20: [51.4032, -1.3357], RG21: [51.2658, -1.0897], RG22: [51.2499, -1.1216], RG23: [51.2608, -1.1457], RG24: [51.2809, -1.0708], RG25: [51.2277, -1.1621], RG26: [51.3497, -1.1182], RG27: [51.2996, -0.9413], RG28: [51.2333, -1.3339], RG29: [51.2475, -0.9454], RG30: [51.4513, -1.0127], RG31: [51.4561, -1.0413], RG4: [51.4806, -0.9688], RG40: [51.3993, -0.8341], RG41: [51.4157, -0.8567], RG42: [51.4273, -0.7542], RG45: [51.3747, -0.8002], RG5: [51.4522, -0.9061], RG6: [51.4389, -0.9309], RG7: [51.3979, -1.0771], RG8: [51.5051, -1.1052], RG9: [51.5441, -0.9227], RH1: [51.2368, -0.1562], RH10: [51.1172, -0.1581], RH11: [51.1108, -0.2055], RH12: [51.0758, -0.3325], RH13: [51.037, -0.3254], RH14: [51.032, -0.4824], RH15: [50.9567, -0.1332], RH16: [51.002, -0.0971], RH17: [51.0212, -0.1149], RH18: [51.097, 0.031], RH19: [51.1247, -0.012], RH2: [51.2349, -0.2021], RH20: [50.9365, -0.4699], RH3: [51.2324, -0.2796], RH4: [51.2287, -0.3342], RH5: [51.1946, -0.3411], RH6: [51.1713, -0.1617], RH7: [51.1743, -0.0156], RH8: [51.2513, 34e-4], RH9: [51.2354, -0.0689], RM1: [51.5817, 0.184], RM10: [51.5444, 0.1591], RM11: [51.5694, 0.2194], RM12: [51.5525, 0.2085], RM13: [51.524, 0.1956], RM14: [51.5559, 0.265], RM15: [51.508, 0.2784], RM16: [51.4915, 0.341], RM17: [51.4791, 0.3303], RM18: [51.4665, 0.3772], RM19: [51.4825, 0.2483], RM2: [51.5832, 0.2028], RM20: [51.4781, 0.2885], RM3: [51.6016, 0.2268], RM4: [51.6326, 0.1604], RM5: [51.5992, 0.166], RM6: [51.5755, 0.1331], RM7: [51.5748, 0.1706], RM8: [51.5566, 0.1323], RM9: [51.5404, 0.1358], S1: [53.3802, -1.4678], S10: [53.3768, -1.5174], S11: [53.3615, -1.5056], S12: [53.3484, -1.4051], S13: [53.3645, -1.3823], S14: [53.3459, -1.4427], S17: [53.3211, -1.5256], S18: [53.2993, -1.4718], S2: [53.3693, -1.4469], S20: [53.3347, -1.3512], S21: [53.3121, -1.338], S25: [53.3689, -1.2139], S26: [53.3568, -1.2862], S3: [53.3874, -1.4722], S32: [53.2945, -1.6384], S33: [53.3415, -1.7206], S35: [53.4576, -1.4954], S36: [53.503, -1.6125], S4: [53.399, -1.4495], S40: [53.2336, -1.4456], S41: [53.247, -1.4275], S42: [53.2002, -1.4221], S43: [53.2672, -1.3417], S44: [53.2248, -1.3124], S45: [53.166, -1.4211], S5: [53.4215, -1.4612], S6: [53.4019, -1.5096], S60: [53.4138, -1.347], S61: [53.4437, -1.3932], S62: [53.465, -1.3462], S63: [53.5179, -1.3288], S64: [53.4908, -1.2991], S65: [53.4352, -1.3196], S66: [53.4203, -1.2415], S7: [53.3542, -1.4891], S70: [53.5411, -1.4733], S71: [53.5734, -1.4563], S72: [53.5785, -1.3913], S73: [53.5246, -1.3936], S74: [53.5005, -1.4391], S75: [53.562, -1.5198], S8: [53.3398, -1.4758], S80: [53.2921, -1.1493], S81: [53.3377, -1.1213], S9: [53.3979, -1.4164], SA1: [51.6274, -3.939], SA10: [51.6872, -3.7984], SA11: [51.6743, -3.7617], SA12: [51.6073, -3.7938], SA13: [51.6056, -3.7244], SA14: [51.7325, -4.1072], SA15: [51.6999, -4.1665], SA16: [51.6892, -4.2557], SA17: [51.7579, -4.2852], SA18: [51.798, -3.958], SA19: [51.9528, -3.9472], SA2: [51.6202, -3.9936], SA20: [52.0102, -3.7865], SA3: [51.5797, -4.0511], SA31: [51.8564, -4.3076], SA32: [51.886, -4.1711], SA33: [51.8502, -4.4351], SA34: [51.8526, -4.6182], SA35: [51.9735, -4.5597], SA36: [51.9572, -4.6068], SA37: [52.0168, -4.5928], SA38: [52.0401, -4.4731], SA39: [52.0196, -4.2417], SA4: [51.6705, -4.0479], SA40: [52.0838, -4.1734], SA41: [51.9972, -4.7068], SA42: [52.0153, -4.8522], SA43: [52.0862, -4.629], SA44: [52.0862, -4.372], SA45: [52.2079, -4.358], SA46: [52.2325, -4.2495], SA47: [52.1903, -4.2956], SA48: [52.1434, -4.1105], SA5: [51.6485, -3.9689], SA6: [51.6754, -3.9208], SA61: [51.7992, -4.9734], SA62: [51.8409, -5.0633], SA63: [51.8741, -4.8534], SA64: [52.0015, -5.0116], SA65: [51.9882, -4.9685], SA66: [51.8812, -4.7434], SA67: [51.7816, -4.7316], SA68: [51.7287, -4.766], SA69: [51.7103, -4.7055], SA7: [51.6615, -3.8899], SA70: [51.6718, -4.738], SA71: [51.6672, -4.9286], SA72: [51.6913, -4.9345], SA73: [51.7163, -5.0115], SA8: [51.7215, -3.8475], SA9: [51.7812, -3.7673], SE1: [51.4984, -0.0895], SE10: [51.4816, -9e-4], SE11: [51.4888, -0.1086], SE12: [51.4443, 0.0248], SE13: [51.4584, -91e-4], SE14: [51.4751, -0.0415], SE15: [51.4719, -0.0647], SE16: [51.496, -0.0521], SE17: [51.4876, -0.0928], SE18: [51.4839, 0.0741], SE19: [51.4173, -0.0842], SE2: [51.4894, 0.1176], SE20: [51.4115, -0.0572], SE21: [51.4381, -0.0863], SE22: [51.454, -0.0712], SE23: [51.4402, -0.0488], SE24: [51.4545, -0.0985], SE25: [51.3974, -0.075], SE26: [51.4267, -0.0536], SE27: [51.4302, -0.101], SE28: [51.5022, 0.1081], SE3: [51.4687, 0.0202], SE4: [51.4606, -0.0335], SE5: [51.4732, -0.0906], SE6: [51.4378, -0.0143], SE7: [51.4837, 0.0352], SE8: [51.4812, -0.0283], SE9: [51.4447, 0.0565], SG1: [51.911, -0.1942], SG10: [51.8446, 0.0718], SG11: [51.8813, 0.0328], SG12: [51.8137, -0.0167], SG13: [51.7867, -0.0686], SG14: [51.8069, -0.091], SG15: [52.0128, -0.2615], SG16: [52.0151, -0.2964], SG17: [52.0344, -0.3306], SG18: [52.0821, -0.2661], SG19: [52.1392, -0.2405], SG2: [51.8962, -0.1657], SG3: [51.8605, -0.1802], SG4: [51.921, -0.2592], SG5: [51.9673, -0.2865], SG6: [51.9789, -0.2206], SG7: [52.0033, -0.1744], SG8: [52.0637, -0.0129], SG9: [51.9458, -8e-3], SK1: [53.4074, -2.1504], SK10: [53.2779, -2.129], SK11: [53.2465, -2.1424], SK12: [53.3517, -2.0917], SK13: [53.4479, -1.9639], SK14: [53.4515, -2.0542], SK15: [53.4866, -2.0467], SK16: [53.474, -2.0814], SK17: [53.2438, -1.8786], SK2: [53.3948, -2.1324], SK22: [53.3724, -1.985], SK23: [53.3274, -1.9489], SK3: [53.3984, -2.17], SK4: [53.419, -2.1791], SK5: [53.4343, -2.152], SK6: [53.4056, -2.0797], SK7: [53.3696, -2.1413], SK8: [53.3794, -2.2075], SK9: [53.3272, -2.2298], SL0: [51.5243, -0.5137], SL1: [51.5175, -0.6192], SL2: [51.5335, -0.6028], SL3: [51.4996, -0.552], SL4: [51.4753, -0.6248], SL5: [51.4047, -0.6614], SL6: [51.5223, -0.7257], SL7: [51.5741, -0.7762], SL8: [51.5779, -0.7068], SL9: [51.5968, -0.5547], SM1: [51.366, -0.1913], SM2: [51.3526, -0.1961], SM3: [51.3699, -0.2127], SM4: [51.3922, -0.1989], SM5: [51.3674, -0.1668], SM6: [51.3598, -0.1427], SM7: [51.323, -0.2001], SN1: [51.5569, -1.7735], SN10: [51.3359, -1.9871], SN11: [51.4393, -1.9986], SN12: [51.3718, -2.1365], SN13: [51.4238, -2.21], SN14: [51.4751, -2.1944], SN15: [51.4725, -2.0792], SN16: [51.593, -2.0895], SN2: [51.5794, -1.7821], SN25: [51.5911, -1.7964], SN26: [51.6109, -1.7833], SN3: [51.5613, -1.7432], SN4: [51.5309, -1.8198], SN5: [51.5651, -1.837], SN6: [51.6207, -1.7414], SN7: [51.6489, -1.5635], SN8: [51.4074, -1.6851], SN9: [51.324, -1.7861], SO14: [50.9081, -1.3955], SO15: [50.9163, -1.4238], SO16: [50.9352, -1.4307], SO17: [50.926, -1.3938], SO18: [50.9241, -1.3597], SO19: [50.9024, -1.3543], SO20: [51.1136, -1.5042], SO21: [51.0749, -1.3133], SO22: [51.0651, -1.332], SO23: [51.0677, -1.3077], SO24: [51.0837, -1.1462], SO30: [50.9192, -1.3057], SO31: [50.8688, -1.2951], SO32: [50.9474, -1.2085], SO40: [50.9148, -1.5007], SO41: [50.755, -1.5647], SO42: [50.8098, -1.5344], SO43: [50.8873, -1.5834], SO45: [50.8478, -1.3934], SO50: [50.9689, -1.3391], SO51: [50.994, -1.5041], SO52: [50.9766, -1.4402], SO53: [50.9844, -1.3802], SP1: [51.074, -1.7887], SP10: [51.2107, -1.4831], SP11: [51.227, -1.513], SP2: [51.0741, -1.8244], SP3: [51.1012, -2.0057], SP4: [51.1648, -1.764], SP5: [51.0227, -1.7718], SP6: [50.9355, -1.8007], SP7: [51.0039, -2.1824], SP8: [51.037, -2.2896], SP9: [51.2302, -1.6605], SR1: [54.907, -1.3792], SR2: [54.8872, -1.3764], SR3: [54.8775, -1.4155], SR4: [54.9009, -1.4245], SR5: [54.9233, -1.4242], SR6: [54.9348, -1.3788], SR7: [54.8305, -1.3617], SR8: [54.7665, -1.3347], SR9: [54.9024, -1.3746], SS0: [51.546, 0.6915], SS1: [51.537, 0.7328], SS11: [51.6151, 0.5381], SS12: [51.6056, 0.5216], SS13: [51.5743, 0.5098], SS14: [51.5751, 0.4752], SS15: [51.5769, 0.432], SS16: [51.562, 0.4543], SS17: [51.5209, 0.4405], SS2: [51.5499, 0.7177], SS3: [51.5428, 0.7922], SS4: [51.5941, 0.7145], SS5: [51.6072, 0.6503], SS6: [51.5875, 0.6087], SS7: [51.562, 0.5798], SS8: [51.5222, 0.5906], SS9: [51.5541, 0.653], ST1: [53.0262, -2.1715], ST10: [52.9894, -1.9627], ST11: [52.9669, -2.0655], ST12: [52.9479, -2.1712], ST13: [53.1009, -2.0179], ST14: [52.903, -1.8677], ST15: [52.9003, -2.1472], ST16: [52.8132, -2.1187], ST17: [52.7889, -2.0994], ST18: [52.8141, -2.0816], ST19: [52.7124, -2.1466], ST2: [53.0271, -2.1357], ST20: [52.7985, -2.2626], ST21: [52.8678, -2.2585], ST3: [52.9804, -2.1221], ST4: [52.9947, -2.1833], ST5: [53.0153, -2.237], ST6: [53.0576, -2.1895], ST7: [53.088, -2.2658], ST8: [53.1152, -2.1673], ST9: [53.0505, -2.0985], SW1: [51.4956, -0.1386], SW10: [51.4836, -0.1809], SW11: [51.4663, -0.1643], SW12: [51.4454, -0.1478], SW13: [51.4747, -0.2446], SW14: [51.4651, -0.2651], SW15: [51.4573, -0.2251], SW16: [51.4216, -0.1272], SW17: [51.4303, -0.1628], SW18: [51.4496, -0.1894], SW19: [51.4228, -0.2034], SW1A: [51.5027, -0.1311], SW1E: [51.4974, -0.1385], SW1H: [51.4982, -0.1327], SW1P: [51.4955, -0.1328], SW1V: [51.4902, -0.1374], SW1W: [51.493, -0.1474], SW1X: [51.4976, -0.1529], SW1Y: [51.5054, -0.1339], SW2: [51.4494, -0.1189], SW20: [51.4106, -0.2255], SW3: [51.4897, -0.1648], SW4: [51.4605, -0.1357], SW5: [51.49, -0.1878], SW6: [51.4768, -0.1999], SW7: [51.4961, -0.1746], SW8: [51.4757, -0.1308], SW9: [51.4691, -0.1123], SY1: [52.7228, -2.7404], SY10: [52.8358, -3.1209], SY11: [52.8663, -3.0281], SY12: [52.9034, -2.8936], SY13: [52.9515, -2.6892], SY14: [53.0292, -2.762], SY15: [52.5552, -3.13], SY16: [52.52, -3.3118], SY17: [52.5164, -3.465], SY18: [52.4408, -3.5478], SY19: [52.5739, -3.6116], SY2: [52.7067, -2.7283], SY20: [52.614, -3.8184], SY21: [52.6578, -3.205], SY22: [52.756, -3.1855], SY23: [52.3818, -4.0513], SY24: [52.4704, -4.023], SY25: [52.2381, -3.9363], SY3: [52.6992, -2.7696], SY4: [52.7956, -2.7505], SY5: [52.653, -2.8279], SY6: [52.5391, -2.7904], SY7: [52.4251, -2.8869], SY8: [52.3652, -2.6947], SY9: [52.498, -2.9856], TA1: [51.0123, -3.102], TA10: [51.0326, -2.8244], TA11: [51.0604, -2.7021], TA12: [50.9745, -2.7721], TA13: [50.9464, -2.81], TA14: [50.9459, -2.7502], TA15: [50.9506, -2.7176], TA16: [50.9069, -2.7923], TA17: [50.9075, -2.835], TA18: [50.8827, -2.7862], TA19: [50.9339, -2.9137], TA2: [51.033, -3.1011], TA20: [50.8733, -2.9609], TA21: [50.9767, -3.2451], TA22: [51.0451, -3.5451], TA23: [51.1617, -3.3516], TA24: [51.1814, -3.5096], TA3: [50.994, -3.0389], TA4: [51.0709, -3.2676], TA5: [51.1463, -3.1038], TA6: [51.1248, -2.9989], TA7: [51.13, -2.9119], TA8: [51.2445, -2.9929], TA9: [51.2259, -2.9553], TD1: [55.6239, -2.81], TD10: [55.712, -2.4489], TD11: [55.7879, -2.3158], TD12: [55.6533, -2.2384], TD13: [55.9297, -2.3697], TD14: [55.8674, -2.1231], TD15: [55.747, -2.0128], TD2: [55.733, -2.7533], TD3: [55.7007, -2.5713], TD4: [55.6418, -2.6705], TD5: [55.5872, -2.4157], TD6: [55.5824, -2.6933], TD7: [55.5363, -2.8716], TD8: [55.4753, -2.5411], TD9: [55.3977, -2.7753], TF1: [52.7025, -2.5032], TF10: [52.7694, -2.3854], TF11: [52.6625, -2.3593], TF12: [52.6118, -2.48], TF13: [52.578, -2.5815], TF2: [52.7, -2.4396], TF3: [52.664, -2.4436], TF4: [52.6613, -2.4673], TF5: [52.7149, -2.5359], TF6: [52.7355, -2.554], TF7: [52.6352, -2.4493], TF8: [52.6297, -2.4787], TF9: [52.8977, -2.4683], TN1: [51.1349, 0.27], TN10: [51.2101, 0.2866], TN11: [51.206, 0.2692], TN12: [51.1719, 0.4407], TN13: [51.2759, 0.1852], TN14: [51.2953, 0.1617], TN15: [51.2995, 0.2695], TN16: [51.2936, 0.0526], TN17: [51.0961, 0.5381], TN18: [51.0433, 0.5266], TN19: [51.0026, 0.4075], TN2: [51.1373, 0.2873], TN20: [51.0263, 0.2561], TN21: [50.9587, 0.2643], TN22: [50.9807, 0.1001], TN23: [51.139, 0.8608], TN24: [51.1492, 0.8871], TN25: [51.1443, 0.9397], TN26: [51.0999, 0.8055], TN27: [51.1652, 0.7064], TN28: [50.982, 0.9523], TN29: [50.9933, 0.9344], TN3: [51.1227, 0.2523], TN30: [51.062, 0.6975], TN31: [50.9623, 0.6875], TN32: [50.9793, 0.4904], TN33: [50.9103, 0.4768], TN34: [50.8639, 0.5837], TN35: [50.8804, 0.6131], TN36: [50.9206, 0.7022], TN37: [50.8717, 0.5586], TN38: [50.863, 0.5453], TN39: [50.846, 0.4549], TN4: [51.1459, 0.2591], TN40: [50.8445, 0.4846], TN5: [51.0647, 0.3622], TN6: [51.0522, 0.1746], TN7: [51.092, 0.1094], TN8: [51.1942, 0.0797], TN9: [51.1905, 0.2771], TQ1: [50.4716, -3.5221], TQ10: [50.4241, -3.8191], TQ11: [50.4814, -3.7818], TQ12: [50.5288, -3.6114], TQ13: [50.593, -3.7182], TQ14: [50.55, -3.5063], TQ2: [50.474, -3.5433], TQ3: [50.443, -3.5747], TQ4: [50.4233, -3.5698], TQ5: [50.3915, -3.5223], TQ6: [50.3466, -3.5884], TQ7: [50.2826, -3.7828], TQ8: [50.2369, -3.7713], TQ9: [50.4162, -3.6892], TR1: [50.2624, -5.0535], TR10: [50.1662, -5.1174], TR11: [50.1491, -5.0868], TR12: [50.0431, -5.1792], TR13: [50.1095, -5.2843], TR14: [50.2099, -5.2969], TR15: [50.2323, -5.2367], TR16: [50.2327, -5.2199], TR17: [50.1248, -5.4673], TR18: [50.1163, -5.5409], TR19: [50.1001, -5.6278], TR2: [50.2533, -4.9519], TR20: [50.1314, -5.4888], TR21: [49.9294, -6.2562], TR22: [49.8919, -6.3435], TR23: [49.9528, -6.3517], TR24: [49.9553, -6.3338], TR25: [49.964, -6.2928], TR26: [50.2028, -5.4786], TR27: [50.1816, -5.4028], TR3: [50.2168, -5.1094], TR4: [50.2836, -5.1363], TR5: [50.3082, -5.1913], TR6: [50.3417, -5.1513], TR7: [50.413, -5.073], TR8: [50.3987, -5.0369], TR9: [50.4139, -4.9365], TS1: [54.5718, -1.2373], TS10: [54.6066, -1.0679], TS11: [54.5873, -1.025], TS12: [54.5626, -0.9653], TS13: [54.5499, -0.8543], TS14: [54.5319, -1.0603], TS15: [54.4914, -1.3299], TS16: [54.5239, -1.3526], TS17: [54.5371, -1.3029], TS18: [54.5624, -1.3226], TS19: [54.5778, -1.344], TS2: [54.5844, -1.2355], TS20: [54.5857, -1.3129], TS21: [54.6268, -1.4253], TS22: [54.6181, -1.3139], TS23: [54.608, -1.2847], TS24: [54.6966, -1.2102], TS25: [54.6634, -1.2232], TS26: [54.6877, -1.2289], TS27: [54.7231, -1.2873], TS28: [54.7254, -1.3726], TS29: [54.7103, -1.4195], TS3: [54.5607, -1.1958], TS4: [54.5555, -1.2222], TS5: [54.5512, -1.2501], TS6: [54.5658, -1.1524], TS7: [54.5337, -1.1839], TS8: [54.5214, -1.2305], TS9: [54.4661, -1.1637], TW1: [51.4498, -0.3247], TW10: [51.4495, -0.3017], TW11: [51.4265, -0.3313], TW12: [51.4217, -0.3689], TW13: [51.4383, -0.4], TW14: [51.452, -0.4182], TW15: [51.43, -0.4549], TW16: [51.4151, -0.4151], TW17: [51.3975, -0.4459], TW18: [51.428, -0.5068], TW19: [51.4522, -0.5017], TW2: [51.4466, -0.3493], TW20: [51.4267, -0.55], TW3: [51.4674, -0.3615], TW4: [51.4659, -0.3831], TW5: [51.4803, -0.3812], TW6: [51.4695, -0.4464], TW7: [51.4733, -0.3325], TW8: [51.4855, -0.3061], TW9: [51.4674, -0.2938], UB1: [51.5144, -0.3728], UB10: [51.5478, -0.4524], UB11: [51.5191, -0.4577], UB2: [51.4992, -0.3791], UB3: [51.5051, -0.4221], UB4: [51.5238, -0.407], UB5: [51.5431, -0.3746], UB6: [51.5391, -0.3431], UB7: [51.5058, -0.4696], UB8: [51.5346, -0.473], UB9: [51.5816, -0.4902], W1: [51.5145, -0.1421], W10: [51.521, -0.214], W11: [51.5119, -0.2042], W12: [51.5078, -0.2289], W13: [51.5127, -0.3195], W14: [51.4949, -0.2092], W1B: [51.5136, -0.1393], W1C: [51.5137, -0.1479], W1D: [51.5134, -0.1307], W1F: [51.5126, -0.135], W1G: [51.5182, -0.1463], W1H: [51.5166, -0.1594], W1J: [51.5074, -0.1439], W1K: [51.511, -0.1495], W1M: [51.5182, -0.1492], W1S: [51.5109, -0.1409], W1T: [51.5198, -0.1347], W1U: [51.5183, -0.1521], W1W: [51.519, -0.1391], W2: [51.5151, -0.1782], W3: [51.5093, -0.2677], W4: [51.4912, -0.2627], W5: [51.5124, -0.3008], W6: [51.4925, -0.2281], W7: [51.5111, -0.334], W8: [51.5, -0.1932], W9: [51.5261, -0.1907], WA1: [53.3944, -2.5685], WA10: [53.4536, -2.7545], WA11: [53.4772, -2.7188], WA12: [53.4534, -2.631], WA13: [53.3823, -2.4691], WA14: [53.3862, -2.3579], WA15: [53.3836, -2.3248], WA16: [53.3026, -2.3707], WA2: [53.4105, -2.5808], WA3: [53.4538, -2.5482], WA4: [53.3647, -2.5741], WA5: [53.3986, -2.6362], WA6: [53.2722, -2.7229], WA7: [53.3299, -2.7028], WA8: [53.3719, -2.7411], WA9: [53.4368, -2.7181], WC1: [51.5214, -0.1217], WC1A: [51.5169, -0.1247], WC1B: [51.5188, -0.1261], WC1E: [51.5207, -0.1318], WC1H: [51.5241, -0.1259], WC1N: [51.5214, -0.1202], WC1R: [51.5186, -0.116], WC1V: [51.5168, -0.119], WC1X: [51.5249, -0.1158], WC2: [51.5133, -0.1235], WC2A: [51.5159, -0.1147], WC2B: [51.5151, -0.122], WC2E: [51.5124, -0.1235], WC2H: [51.5134, -0.1278], WC2N: [51.5097, -0.125], WC2R: [51.5115, -0.1192], WD1: [51.6469, -0.3998], WD17: [51.6614, -0.4051], WD18: [51.648, -0.4143], WD19: [51.6315, -0.3903], WD2: [51.6673, -0.3774], WD23: [51.6455, -0.3652], WD24: [51.6703, -0.3976], WD25: [51.6836, -0.3884], WD3: [51.6453, -0.4808], WD4: [51.7088, -0.4556], WD5: [51.7047, -0.4166], WD6: [51.6568, -0.2751], WD7: [51.6861, -0.3088], WF1: [53.6868, -1.4912], WF10: [53.7239, -1.3437], WF11: [53.7108, -1.256], WF12: [53.6837, -1.6199], WF13: [53.6928, -1.6456], WF14: [53.6803, -1.6926], WF15: [53.7082, -1.6985], WF16: [53.7099, -1.6682], WF17: [53.7189, -1.6408], WF2: [53.6725, -1.511], WF3: [53.7229, -1.5241], WF4: [53.6474, -1.5189], WF5: [53.68, -1.576], WF6: [53.7, -1.4138], WF7: [53.6664, -1.3506], WF8: [53.685, -1.2989], WF9: [53.606, -1.3198], WN1: [53.5541, -2.6265], WN2: [53.5364, -2.5825], WN3: [53.5289, -2.6442], WN4: [53.4947, -2.6422], WN5: [53.5314, -2.685], WN6: [53.5737, -2.6691], WN7: [53.498, -2.5171], WN8: [53.5524, -2.7684], WR1: [52.1971, -2.2166], WR10: [52.1146, -2.0643], WR11: [52.0948, -1.9285], WR12: [52.0426, -1.8731], WR13: [52.0943, -2.3416], WR14: [52.1133, -2.3184], WR15: [52.3048, -2.5676], WR2: [52.1899, -2.2414], WR3: [52.216, -2.2108], WR4: [52.2044, -2.1844], WR5: [52.1774, -2.1989], WR6: [52.2273, -2.3704], WR7: [52.1964, -2.0527], WR8: [52.0821, -2.2029], WR9: [52.2683, -2.1568], WS1: [52.5795, -1.9779], WS10: [52.5606, -2.0206], WS11: [52.6891, -2.0178], WS12: [52.7062, -1.9985], WS13: [52.6917, -1.818], WS14: [52.6629, -1.8137], WS15: [52.7583, -1.917], WS2: [52.5885, -2.0015], WS3: [52.6181, -1.9897], WS4: [52.6055, -1.9587], WS5: [52.5678, -1.9587], WS6: [52.6577, -2.0222], WS7: [52.6801, -1.9127], WS8: [52.646, -1.9335], WS9: [52.6091, -1.9173], WV1: [52.5857, -2.1151], WV10: [52.6172, -2.1123], WV11: [52.61, -2.0709], WV12: [52.6055, -2.0399], WV13: [52.5848, -2.0605], WV14: [52.557, -2.0782], WV15: [52.5159, -2.3744], WV16: [52.5112, -2.4406], WV2: [52.574, -2.1181], WV3: [52.5794, -2.1505], WV4: [52.5623, -2.1416], WV5: [52.5334, -2.2094], WV6: [52.5955, -2.1816], WV7: [52.6331, -2.2704], WV8: [52.6234, -2.1832], WV9: [52.6333, -2.1404], YO1: [53.9586, -1.0809], YO10: [53.9503, -1.0582], YO11: [54.2651, -0.3953], YO12: [54.2736, -0.4227], YO13: [54.288, -0.4959], YO14: [54.199, -0.2967], YO15: [54.0939, -0.1772], YO16: [54.0951, -0.2], YO17: [54.1363, -0.754], YO18: [54.2587, -0.7672], YO19: [53.9105, -1.0211], YO21: [54.4765, -0.7112], YO22: [54.4504, -0.621], YO23: [53.9256, -1.1212], YO24: [53.9462, -1.1147], YO25: [54.0046, -0.413], YO26: [53.9745, -1.172], YO30: [53.9858, -1.1139], YO31: [53.9692, -1.0639], YO32: [54.0114, -1.0584], YO41: [53.9697, -0.9023], YO42: [53.9227, -0.7908], YO43: [53.8498, -0.6895], YO51: [54.0818, -1.3763], YO60: [54.0824, -0.9406], YO61: [54.1158, -1.1937], YO62: [54.2428, -0.9932], YO7: [54.2237, -1.3496], YO8: [53.7813, -1.0575], ZE1: [60.1523, -1.1678], ZE2: [60.3305, -1.2248], ZE3: [59.8837, -1.3032], W1A: [51.5186, -0.1438], BL11: [53.5762, -2.4287], BL78: [53.5717, -2.4163], BN50: [50.8234, -0.1404], BN51: [50.8048, -0.0587], BN52: [50.8293, -0.1684], BN88: [50.8312, -0.1404], BN99: [50.8202, -0.3799], BS80: [51.5219, -2.5725], BS98: [51.4591, -2.5815], CA95: [54.6447, -3.5665], CF30: [51.5196, -3.1196], CF91: [51.4657, -3.1936], CF95: [51.4812, -3.171], CF99: [51.4644, -3.1617], CH25: [53.397, -3.0119], CH26: [53.3657, -3.0659], CH27: [53.4183, -3.0331], CH28: [53.4004, -3.112], CH29: [53.3903, -3.1794], CH30: [53.3791, -3.0985], CH31: [53.3297, -3.0989], CH32: [53.3619, -2.9977], CH33: [53.2906, -3.0626], CH34: [53.2817, -2.9081], CH70: [53.1927, -2.9226], CH88: [53.1796, -2.8939], CH99: [53.1783, -2.8941], CM99: [51.7359, 0.473], CT50: [51.0757, 1.1491], CW98: [53.0893, -2.4317], DE99: [52.9155, -1.4611], DH97: [54.7793, -1.5781], DH98: [54.9346, -1.6151], DH99: [54.7862, -1.5571], DN55: [53.5129, -1.1257], E77: [51.5139, -0.0691], E98: [51.5137, -0.0609], EC1P: [51.5245, -0.1121], EC4P: [51.5245, -0.1121], EC50: [51.5245, -0.1121], EH91: [55.9232, -3.3051], EH95: [55.9786, -3.2535], EH99: [55.9556, -3.1761], FY0: [53.7546, -3.008], G58: [55.8484, -4.2772], G70: [55.9494, -3.989], G75: [55.7291, -4.1865], G79: [55.771, -4.2231], G9: [55.8686, -4.2419], G90: [55.8722, -4.2339], GU95: [51.3263, -0.7631], IP98: [52.3767, 1.1164], KY99: [56.0594, -3.4441], L67: [53.429, -2.9586], L68: [53.4731, -2.9607], L71: [53.4395, -2.9714], L72: [53.4803, -2.9884], L73: [53.4064, -2.9756], L74: [53.3938, -2.9881], L75: [53.4386, -2.9852], LE21: [52.6326, -1.1252], LE41: [52.6541, -1.1215], LE55: [52.6904, -1.2903], LE87: [52.597, -1.1541], LE94: [52.4837, -0.9055], LE95: [52.6062, -1.1906], LS88: [53.7508, -1.539], LS98: [53.7788, -1.525], LS99: [53.7867, -1.5928], M50: [53.4794, -2.3043], M99: [53.4845, -2.2349], MK77: [52.0421, -0.8189], N1P: [51.5384, -0.1033], NE82: [54.9381, -1.6155], NE83: [54.9346, -1.6151], NE85: [54.9217, -1.5548], NE88: [54.9418, -1.615], NE92: [54.9418, -1.615], NE98: [54.972, -1.5987], NG70: [53.1546, -1.1869], NG80: [52.9166, -1.159], NG90: [52.9272, -1.1911], NW1W: [51.5308, -0.1354], OL95: [53.5563, -2.1054], PH37: [56.8162, -5.5284], PL95: [50.3644, -4.1046], PR0: [53.7588, -2.6839], PR11: [53.7781, -2.6854], S49: [53.2343, -1.4356], S96: [53.403, -1.4275], S97: [53.4562, -1.3825], S98: [53.3866, -1.4552], S99: [53.4043, -1.431], SA80: [51.648, -3.924], SA99: [51.67, -3.9454], SE1P: [51.4928, -0.0802], SL95: [51.4979, -0.5325], SN38: [51.5628, -1.7953], SN99: [51.5565, -1.7559], SS22: [51.557, 0.7068], SS99: [51.5614, 0.6085], ST55: [53.0148, -2.2412], SW99: [51.4723, -0.1158], TR93: [50.1294, -5.5027], UB18: [51.5007, -0.4027], WA55: [53.4018, -2.619], WA88: [53.368, -2.7687], WR78: [52.1977, -2.2235], WR99: [52.201, -2.2144], YO90: [53.9601, -1.0893], YO91: [53.9766, -1.0704], E20: [51.5386, -0.0164], B99: [52.496, -1.8942], BB94: [53.9152, -2.138], BD97: [53.8505, -1.8374], BD98: [53.8377, -1.78], BD99: [53.7945, -1.7665], SL60: [51.5186, -0.7148], CA99: [54.8909, -2.9438], IV99: [57.4813, -4.224] };
+  }
+});
+
+// server/studio/geo.js
+var require_geo = __commonJS({
+  "server/studio/geo.js"(exports, module) {
+    var OC = require_outcodes();
+    var PC = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
+    var OUT = /^\s*([A-Z]{1,2}\d[A-Z\d]?)\s*$/i;
+    function outcode(text) {
+      const t = String(text || ""), m = t.match(PC) || t.match(OUT), k = m ? m[1].toUpperCase() : "";
+      return OC[k] ? k : "";
+    }
+    function point(text) {
+      const k = outcode(text);
+      return k ? { lat: OC[k][0], lng: OC[k][1], postcode: k } : null;
+    }
+    function miles(a, b) {
+      const r = (x) => x * Math.PI / 180, dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLng / 2) ** 2;
+      return 3958.8 * 2 * Math.asin(Math.min(1, Math.sqrt(h)));
+    }
+    function locate(p) {
+      const town = String(p.area || "").split(",")[0].trim();
+      if (+p.lat && +p.lng) return { lat: +p.lat, lng: +p.lng, place: town };
+      const q = point(p.address) || point(p.area) || point(p.postcode);
+      return q ? Object.assign(q, { place: town || q.postcode }) : null;
+    }
+    module.exports = { outcode, point, miles, locate, PC };
+  }
+});
+
+// server/studio/event-sources.json
+var require_event_sources = __commonJS({
+  "server/studio/event-sources.json"(exports, module) {
+    module.exports = {
+      about: "Starter pages the event finder reads for every host near them, about once a day. Each needs a public page of events, courses or shows, and a postcode district for where it covers. Hosts add their own pages in Event ads. Check a site's robots.txt and terms allow reading before adding it here.",
+      sources: [
+        { url: "https://www.visitmaidstone.com/whats-on", name: "Visit Maidstone: what's on", place: "Maidstone", postcode: "ME14" },
+        { url: "https://www.visitmaidstone.com/whats-on/searchresults", name: "Visit Maidstone: all events", place: "Maidstone", postcode: "ME14" }
+      ]
+    };
+  }
+});
+
+// server/studio/crawler.js
+var require_crawler = __commonJS({
+  "server/studio/crawler.js"(exports, module) {
+    var crypto = __require("crypto");
+    var dns = __require("dns").promises;
+    var { privateIp } = require_ical();
+    var G = require_geo();
+    var TOKEN = "BookingboosterEvents";
+    var ISO = /^\d{4}-\d{2}-\d{2}$/;
+    var add = (s, n) => {
+      const x = /* @__PURE__ */ new Date(s + "T00:00:00Z");
+      x.setUTCDate(x.getUTCDate() + n);
+      return x.toISOString().slice(0, 10);
+    };
+    var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    var sid = (url) => "src" + crypto.createHash("sha1").update(normUrl(url)).digest("hex").slice(0, 10);
+    function normUrl(u) {
+      try {
+        const x = new URL(u);
+        x.hash = "";
+        return x.toString().replace(/\/$/, "");
+      } catch (_) {
+        return String(u);
+      }
+    }
+    var site = (u) => {
+      try {
+        return new URL(u).hostname.replace(/^www\./, "");
+      } catch (_) {
+        return "";
+      }
+    };
+    async function get(url, o, hops = 0) {
+      const u = new URL(url);
+      if (!/^https?:$/.test(u.protocol)) throw new Error("Only http and https pages can be read.");
+      const addrs = await dns.lookup(u.hostname, { all: true }).catch(() => {
+        throw new Error("Could not find " + u.hostname + ".");
+      });
+      if (!o.allowPrivate && addrs.some((a) => privateIp(a.address))) throw new Error("That address is not allowed.");
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12e3);
+      try {
+        const r = await fetch(u, { redirect: "manual", signal: ctl.signal, headers: { "user-agent": o.ua, accept: o.accept || "text/html,application/xhtml+xml,text/calendar;q=0.9,*/*;q=0.5", "accept-language": "en-GB,en;q=0.8" } });
+        const loc = r.headers.get("location");
+        if (r.status >= 300 && r.status < 400 && loc && hops < 3) {
+          const next = new URL(loc, u);
+          if (site(next) !== site(u)) throw new Error("The page moved to another site (" + next.hostname + ").");
+          return get(next.toString(), o, hops + 1);
+        }
+        const reader = r.body ? r.body.getReader() : null, chunks = [];
+        let size = 0;
+        if (reader) for (; ; ) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          size += value.length;
+          if (size > 3e6) {
+            ctl.abort();
+            throw new Error("That page is too large.");
+          }
+          chunks.push(value);
+        }
+        return { url: u.toString(), status: r.status, type: r.headers.get("content-type") || "", robotsTag: r.headers.get("x-robots-tag") || "", text: Buffer.concat(chunks).toString("utf8") };
+      } catch (e) {
+        if (e.name === "AbortError") throw new Error(u.hostname + " took too long to answer.");
+        throw e;
+      } finally {
+        clearTimeout(t);
+      }
+    }
+    function robots(text, token) {
+      const groups = [];
+      let g = null, lastUA = false;
+      for (let line of String(text).split(/\r?\n/)) {
+        line = line.replace(/#.*/, "").trim();
+        const i = line.indexOf(":");
+        if (!line || i < 0) continue;
+        const k = line.slice(0, i).trim().toLowerCase(), v = line.slice(i + 1).trim();
+        if (k === "user-agent") {
+          if (!g || !lastUA) groups.push(g = { agents: [], rules: [], delay: null });
+          g.agents.push(v.toLowerCase());
+          lastUA = true;
+          continue;
+        }
+        lastUA = false;
+        if (!g) continue;
+        if (k === "allow" || k === "disallow") g.rules.push({ allow: k === "allow", path: v });
+        else if (k === "crawl-delay" && parseFloat(v) >= 0) g.delay = parseFloat(v);
+      }
+      const t = String(token).toLowerCase();
+      let pick = groups.filter((x) => x.agents.some((a) => a !== "*" && a && t.startsWith(a)));
+      if (!pick.length) pick = groups.filter((x) => x.agents.includes("*"));
+      return { rules: [].concat(...pick.map((x) => x.rules)), delay: pick.map((x) => x.delay).find((x) => x != null) ?? null };
+    }
+    var esc = (s) => s.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    function allowed(r, url) {
+      let path;
+      try {
+        const u = new URL(url);
+        path = u.pathname + u.search;
+      } catch (_) {
+        return false;
+      }
+      if (r.all === false) return false;
+      let best = null;
+      for (const x of r.rules) {
+        if (!x.path) continue;
+        const end = x.path.endsWith("$"), p = end ? x.path.slice(0, -1) : x.path;
+        if (!new RegExp("^" + p.split("*").map(esc).join(".*") + (end ? "$" : "")).test(path)) continue;
+        if (!best || x.path.length > best.path.length || x.path.length === best.path.length && x.allow) best = x;
+      }
+      return !best || best.allow;
+    }
+    async function robotsFor(url, o) {
+      const root = new URL("/robots.txt", url).toString();
+      try {
+        const r = await get(root, Object.assign({}, o, { accept: "text/plain" }));
+        if (r.status === 200) return robots(r.text, TOKEN);
+        if (r.status === 404 || r.status === 410) return { rules: [], delay: null };
+        return { rules: [], delay: null, all: false, why: "robots.txt answered " + r.status };
+      } catch (e) {
+        return { rules: [], delay: null, all: false, why: "could not read robots.txt (" + e.message + ")" };
+      }
+    }
+    var decode = (s) => String(s == null ? "" : s).replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#0?39;|&apos;|&rsquo;/g, "\u2019").replace(/&ndash;/g, "\u2013").replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/\s+/g, " ").trim();
+    var types = (n) => [].concat(n && n["@type"] || []).map(String);
+    var isEvent = (t) => t.some((x) => /(^|:)(\w*Event|Festival|CourseInstance|EventSeries)$/.test(x) && !/^(Virtual)/.test(x));
+    var KIND_RULES = [
+      ["course", /\b(course|training|certificate|certification|cpd|smsts|sssts|nebosh|iosh|cscs|citb|first aid|workshop|bootcamp|qualification|diploma|apprentice)/i],
+      ["exam", /\b(exam|examination|assessment centre|test centre)\b/i],
+      ["conference", /\b(conference|summit|congress|symposium|convention|forum)\b/i],
+      ["expo", /\b(expo|trade show|exhibition|trade fair|b2b)\b/i],
+      ["festival", /\b(festival|fest|music weekend)\b/i],
+      ["sport", /\b(championship|tournament|cup|race|rally|regatta|marathon|open|league|grand prix|games)\b/i],
+      ["show", /\b(show|fair|county show|agricultural|steam|game fair|motor)\b/i]
+    ];
+    function classify(t, text) {
+      const ty = t.join(" ");
+      if (/CourseInstance|EducationEvent|Course\b/.test(ty)) return "course";
+      if (/SportsEvent/.test(ty)) return "sport";
+      if (/Festival|MusicEvent/.test(ty) && !/\b(course|conference)\b/i.test(text)) return "festival";
+      if (/ExhibitionEvent/.test(ty)) return /\b(art|gallery|museum)\b/i.test(text) ? "other" : "expo";
+      for (const [k, re] of KIND_RULES) if (re.test(text)) return k;
+      if (/BusinessEvent/.test(ty)) return "conference";
+      return "other";
+    }
+    function dateOf(v) {
+      const s = String(v == null ? "" : v).trim();
+      let m;
+      if (m = s.match(/^(\d{4})-(\d{2})-(\d{2})/)) return m[1] + "-" + m[2] + "-" + m[3];
+      if (m = s.match(/^(\d{4})(\d{2})(\d{2})/)) return m[1] + "-" + m[2] + "-" + m[3];
+      if (m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/)) return m[3] + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
+      return "";
+    }
+    function place(loc) {
+      const L = [].concat(loc || []).find((x) => x && (typeof x === "string" || !/VirtualLocation/.test(types(x).join(" "))));
+      if (!L) return {};
+      if (typeof L === "string") return { venue: decode(L).replace(G.PC, "").replace(/[,\s]+$/, ""), postcode: G.outcode(L) };
+      const a = L.address || {}, adr = typeof a === "string" ? a : [a.streetAddress, a.addressLocality, a.addressRegion, a.postalCode].filter(Boolean).join(", ");
+      const geo = L.geo || {}, lat = parseFloat(geo.latitude), lng = parseFloat(geo.longitude);
+      return { venue: decode(L.name || (typeof a === "string" ? a : "")), town: decode(typeof a === "object" ? a.addressLocality : ""), postcode: G.outcode(adr), lat: isFinite(lat) && lat ? lat : null, lng: isFinite(lng) && lng ? lng : null };
+    }
+    function fromLd(n, pageUrl, parent) {
+      parent = parent || {};
+      const t = types(n).concat(parent.types || []), status = String(n.eventStatus || ""), mode = String(n.eventAttendanceMode || n.courseMode || "");
+      if (/Cancelled|Postponed/i.test(status) || /online|virtual/i.test(mode) && !/mixed|blended/i.test(mode)) return null;
+      const sch = [].concat(n.courseSchedule || [])[0] || {};
+      const name = decode(n.name || parent.name), start = dateOf(n.startDate || sch.startDate), end = dateOf(n.endDate || sch.endDate) || start;
+      if (!name || !start) return null;
+      let url = "";
+      try {
+        url = new URL(String(n.url || parent.url || pageUrl), pageUrl).toString();
+      } catch (_) {
+        url = pageUrl;
+      }
+      const cap = parseInt(n.maximumAttendeeCapacity, 10);
+      return Object.assign({ name, start, end, url, kind: classify(t, name + " " + decode(n.description || parent.description || "").slice(0, 300)), attendance: cap > 0 ? cap : null, how: "data" }, place(n.location || parent.location));
+    }
+    function walk(node, pageUrl, out, depth) {
+      if (!node || typeof node !== "object" || depth > 8 || out.length > 500) return;
+      if (Array.isArray(node)) {
+        node.forEach((x) => walk(x, pageUrl, out, depth + 1));
+        return;
+      }
+      const t = types(node);
+      if (t.some((x) => /(^|:)Course$/.test(x)) && node.hasCourseInstance) {
+        [].concat(node.hasCourseInstance).forEach((ci) => {
+          const e = fromLd(ci, pageUrl, { name: node.name, url: node.url, description: node.description, types: t, location: node.location });
+          if (e) out.push(e);
+        });
+        return;
+      }
+      if (isEvent(t)) {
+        const e = fromLd(node, pageUrl);
+        if (e) out.push(e);
+        if (node.subEvent) walk(node.subEvent, pageUrl, out, depth + 1);
+        return;
+      }
+      for (const v of Object.values(node)) if (v && typeof v === "object") walk(v, pageUrl, out, depth + 1);
+    }
+    function jsonLd(html, pageUrl) {
+      const out = [];
+      for (const m of html.matchAll(/<script[^>]*type=["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi)) {
+        let j;
+        try {
+          j = JSON.parse(m[1].trim().replace(/^<!--|-->$/g, ""));
+        } catch (_) {
+          continue;
+        }
+        walk(j, pageUrl, out, 0);
+      }
+      return out;
+    }
+    function microdata(html, pageUrl) {
+      const out = [], re = /itemtype=["']https?:\/\/schema\.org\/(\w*Event|Festival|CourseInstance)["']/gi, hits = [...html.matchAll(re)];
+      hits.forEach((h, i) => {
+        const chunk = html.slice(h.index, i + 1 < hits.length ? hits[i + 1].index : h.index + 1e4);
+        const prop = (name, from) => {
+          const c = from ? chunk.slice(from) : chunk, m = c.match(new RegExp(`<[^>]*itemprop=["'][^"']*\\b` + name + `\\b[^"']*["'][^>]*>`, "i"));
+          if (!m) return "";
+          const a = m[0].match(/\b(?:content|datetime)=["']([^"']*)["']/i);
+          if (a) return a[1];
+          const h2 = m[0].match(/\bhref=["']([^"']*)["']/i);
+          if (h2 && name === "url") return h2[1];
+          return decode(c.slice(m.index + m[0].length).split("<")[0]);
+        };
+        const li = chunk.search(/itemprop=["'][^"']*\blocation\b/i);
+        const n = {
+          "@type": h[1],
+          name: prop("name"),
+          startDate: prop("startDate"),
+          endDate: prop("endDate"),
+          url: prop("url"),
+          eventStatus: prop("eventStatus"),
+          description: prop("description"),
+          location: li >= 0 ? { name: prop("name", li), address: { postalCode: prop("postalCode", li), addressLocality: prop("addressLocality", li) } } : void 0
+        };
+        const e = fromLd(n, pageUrl);
+        if (e) out.push(e);
+      });
+      return out;
+    }
+    function ics(text, pageUrl) {
+      const out = [], lines = String(text).replace(/\r?\n[ \t]/g, "").split(/\r?\n/);
+      let ev = null;
+      const un = (v) => v.replace(/\\n/gi, " ").replace(/\\([,;\\])/g, "$1").trim();
+      for (const line of lines) {
+        if (line === "BEGIN:VEVENT") {
+          ev = {};
+          continue;
+        }
+        if (line === "END:VEVENT") {
+          if (ev && ev.name && ev.start && ev.status !== "CANCELLED") {
+            let end = ev.end || ev.start;
+            if (ev.end && ev.allDay && ev.end > ev.start) end = add(ev.end, -1);
+            const geo = (ev.geo || "").split(";").map(parseFloat);
+            let url = pageUrl;
+            try {
+              if (ev.url) url = new URL(ev.url, pageUrl).toString();
+            } catch (_) {
+            }
+            out.push(Object.assign({ name: ev.name, start: ev.start, end: end < ev.start ? ev.start : end, url, kind: classify([], ev.name + " " + (ev.desc || "")), attendance: null, how: "feed", venue: ev.loc ? ev.loc.split(",")[0].trim() : "", postcode: G.outcode(ev.loc || ""), lat: geo[0] || null, lng: geo[1] || null }));
+          }
+          ev = null;
+          continue;
+        }
+        if (!ev) continue;
+        const i = line.indexOf(":");
+        if (i < 0) continue;
+        const head = line.slice(0, i).toUpperCase(), key = head.split(";")[0], v = line.slice(i + 1);
+        if (key === "SUMMARY") ev.name = un(v).slice(0, 160);
+        else if (key === "DTSTART") {
+          ev.start = dateOf(v);
+          ev.allDay = /VALUE=DATE(?!-)/.test(head) || /^\d{8}$/.test(v.trim());
+        } else if (key === "DTEND") ev.end = dateOf(v);
+        else if (key === "LOCATION") ev.loc = un(v);
+        else if (key === "URL") ev.url = v.trim();
+        else if (key === "GEO") ev.geo = v;
+        else if (key === "STATUS") ev.status = v.trim().toUpperCase();
+        else if (key === "DESCRIPTION") ev.desc = un(v).slice(0, 300);
+      }
+      return out;
+    }
+    var MONTHS = "jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?";
+    var MI = (m) => ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].indexOf(m.slice(0, 3).toLowerCase()) + 1;
+    var RANGE = new RegExp("(\\d{1,2})(?:st|nd|rd|th)?(?:\\s+(" + MONTHS + "))?(?:\\s+(\\d{4}))?\\s*(?:-|\u2013|\u2014|to|until|and)\\s*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\\s+)?(\\d{1,2})(?:st|nd|rd|th)?\\s+(" + MONTHS + ")\\s+(\\d{4})", "i");
+    function textEvent(html, pageUrl) {
+      const body = decode(html.replace(/<(script|style|nav|header|footer)[\s\S]*?<\/\1>/gi, " ")), m = body.match(RANGE);
+      if (!m) return [];
+      const p2 = (n) => String(n).padStart(2, "0");
+      const end = m[6] + "-" + p2(MI(m[5])) + "-" + p2(m[4]);
+      let sm = m[2] ? MI(m[2]) : MI(m[5]), sy = +(m[3] || m[6]);
+      if (!m[3] && sm > MI(m[5])) sy--;
+      const start = sy + "-" + p2(sm) + "-" + p2(m[1]);
+      if (!ISO.test(start) || !ISO.test(end) || end < start || (new Date(end) - new Date(start)) / 864e5 > 31) return [];
+      const og = html.match(/<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i) || html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || html.match(/<title>([\s\S]*?)<\/title>/i);
+      const name = og ? decode(og[1]).split(/\s+[|–-]\s+/)[0] : "";
+      if (!name) return [];
+      return [{ name, start, end, url: pageUrl, kind: classify([], name + " " + body.slice(0, 2e3)), attendance: null, how: "text", venue: "", postcode: G.outcode(body), lat: null, lng: null }];
+    }
+    function extract(page, base) {
+      const html = page.text, url = page.url, tag = (page.robotsTag || "") + " " + (html.match(/<meta[^>]+name=["']robots["'][^>]*>/i) || [""])[0];
+      const noindex = /noindex|none/i.test(tag), nofollow = /nofollow|none/i.test(tag);
+      if (/text\/calendar/i.test(page.type) || /^\s*BEGIN:VCALENDAR/.test(html)) return { events: ics(html, url), links: [], feeds: [] };
+      let events = noindex ? [] : jsonLd(html, url).concat(microdata(html, url));
+      const links = [], feeds = [];
+      if (!nofollow) {
+        for (const m of html.matchAll(/<(a|link)\b[^>]*href=["']([^"'#]+)["'][^>]*>/gi)) {
+          let u;
+          try {
+            u = new URL(decode(m[2]), url);
+          } catch (_) {
+            continue;
+          }
+          if (!/^https?:$/.test(u.protocol) || site(u) !== site(base)) continue;
+          u.hash = "";
+          const s = u.toString(), tagTxt = m[0];
+          if (/rel=["'][^"']*nofollow/i.test(tagTxt)) continue;
+          if (/\.ics(\?|$)/i.test(u.pathname) || /text\/calendar/i.test(tagTxt)) {
+            feeds.push(s);
+            continue;
+          }
+          if (/\.(pdf|jpe?g|png|gif|webp|svg|zip|docx?|xlsx?|css|js|mp4|mp3)$/i.test(u.pathname) || m[1].toLowerCase() === "link" && !/rel=["']next/i.test(tagTxt)) continue;
+          const next = /rel=["']next/i.test(tagTxt) || u.pathname === new URL(url).pathname && /[?&](page|p|pg)=\d+/i.test(u.search) || /\/page\/\d+\/?$/.test(u.pathname);
+          links.push({ url: s, next });
+        }
+      }
+      return { events, links, feeds, noindex };
+    }
+    var EVENTY = /(event|whats-on|what-s-on|whatson|course|training|show|festival|conference|exhibition|programme|fixture|calendar|diary|agenda|workshop)/i;
+    async function crawl(src, o) {
+      const opt = { ua: o.ua, allowPrivate: !!o.allowPrivate }, maxPages = o.maxPages || 25, until = Date.now() + (o.budgetMs || 12e4);
+      const rb = await robotsFor(src.url, opt);
+      if (rb.all === false) return { ok: false, error: "We are staying away: " + rb.why + ".", pages: 0, events: [] };
+      if (!allowed(rb, src.url)) return { ok: false, error: "This site\u2019s robots.txt asks crawlers not to read that page, so we don\u2019t.", pages: 0, events: [], blocked: true };
+      const gap = Math.max(1500, Math.min(rb.delay != null ? rb.delay * 1e3 : 0, 6e4)), seen = /* @__PURE__ */ new Set(), found = [];
+      const queue = [{ url: src.url, depth: 0 }];
+      let pages = 0, last = 0, err = "";
+      const baseDir = (() => {
+        const u = new URL(src.url);
+        return u.pathname.replace(/[^/]*$/, "");
+      })();
+      while (queue.length && pages < maxPages && Date.now() < until) {
+        const q = queue.shift(), key = normUrl(q.url);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (!allowed(rb, q.url)) continue;
+        const wait = last + gap - Date.now();
+        if (wait > 0) {
+          if (Date.now() + wait > until) break;
+          await sleep(wait);
+        }
+        last = Date.now();
+        pages++;
+        let page;
+        try {
+          page = await get(q.url, opt);
+        } catch (e) {
+          if (!q.depth) err = e.message;
+          continue;
+        }
+        if (page.status !== 200) {
+          if (!q.depth && q.feed !== true) err = "The page answered " + page.status + ".";
+          continue;
+        }
+        const x = extract(page, src.url), evs = x.events;
+        if (q.depth === 1 && !evs.length && !x.noindex) evs.push(...textEvent(page.text, page.url));
+        found.push(...evs);
+        if (q.depth === 0) {
+          x.feeds.slice(0, 3).forEach((f) => queue.unshift({ url: f, depth: 2, feed: true }));
+          x.links.filter((l) => l.next).slice(0, 5).forEach((l) => queue.push({ url: l.url, depth: 0 }));
+          const known = new Set(found.map((e) => normUrl(e.url)));
+          x.links.filter((l) => !l.next && normUrl(l.url) !== key && (EVENTY.test(l.url) || new URL(l.url).pathname.startsWith(baseDir)) && new URL(l.url).pathname.length > baseDir.length && !known.has(normUrl(l.url))).slice(0, 40).forEach((l) => queue.push({ url: l.url, depth: 1 }));
+        }
+      }
+      if (!pages) return { ok: false, error: err || "Nothing could be read.", pages, events: [] };
+      return { ok: !err || found.length > 0, error: found.length ? "" : err, pages, events: tidy(found, o.today) };
+    }
+    function tidy(list, today) {
+      const by = /* @__PURE__ */ new Map();
+      list.forEach((e) => {
+        if (!e || !ISO.test(e.start) || !ISO.test(e.end) || today && e.end < today || e.end > add(e.start, 120)) return;
+        const k = e.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + "|" + e.start, old = by.get(k);
+        if (!old) return by.set(k, e);
+        ["end", "venue", "town", "postcode", "lat", "lng", "attendance"].forEach((f) => {
+          if (!old[f] && e[f]) old[f] = e[f];
+        });
+        if (e.end > old.end) old.end = e.end;
+        if (old.how === "data" && e.how === "data" && e.url && normUrl(e.url) !== normUrl(old.url) && e.url.length > old.url.length) old.url = e.url;
+      });
+      return [...by.values()].sort((a, b) => a.start.localeCompare(b.start)).slice(0, 400);
+    }
+    module.exports = function Finder({ kv, cfg, log }) {
+      const ua = TOKEN + "/1.0 (+" + (cfg.baseUrl || "https://booking-booster.co.uk") + "/bot)";
+      const allowPrivate = !!process.env.EVENTS_ALLOW_PRIVATE_FOR_TESTS;
+      const read = async (k) => {
+        try {
+          const r = await kv.get(k);
+          return r ? JSON.parse(r.v) : null;
+        } catch (_) {
+          return null;
+        }
+      };
+      const write = (k, o) => kv.set(k, JSON.stringify(o));
+      const seedFile = (cfg.events || {}).seeds;
+      let seeds = [];
+      if (seedFile !== "off") try {
+        seeds = (seedFile ? JSON.parse(require_vfs().readFileSync(seedFile, "utf8")) : require_event_sources()).sources.map((s) => Object.assign({ id: sid(s.url), seed: true, by: [], near: G.point(s.postcode) ? Object.assign(G.point(s.postcode), { place: s.place || "" }) : null }, s));
+      } catch (_) {
+      }
+      seeds = seeds.filter((x, i) => seeds.findIndex((y) => y.id === x.id) === i);
+      let lock = Promise.resolve();
+      const locked = (fn) => lock = lock.then(fn, fn);
+      async function all() {
+        const mine = await read("events:sources") || [];
+        const ids = new Set(mine.map((s) => s.id));
+        return mine.concat(seeds.filter((s) => !ids.has(s.id)));
+      }
+      const today = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      async function run(src, quick) {
+        const r = await crawl(src, { ua, allowPrivate, today: today(), maxPages: quick ? 6 : 25, budgetMs: quick ? 25e3 : 12e4 });
+        const old = await read("events:src:" + src.id) || {};
+        const keep = r.ok ? r.events : r.blocked ? [] : (old.events || []).filter((e) => e.end >= today());
+        await write("events:src:" + src.id, { at: (/* @__PURE__ */ new Date()).toISOString(), ok: r.ok, error: r.error || "", pages: r.pages, events: keep });
+        log && log("events", "read", src.url, r.pages + " pages", keep.length + " events", r.error || "");
+        return Object.assign({}, r, { events: keep });
+      }
+      async function forHost(wid, loc, radius) {
+        const list = (await all()).filter((s) => s.by.includes(wid) || loc && s.near && G.miles(loc, s.near) <= (radius || 25) + 15);
+        return Promise.all(list.map(async (s) => {
+          const x = await read("events:src:" + s.id) || {};
+          return { id: s.id, url: s.url, name: s.name, site: site(s.url), mine: s.by.includes(wid), seed: !!s.seed, place: (s.near || {}).place || "", at: x.at || null, ok: x.ok !== false, error: x.error || "", n: (x.events || []).filter((e) => e.end >= today()).length };
+        }));
+      }
+      async function near(wid, loc, o) {
+        const list = (await all()).filter((s) => s.by.includes(wid) || loc && s.near && G.miles(loc, s.near) <= o.radius + 15);
+        const out = [], stats = [];
+        for (const s of list) {
+          const x = await read("events:src:" + s.id) || {};
+          let n = 0;
+          (x.events || []).forEach((e) => {
+            const at = e.lat && e.lng ? { lat: e.lat, lng: e.lng } : G.point(e.postcode) || s.near;
+            if (loc && at && G.miles(loc, at) > o.radius) return;
+            if (!at && !s.by.includes(wid)) return;
+            out.push(Object.assign({}, e, { site: site(e.url || s.url) || site(s.url), sourceId: s.id }));
+            n++;
+          });
+          stats.push({ id: s.id, name: s.name, n, error: x.at ? x.ok === false ? x.error : "" : "not read yet" });
+        }
+        return { events: out, sources: stats };
+      }
+      async function watch(wid, url, near0, name) {
+        let u;
+        try {
+          u = new URL(String(url).trim());
+        } catch (_) {
+          throw new Error("That is not a valid link.");
+        }
+        if (!/^https?:$/.test(u.protocol)) throw new Error("Links start with https://");
+        u.hash = "";
+        const id = sid(u.toString());
+        const rb = await robotsFor(u.toString(), { ua, allowPrivate });
+        if (rb.all === false) throw new Error("We could not check that site\u2019s rules for crawlers (" + rb.why + "), so we won\u2019t read it. Try again later, or add its events yourself.");
+        if (!allowed(rb, u.toString())) throw new Error("That site\u2019s robots.txt asks crawlers not to read this page, so we won\u2019t. Add its events yourself instead.");
+        const src = await locked(async () => {
+          const list = await read("events:sources") || [], s0 = seeds.find((x2) => x2.id === id);
+          let s = list.find((x2) => x2.id === id);
+          if (!s) {
+            s = Object.assign({ id, url: u.toString(), name: String(name || "").replace(/[<>]/g, "").trim().slice(0, 80) || site(u.toString()), near: near0 || s0 && s0.near || null, by: [], added: today() });
+            if (list.length >= 5e3) throw new Error("We are watching too many pages right now.");
+            list.push(s);
+          }
+          if (!s.by.includes(wid)) s.by.push(wid);
+          if (!s.near && near0) s.near = near0;
+          await write("events:sources", list);
+          return s;
+        });
+        const x = await read("events:src:" + id);
+        const r = x && x.at && Date.now() - new Date(x.at) < 6 * 36e5 ? x : await run(src, true);
+        return { id, n: (r.events || []).length, error: r.ok === false ? r.error : "" };
+      }
+      async function unwatch(wid, id) {
+        await locked(async () => {
+          const list = await read("events:sources") || [];
+          const s = list.find((x) => x.id === id);
+          if (!s) return;
+          s.by = s.by.filter((x) => x !== wid);
+          await write("events:sources", s.by.length ? list : list.filter((x) => x.id !== id));
+        });
+      }
+      async function due(limit, budgetMs) {
+        const stop = Date.now() + (budgetMs || 24e4), list = await all(), pick = [];
+        for (const s of list) {
+          if (!s.seed && !s.by.length) continue;
+          const x = await read("events:src:" + s.id) || {}, age = x.at ? Date.now() - new Date(x.at) : Infinity;
+          if (age > (x.ok === false ? 6 : 22) * 36e5) pick.push([age, s]);
+        }
+        pick.sort((a, b) => b[0] - a[0]);
+        let n = 0;
+        for (const [, s] of pick.slice(0, limit || 3)) {
+          if (Date.now() > stop) break;
+          try {
+            await run(s);
+            n++;
+          } catch (e) {
+            log && log("events", s.url, e.message);
+          }
+        }
+        return n;
+      }
+      async function warm(loc, radius, max) {
+        if (!loc) return 0;
+        let n = 0;
+        for (const s of seeds.filter((s2) => s2.near && G.miles(loc, s2.near) <= radius + 15)) {
+          if (n >= (max || 2)) break;
+          if (!await read("events:src:" + s.id)) {
+            await run(s, true);
+            n++;
+          }
+        }
+        return n;
+      }
+      return { forHost, near, watch, unwatch, due, warm, run, all, ua };
+    };
+    Object.assign(module.exports, { robots, allowed, extract, jsonLd, microdata, ics, textEvent, crawl, tidy, classify, TOKEN, sid });
+  }
+});
+
 // server/studio/design.js
 var require_design = __commonJS({
   "server/studio/design.js"(exports, module) {
@@ -19940,10 +20539,8 @@ var require_events = __commonJS({
       other: { who: "people travelling in for it", need: "somewhere comfortable close by", meta: ["Travel", "Weekend breaks"] }
     };
     var SOURCES = {
-      web: { name: "Web search by Claude", key: "ANTHROPIC_API_KEY", price: "About 1p a search from your AI credit", finds: "Training courses, conferences, trade shows, county shows, festivals and anything else on the open web." },
-      predicthq: { name: "PredictHQ", key: "PREDICTHQ_TOKEN", price: "Paid, with a free trial", finds: "Conferences, expos, sport and festivals, with expected attendance." },
-      ticketmaster: { name: "Ticketmaster", key: "TICKETMASTER_API_KEY", price: "Free key", finds: "Shows, festivals, sport and concerts sold through Ticketmaster." },
-      manual: { name: "Added by you", key: "", price: "Free", finds: "Any event, course or contract you know about." }
+      crawl: { name: "Our event finder", price: "Included", finds: "Events, training courses, shows and conferences from public what\u2019s-on, venue and course pages and calendar feeds that we read ourselves, about once a day." },
+      manual: { name: "Added by you", price: "Included", finds: "Any event, course or contract you know about." }
     };
     var ISO = /^\d{4}-\d{2}-\d{2}$/;
     var P = (s) => /* @__PURE__ */ new Date(s + "T00:00:00Z");
@@ -19971,7 +20568,7 @@ var require_events = __commonJS({
       const url = /^https?:\/\/[^\s]+$/i.test(String(e.url || "")) ? String(e.url).slice(0, 400) : "";
       const att = parseInt(e.attendance, 10);
       return {
-        id: "ev" + crypto.createHash("sha1").update(propertyId + "|" + name.toLowerCase() + "|" + start).digest("hex").slice(0, 10),
+        id: "ev" + crypto.createHash("sha1").update(propertyId + "|" + base(name) + "|" + start).digest("hex").slice(0, 10),
         propertyId,
         name,
         kind: KINDS[e.kind] ? e.kind : "other",
@@ -19984,23 +20581,28 @@ var require_events = __commonJS({
         audience: clean(e.audience, 160),
         why: clean(e.why, 200),
         attendance: att > 0 ? att : null,
-        source: SOURCES[source] || source === "sample" ? source : "manual"
+        source: SOURCES[source] || source === "sample" ? source : "manual",
+        site: clean(e.site, 80)
       };
     }
     var unday = (n) => n.replace(/\s*[-–:|(]\s*(day \d+|(mon|tues|wednes|thurs|fri|satur|sun)day.*|weekend.*|\d+ day.*)\)?$/i, "").trim();
-    var base = (n) => unday(n).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    var base = (n) => unday(n).toLowerCase().replace(/\b(19|20)\d\d\b/g, " ").replace(/^\s*the\s+/, "").replace(/[^a-z0-9]+/g, " ").trim();
     function merge(list) {
       const out = [];
       list.slice().sort((a, b) => a.start.localeCompare(b.start)).forEach((e) => {
-        const same = out.find((x) => base(x.name) === base(e.name) && (x.venue || "") === (e.venue || "") && e.start <= add(x.end, 1));
+        const place = (x) => (x.venue || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(), town = (x) => (x.town || "").toLowerCase();
+        const same = out.find((x) => base(x.name) === base(e.name) && e.start <= add(x.end, 1) && (!place(x) || !place(e) || place(x) === place(e) || place(x).includes(place(e)) || place(e).includes(place(x)) || town(x) && town(x) === town(e)));
         if (same) {
           if (e.end > same.end) {
             same.end = e.end;
             same.days = diff(same.start, same.end) + 1;
           }
-          same.name = unday(same.name) || same.name;
+          same.name = [unday(same.name), unday(e.name)].filter(Boolean).sort((a, b) => a.length - b.length)[0] || same.name;
           same.url = same.url || e.url;
           same.attendance = same.attendance || e.attendance;
+          ["venue", "town", "audience", "site"].forEach((f) => {
+            if (!same[f] && e[f]) same[f] = e[f];
+          });
           return;
         }
         out.push(Object.assign({}, e));
@@ -20023,107 +20625,6 @@ var require_events = __commonJS({
       const status = !free.length ? "booked" : free.length === nights.length ? "free" : "part";
       return { from, to, nights: nights.length, free: free.length, status: n && n < min ? "booked" : status, stay: best && n >= min ? best : null, value: best && n >= min ? n * (+p.nightly || 0) + (+p.cleaning || 0) : 0 };
     }
-    var PC = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
-    async function locate(cfg, p) {
-      if (+p.lat && +p.lng) return { lat: +p.lat, lng: +p.lng, place: p.area || "" };
-      const m = String(p.address || "").match(PC) || String(p.area || "").match(PC);
-      const api = cfg.events.postcodesBase || "https://api.postcodes.io";
-      try {
-        if (m) {
-          const r = await fetch(api + "/postcodes/" + encodeURIComponent(m[1] + m[2]), { signal: AbortSignal.timeout(6e3) });
-          if (r.ok) {
-            const j = (await r.json()).result;
-            if (j) return { lat: j.latitude, lng: j.longitude, place: j.admin_district || j.parish || "", postcode: m[1].toUpperCase() + " " + m[2].toUpperCase() };
-          }
-        }
-        const town = String(p.area || "").split(",")[0].trim();
-        if (town) {
-          const r = await fetch(api + "/places?limit=1&q=" + encodeURIComponent(town), { signal: AbortSignal.timeout(6e3) });
-          if (r.ok) {
-            const j = ((await r.json()).result || [])[0];
-            if (j) return { lat: j.latitude, lng: j.longitude, place: j.name_1 || town };
-          }
-        }
-      } catch (_) {
-      }
-      return null;
-    }
-    async function ticketmaster(cfg, loc, o) {
-      const q = new URLSearchParams({ apikey: cfg.events.ticketmaster, latlong: loc.lat + "," + loc.lng, radius: String(o.radius), unit: "miles", countryCode: "GB", startDateTime: o.from + "T00:00:00Z", endDateTime: o.to + "T23:59:59Z", size: "200", sort: "date,asc" });
-      const r = await fetch((cfg.events.ticketmasterBase || "https://app.ticketmaster.com") + "/discovery/v2/events.json?" + q, { signal: AbortSignal.timeout(1e4) });
-      if (!r.ok) throw new Error("Ticketmaster answered " + r.status);
-      const seg = { Sports: "sport", Music: "festival", "Arts & Theatre": "show", Miscellaneous: "show" };
-      return (((await r.json())._embedded || {}).events || []).map((e) => {
-        const v = ((e._embedded || {}).venues || [])[0] || {}, c = ((e.classifications || [])[0] || {}).segment || {};
-        return { name: e.name, start: ((e.dates || {}).start || {}).localDate, end: ((e.dates || {}).end || {}).localDate, venue: v.name, town: (v.city || {}).name, url: e.url, kind: seg[c.name] || "other" };
-      });
-    }
-    async function predicthq(cfg, loc, o) {
-      const q = new URLSearchParams({ within: o.radius + "mi@" + loc.lat + "," + loc.lng, "active.gte": o.from, "active.lte": o.to, category: "conferences,expos,festivals,sports,community,performing-arts", limit: "200", sort: "start" });
-      const r = await fetch((cfg.events.predicthqBase || "https://api.predicthq.com") + "/v1/events/?" + q, { headers: { authorization: "Bearer " + cfg.events.predicthq, accept: "application/json" }, signal: AbortSignal.timeout(1e4) });
-      if (!r.ok) throw new Error("PredictHQ answered " + r.status);
-      const cat = { conferences: "conference", expos: "expo", festivals: "festival", sports: "sport", community: "show", "performing-arts": "show" };
-      return ((await r.json()).results || []).map((e) => {
-        const v = (e.entities || []).find((x) => x.type === "venue") || {};
-        return { name: e.title, start: String(e.start_local || e.start || "").slice(0, 10), end: String(e.predicted_end_local || e.end_local || e.end || "").slice(0, 10), venue: v.name, town: "", kind: cat[e.category] || "other", attendance: e.phq_attendance, url: "" };
-      });
-    }
-    function webPrompt(f, loc, o) {
-      return "Find events near this UK holiday let that will bring people who need somewhere to stay for " + o.minDays + " or more nights in a row.\n\nThe home: " + JSON.stringify({ name: f.name, area: f.area, town: f.town, postcode: loc && loc.postcode || "", sleeps: f.maxGuests, bedrooms: f.bedrooms, about: String(f.about || "").slice(0, 500) }) + "\nSearch area: within about " + o.radius + " miles of " + (f.town || f.area) + ". Dates: " + o.from + " to " + o.to + ".\n\nLook for, in this order: multi-day professional training courses held at local venues (construction and site safety such as SMSTS, SSSTS and NEBOSH, first aid at work, NHS and nursing, teaching, HGV and plant, trades), conferences and trade shows at local event centres, county and agricultural shows, festivals, sports tournaments and championships, exams and assessment centres, university events such as graduations, and anything else that runs for " + o.minDays + '+ consecutive days. Check each one on its own page. Skip single-day events, online-only courses and anything you could not find a date for.\n\nAnswer with JSON only, no other text: {"events":[{"name":"","kind":"course|conference|expo|show|festival|sport|exam|other","start":"YYYY-MM-DD","end":"YYYY-MM-DD","venue":"","town":"","url":"the page that confirms the dates","audience":"who travels for it, in a few words","attendance":0,"why":"one line on why its visitors need a place to stay"}]}. At most 15 events, soonest first. For a course that runs every month, give the next three dates as separate events. attendance is your best estimate or 0.';
-    }
-    async function web(cfg, f, loc, o, onUsage) {
-      const key = cfg.ai.anthropic, root = cfg.ai.anthropicBase || "https://api.anthropic.com", model = cfg.ai.studioModel || "claude-opus-5-5";
-      const messages = [{ role: "user", content: webPrompt(f, loc, o) }], seen = /* @__PURE__ */ new Set();
-      let text = "";
-      for (let turn = 0; turn < 3; turn++) {
-        const body = {
-          model,
-          max_tokens: 16e3,
-          system: "You are a careful local events researcher for UK holiday let hosts. You only report events you found on real pages, with their real dates.",
-          messages,
-          tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 8, user_location: { type: "approximate", country: "GB", city: f.town || void 0 } }],
-          output_config: { effort: "medium" },
-          fallbacks: "default"
-        };
-        const r = await fetch(root + "/v1/messages", { method: "POST", signal: AbortSignal.timeout(17e4), headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-beta": "server-side-fallback-2026-07-01", "content-type": "application/json" }, body: JSON.stringify(body) });
-        if (!r.ok) {
-          const t = await r.text().catch(() => "");
-          throw new Error("Claude answered " + r.status + " " + t.slice(0, 160));
-        }
-        const j = await r.json();
-        if (onUsage) await onUsage(j.model || model, j.usage);
-        if (j.stop_reason === "refusal") throw new Error("Claude declined this search");
-        (j.content || []).forEach((c) => {
-          if (c.type === "web_search_tool_result" && Array.isArray(c.content)) c.content.forEach((x) => x.url && seen.add(x.url));
-          if (c.type === "text") text += c.text;
-        });
-        if (j.stop_reason !== "pause_turn") break;
-        messages.push({ role: "assistant", content: j.content });
-        text = "";
-      }
-      const a = text.indexOf("{"), b = text.lastIndexOf("}");
-      let out;
-      try {
-        out = JSON.parse(text.slice(a, b + 1));
-      } catch (_) {
-        throw new Error("Claude did not return a usable list of events");
-      }
-      const hosts = new Set([...seen].map((u) => {
-        try {
-          return new URL(u).host;
-        } catch (_) {
-          return "";
-        }
-      }));
-      return (out.events || []).map((e) => {
-        let ok = false;
-        try {
-          ok = seen.has(e.url) || hosts.has(new URL(e.url).host);
-        } catch (_) {
-        }
-        return Object.assign({}, e, { url: ok ? e.url : "" });
-      });
-    }
     function samples(p, today) {
       const at = (n, d) => ({ start: add(today, n), end: add(today, n + d - 1) });
       const S = {
@@ -20133,24 +20634,21 @@ var require_events = __commonJS({
       };
       return (S[p.id] || []).map((x) => Object.assign({ name: x[0], kind: x[1], venue: x[2], town: x[3], audience: x[4], url: "", why: "Sample event for the demo" }, at(x[5], x[6])));
     }
-    async function find(cfg, f, p, o, opts) {
+    async function find(finder, wid, loc, p, o, opts) {
       opts = opts || {};
-      const loc = opts.demo ? null : await locate(cfg, p);
-      const jobs = [];
-      if (opts.demo) jobs.push(["sample", async () => samples(p, o.today)]);
-      else {
-        if (cfg.ai.anthropic && cfg.events.webSearch) jobs.push(["web", () => web(cfg, f, loc, o, opts.onUsage)]);
-        if (cfg.events.predicthq && loc) jobs.push(["predicthq", () => predicthq(cfg, loc, o)]);
-        if (cfg.events.ticketmaster && loc) jobs.push(["ticketmaster", () => ticketmaster(cfg, loc, o)]);
-      }
-      const res = await Promise.all(jobs.map(([id, fn]) => fn().then((list) => ({ id, list }), (e) => ({ id, list: [], error: e.message }))));
-      let all = [];
-      res.forEach((r) => {
-        all = all.concat(r.list.map((e) => norm(e, r.id, p.id)).filter(Boolean));
-      });
       const keep = (e) => e.days >= o.minDays && e.end > o.today && e.start <= o.to;
-      const events = merge(all).filter(keep);
-      return { events, loc, sources: res.map((r) => ({ id: r.id, n: merge(r.list.map((e) => norm(e, r.id, p.id)).filter(Boolean)).filter(keep).length, error: r.error || "" })) };
+      if (opts.demo) {
+        const ev = merge(samples(p, o.today).map((e) => norm(e, "sample", p.id)).filter(Boolean)).filter(keep);
+        return { events: ev, loc: null, sources: [{ id: "sample", name: "Samples", n: ev.length, error: "" }] };
+      }
+      const r = await finder.near(wid, loc, o);
+      const by = /* @__PURE__ */ new Map();
+      r.events.forEach((e) => {
+        const n = norm(e, "crawl", p.id);
+        if (n) (by.get(e.sourceId) || by.set(e.sourceId, []).get(e.sourceId)).push(n);
+      });
+      const events = merge([].concat(...by.values())).filter(keep);
+      return { events, loc, sources: r.sources.map((s) => ({ id: s.id, name: s.name, n: merge(by.get(s.id) || []).filter(keep).length, error: s.error })) };
     }
     var fits = (n, list) => [...new Set(list.map((x) => clean(x, 200)).filter((x) => x && x.length <= n))];
     var title = (s) => s.replace(/\b([a-z])/g, (m, c) => c.toUpperCase());
@@ -20280,7 +20778,7 @@ var require_events = __commonJS({
         }
       };
     }
-    module.exports = { KINDS, WHO, SOURCES, find, fit, merge, norm, rulesAds, adPrompt, adSchema, mergeAds, plan, range, add, diff, samples, locate, base };
+    module.exports = { KINDS, WHO, SOURCES, find, fit, merge, norm, rulesAds, adPrompt, adSchema, mergeAds, plan, range, add, diff, samples, base };
   }
 });
 
@@ -20685,12 +21183,17 @@ var require_studio = __commonJS({
     var render = require_render();
     var FN = require_funnels();
     var EV = require_events();
+    var G = require_geo();
     var Gen = require_generate();
     module.exports = function(o) {
       const { cfg, ws, auth, pub, urls, stripeReady, log, json, jsonBody, send, err, ip } = o;
       const gen = Gen(cfg);
       const credits = o.credits || { check: async () => {
       }, meter: () => null };
+      const finder = o.finder || { near: async () => ({ events: [], sources: [] }), forHost: async () => [], warm: async () => 0, watch: async () => {
+        throw err(400, "The event finder is not running here.");
+      }, unwatch: async () => {
+      } };
       const HTML = "text/html; charset=utf-8";
       const st = (s) => s.studio = s.studio || { sites: {}, funnels: [] };
       const today = (s) => s.today;
@@ -20977,9 +21480,18 @@ var require_studio = __commonJS({
         return x.events;
       };
       function eventsMeta(w) {
-        const E = cfg.events || {}, demo = w.kind === "demo";
-        const on = { web: !!(cfg.ai.anthropic && E.webSearch), predicthq: !!E.predicthq, ticketmaster: !!E.ticketmaster, manual: true };
-        return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: demo ? id === "manual" : on[id] }, x)) };
+        const demo = w.kind === "demo";
+        return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: true }, x)) };
+      }
+      async function pagesFor(w) {
+        if (w.kind === "demo") return [];
+        const seen2 = /* @__PURE__ */ new Map();
+        for (const p of w.state.properties) {
+          const loc = G.locate(p);
+          (await finder.forHost(w.id, loc, 50)).forEach((x) => seen2.set(x.id, x));
+        }
+        if (!w.state.properties.length) (await finder.forHost(w.id, null)).forEach((x) => seen2.set(x.id, x));
+        return [...seen2.values()].sort((a, b) => b.mine - a.mine || a.name.localeCompare(b.name));
       }
       function withFit(s, list) {
         return list.map((e) => {
@@ -20997,7 +21509,7 @@ var require_studio = __commonJS({
         };
         if (api === "/api/eventads/list" && m === "GET") {
           const x = E || { found: [], ads: [], scans: {}, prefs: {} };
-          return json(res, { events: withFit(s, x.found.filter((e) => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w) }, 200, headers), true;
+          return json(res, { events: withFit(s, x.found.filter((e) => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w), pages: await pagesFor(w), located: Object.fromEntries(s.properties.map((p) => [p.id, !!G.locate(p)])) }, 200, headers), true;
         }
         if (api === "/api/eventads/find" && m === "POST") {
           limited(w, "events", w.kind === "demo" ? 12 : 20);
@@ -21005,10 +21517,10 @@ var require_studio = __commonJS({
           const o2 = { today: s.today, radius: [10, 25, 50].includes(+j.radius) ? +j.radius : 25, minDays: [2, 3, 5].includes(+j.minDays) ? +j.minDays : 2, months: [3, 6, 12].includes(+j.months) ? +j.months : 6 };
           o2.from = EV.add(s.today, 1);
           o2.to = EV.add(s.today, Math.round(o2.months * 30.5));
-          const meta = eventsMeta(w);
-          if (!demo && !meta.sources.some((x) => x.on && x.id !== "manual")) throw err(400, "No event sources are switched on yet. Add an event yourself below, or ask us to turn on web search.");
-          if (!demo && meta.sources.find((x) => x.id === "web").on) await credits.check(w.id);
-          const r = await EV.find(cfg, render.facts(s, p), p, o2, { demo, onUsage: credits.meter(w.id, "eventads") });
+          const loc = demo ? null : G.locate(p);
+          if (!demo && !loc && !(await finder.forHost(w.id, null)).some((x) => x.mine)) throw err(400, "Add your home\u2019s postcode in its details so we know where to look, or add an events page for us to read below. You can always add an event yourself.");
+          if (loc) await finder.warm(loc, o2.radius, 2);
+          const r = await EV.find(finder, w.id, loc, p, o2, { demo });
           let added = 0;
           await save(w.id, (S, BB) => {
             const x = evs(S);
@@ -21030,12 +21542,34 @@ var require_studio = __commonJS({
               }
             });
             x.prefs = { radius: o2.radius, minDays: o2.minDays, months: o2.months };
-            x.scans[p.id] = { at: (/* @__PURE__ */ new Date()).toISOString(), place: r.loc && r.loc.place || "", sources: r.sources };
+            x.scans[p.id] = { at: (/* @__PURE__ */ new Date()).toISOString(), place: r.loc && (r.loc.place || r.loc.postcode) || "", sources: r.sources };
             BB.log("campaign", "Event ads", "Looked for events near " + p.name + ": " + r.events.length + " found, " + added + " new.", p.id);
             BB.store.commit({ type: "campaign", quiet: true });
           });
           const w2 = await ws.open(w.id), x2 = w2.state.studio.events;
           return json(res, { events: withFit(w2.state, x2.found.filter((e) => !e.hidden)), ads: x2.ads, scans: x2.scans, prefs: x2.prefs, added, sources: r.sources, state: w2.state, version: await ws.version(w.id) }, 200, headers), true;
+        }
+        if (api === "/api/eventads/watch" && m === "POST") {
+          if (w.kind === "demo") throw err(400, "In the demo we only use sample events. Sign up to have us read pages near your home.");
+          limited(w, "evwatch", 20);
+          const j = await jsonBody(req, 4e3), p = home(j.propertyId), near = G.point(j.postcode) || G.locate(p);
+          if (near && !near.place) near.place = String(p.area || "").split(",")[0].trim() || near.postcode;
+          let r;
+          try {
+            r = await finder.watch(w.id, j.url, near, j.name);
+          } catch (e) {
+            throw err(e.status || 400, e.message);
+          }
+          await save(w.id, (S, BB) => {
+            BB.log("campaign", "Event ads", "Added a page for the event finder to read: " + String(j.url).slice(0, 120) + " (" + r.n + " event" + (r.n === 1 ? "" : "s") + " so far).", p.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, { page: r, pages: await pagesFor(await ws.open(w.id)) }, headers), true;
+        }
+        if (api === "/api/eventads/unwatch" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await finder.unwatch(w.id, String(j.id || ""));
+          return json(res, { pages: await pagesFor(w) }, 200, headers), true;
         }
         if (api === "/api/eventads/add" && m === "POST") {
           const j = await jsonBody(req, 4e3), p = home(j.propertyId);
@@ -21592,7 +22126,8 @@ var require_server = __commonJS({
       return ws.subscribe(wid, res);
     }
     var err = (status, message) => Object.assign(new Error(message), { status });
-    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, credits, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
+    var eventFinder = require_crawler()({ cfg, kv: { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, log: (...a) => log(...a) });
+    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, credits, finder: eventFinder, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
     var MIME = { ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".html": "text/html; charset=utf-8", ".pdf": "application/pdf", ".txt": "text/plain; charset=utf-8" };
     function file(res, base, rel, cache, extra) {
       const f = path.normalize(path.join(base, rel));
@@ -22095,6 +22630,16 @@ var require_server = __commonJS({
       if (p.startsWith("/email-img/brand/")) return file(res, path.join(__dirname, "emails", "brand"), p.slice("/email-img/brand/".length), "public, max-age=86400");
       if (p.startsWith("/email-img/")) return file(res, path.join(__dirname, "emails", "guest-img"), p.slice("/email-img/".length), "public, max-age=86400");
       if (p === "/healthz") return json(res, { ok: true });
+      if (p === "/bot") return send(res, 200, `BookingboosterEvents is the event finder for Bookingbooster, a direct-booking tool for UK holiday lets.
+
+It reads public what's-on, venue and training course pages, and calendar feeds, to find events near our hosts' homes, so they can tell people travelling for those events that they have a room free. It keeps only the facts (name, dates, venue) and a link back to your page.
+
+It asks robots.txt first and follows it, for "BookingboosterEvents" or for "*". It keeps to Crawl-delay, waits at least 1.5 seconds between pages, reads at most 25 pages of a site a day, skips noindex pages and does not follow nofollow links.
+
+To stop it, add to your robots.txt:
+User-agent: BookingboosterEvents
+Disallow: /
+`, "text/plain; charset=utf-8");
       if (p === "/test/sql" && m === "POST" && process.env.TEST_SQL === "1" && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host)) {
         const j = await jsonBody(req, 1e5);
         return json(res, { rows: await db.prepare(String(j.q)).all(...j.args || []) });
@@ -23010,10 +23555,11 @@ var require_server = __commonJS({
     }
     async function runTick(t) {
       const row = await kvGet.get("jobs:last");
-      const last = Object.assign({ ical: 0, daily: 0, domains: 0 }, row ? JSON.parse(row.v) : {});
+      const last = Object.assign({ ical: 0, daily: 0, domains: 0, events: 0 }, row ? JSON.parse(row.v) : {});
       const jobs = [], bg = (name, pr) => jobs.push(Promise.resolve(pr).catch((e) => log(name, e.message)));
       const ical2 = t - last.ical > cfg.icalEveryMin * 6e4, daily = t - last.daily > 864e5;
       if (t - last.domains > 10 * 6e4) last.domains = t;
+      if (t - last.events > 20 * 6e4) last.events = t;
       if (ical2) last.ical = t;
       if (daily) last.daily = t;
       await kvSet.run("jobs:last", JSON.stringify(last));
@@ -23044,6 +23590,7 @@ var require_server = __commonJS({
         }
       }
       if (last.domains === t) bg("domains", checkDomains());
+      if (last.events === t && cfg.events.crawl) bg("events", eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 1e5 : 24e4));
       if (daily) {
         bg("demos", ws.cleanupDemos(7));
         bg("ids", purgeIds());

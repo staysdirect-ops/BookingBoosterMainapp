@@ -1,14 +1,19 @@
-// Event ads: finding events near a home (web search by Claude, Ticketmaster, PredictHQ, or added by hand), checking
-// them against the calendar, and writing the Facebook, Instagram and Google ads and the landing page for the free nights.
+// Event ads: finding events near a home with our own event finder (it reads public pages, no event APIs) or added by
+// hand, checking them against the calendar, and writing the Facebook, Instagram and Google ads and the landing page.
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');
 const http = require('node:http');
 const start = require('./harness');
 const EV = require('../server/studio/events');
+const C = require('../server/studio/crawler');
+const G = require('../server/studio/geo');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
 test('a show listed once per day becomes one event, and single-day events are left out', () => {
-  const n = (name, d) => EV.norm({ name, start: d, venue: 'Kent Showground' }, 'ticketmaster', 'h');
+  const n = (name, d) => EV.norm({ name, start: d, venue: 'Kent Showground' }, 'crawl', 'h');
   const m = EV.merge([n('Kent County Show - Friday', '2027-07-09'), n('Kent County Show - Saturday', '2027-07-10'), n('Kent County Show - Sunday', '2027-07-11'), n('Antiques Fair', '2027-08-01')]);
   assert.deepEqual(m.map(e => [e.name, e.start, e.end, e.days]), [['Kent County Show', '2027-07-09', '2027-07-11', 3], ['Antiques Fair', '2027-08-01', '2027-08-01', 1]]);
   assert.equal(EV.norm({ name: 'x', start: 'soon' }, 'web', 'h'), null);
@@ -57,24 +62,76 @@ test('the demo finds sample events and makes an ad pack with a landing page', as
   assert.match(pv, /Arrive /); assert.match(pv, new RegExp('checkin=' + c.ad.stay.from + '&amp;checkout=' + c.ad.stay.to));
 });
 
-test('a real account searches the web with Claude, Ticketmaster and PredictHQ, then gets ads written by Claude', async () => {
+test('robots.txt is followed: our own group first, longest rule wins, Allow wins a tie', () => {
+  const r = C.robots('User-agent: *\nDisallow: /private/\nDisallow: /*?sr=\nAllow: /private/open$\nCrawl-delay: 4\n\nUser-agent: BadBot\nDisallow: /', 'BookingboosterEvents/1.0');
+  assert.equal(r.delay, 4);
+  assert.deepEqual(['/whats-on', '/private/x', '/private/open', '/private/open/more', '/search?sr=1'].map(p => C.allowed(r, 'https://v.example' + p)), [true, false, true, false, false]);
+  const us = C.robots('User-agent: BookingboosterEvents\nDisallow: /\n\nUser-agent: *\nAllow: /', 'BookingboosterEvents/1.0');
+  assert.equal(C.allowed(us, 'https://v.example/whats-on'), false);
+  assert.equal(C.allowed({ rules: [], all: false }, 'https://v.example/'), false, 'a robots.txt we could not read means stay away');
+});
+
+test('events are read from JSON-LD, microdata, course instances, calendar feeds and an event page’s own text', () => {
+  const html = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@graph': [
+    { '@type': 'Event', name: 'Kent County Show', startDate: '2027-07-09T09:00:00+01:00', endDate: '2027-07-11', location: { '@type': 'Place', name: 'Kent Showground', address: { addressLocality: 'Detling', postalCode: 'ME14 3JF' } } },
+    { '@type': 'Event', name: 'Cancelled gala', startDate: '2027-05-01', endDate: '2027-05-03', eventStatus: 'https://schema.org/EventCancelled' },
+    { '@type': 'Course', name: 'SMSTS site manager course', hasCourseInstance: [{ '@type': 'CourseInstance', courseMode: 'onsite', startDate: '2027-02-08', endDate: '2027-02-12', location: 'Maidstone ME15 6AA' }, { '@type': 'CourseInstance', courseMode: 'online', startDate: '2027-03-08', endDate: '2027-03-12' }] }] }) + '</script>' +
+    '<div itemscope itemtype="https://schema.org/SportsEvent"><h2 itemprop="name">Kent Junior Cup</h2><meta itemprop="startDate" content="2027-05-01"><time itemprop="endDate" datetime="2027-05-03">3 May</time></div>' +
+    '<a href="/events/kent-junior-cup">More</a><a href="https://other.example/x">Away</a><a href="/feed.ics">Calendar</a>';
+  const x = C.extract({ text: html, url: 'https://v.example/whats-on', type: 'text/html' }, 'https://v.example/whats-on');
+  assert.deepEqual(x.events.map(e => [e.name, e.start, e.end, e.kind]), [['Kent County Show', '2027-07-09', '2027-07-11', 'show'], ['SMSTS site manager course', '2027-02-08', '2027-02-12', 'course'], ['Kent Junior Cup', '2027-05-01', '2027-05-03', 'sport']]);
+  assert.equal(x.events[0].postcode, 'ME14'); assert.equal(x.events[1].venue, 'Maidstone');
+  assert.deepEqual(x.links.map(l => l.url), ['https://v.example/events/kent-junior-cup'], 'links to other sites are not followed');
+  assert.deepEqual(x.feeds, ['https://v.example/feed.ics']);
+  assert.equal(C.extract({ text: '<meta name="robots" content="noindex, nofollow">' + html, url: 'https://v.example/a', type: 'text/html' }, 'https://v.example/').events.length, 0, 'noindex pages are skipped');
+  const f = C.ics('BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:First Aid at Work course\r\nDTSTART;VALUE=DATE:20270301\r\nDTEND;VALUE=DATE:20270304\r\nLOCATION:Hilton\\, Maidstone ME14 5AA\r\nEND:VEVENT\r\nEND:VCALENDAR', 'https://v.example/feed.ics');
+  assert.deepEqual([f[0].start, f[0].end, f[0].kind, f[0].postcode], ['2027-03-01', '2027-03-03', 'course', 'ME14'], 'an all-day DTEND is the day after');
+  const t1 = C.textEvent('<title>Farm Expo | Kent Event Centre</title><h1>Farm Expo</h1><p>Friday 30th June - Sunday 2nd July 2027, Detling ME14 3JF</p>', 'https://v.example/events/farm-expo');
+  assert.deepEqual([t1[0].name, t1[0].start, t1[0].end, t1[0].kind], ['Farm Expo', '2027-06-30', '2027-07-02', 'expo']);
+  assert.equal(C.textEvent('<h1>Leeds Castle</h1><p>Open 1 January - 31 December 2027</p>', 'https://v.example/a').length, 0, 'opening seasons are not events');
+});
+
+test('postcodes are placed with our own table, and the same event on two sites is kept once', () => {
+  assert.deepEqual(G.point('1 High Street, Maidstone ME15 6AA'), { lat: 51.2545, lng: 0.5339, postcode: 'ME15' });
+  assert.equal(G.point('Junction 7 of the M20'), null, 'a bare road number is not a postcode');
+  assert.ok(G.miles(G.point('ME15'), G.point('ME14')) < 3 && G.miles(G.point('ME15'), G.point('EH1')) > 300);
+  const n = (name, venue, d1, d2) => EV.norm({ name, start: d1, end: d2, venue }, 'crawl', 'h');
+  const m = EV.merge([n('Kent County Show', 'Kent Showground', '2027-07-09', '2027-07-11'), n('Kent County Show 2027', 'Kent Showground, Detling', '2027-07-09', '2027-07-11'),
+    n('First Aid at Work', 'Maidstone College', '2027-03-01', '2027-03-03'), n('First Aid at Work', 'Ashford Hub', '2027-03-01', '2027-03-03')]);
+  assert.deepEqual(m.map(e => e.name + ' @ ' + e.venue), ['First Aid at Work @ Maidstone College', 'First Aid at Work @ Ashford Hub', 'Kent County Show @ Kent Showground']);
+});
+
+// A small public website on this machine: a what's-on page, an event page with no data, a course page, a calendar
+// feed, a page robots.txt keeps us out of, and a second site that keeps our crawler out altogether.
+function venueSite(opts) {
+  const hits = [];
+  const ld = o => '<script type="application/ld+json">' + JSON.stringify(o) + '</script>';
+  const pages = {
+    '/robots.txt': ['text/plain', 'User-agent: *\nDisallow: /private/\nDisallow: /*?sr=\n'],
+    '/whats-on': ['text/html', '<title>What’s on</title>' + ld([
+      { '@context': 'https://schema.org', '@type': 'Event', name: 'Kent County Show', startDate: '2027-07-09', endDate: '2027-07-11', url: '/events/kent-county-show', location: { '@type': 'Place', name: 'Kent Showground', address: { addressLocality: 'Detling', postalCode: 'ME14 3JF' } }, maximumAttendeeCapacity: 80000 },
+      { '@context': 'https://schema.org', '@type': 'Festival', name: 'Edinburgh Fringe', startDate: '2027-08-06', endDate: '2027-08-30', location: { '@type': 'Place', name: 'Edinburgh', address: { postalCode: 'EH1 1YJ' } } },
+      { '@context': 'https://schema.org', '@type': 'Event', name: 'Craft fair', startDate: '2027-04-01', location: { '@type': 'Place', name: 'Hazlitt', address: { postalCode: 'ME14 1PL' } } }]) +
+      ['Detling Steam Rally - Day 1|2027-05-14', 'Detling Steam Rally - Day 2|2027-05-15'].map(x => '<div itemscope itemtype="https://schema.org/Event"><span itemprop="name">' + x.split('|')[0] + '</span><meta itemprop="startDate" content="' + x.split('|')[1] + '"><div itemprop="location" itemscope itemtype="https://schema.org/Place"><span itemprop="name">Kent Showground</span><span itemprop="postalCode">ME14 3JF</span></div></div>').join('') +
+      '<a href="/events/kent-county-show">Kent County Show</a><a href="/events/farm-expo">Farm Expo</a><a href="/courses/smsts">SMSTS</a><a href="/private/staff-party">Staff</a><a href="/whats-on?sr=1">Search</a><link rel="alternate" type="text/calendar" href="/feed.ics">'],
+    '/events/kent-county-show': ['text/html', '<h1>Kent County Show</h1>'],
+    '/events/farm-expo': ['text/html', '<title>Farm Expo | Kent Event Centre</title><h1>Farm Expo</h1><p>Wednesday 10 - Thursday 11 March 2027 at the Kent Event Centre, Detling, ME14 3JF.</p>'],
+    '/courses/smsts': ['text/html', ld({ '@context': 'https://schema.org', '@type': 'Course', name: 'SMSTS site manager course', hasCourseInstance: [{ '@type': 'CourseInstance', courseMode: 'onsite', startDate: '2027-02-08', endDate: '2027-02-12', location: { '@type': 'Place', name: 'Maidstone Training Centre', address: 'Maidstone ME15 6AA' } }] })],
+    '/feed.ics': ['text/calendar', 'BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:Kent Business Expo\r\nDTSTART;VALUE=DATE:20270310\r\nDTEND;VALUE=DATE:20270312\r\nLOCATION:Kent Event Centre\\, Detling ME14 3JF\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n'],
+    '/private/staff-party': ['text/html', 'secret'],
+    '/venue': ['text/html', ld({ '@context': 'https://schema.org', '@type': 'Event', name: 'Kent County Show 2027', startDate: '2027-07-09', endDate: '2027-07-11', location: { '@type': 'Place', name: 'Kent Showground, Detling', address: { postalCode: 'ME14 3JF' } } })],
+  };
+  const srv = http.createServer((q, s) => { hits.push({ path: q.url, ua: q.headers['user-agent'] });
+    if (opts && opts.closed) { if (q.url === '/robots.txt') { s.writeHead(200, { 'content-type': 'text/plain' }); return s.end('User-agent: BookingboosterEvents\nDisallow: /\n'); } s.writeHead(200); return s.end('should not be read'); }
+    const pg = pages[q.url]; if (!pg) { s.writeHead(404); return s.end('not found'); } s.writeHead(200, { 'content-type': pg[0] }); s.end(pg[1]); });
+  return new Promise(ok => srv.listen(0, () => ok({ srv, hits, base: 'http://localhost:' + srv.address().port })));
+}
+
+test('a real account finds events with our own finder, no event APIs, then gets ads written by Claude', { timeout: 120000 }, async () => {
   const calls = [];
   const mock = http.createServer((q, s) => { let raw = ''; q.on('data', c => raw += c); q.on('end', () => {
     const J = (o, c) => { s.writeHead(c || 200, { 'content-type': 'application/json' }); s.end(JSON.stringify(o)); };
-    calls.push(q.url.split('?')[0]);
-    if (q.url.startsWith('/postcodes/')) return J({ result: { latitude: 51.27, longitude: 0.52, admin_district: 'Maidstone' } });
-    if (q.url.startsWith('/discovery/v2/events.json')) { assert.match(q.url, /latlong=51.27%2C0.52/); assert.match(q.url, /apikey=tm-key/);
-      return J({ _embedded: { events: ['2027-05-14', '2027-05-15'].map((d, i) => ({ name: 'Detling Steam Rally - Day ' + (i + 1), url: 'https://tm.example/rally', dates: { start: { localDate: d } }, classifications: [{ segment: { name: 'Miscellaneous' } }], _embedded: { venues: [{ name: 'Kent Showground', city: { name: 'Detling' } }] } })) } }); }
-    if (q.url.startsWith('/v1/events/')) { assert.equal(q.headers.authorization, 'Bearer phq-key');
-      return J({ results: [{ title: 'Kent Business Expo', category: 'expos', start_local: '2027-03-10T09:00:00', predicted_end_local: '2027-03-11T17:00:00', phq_attendance: 4000, entities: [{ type: 'venue', name: 'Kent Event Centre' }] }] }); }
-    const b = JSON.parse(raw);
-    if (b.tools) { assert.equal(b.tools[0].type, 'web_search_20260209'); assert.match(b.messages[0].content, /Maidstone/);
-      return J({ model: 'claude-opus-5-5', stop_reason: 'end_turn', usage: { input_tokens: 5000, output_tokens: 500, server_tool_use: { web_search_requests: 3 } }, content: [
-        { type: 'web_search_tool_result', tool_use_id: 'a', content: [{ type: 'web_search_result', url: 'https://shows.example/kent-county-show', title: 'Kent County Show' }] },
-        { type: 'text', text: 'Here you go: ' + JSON.stringify({ events: [
-          { name: 'Kent County Show', kind: 'show', start: '2027-07-09', end: '2027-07-11', venue: 'Kent Showground', town: 'Detling', url: 'https://shows.example/kent-county-show', audience: 'Exhibitors and visitors', attendance: 80000 },
-          { name: 'SMSTS course', kind: 'course', start: '2027-02-08', end: '2027-02-12', venue: 'Maidstone', url: 'https://made-up.example/smsts' },
-          { name: 'Craft fair', kind: 'show', start: '2027-04-01', end: '2027-04-01' }] }) }] }); }
+    const b = JSON.parse(raw); calls.push(b);
     // ad copy: one headline is too long and is dropped
     return J({ model: 'claude-opus-5-5', stop_reason: 'end_turn', usage: { input_tokens: 3000, output_tokens: 800 }, content: [{ type: 'text', text: JSON.stringify({
       meta: { primary: 'Showing at the Kent County Show? The whole house is yours 8–11 July.', headline: 'Your Kent County Show base', description: '10% off direct' },
@@ -83,26 +140,44 @@ test('a real account searches the web with Claude, Ticketmaster and PredictHQ, t
       landing: { eyebrow: 'Kent County Show · 9–11 July', headline: 'Your *base* for the show', subhead: 'Free 8–11 July.', points: ['Sleeps 7', 'Parking', 'Fast Wi-Fi'], button: 'Book these dates', urgency: 'Three nights free' } }) }] });
   }); });
   await new Promise(ok => mock.listen(0, ok)); const base = 'http://localhost:' + mock.address().port;
-  const t2 = await start({ ANTHROPIC_API_KEY: 'sk-ant-test', ANTHROPIC_API_BASE: base, POSTCODES_API_BASE: base, TICKETMASTER_API_KEY: 'tm-key', TICKETMASTER_API_BASE: base, PREDICTHQ_TOKEN: 'phq-key', PREDICTHQ_API_BASE: base });
+  const v = await venueSite(), shut = await venueSite({ closed: true });
+  const seeds = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'bb-seeds-')), 'seeds.json');
+  fs.writeFileSync(seeds, JSON.stringify({ sources: [{ url: v.base + '/whats-on', name: 'Kent what’s on', place: 'Maidstone', postcode: 'ME14' }, { url: v.base + '/whats-on', name: 'Same page twice', place: 'Edinburgh', postcode: 'EH1' }] }));
+  const t2 = await start({ ANTHROPIC_API_KEY: 'sk-ant-test', ANTHROPIC_API_BASE: base, EVENTS_ALLOW_PRIVATE_FOR_TESTS: '1', EVENT_SEEDS: seeds });
   try {
     await t2.signup(); const { p } = await t2.home();
     await t2.act('updateProperty', p.id, { address: '1 High Street, Maidstone ME15 6AA', area: 'Maidstone, Kent', maxGuests: 7, bedrooms: 4 });
-    const meta = (await t2.call('/api/studio/meta')).body.events; assert.deepEqual(meta.sources.filter(x => x.on).map(x => x.id), ['web', 'predicthq', 'ticketmaster', 'manual']);
+    const meta = (await t2.call('/api/studio/meta')).body.events; assert.deepEqual(meta.sources.map(x => x.id), ['crawl', 'manual']);
     const f = await t2.call('/api/eventads/find', { body: { propertyId: p.id, months: 12, radius: 25, minDays: 2 } });
     assert.equal(f.status, 200, JSON.stringify(f.body));
     const names = f.body.events.map(e => e.name).sort();
-    assert.deepEqual(names, ['Detling Steam Rally', 'Kent Business Expo', 'Kent County Show', 'SMSTS course'], 'one-day events left out, the rally merged');
-    const kcs = f.body.events.find(e => e.name === 'Kent County Show'); assert.equal(kcs.url, 'https://shows.example/kent-county-show'); assert.equal(kcs.fit.status, 'free');
-    assert.equal(f.body.events.find(e => e.name === 'SMSTS course').url, '', 'links Claude did not actually find are dropped');
-    assert.equal(f.body.events.find(e => e.name === 'Kent Business Expo').attendance, 4000);
-    // web search is charged to the host's AI credit, searches included
-    const cr = (await t2.call('/api/credits')).body; const used = cr.recent.filter(x => x.feature === 'eventads'); assert.equal(used.length, 1); assert.ok(used[0].pounds > 0.03);
-    // a second search adds nothing new
-    assert.equal((await t2.call('/api/eventads/find', { body: { propertyId: p.id, months: 12 } })).body.added, 0);
+    assert.deepEqual(names, ['Detling Steam Rally', 'Farm Expo', 'Kent Business Expo', 'Kent County Show', 'SMSTS site manager course'], 'one-day and far-away events left out, the rally merged, feed and course pages read');
+    const kcs = f.body.events.find(e => e.name === 'Kent County Show');
+    assert.equal(kcs.url, v.base + '/events/kent-county-show'); assert.equal(kcs.fit.status, 'free'); assert.equal(kcs.attendance, 80000); assert.equal(kcs.source, 'crawl'); assert.equal(kcs.site, 'localhost');
+    assert.equal(f.body.events.find(e => e.name === 'SMSTS site manager course').kind, 'course');
+    // good manners: robots.txt read first, disallowed pages never fetched, and we say who we are
+    assert.equal(v.hits[0].path, '/robots.txt'); assert.ok(v.hits.every(h => /^BookingboosterEvents\/1\.0 \(\+http/.test(h.ua)));
+    assert.ok(!v.hits.some(h => h.path.startsWith('/private/') || h.path.includes('sr=')), JSON.stringify(v.hits));
+    // nothing went to an event API or a search engine; Claude was not asked yet
+    assert.equal(calls.length, 0);
+    const cr = (await t2.call('/api/credits')).body; assert.equal(cr.recent.filter(x => x.feature === 'eventads').length, 0, 'finding events costs no AI credit');
+    const l = (await t2.call('/api/eventads/list')).body; assert.equal(l.pages.length, 1, 'the starter page near the home, once'); assert.equal(l.pages[0].n, 8, 'everything on the page, before the filters'); assert.equal(l.located[p.id], true);
+
+    // the host adds a page; the same show listed there is merged with the one we have
+    const w1 = await t2.call('/api/eventads/watch', { body: { propertyId: p.id, url: v.base + '/venue', name: 'Showground events' } });
+    assert.equal(w1.status, 200, JSON.stringify(w1.body)); assert.equal(w1.body.page.n, 1); assert.ok(w1.body.pages.some(x => x.mine && x.name === 'Showground events'));
+    const f2 = await t2.call('/api/eventads/find', { body: { propertyId: p.id, months: 12 } });
+    assert.equal(f2.body.added, 0); assert.equal(f2.body.events.filter(e => /Kent County Show/.test(e.name)).length, 1);
+    // a site that keeps crawlers out is not read at all
+    const w2 = await t2.call('/api/eventads/watch', { body: { propertyId: p.id, url: shut.base + '/whats-on' } });
+    assert.equal(w2.status, 400); assert.match(w2.body.error, /robots\.txt/); assert.deepEqual(shut.hits.map(h => h.path), ['/robots.txt']);
+    await t2.call('/api/eventads/unwatch', { body: { id: w1.body.page.id } });
+    assert.ok(!(await t2.call('/api/eventads/list')).body.pages.some(x => x.mine));
 
     const c = await t2.call('/api/eventads/create', { body: { eventId: kcs.id, pct: 10, code: 'show 10!' } });
     assert.equal(c.status, 200, JSON.stringify(c.body)); const ad = c.body.ad;
     assert.equal(ad.by, 'ai'); assert.equal(ad.code, 'SHOW10'); assert.deepEqual(ad.stay, { from: '2027-07-08', to: '2027-07-11', n: 3 });
+    assert.ok(!calls[0].tools, 'Claude only writes the copy, it does not search');
     assert.equal(ad.meta.headline, 'Your Kent County Show base'); assert.deepEqual(ad.google.headlines, ['Kent County Show Stays', 'Whole House, Sleeps 7']);
     assert.ok(ad.plan.total >= 30 && ad.plan.runTo === '2027-07-06');
     const fn = c.body.state.studio.funnels.find(x => x.id === ad.funnelId); assert.equal(fn.status, 'draft'); assert.equal(fn.copy.offer.headline, 'Your *base* for the show');
@@ -125,8 +200,8 @@ test('a real account searches the web with Claude, Ticketmaster and PredictHQ, t
     assert.ok(!(await t2.call('/api/eventads/list')).body.events.some(e => e.id === add.body.event.id));
     await t2.call('/api/eventads/delete', { body: { id: ad.id, landing: true } });
     st = (await t2.call('/api/state')).body.state; assert.equal(st.studio.events.ads.length, 0); assert.ok(!st.studio.funnels.some(x => x.id === fn.id));
-    assert.ok(calls.includes('/discovery/v2/events.json') && calls.includes('/v1/events/'));
-  } finally { t2.stop(); mock.close(); }
+    assert.equal((await fetch(t2.base + '/bot').then(x => x.text())).includes('User-agent: BookingboosterEvents'), true);
+  } finally { t2.stop(); mock.close(); v.srv.close(); shut.srv.close(); }
 });
 
 test('without any event source, a real account can still add events by hand', async () => {

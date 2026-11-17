@@ -107,7 +107,9 @@ async function stream(res, u, wid, headers) {
 }
 const err = (status, message) => Object.assign(new Error(message), { status });
 // The AI site builder and funnel creator (server/studio)
-const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, credits, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
+// Our own event finder for Event ads (server/studio/crawler.js): reads public what's-on and course pages, no event APIs
+const eventFinder = require('./studio/crawler')({ cfg, kv: { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, log: (...a) => log(...a) });
+const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, credits, finder: eventFinder, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
 
 /* ---------------- static assets ---------------- */
 const MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.html': 'text/html; charset=utf-8', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8' };
@@ -437,6 +439,7 @@ async function route(req, res) {
   if (p.startsWith('/email-img/brand/')) return file(res, path.join(__dirname, 'emails', 'brand'), p.slice('/email-img/brand/'.length), 'public, max-age=86400');
   if (p.startsWith('/email-img/')) return file(res, path.join(__dirname, 'emails', 'guest-img'), p.slice('/email-img/'.length), 'public, max-age=86400');
   if (p === '/healthz') return json(res, { ok: true });
+  if (p === '/bot') return send(res, 200, 'BookingboosterEvents is the event finder for Bookingbooster, a direct-booking tool for UK holiday lets.\n\nIt reads public what\'s-on, venue and training course pages, and calendar feeds, to find events near our hosts\' homes, so they can tell people travelling for those events that they have a room free. It keeps only the facts (name, dates, venue) and a link back to your page.\n\nIt asks robots.txt first and follows it, for "BookingboosterEvents" or for "*". It keeps to Crawl-delay, waits at least 1.5 seconds between pages, reads at most 25 pages of a site a day, skips noindex pages and does not follow nofollow links.\n\nTo stop it, add to your robots.txt:\nUser-agent: BookingboosterEvents\nDisallow: /\n', 'text/plain; charset=utf-8');
   /* test servers only (TEST_SQL=1, set by test/harness.js): lets tests read and change the database directly */
   if (p === '/test/sql' && m === 'POST' && process.env.TEST_SQL === '1' && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host)) { const j = await jsonBody(req, 1e5); return json(res, { rows: await db.prepare(String(j.q)).all(...(j.args || [])) }); }
   /* background jobs on Supabase: pg_cron posts here every few minutes with the jobs key */
@@ -1094,10 +1097,11 @@ const kvGet = db.prepare('SELECT v FROM kv WHERE k = ?'), kvSet = db.prepare('IN
 let ticking = null;
 function tick(t) { if (!ticking) ticking = runTick(t || Date.now()).finally(() => { ticking = null; }); return ticking; }
 async function runTick(t) {
-  const row = await kvGet.get('jobs:last'); const last = Object.assign({ ical: 0, daily: 0, domains: 0 }, row ? JSON.parse(row.v) : {});
+  const row = await kvGet.get('jobs:last'); const last = Object.assign({ ical: 0, daily: 0, domains: 0, events: 0 }, row ? JSON.parse(row.v) : {});
   const jobs = [], bg = (name, pr) => jobs.push(Promise.resolve(pr).catch(e => log(name, e.message)));
   const ical = t - last.ical > cfg.icalEveryMin * 60e3, daily = t - last.daily > 864e5;
   if (t - last.domains > 10 * 60e3) last.domains = t;
+  if (t - last.events > 20 * 60e3) last.events = t; // the event finder reads a few due pages every 20 minutes
   if (ical) last.ical = t;
   if (daily) last.daily = t;
   await kvSet.run('jobs:last', JSON.stringify(last)); // claim this run first, so a second caller does not repeat it
@@ -1118,6 +1122,7 @@ async function runTick(t) {
     } catch (e) { log('job', id, e.message); }
   }
   if (last.domains === t) bg('domains', checkDomains());
+  if (last.events === t && cfg.events.crawl) bg('events', eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 100e3 : 240e3));
   if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists
   await Promise.all(jobs); await ws.settle();

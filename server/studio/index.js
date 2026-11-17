@@ -8,6 +8,7 @@ const D = require('./design');
 const render = require('./render');
 const FN = require('./funnels');
 const EV = require('./events');
+const G = require('./geo');
 const Gen = require('./generate');
 
 module.exports = function (o) {
@@ -15,6 +16,8 @@ module.exports = function (o) {
   const gen = Gen(cfg);
   // AI credit (server/credits.js): checked before each AI design or funnel, and charged for what Claude used.
   const credits = o.credits || { check: async () => {}, meter: () => null };
+  // Our own event finder (crawler.js), shared by every host. Without one (some tests), only events added by hand.
+  const finder = o.finder || { near: async () => ({ events: [], sources: [] }), forHost: async () => [], warm: async () => 0, watch: async () => { throw err(400, 'The event finder is not running here.'); }, unwatch: async () => {} };
   const HTML = 'text/html; charset=utf-8';
   const st = s => (s.studio = s.studio || { sites: {}, funnels: [] });
   const today = s => s.today;
@@ -174,9 +177,16 @@ module.exports = function (o) {
   // state.studio.events: { found: [event], ads: [adset], scans: { [homeId]: { at, sources, place } }, prefs: { radius, minDays, months } }
   const evs = s => { const x = st(s); x.events = x.events || { found: [], ads: [], scans: {}, prefs: {} }; return x.events; };
   function eventsMeta(w) {
-    const E = cfg.events || {}, demo = w.kind === 'demo';
-    const on = { web: !!(cfg.ai.anthropic && E.webSearch), predicthq: !!E.predicthq, ticketmaster: !!E.ticketmaster, manual: true };
-    return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: demo ? id === 'manual' : on[id] }, x)) };
+    const demo = w.kind === 'demo';
+    return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: true }, x)) };
+  }
+  // the pages our finder reads for this host: ones they added, and starter or shared pages near their homes
+  async function pagesFor(w) {
+    if (w.kind === 'demo') return [];
+    const seen = new Map();
+    for (const p of w.state.properties) { const loc = G.locate(p); (await finder.forHost(w.id, loc, 50)).forEach(x => seen.set(x.id, x)); }
+    if (!w.state.properties.length) (await finder.forHost(w.id, null)).forEach(x => seen.set(x.id, x));
+    return [...seen.values()].sort((a, b) => (b.mine - a.mine) || a.name.localeCompare(b.name));
   }
   // what the host sees for each event: how it sits against the calendar today
   function withFit(s, list) {
@@ -187,17 +197,17 @@ module.exports = function (o) {
     const home = id => { const p = s.properties.find(x => x.id === id) || s.properties[0]; if (!p) throw err(400, 'Add a home first.'); return p; };
     if (api === '/api/eventads/list' && m === 'GET') {
       const x = E || { found: [], ads: [], scans: {}, prefs: {} };
-      return json(res, { events: withFit(s, x.found.filter(e => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w) }, 200, headers), true;
+      return json(res, { events: withFit(s, x.found.filter(e => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w), pages: await pagesFor(w), located: Object.fromEntries(s.properties.map(p => [p.id, !!G.locate(p)])) }, 200, headers), true;
     }
     if (api === '/api/eventads/find' && m === 'POST') {
       limited(w, 'events', w.kind === 'demo' ? 12 : 20);
       const j = await jsonBody(req, 2e3), p = home(j.propertyId), demo = w.kind === 'demo';
       const o = { today: s.today, radius: [10, 25, 50].includes(+j.radius) ? +j.radius : 25, minDays: [2, 3, 5].includes(+j.minDays) ? +j.minDays : 2, months: [3, 6, 12].includes(+j.months) ? +j.months : 6 };
       o.from = EV.add(s.today, 1); o.to = EV.add(s.today, Math.round(o.months * 30.5));
-      const meta = eventsMeta(w);
-      if (!demo && !meta.sources.some(x => x.on && x.id !== 'manual')) throw err(400, 'No event sources are switched on yet. Add an event yourself below, or ask us to turn on web search.');
-      if (!demo && meta.sources.find(x => x.id === 'web').on) await credits.check(w.id);
-      const r = await EV.find(cfg, render.facts(s, p), p, o, { demo, onUsage: credits.meter(w.id, 'eventads') });
+      const loc = demo ? null : G.locate(p);
+      if (!demo && !loc && !(await finder.forHost(w.id, null)).some(x => x.mine)) throw err(400, 'Add your home’s postcode in its details so we know where to look, or add an events page for us to read below. You can always add an event yourself.');
+      if (loc) await finder.warm(loc, o.radius, 2); // starter pages near a new host that have never been read
+      const r = await EV.find(finder, w.id, loc, p, o, { demo });
       let added = 0;
       await save(w.id, (S, BB) => { const x = evs(S);
         r.events.forEach(e => { const old = x.found.find(q => q.id === e.id); if (old) { if (!old.url && e.url) old.url = e.url; return; } x.found.push(e); added++; });
@@ -205,11 +215,25 @@ module.exports = function (o) {
         x.found = x.found.filter(e => e.end >= S.today || x.ads.some(a => a.eventId === e.id)).sort((a, b) => a.start.localeCompare(b.start));
         S.properties.forEach(q => { const mine = x.found.filter(e => e.propertyId === q.id); if (mine.length > 80) { const drop = new Set(mine.slice(80).map(e => e.id)); x.found = x.found.filter(e => !drop.has(e.id)); } });
         x.prefs = { radius: o.radius, minDays: o.minDays, months: o.months };
-        x.scans[p.id] = { at: new Date().toISOString(), place: (r.loc && r.loc.place) || '', sources: r.sources };
+        x.scans[p.id] = { at: new Date().toISOString(), place: (r.loc && (r.loc.place || r.loc.postcode)) || '', sources: r.sources };
         BB.log('campaign', 'Event ads', 'Looked for events near ' + p.name + ': ' + r.events.length + ' found, ' + added + ' new.', p.id);
         BB.store.commit({ type: 'campaign', quiet: true }); });
       const w2 = await ws.open(w.id), x2 = w2.state.studio.events;
       return json(res, { events: withFit(w2.state, x2.found.filter(e => !e.hidden)), ads: x2.ads, scans: x2.scans, prefs: x2.prefs, added, sources: r.sources, state: w2.state, version: await ws.version(w.id) }, 200, headers), true;
+    }
+    // pages for our finder to read: a venue's or council's what's-on page, a training provider's course dates, a calendar feed
+    if (api === '/api/eventads/watch' && m === 'POST') {
+      if (w.kind === 'demo') throw err(400, 'In the demo we only use sample events. Sign up to have us read pages near your home.');
+      limited(w, 'evwatch', 20);
+      const j = await jsonBody(req, 4e3), p = home(j.propertyId), near = G.point(j.postcode) || G.locate(p);
+      if (near && !near.place) near.place = String(p.area || '').split(',')[0].trim() || near.postcode;
+      let r; try { r = await finder.watch(w.id, j.url, near, j.name); } catch (e) { throw err(e.status || 400, e.message); }
+      await save(w.id, (S, BB) => { BB.log('campaign', 'Event ads', 'Added a page for the event finder to read: ' + String(j.url).slice(0, 120) + ' (' + r.n + ' event' + (r.n === 1 ? '' : 's') + ' so far).', p.id); BB.store.commit({ type: 'campaign', quiet: true }); });
+      return reply(res, w.id, { page: r, pages: await pagesFor(await ws.open(w.id)) }, headers), true;
+    }
+    if (api === '/api/eventads/unwatch' && m === 'POST') {
+      const j = await jsonBody(req, 2e3); await finder.unwatch(w.id, String(j.id || ''));
+      return json(res, { pages: await pagesFor(w) }, 200, headers), true;
     }
     if (api === '/api/eventads/add' && m === 'POST') {
       const j = await jsonBody(req, 4e3), p = home(j.propertyId);

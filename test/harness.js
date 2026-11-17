@@ -9,7 +9,7 @@ const path = require('node:path');
 // on a fresh Postgres (PGlite over a socket), behind a pass-through that does what supabase/20i/index.php does.
 function spawnServer({ port, base, data, env }) {
   const cwd = path.join(__dirname, '..');
-  const full = Object.assign({}, process.env, { PORT: String(port), BASE_URL: base, DATA_DIR: data, TEST_SQL: '1', STRIPE_SECRET_KEY: '', RESEND_API_KEY: '', POSTMARK_TOKEN: '', TWILIO_ACCOUNT_SID: '' }, env);
+  const full = Object.assign({}, process.env, { PORT: String(port), BASE_URL: base, DATA_DIR: data, TEST_SQL: '1', STRIPE_SECRET_KEY: '', EVENT_SEEDS: 'off', RESEND_API_KEY: '', POSTMARK_TOKEN: '', TWILIO_ACCOUNT_SID: '' }, env);
   if (!process.env.BB_DENO) {
     const proc = spawn(process.execPath, ['server/index.js'], { cwd, stdio: ['ignore', 'pipe', 'pipe'], env: full });
     proc.stderr.on('data', d => process.stderr.write(d)); if (process.env.BB_LOG) proc.stdout.on('data', d => process.stderr.write(d));

@@ -1,0 +1,7 @@
+{
+  "about": "Starter pages the event finder reads for every host near them, about once a day. Each needs a public page of events, courses or shows, and a postcode district for where it covers. Hosts add their own pages in Event ads. Check a site's robots.txt and terms allow reading before adding it here.",
+  "sources": [
+    { "url": "https://www.visitmaidstone.com/whats-on", "name": "Visit Maidstone: what's on", "place": "Maidstone", "postcode": "ME14" },
+    { "url": "https://www.visitmaidstone.com/whats-on/searchresults", "name": "Visit Maidstone: all events", "place": "Maidstone", "postcode": "ME14" }
+  ]
+}
