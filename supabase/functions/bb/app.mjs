@@ -1440,7 +1440,7 @@ var require_bb_embedded_files = __commonJS({
     },
   }, hooks);
 })();
-` }, "/app/web/src/app-studio.css": { "t": "/* Host console: Site builder and Funnels (app-studio.js). Lives inside .ag, so it reflows with the container. */\n.sb .sb-cols { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }\n@container ag (max-width: 860px) { .sb .sb-cols { grid-template-columns: minmax(0, 1fr); } .sb .sb-stage { order: -1; } }\n.sb .eyebrow { display: block; font: 600 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }\n.sb .eyebrow em { font: 500 11px var(--font, inherit); text-transform: none; letter-spacing: 0; font-style: normal; }\n.sb .sb-q { display: grid; gap: 2px; margin: 0 0 18px; }\n.sb .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }\n.sb .field { display: grid; gap: 6px; margin-bottom: 14px; }\n.sb .field > span { font-size: 13px; font-weight: 600; }\n.sb .field em { font-style: normal; font-weight: 500; font-size: 12px; }\n.sb .field input, .sb .field textarea, .sb .field select { width: 100%; }\n\n/* brief */\n.sb .sb-brief { padding: 18px 20px 20px; }\n.sb .sb-brief .a-card-h { padding: 0 0 14px; }\n.sb .sb-ph { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 0 0 16px; }\n.sb .sb-ph .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; }\n.sb .sb-gobtn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 15px; }\n\n/* art direction cards */\n.sb .sb-dirs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }\n.sb .sb-dir { display: grid; gap: 2px; text-align: left; padding: 8px 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }\n.sb .sb-dir:hover { border-color: var(--line-2); transform: translateY(-1px); }\n.sb .sb-dir.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-dir b { font-size: 13px; line-height: 1.2; margin-top: 6px; }\n.sb .sb-dir small { font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dir-sw { display: flex; align-items: flex-end; justify-content: space-between; height: 58px; padding: 8px 10px; border-radius: 8px; background: var(--b); color: var(--i); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }\n.sb .sb-aa { font-size: 30px; line-height: 1; }\n.sb .sb-dots { display: flex; gap: 3px; }\n.sb .sb-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }\n.sb .sb-dirs.sm { grid-template-columns: repeat(4, minmax(0, 1fr)); }\n.sb .sb-dirs.sm .sb-dir-sw { height: 40px; padding: 6px; }\n.sb .sb-dirs.sm .sb-aa { font-size: 20px; }\n.sb .sb-dirs.sm .sb-dots, .sb .sb-dirs.sm small { display: none; }\n.sb .sb-dirs.sm b { font-size: 11.5px; }\n\n/* busy */\n.sb .sb-busy { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 24px; display: grid; gap: 6px; justify-items: start; }\n.sb .sb-busy p { margin: 0 0 10px; font-size: 13.5px; }\n.sb .sb-orb { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 30%, white), var(--primary)); color: #fff; animation: sbPulse 1.8s ease-in-out infinite; margin-bottom: 8px; }\n.sb .sb-orb .ic { width: 22px; height: 22px; }\n@keyframes sbPulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 12%, transparent); } }\n.sb .sb-busy ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; width: 100%; }\n.sb .sb-busy li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }\n.sb .sb-busy li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }\n.sb .sb-busy li .ic { width: 16px; height: 16px; color: var(--good); flex: none; }\n.sb .sb-busy li.done { color: var(--fg); }\n.sb .sb-busy li.now { color: var(--fg); font-weight: 600; }\n.sb .sb-busy li.now i { border-color: var(--primary); border-top-color: transparent; animation: sbSpin .8s linear infinite; }\n@keyframes sbSpin { to { transform: rotate(360deg); } }\n@media (prefers-reduced-motion: reduce) { .sb .sb-orb, .sb .sb-busy li.now i { animation: none; } }\n\n/* edit panel */\n.sb .sb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 14px; min-width: 0; }\n.sb .sb-ask { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--primary-soft); }\n.sb .sb-ask > div { display: flex; gap: 8px; align-items: flex-end; }\n.sb .sb-ask textarea { flex: 1; min-width: 0; resize: vertical; background: var(--surface); }\n.sb .sb-tabs { display: flex; width: 100%; }\n.sb .sb-tabs button { flex: 1; white-space: nowrap; }\n.sb .sb-tabbody { min-width: 0; }\n.sb .sb-why { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 13.5px; line-height: 1.5; }\n.sb .sb-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }\n.sb .sb-hero { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-hero.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-hero b { font-size: 12.5px; } .sb .sb-hero small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-hi { display: block; height: 44px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); position: relative; overflow: hidden; }\n.sb .sb-hi::before, .sb .sb-hi::after { content: ''; position: absolute; background: var(--line-2); border-radius: 2px; }\n.sb .h-cinematic { background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-cinematic::before { left: 8px; bottom: 9px; width: 50%; height: 5px; background: #fff; } .sb .h-cinematic::after { left: 8px; bottom: 18px; width: 30%; height: 3px; background: rgba(255,255,255,.7); }\n.sb .h-split::before { right: 6px; top: 6px; bottom: 6px; width: 42%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-split::after { left: 6px; top: 16px; width: 36%; height: 5px; background: var(--fg); }\n.sb .h-editorial::before { left: 6px; top: 6px; width: 70%; height: 9px; background: var(--fg); } .sb .h-editorial::after { left: 6px; right: 6px; bottom: 5px; height: 18px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-mosaic::before { left: 6px; top: 6px; bottom: 6px; width: 46%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-mosaic::after { right: 6px; top: 6px; bottom: 6px; width: 40%; background: repeating-linear-gradient(180deg, #b9c6d3 0 15px, transparent 15px 18px); }\n.sb .h-type::before { left: 8px; top: 9px; width: 66%; height: 9px; background: var(--fg); } .sb .h-type::after { left: 8px; top: 23px; width: 40%; height: 9px; background: var(--primary); }\n.sb .sb-accrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }\n.sb .sb-accrow input[type=color] { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); cursor: pointer; }\n.sb .sb-acc > small { font-size: 12px; }\n.sb .sb-hl { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }\n.sb .sb-hl .eyebrow { margin: 0; }\n.sb .sb-sticky { position: sticky; bottom: 0; display: grid; gap: 6px; padding: 12px 0 2px; background: linear-gradient(transparent, var(--surface) 30%); margin-bottom: 14px; }\n.sb .sb-sticky small { font-size: 12px; }\n.sb .sb-secs { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 6px; }\n.sb .sb-secs li { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.sb .sb-secs li > div { flex: 1; min-width: 0; display: grid; }\n.sb .sb-secs b { font-size: 13.5px; } .sb .sb-secs small { font-size: 11.5px; color: var(--muted); }\n.sb .sb-sn { font: 600 11px var(--mono); color: var(--muted); }\n.sb .sb-sa { display: flex; gap: 2px; }\n.sb .sb-sa .iconbtn { width: 30px; height: 30px; font-size: 14px; }\n.sb .sb-qa { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }\n.sb .sb-qa li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }\n.sb .sb-qa li > .ic { width: 18px; height: 18px; flex: none; padding: 2px; border-radius: 50%; }\n.sb .sb-qa li.ok > .ic { color: var(--good); background: var(--good-soft); }\n.sb .sb-qa li.no > .ic { color: var(--bad); background: var(--bad-soft); }\n.sb .sb-qa small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }\n.sb .sb-rules { font-size: 13px; } .sb .sb-rules summary { cursor: pointer; font-weight: 600; }\n.sb .sb-rules ol { padding-left: 20px; display: grid; gap: 6px; color: var(--muted); }\n\n/* stage */\n.sb .sb-stage { position: sticky; top: calc(var(--a-top, 0px) + 12px); display: grid; gap: 10px; min-width: 0; }\n.sb .sb-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }\n.sb .sb-meta { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; min-width: 0; }\n.sb .sb-meta small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-tools { display: flex; gap: 4px; }\n.sb .sb-dev { border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); margin-inline: auto; width: 100%; }\n.sb .sb-dev.phone { width: min(100%, 390px); border-radius: 34px; border: 10px solid #0d0f17; box-shadow: var(--shadow), 0 0 0 1px var(--line-2); }\n.sb .sb-chrome { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }\n.sb .sb-chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }\n.sb .sb-chrome span { margin-left: 10px; font-size: 11.5px; color: var(--muted); padding: 3px 12px; border-radius: 999px; background: var(--surface); flex: 1; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dev.phone .sb-chrome { justify-content: center; } .sb .sb-dev.phone .sb-chrome i { display: none; } .sb .sb-dev.phone .sb-chrome span { margin: 0; text-align: center; }\n.sb .sb-slot { height: min(74vh, 860px); min-height: 420px; background: var(--surface-2); }\n.sb .sb-dev.phone .sb-slot { height: min(72vh, 760px); }\n.sb-float { position: fixed; z-index: 40; overflow: hidden; pointer-events: auto; }\n.sb-float[hidden] { display: none; }\n.sb-float iframe { border: 0; display: block; transform-origin: 0 0; background: #fff; }\n.sb-float.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) var(--surface-2); background-size: 200% 100%; animation: sbShimmer 1.2s linear infinite; }\n@keyframes sbShimmer { to { background-position: -200% 0; } }\n\n/* empty state */\n.sb .sb-empty { min-height: 520px; display: grid; place-items: center; border-radius: var(--r-lg); background: radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%), var(--surface); border: 1px solid var(--line); padding: 40px; position: static; }\n.sb .sb-hero-ill { max-width: 520px; }\n.sb .sb-hero-ill .disp { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; display: block; margin-bottom: 14px; }\n.sb .sb-hero-ill em, .sb .sb-fempty em { font-style: italic; color: var(--primary); }\n.sb .sb-hero-ill p { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }\n.sb .sb-hero-ill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 13.5px; }\n.sb .sb-hero-ill li { display: flex; gap: 8px; align-items: flex-start; } .sb .sb-hero-ill li .ic { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 2px; }\n.sb .sb-load { min-height: 300px; }\n\n/* funnels */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 0 20px 20px; }\n.sb .sb-tpl { display: grid; gap: 4px; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .15s, transform .15s; }\n.sb .sb-tpl:hover { border-color: var(--primary); transform: translateY(-1px); }\n.sb .sb-tpl b { font-size: 15px; margin-top: 6px; } .sb .sb-tpl small { color: var(--muted); font-size: 13px; line-height: 1.45; }\n.sb .sb-tpl em { font-style: normal; font: 500 11px var(--mono); color: var(--muted); margin-top: 6px; }\n.sb .sb-tpl-i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; }\n.sb .sb-tpl-i .ic { width: 18px; height: 18px; }\n.sb .sb-fform { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 14px; padding: 0 20px; }\n.sb .sb-fform .sb-wide { grid-column: 1 / -1; }\n.sb section > .ag-acts-row, .sb section > p.muted { padding: 0 20px 20px; }\n.sb section > p.muted { padding-bottom: 0; }\n.sb .sb-flist { display: grid; gap: 8px; }\n.sb .sb-frow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--line); }\n.sb .sb-frow:hover { border-color: var(--line-2); }\n.sb .sb-fn { flex: 1; min-width: 0; display: grid; } .sb .sb-fn small { color: var(--muted); font-size: 12.5px; }\n.sb .sb-fs { display: flex; gap: 18px; } .sb .sb-fs > span { display: grid; text-align: right; } .sb .sb-fs small { font-size: 11px; color: var(--muted); }\n@container ag (max-width: 620px) { .sb .sb-fs { display: none; } }\n.sb .sb-fempty { padding: 36px; display: grid; gap: 10px; justify-items: start; }\n.sb .sb-fempty .disp { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; } .sb .sb-fempty p { max-width: 560px; margin: 0 0 6px; line-height: 1.6; }\n.sb .sb-fdetail { display: grid; gap: 16px; min-width: 0; }\n.sb .sb-fh { margin: 0; }\n.sb .sb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }\n.sb .sb-kpis > div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }\n.sb .sb-kpis small { font-size: 12px; color: var(--muted); } .sb .sb-kpis b { font-size: 22px; }\n" }, "/app/web/src/app-studio.js": { "t": `/* Bookingbooster: the Site builder and Funnels views in the host console.
+` }, "/app/web/src/app-studio.css": { "t": "/* Host console: Site builder and Funnels (app-studio.js). Lives inside .ag, so it reflows with the container. */\n.sb .sb-cols { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }\n@container ag (max-width: 860px) { .sb .sb-cols { grid-template-columns: minmax(0, 1fr); } .sb .sb-stage { order: -1; } }\n.sb .eyebrow { display: block; font: 600 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }\n.sb .eyebrow em { font: 500 11px var(--font, inherit); text-transform: none; letter-spacing: 0; font-style: normal; }\n.sb .sb-q { display: grid; gap: 2px; margin: 0 0 18px; }\n.sb .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }\n.sb .field { display: grid; gap: 6px; margin-bottom: 14px; }\n.sb .field > span { font-size: 13px; font-weight: 600; }\n.sb .field em { font-style: normal; font-weight: 500; font-size: 12px; }\n.sb .field input, .sb .field textarea, .sb .field select { width: 100%; }\n\n/* brief */\n.sb .sb-brief { padding: 18px 20px 20px; }\n.sb .sb-brief .a-card-h { padding: 0 0 14px; }\n.sb .sb-ph { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 0 0 16px; }\n.sb .sb-ph .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; }\n.sb .sb-gobtn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 15px; }\n\n/* art direction cards */\n.sb .sb-dirs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }\n.sb .sb-dir { display: grid; gap: 2px; text-align: left; padding: 8px 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }\n.sb .sb-dir:hover { border-color: var(--line-2); transform: translateY(-1px); }\n.sb .sb-dir.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-dir b { font-size: 13px; line-height: 1.2; margin-top: 6px; }\n.sb .sb-dir small { font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dir-sw { display: flex; align-items: flex-end; justify-content: space-between; height: 58px; padding: 8px 10px; border-radius: 8px; background: var(--b); color: var(--i); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }\n.sb .sb-aa { font-size: 30px; line-height: 1; }\n.sb .sb-dots { display: flex; gap: 3px; }\n.sb .sb-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }\n.sb .sb-dirs.sm { grid-template-columns: repeat(4, minmax(0, 1fr)); }\n.sb .sb-dirs.sm .sb-dir-sw { height: 40px; padding: 6px; }\n.sb .sb-dirs.sm .sb-aa { font-size: 20px; }\n.sb .sb-dirs.sm .sb-dots, .sb .sb-dirs.sm small { display: none; }\n.sb .sb-dirs.sm b { font-size: 11.5px; }\n\n/* busy */\n.sb .sb-busy { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 24px; display: grid; gap: 6px; justify-items: start; }\n.sb .sb-busy p { margin: 0 0 10px; font-size: 13.5px; }\n.sb .sb-orb { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 30%, white), var(--primary)); color: #fff; animation: sbPulse 1.8s ease-in-out infinite; margin-bottom: 8px; }\n.sb .sb-orb .ic { width: 22px; height: 22px; }\n@keyframes sbPulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 12%, transparent); } }\n.sb .sb-busy ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; width: 100%; }\n.sb .sb-busy li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }\n.sb .sb-busy li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }\n.sb .sb-busy li .ic { width: 16px; height: 16px; color: var(--good); flex: none; }\n.sb .sb-busy li.done { color: var(--fg); }\n.sb .sb-busy li.now { color: var(--fg); font-weight: 600; }\n.sb .sb-busy li.now i { border-color: var(--primary); border-top-color: transparent; animation: sbSpin .8s linear infinite; }\n@keyframes sbSpin { to { transform: rotate(360deg); } }\n@media (prefers-reduced-motion: reduce) { .sb .sb-orb, .sb .sb-busy li.now i { animation: none; } }\n\n/* edit panel */\n.sb .sb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 14px; min-width: 0; }\n.sb .sb-ask { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--primary-soft); }\n.sb .sb-ask > div { display: flex; gap: 8px; align-items: flex-end; }\n.sb .sb-ask textarea { flex: 1; min-width: 0; resize: vertical; background: var(--surface); }\n.sb .sb-tabs { display: flex; width: 100%; }\n.sb .sb-tabs button { flex: 1; white-space: nowrap; }\n.sb .sb-tabbody { min-width: 0; }\n.sb .sb-why { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 13.5px; line-height: 1.5; }\n.sb .sb-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }\n.sb .sb-hero { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-hero.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-hero b { font-size: 12.5px; } .sb .sb-hero small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-hi { display: block; height: 44px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); position: relative; overflow: hidden; }\n.sb .sb-hi::before, .sb .sb-hi::after { content: ''; position: absolute; background: var(--line-2); border-radius: 2px; }\n.sb .h-cinematic { background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-cinematic::before { left: 8px; bottom: 9px; width: 50%; height: 5px; background: #fff; } .sb .h-cinematic::after { left: 8px; bottom: 18px; width: 30%; height: 3px; background: rgba(255,255,255,.7); }\n.sb .h-split::before { right: 6px; top: 6px; bottom: 6px; width: 42%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-split::after { left: 6px; top: 16px; width: 36%; height: 5px; background: var(--fg); }\n.sb .h-editorial::before { left: 6px; top: 6px; width: 70%; height: 9px; background: var(--fg); } .sb .h-editorial::after { left: 6px; right: 6px; bottom: 5px; height: 18px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-mosaic::before { left: 6px; top: 6px; bottom: 6px; width: 46%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-mosaic::after { right: 6px; top: 6px; bottom: 6px; width: 40%; background: repeating-linear-gradient(180deg, #b9c6d3 0 15px, transparent 15px 18px); }\n.sb .h-type::before { left: 8px; top: 9px; width: 66%; height: 9px; background: var(--fg); } .sb .h-type::after { left: 8px; top: 23px; width: 40%; height: 9px; background: var(--primary); }\n.sb .sb-accrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }\n.sb .sb-accrow input[type=color] { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); cursor: pointer; }\n.sb .sb-acc > small { font-size: 12px; }\n.sb .sb-hl { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }\n.sb .sb-hl .eyebrow { margin: 0; }\n.sb .sb-sticky { position: sticky; bottom: 0; display: grid; gap: 6px; padding: 12px 0 2px; background: linear-gradient(transparent, var(--surface) 30%); margin-bottom: 14px; }\n.sb .sb-sticky small { font-size: 12px; }\n.sb .sb-secs { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 6px; }\n.sb .sb-secs li { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.sb .sb-secs li > div { flex: 1; min-width: 0; display: grid; }\n.sb .sb-secs b { font-size: 13.5px; } .sb .sb-secs small { font-size: 11.5px; color: var(--muted); }\n.sb .sb-sn { font: 600 11px var(--mono); color: var(--muted); }\n.sb .sb-sa { display: flex; gap: 2px; }\n.sb .sb-sa .iconbtn { width: 30px; height: 30px; font-size: 14px; }\n.sb .sb-qa { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }\n.sb .sb-qa li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }\n.sb .sb-qa li > .ic { width: 18px; height: 18px; flex: none; padding: 2px; border-radius: 50%; }\n.sb .sb-qa li.ok > .ic { color: var(--good); background: var(--good-soft); }\n.sb .sb-qa li.no > .ic { color: var(--bad); background: var(--bad-soft); }\n.sb .sb-qa small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }\n.sb .sb-rules { font-size: 13px; } .sb .sb-rules summary { cursor: pointer; font-weight: 600; }\n.sb .sb-rules ol { padding-left: 20px; display: grid; gap: 6px; color: var(--muted); }\n\n/* stage */\n.sb .sb-stage { position: sticky; top: calc(var(--a-top, 0px) + 12px); display: grid; gap: 10px; min-width: 0; }\n.sb .sb-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }\n.sb .sb-meta { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; min-width: 0; }\n.sb .sb-meta small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-tools { display: flex; gap: 4px; }\n.sb .sb-dev { border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); margin-inline: auto; width: 100%; }\n.sb .sb-dev.phone { width: min(100%, 390px); border-radius: 34px; border: 10px solid #0d0f17; box-shadow: var(--shadow), 0 0 0 1px var(--line-2); }\n.sb .sb-chrome { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }\n.sb .sb-chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }\n.sb .sb-chrome span { margin-left: 10px; font-size: 11.5px; color: var(--muted); padding: 3px 12px; border-radius: 999px; background: var(--surface); flex: 1; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dev.phone .sb-chrome { justify-content: center; } .sb .sb-dev.phone .sb-chrome i { display: none; } .sb .sb-dev.phone .sb-chrome span { margin: 0; text-align: center; }\n.sb .sb-slot { height: min(74vh, 860px); min-height: 420px; background: var(--surface-2); }\n.sb .sb-dev.phone .sb-slot { height: min(72vh, 760px); }\n.sb-float { position: fixed; z-index: 40; overflow: hidden; pointer-events: auto; }\n.sb-float[hidden] { display: none; }\n.sb-float iframe { border: 0; display: block; transform-origin: 0 0; background: #fff; }\n.sb-float.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) var(--surface-2); background-size: 200% 100%; animation: sbShimmer 1.2s linear infinite; }\n@keyframes sbShimmer { to { background-position: -200% 0; } }\n\n/* empty state */\n.sb .sb-empty { min-height: 520px; display: grid; place-items: center; border-radius: var(--r-lg); background: radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%), var(--surface); border: 1px solid var(--line); padding: 40px; position: static; }\n.sb .sb-hero-ill { max-width: 520px; }\n.sb .sb-hero-ill .disp { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; display: block; margin-bottom: 14px; }\n.sb .sb-hero-ill em, .sb .sb-fempty em { font-style: italic; color: var(--primary); }\n.sb .sb-hero-ill p { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }\n.sb .sb-hero-ill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 13.5px; }\n.sb .sb-hero-ill li { display: flex; gap: 8px; align-items: flex-start; } .sb .sb-hero-ill li .ic { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 2px; }\n.sb .sb-load { min-height: 300px; }\n\n/* funnels */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 0 20px 20px; }\n.sb .sb-tpl { display: grid; gap: 4px; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .15s, transform .15s; }\n.sb .sb-tpl:hover { border-color: var(--primary); transform: translateY(-1px); }\n.sb .sb-tpl b { font-size: 15px; margin-top: 6px; } .sb .sb-tpl small { color: var(--muted); font-size: 13px; line-height: 1.45; }\n.sb .sb-tpl em { font-style: normal; font: 500 11px var(--mono); color: var(--muted); margin-top: 6px; }\n.sb .sb-tpl-i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; }\n.sb .sb-tpl-i .ic { width: 18px; height: 18px; }\n.sb .sb-fform { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 14px; padding: 0 20px; }\n.sb .sb-fform .sb-wide { grid-column: 1 / -1; }\n.sb section > .ag-acts-row, .sb section > p.muted { padding: 0 20px 20px; }\n.sb section > p.muted { padding-bottom: 0; }\n.sb .sb-flist { display: grid; gap: 8px; }\n.sb .sb-frow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--line); }\n.sb .sb-frow:hover { border-color: var(--line-2); }\n.sb .sb-fn { flex: 1; min-width: 0; display: grid; } .sb .sb-fn small { color: var(--muted); font-size: 12.5px; }\n.sb .sb-fs { display: flex; gap: 18px; } .sb .sb-fs > span { display: grid; text-align: right; } .sb .sb-fs small { font-size: 11px; color: var(--muted); }\n@container ag (max-width: 620px) { .sb .sb-fs { display: none; } }\n.sb .sb-fempty { padding: 36px; display: grid; gap: 10px; justify-items: start; }\n.sb .sb-fempty .disp { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; } .sb .sb-fempty p { max-width: 560px; margin: 0 0 6px; line-height: 1.6; }\n.sb .sb-fdetail { display: grid; gap: 16px; min-width: 0; }\n.sb .sb-fh { margin: 0; }\n.sb .sb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }\n.sb .sb-kpis > div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }\n.sb .sb-kpis small { font-size: 12px; color: var(--muted); } .sb .sb-kpis b { font-size: 22px; }\n\n/* page templates, fonts, palettes and style switches */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }\n.sb .sb-tpl { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-tpl.on, .sb .sb-font.on, .sb .sb-pal.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-tpl b { font-size: 12.5px; } .sb .sb-tpl small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-ti { display: block; height: 52px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); --p: linear-gradient(160deg, #9fb3c8, #4a6176); --t: var(--fg); --l: var(--line-2); }\n.sb .t-classic { background: linear-gradient(var(--t), var(--t)) 6px 10px / 34% 4px no-repeat, var(--p) right 6px top 6px / 40% 24px no-repeat, linear-gradient(var(--l), var(--l)) 6px 36px / 88% 3px no-repeat, linear-gradient(var(--l), var(--l)) 6px 43px / 60% 3px no-repeat, var(--surface-2); }\n.sb .t-magazine { background: linear-gradient(var(--t), var(--t)) 6px 6px / 80% 9px no-repeat, var(--p) right 6px top 20px / 56% 18px no-repeat, linear-gradient(var(--l), var(--l)) 6px 44px / 88% 3px no-repeat, var(--surface-2); }\n.sb .t-showcase { background: var(--p) 6px 6px / 46% 40px no-repeat, var(--p) right 6px top 6px / 40% 18px no-repeat, var(--p) right 6px top 28px / 40% 18px no-repeat, var(--surface-2); }\n.sb .t-minimal { background: linear-gradient(var(--t), var(--t)) center 9px / 50% 5px no-repeat, linear-gradient(var(--l), var(--l)) center 19px / 30% 3px no-repeat, var(--p) center 28px / 80% 16px no-repeat, var(--surface-2); }\n.sb .t-bold { background: linear-gradient(#fff, #fff) 8px 32px / 44% 5px no-repeat, linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)) 8px 41px / 28% 3px no-repeat, var(--p); }\n.sb .t-boutique { background: linear-gradient(var(--t), var(--t)) 6px 14px / 40% 5px no-repeat, linear-gradient(var(--l), var(--l)) 6px 24px / 30% 3px no-repeat, radial-gradient(circle at 50% 30%, #6f879c 60%, transparent 61%) right 8px top 4px / 36% 30px no-repeat, var(--p) right 8px top 18px / 36% 30px no-repeat, var(--surface-2); }\n.sb .t-cosy { background: linear-gradient(var(--surface-2), var(--surface-2)) 6px 28px / 56% 20px no-repeat, var(--p) 4px 4px / calc(100% - 8px) 34px no-repeat, linear-gradient(var(--t), var(--t)) 10px 33px / 40% 4px no-repeat, var(--surface-2); }\n.sb .h-centered::before { left: 30%; top: 6px; width: 40%; height: 5px; background: var(--fg); } .sb .h-centered::after { left: 8px; right: 8px; bottom: 5px; height: 20px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-framed::before { left: 4px; right: 4px; top: 4px; height: 26px; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-framed::after { left: 4px; top: 24px; width: 48%; height: 16px; background: var(--surface-2); box-shadow: inset 6px 6px 0 -1px var(--surface-2), inset 0 -8px 0 -4px var(--fg); }\n.sb .h-arch::before { right: 10px; top: 4px; bottom: 4px; width: 30%; border-radius: 99px 99px 3px 3px; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-arch::after { left: 6px; top: 16px; width: 40%; height: 5px; background: var(--fg); }\n.sb .sb-fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }\n.sb .sb-font { display: grid; grid-template-columns: 44px 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; text-align: left; padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; min-width: 0; }\n.sb .sb-font .sb-aa { grid-row: 1 / 3; font-size: 26px; line-height: 1; text-align: center; }\n.sb .sb-font b { font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sb .sb-font small { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-pals { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 6px; }\n.sb .sb-pal { display: grid; gap: 4px; padding: 5px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; text-align: left; min-width: 0; }\n.sb .sb-pal .sw { display: flex; gap: 3px; align-items: flex-end; height: 34px; padding: 5px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }\n.sb .sb-pal .sw i { width: 12px; height: 12px; border-radius: 50%; }\n.sb .sb-pal small { font-size: 10.5px; line-height: 1.2; color: var(--muted); }\n.sb .sb-srow { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }\n.sb .sb-srow > span { font-size: 12.5px; font-weight: 600; }\n.sb .sb-srow .seg { flex-wrap: wrap; justify-self: start; }\n.sb .sb-srow .seg button { font-size: 12px; padding: 4px 9px; }\n.sb .sb-shuf { display: grid; gap: 6px; margin-bottom: 12px; } .sb .sb-shuf small { font-size: 12px; }\n.sb .sb-sname { all: unset; cursor: pointer; font-weight: 600; font-size: 13.5px; } .sb .sb-sname:hover { text-decoration: underline; }\n.sb .sb-var { font-size: 12px; padding: 2px 6px; margin-top: 3px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); max-width: 170px; }\n.sb .sb-wg { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; margin-bottom: 8px; }\n.sb .sb-wg > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; padding: 11px 0; }\n.sb .sb-wg[open] { padding-bottom: 6px; }\n.sb .sb-cnt { font-style: normal; font-size: 11px; color: var(--muted); float: right; font-variant-numeric: tabular-nums; } .sb .sb-cnt.over { color: var(--bad); font-weight: 600; }\n.sb .sb-serp { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 4px 0 12px; display: grid; gap: 2px; font-family: Arial, sans-serif; }\n.sb .sb-serp small { font-size: 12px; color: #4d5156; } .sb .sb-serp b { color: #1a0dab; font-weight: 400; font-size: 17px; line-height: 1.3; } .sb .sb-serp p { margin: 0; font-size: 13px; color: #4d5156; line-height: 1.45; }\n.sb .sb-dev.tablet { width: min(100%, 640px); border-radius: 22px; border: 8px solid #0d0f17; }\n.sb .sb-dev.tablet .sb-chrome i { display: none; }\n.sb .sb-tabs button { padding-inline: 9px; font-size: 13px; }\n" }, "/app/web/src/app-studio.js": { "t": `/* Bookingbooster: the Site builder and Funnels views in the host console.
    Site builder: Claude designs a premium booking site for each home from the Studio design system; the host
    tweaks direction, words and sections, checks the design, previews on desktop and phone, then publishes.
    Funnels: focused opt-in and offer pages in the same style, with sign-ups going into the guest list. */
@@ -1463,7 +1463,9 @@ var require_bb_embedded_files = __commonJS({
     if (!metaP) metaP = BB.api.call(API() + 'studio/meta', null, 'GET').then(j => {
       META = j;
       const l = document.createElement('link'); l.rel = 'stylesheet';
-      l.href = 'https://fonts.googleapis.com/css2?' + Object.values(j.directions).map(d => d.href).join('&') + '&display=swap'; document.head.appendChild(l);
+      // only the display faces, so the font picker can show each pairing without loading every weight of every family
+      const fams = [...new Set(Object.values(j.fonts || {}).map(f => f.display).concat(Object.values(j.directions).map(d => d.fonts.split(' & ')[0])))];
+      l.href = 'https://fonts.googleapis.com/css2?' + fams.map(f => 'family=' + f.replace(/ /g, '+')).join('&') + '&display=swap&text=' + encodeURIComponent('AaBbGg Ccdefghiklmnoprstuvwy'); document.head.appendChild(l);
       inst.render();
     }).catch(() => { metaP = null; });
     return null;
@@ -1494,9 +1496,24 @@ var require_bb_embedded_files = __commonJS({
      SITE BUILDER
      ===================================================================== */
   const STEPS = ['Reading your home\u2019s details', 'Looking at your photos', 'Choosing an art direction', 'Pairing the typefaces', 'Laying out the sections', 'Writing the words', 'Running the design checks'];
-  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['type', 'Type-led', 'No photo needed']];
+  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['centered', 'Centred', 'Centred words, wide photo'], ['framed', 'Framed', 'Inset photo, overlapping words'], ['arch', 'Arch', 'Arched photo and a round inset'], ['type', 'Type-led', 'No photo needed']];
+  const STYLE_LABEL = { corners: 'Corners', buttons: 'Buttons', spacing: 'Spacing', scale: 'Headline size', headings: 'Headlines', texture: 'Texture', nav: 'Top bar', images: 'Photos', bands: 'Section colours' };
   const SEC_NAME = { hero: 'Hero', facts: 'At a glance', story: 'The stay', highlights: 'Highlights', gallery: 'Gallery', amenities: 'Details and rules', reviews: 'Reviews', area: 'Area guide', host: 'Your host', book: 'Booking', faq: 'Questions', closing: 'Closing banner' };
-  const WORDS = [['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.'], ['subhead', 'Subheading', '', 1], ['tagline', 'Small line above the headline'], ['storyTitle', 'Story title'], ['pull', 'Pull quote', '', 1], ['bookTitle', 'Booking title'], ['bookText', 'Booking text', '', 1], ['closing', 'Closing line'], ['seoTitle', 'Google title', 'Up to 62 characters'], ['seoDescription', 'Google description', 'Up to 160 characters', 1]];
+  // Words, grouped by the section they belong to. [key, label, hint, textarea, max length]
+  const WORD_GROUPS = [
+    ['Top of the page', null, [['wordmark', 'Name in the top bar', '', 0, 40], ['tagline', 'Small line above the headline', '', 0, 60], ['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.', 0, 90], ['subhead', 'Subheading', '', 1, 240], ['cta', 'Button text', '', 0, 28]]],
+    ['The stay', 'story', [['storyEyebrow', 'Small heading', '', 0, 40], ['storyTitle', 'Story title', '', 0, 90], ['pull', 'Pull quote', '', 1, 220]]],
+    ['Highlights', 'highlights', [['highlightsEyebrow', 'Small heading', '', 0, 40], ['highlightsTitle', 'Title', '', 0, 80]]],
+    ['Gallery', 'gallery', [['galleryEyebrow', 'Small heading', '', 0, 40], ['galleryTitle', 'Title', '', 0, 80]]],
+    ['Details', 'amenities', [['amenitiesEyebrow', 'Small heading', '', 0, 40], ['amenitiesTitle', 'Title', '', 0, 80]]],
+    ['Reviews', 'reviews', [['reviewsEyebrow', 'Small heading', '', 0, 40], ['reviewsTitle', 'Title', '', 0, 80]]],
+    ['Area guide', 'area', [['areaEyebrow', 'Small heading', '', 0, 50], ['areaTitle', 'Title', '', 0, 80], ['areaIntro', 'Introduction', '', 1, 300]]],
+    ['Your host', 'host', [['hostEyebrow', 'Small heading', '', 0, 40], ['hostNote', 'Your note to guests', '', 1, 260]]],
+    ['Booking', 'book', [['bookEyebrow', 'Small heading', '', 0, 40], ['bookTitle', 'Title', '', 0, 80], ['bookText', 'Text', '', 1, 300]]],
+    ['Questions', 'faq', [['faqEyebrow', 'Small heading', '', 0, 40], ['faqTitle', 'Title', '', 0, 80]]],
+    ['Closing and footer', null, [['closing', 'Closing line', '', 0, 90], ['footerLine', 'Footer line', '', 0, 120]]],
+    ['Google and AI search', null, [['seoTitle', 'Google title', 'Up to 62 characters', 0, 62], ['seoDescription', 'Google description', 'Up to 160 characters', 1, 160]]],
+  ];
 
   function siteOf(pid) { return (((S().studio || {}).sites) || {})[pid] || null; }
   function busy(inst) {
@@ -1534,6 +1551,13 @@ var require_bb_embedded_files = __commonJS({
   H['sb-dev'] = (inst, v) => inst.set({ sb_dev: v });
   H['sb-dir'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { direction: v, accent: '' } });
   H['sb-hero'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { heroVariant: v } });
+  H['sb-tpl'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { template: v } }, 'Page re-laid in the ' + META.pageTemplates[v].name + ' template');
+  H['sb-font'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { font: v === META.directions[siteOf(pidOf(inst)).draft.direction].font ? '' : v } } });
+  H['sb-pal'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { palette: v === META.directions[siteOf(pidOf(inst)).draft.direction].palette ? '' : v }, accent: '' } });
+  H['sb-style'] = (inst, v, a) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { [a.dataset.k]: v } } });
+  H['sb-style-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: null, accent: '' } }, 'Back to the direction\u2019s own style');
+  H['sb-shuffle'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { shuffle: true } }, 'New mix of fonts, colours and layouts. Undo if you preferred the last one.');
+  H['sb-sec'] = (inst, v) => { const fr = PV.frame && PV.frame.contentDocument; const el = fr && fr.querySelector('[data-sec="' + v + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   H['sb-accent-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: '' } });
   H['sb-undo'] = inst => call(inst, 'studio/undo', { propertyId: pidOf(inst) }, 'Went back one step');
   H['sb-publish'] = inst => call(inst, 'studio/publish', { propertyId: pidOf(inst) }, 'Published. Guests see the new site now.');
@@ -1553,7 +1577,7 @@ var require_bb_embedded_files = __commonJS({
     const n = (p.photos || []).length;
     return '<section class="a-card ag-card sb-brief"><div class="a-card-h"><h3>' + (again ? 'Start a new design' : 'Brief your designer') + '</h3>' + (again ? '<button class="btn sm ghost" data-ag="sb-cancel-brief">' + I('x') + 'Cancel</button>' : '<span class="ag-meta">' + (M.ai ? 'Claude art-directs it' : 'Design rules') + '</span>') + '</div>' +
       '<div class="sb-q"><span class="eyebrow">How should it feel?</span><div class="sb-chips">' + Object.entries(M.vibes).map(([k, v]) => '<button type="button" class="chip" aria-pressed="' + (b.vibe === k) + '" data-ag="sb-vibe" data-v="' + k + '">' + esc(v.split(',')[0].replace(/^./, c => c.toUpperCase())) + '</button>').join('') + '</div></div>' +
-      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
+      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
       '<label class="field"><span>Who are your guests?</span><input data-agf="sb.audience" id="sb-aud" placeholder="Couples from London, walkers with dogs, families at half-term" value="' + esc(b.audience || '') + '"></label>' +
       '<label class="field"><span>Anything Claude should know?</span><textarea data-agf="sb.notes" id="sb-notes" rows="3" placeholder="The view from the bath is the thing everyone talks about. Avoid anything too twee.">' + esc(b.notes || '') + '</textarea></label>' +
       '<p class="ag-note sb-ph">' + I('camera') + '<span>' + (n ? n + ' photo' + (n === 1 ? '' : 's') + ' on this home.' + (n < 6 ? ' Add ' + (6 - n) + ' more for a gallery.' : '') : 'No photos yet, so Claude will design a type-led site. Add photos for image-led layouts.') + (S().live ? ' <a href="#" data-ag-nav="website">Add photos</a>' : '') + '</span></p>' +
@@ -1563,23 +1587,38 @@ var require_bb_embedded_files = __commonJS({
   function panel(inst, p, site) {
     const st = inst.st, M = META, sp = site.draft, tab = st.sb_tab || 'design';
     const qaBad = (sp.qa || []).filter(x => !x.ok).length;
-    const tabs = [['design', 'Design'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' \xB7 ' + qaBad : ' \u2713')]];
+    const tabs = [['design', 'Layout'], ['style', 'Style'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' \xB7 ' + qaBad : ' \u2713')]];
+    const sty = sp.style || {}, dirM = M.directions[sp.direction] || {};
     let body = '';
     if (tab === 'design') {
       body = (sp.rationale ? '<blockquote class="sb-why"><span class="eyebrow">Why this design</span>' + esc(sp.rationale) + '</blockquote>' : '') +
-        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Page template <em class="muted">re-lays every section in one click</em></span><div class="sb-tpls">' + Object.entries(M.pageTemplates).map(([k, t]) => '<button type="button" class="sb-tpl' + (sp.template === k ? ' on' : '') + '" data-ag="sb-tpl" data-v="' + k + '"><i class="sb-ti t-' + k + '"></i><b>' + esc(t.name) + '</b><small>' + esc(t.note) + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
         '<div class="sb-q"><span class="eyebrow">Hero layout</span><div class="sb-heroes">' + HERO.map(([k, t, d]) => '<button type="button" class="sb-hero' + ((sp.sections[0] || {}).variant === k ? ' on' : '') + '" data-ag="sb-hero" data-v="' + k + '"><i class="sb-hi h-' + k + '"></i><b>' + t + '</b><small>' + d + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-shuf"><button class="btn" data-ag="sb-shuffle">' + I('sync') + 'Shuffle the style</button><small class="muted">A fresh mix of fonts, colours, shapes and layouts in the same direction. Works without AI.</small></div>' +
+        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('spark') + 'Ask Claude for a different direction</button>' : '');
+    } else if (tab === 'style') {
+      const seg = (k, opts) => '<div class="sb-srow"><span>' + STYLE_LABEL[k] + '</span><div class="seg sm" role="group" aria-label="' + STYLE_LABEL[k] + '">' + [['', 'Auto']].concat(Object.entries(opts).map(([v, x]) => [v, typeof x === 'string' ? x : x.name])).map(([v, l]) => '<button type="button" aria-pressed="' + ((sty[k] || '') === v) + '" data-ag="sb-style" data-k="' + k + '" data-v="' + v + '">' + esc(l) + '</button>').join('') + '</div></div>';
+      const fontNow = sty.font || dirM.font, palNow = sty.palette || dirM.palette;
+      body = '<div class="sb-q"><span class="eyebrow">Fonts <em class="muted">headline face shown</em></span><div class="sb-fonts">' + Object.entries(M.fonts).map(([k, f]) => '<button type="button" class="sb-font' + (fontNow === k ? ' on' : '') + '" data-ag="sb-font" data-v="' + k + '"><span class="sb-aa" style="font-family:\\'' + esc(f.display) + '\\',serif">Ag</span><b>' + esc(f.name) + '</b><small>' + esc(f.feel) + (k === dirM.font ? ' \xB7 direction' : '') + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Colour palette</span><div class="sb-pals">' + Object.entries(M.palettes).map(([k, x]) => { const q = x.pal; return '<button type="button" class="sb-pal' + (palNow === k ? ' on' : '') + '" data-ag="sb-pal" data-v="' + k + '" title="' + esc(x.name) + '"><span class="sw" style="background:' + q.bg + '"><i style="background:' + q.ink + '"></i><i style="background:' + q.accent + '"></i><i style="background:' + q.deep + ';outline:1px solid ' + q.line + '"></i></span><small>' + esc(x.name) + '</small></button>'; }).join('') + '</div></div>' +
         '<div class="sb-q sb-acc"><span class="eyebrow">Accent colour</span><div class="sb-accrow"><input type="color" data-sbacc value="' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '" aria-label="Accent colour"><span class="mono">' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '</span>' + (sp.accent ? '<button class="btn sm ghost" data-ag="sb-accent-reset">Reset</button>' : '<small class="muted">Direction default</small>') + '</div><small class="muted">Colours that fail contrast checks are refused, so buttons always stay readable.</small></div>' +
-        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('sync') + 'Try a different direction</button>' : '');
+        '<div class="sb-q"><span class="eyebrow">Shape and detail</span>' + Object.entries(M.style).map(([k, o]) => seg(k, o)).join('') + '</div>' +
+        '<button class="btn sm ghost" data-ag="sb-style-reset">' + I('back') + 'Reset to the direction\u2019s style</button>';
     } else if (tab === 'words') {
       const d = st.sb_wd = st.sb_wd || {}; const val = k => d[k] != null ? d[k] : (sp.copy[k] || '');
-      body = WORDS.map(([k, l, hint, area]) => '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>').join('') +
-        '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\\n\\n')) + '</textarea></label>' +
-        (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') +
+      const have = sp.sections.map(x => x.type);
+      const fld = ([k, l, hint, area, max]) => { const n = String(val(k)).length; return '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + (max ? ' <em class="sb-cnt' + (n > max ? ' over' : '') + '" data-cnt="' + k + '">' + n + '/' + max + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" maxlength="' + max + '" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input maxlength="' + max + '" data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>'; };
+      const open = st.sb_wopen || 'Top of the page';
+      body = WORD_GROUPS.filter(g => !g[1] || have.includes(g[1])).map(([name, , fields], gi) => '<details class="sb-wg" data-wg="' + esc(name) + '"' + (name === open ? ' open' : '') + '><summary>' + esc(name) + '</summary>' + fields.map(fld).join('') +
+        (name === 'The stay' ? '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\\n\\n')) + '</textarea></label>' : '') +
+        (name === 'Highlights' ? (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') : '') +
+        (name === 'Google and AI search' ? '<div class="sb-serp" aria-label="How it looks on Google"><small class="mono">' + esc(p.domain || 'your-site') + '</small><b>' + esc(val('seoTitle')) + '</b><p>' + esc(val('seoDescription')) + '</p></div>' : '') + '</details>').join('') +
         '<div class="sb-sticky"><button class="btn primary" data-ag="sb-words"' + (Object.keys(d).length ? '' : ' disabled') + '>' + I('check') + 'Save words</button><small class="muted">Facts like prices, photos, amenities and reviews come from Website & SEO and stay up to date by themselves.</small></div>';
     } else if (tab === 'sections') {
       const have = sp.sections.map(x => x.type);
-      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><b>' + SEC_NAME[x.type] + '</b><small>' + esc(x.variant) + '</small></div>' +
+      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><button type="button" class="sb-sname" data-ag="sb-sec" data-v="' + x.type + '" title="Show in the preview">' + SEC_NAME[x.type] + '</button>' +
+        '<select class="sb-var" data-sbvar="' + i + '" aria-label="' + SEC_NAME[x.type] + ' layout">' + (M.sections[x.type] || []).map(v => '<option value="' + v + '"' + (x.variant === v ? ' selected' : '') + '>' + esc((M.variantNames || {})[v] || v) + '</option>').join('') + '</select></div>' +
         (i ? '<span class="sb-sa"><button class="iconbtn" data-ag="sb-up" data-v="' + i + '" aria-label="Move up"' + (i < 2 ? ' disabled' : '') + '>\u2191</button><button class="iconbtn" data-ag="sb-down" data-v="' + i + '" aria-label="Move down"' + (i === sp.sections.length - 1 ? ' disabled' : '') + '>\u2193</button>' + (['book', 'faq'].includes(x.type) ? '' : '<button class="iconbtn" data-ag="sb-del" data-v="' + i + '" aria-label="Remove">' + I('x') + '</button>') + '</span>' : '<span class="sb-sa muted"><small>Always first</small></span>') + '</li>').join('') + '</ol>' +
         (Object.keys(SEC_NAME).filter(k => !have.includes(k)).length ? '<div class="sb-q"><span class="eyebrow">Add a section</span><div class="sb-chips">' + Object.keys(SEC_NAME).filter(k => !have.includes(k)).map(k => '<button type="button" class="chip" data-ag="sb-add" data-v="' + k + '">+ ' + SEC_NAME[k] + '</button>').join('') + '</div><small class="muted">Sections with nothing to show (a gallery without photos, an area guide you have not written) stay hidden.</small></div>' : '');
     } else {
@@ -1601,7 +1640,7 @@ var require_bb_embedded_files = __commonJS({
       if (!live()) return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium booking site for each home.') + '<p class="muted">Available in the live console and the demo.</p></div>';
       if (!M) return '<div class="ag sb">' + vh('Site builder', 'Loading the design system\u2026') + '<div class="a-card ag-card sb-load"></div></div>';
       const site = siteOf(p.id), sp = site && site.draft, pubd = site && site.published;
-      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.sections, pubd.copy]);
+      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.style || {}, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.style || {}, pubd.sections, pubd.copy]);
       const dev = st.sb_dev || 'desk';
       const status = !sp ? '' : pubd ? (dirty ? BB.pill('warn', 'Unpublished changes') : BB.pill('good', 'Live')) : BB.pill('muted', 'Draft');
       const acts = sp ? (pubd ? '<button class="btn" data-ag="sb-unpublish">Use standard site</button>' : '') + '<a class="btn" href="' + PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=" target="_blank" rel="noopener">' + I('out') + 'Open preview</a>' +
@@ -1610,26 +1649,26 @@ var require_bb_embedded_files = __commonJS({
       const showBrief = !sp || st.sb_rebrief;
       const left = st.sb_busy ? busy(inst) : showBrief ? briefCard(inst, p, !!sp) : panel(inst, p, site);
       const src = sp ? PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=1&t=' + encodeURIComponent(sp.at || '') + (sp.direction + (sp.accent || '')) : '';
-      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
-          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + ' \xB7 ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
+      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['tablet', 'Tablet'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
+          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + (sp.template && M.pageTemplates[sp.template] ? ' \xB7 ' + esc(M.pageTemplates[sp.template].name) : '') + ' \xB7 ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
           '<span class="sb-tools">' + ((site.history || []).length ? '<button class="btn sm ghost" data-ag="sb-undo">' + I('back') + 'Undo</button>' : '') + (!st.sb_rebrief ? '<button class="btn sm ghost" data-ag="sb-new">' + I('plus') + 'New design</button>' : '') + '</span></div>' +
           (sp.note ? '<div class="ag-banner warn">' + I('bolt') + '<p>' + esc(sp.note) + '</p></div>' : '') +
-          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : 1360) + '"></div></div></div>'
-        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>Eight art directions, each with a tested type pairing and palette. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
+          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : dev === 'tablet' ? 820 : 1360) + '"></div></div></div>'
+        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>' + Object.keys(M.directions).length + ' art directions, ' + Object.keys(M.fonts || {}).length + ' font pairings, ' + Object.keys(M.palettes || {}).length + ' palettes and ' + Object.keys(M.pageTemplates || {}).length + ' page templates, so no two sites look alike. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
           '<ul>' + M.principles.slice(0, 4).map(x => '<li>' + I('check') + esc(x.split('. ')[0]) + '</li>').join('') + '</ul></div></div>';
       return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium, direct-booking website for each home. Every page follows a tested design system, so it never looks like a template or like AI.', acts) + tabsH +
         (pubd && !dirty ? '<div class="ag-banner good">' + I('check') + '<p>Live on <b class="mono">' + esc(p.domain || '') + '</b> since ' + ago(site.publishedAt) + '. Search engines see the same structured data as before.</p></div>' : '') +
         '<div class="sb-cols">' + left + right + '</div></div>';
     },
     after: previewAfter,
-    click(ev, inst) { const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
+    click(ev, inst) { const sm = ev.target.closest('.sb-wg > summary'); if (sm) { const g = sm.parentNode; inst.st.sb_wopen = g.open ? '-' : g.dataset.wg; return; } const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
     input(ev, inst) {
       const el = ev.target, f = el.dataset && el.dataset.agf; if (!f) return; const [sc, k] = f.split('.');
       if (sc === 'sb' && k === 'ask') inst.st.sb_ask = el.value;
       else if (sc === 'sb') { (inst.st.sb_brief = inst.st.sb_brief || {})[k] = el.value; }
-      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; if (!was) inst.render(); }
+      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; const c = inst.root.querySelector('[data-cnt="' + k + '"]'); if (c) { const mx = +c.textContent.split('/')[1]; c.textContent = el.value.length + '/' + mx; c.classList.toggle('over', el.value.length > mx); } if (!was) inst.render(); }
     },
-    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
+    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbvar != null) { const i = +el.dataset.sbvar; secEdit(inst, a => { a[i].variant = el.value; }); return; } if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
     submit(ev, inst) { if (ev.target.dataset.agform === 'sb-ask') { ev.preventDefault(); H['sb-revise'](inst); } },
   };
 
@@ -16788,110 +16827,300 @@ var require_design = __commonJS({
       "Only state facts the host gave. Never invent prices, distances, awards, reviews or amenities."
     ];
     var CLICHES = ["nestled", "hidden gem", "boasts", "oasis", "perfect getaway", "home away from home", "look no further", "unwind and relax", "tranquil haven", "something for everyone", "whether you", "ideal base", "stunning", "breathtaking", "idyllic", "escape the hustle", "hustle and bustle", "elevate", "unparalleled", "world-class", "luxurious retreat", "a true haven", "in the heart of"];
+    var FONTS = {
+      cormorant: { name: "Cormorant & Jost", display: "Cormorant Garamond", text: "Jost", feel: "Light, literary serif", href: "family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500;600", disp: { weight: 500, track: "-0.015em", lead: 0.98, case: "none", scale: 1.08 } },
+      fraunces: { name: "Fraunces & Hanken", display: "Fraunces", text: "Hanken Grotesk", feel: "Soft modern serif", href: "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Hanken+Grotesk:wght@400;500;600", disp: { weight: 380, track: "-0.03em", lead: 0.96, case: "none", scale: 1 } },
+      dmserif: { name: "DM Serif & DM Sans", display: "DM Serif Display", text: "DM Sans", feel: "Confident classic serif", href: "family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400..600", disp: { weight: 400, track: "-0.02em", lead: 1, case: "none", scale: 0.96 } },
+      bodoni: { name: "Bodoni & Karla", display: "Bodoni Moda", text: "Karla", feel: "High-contrast fashion serif", href: "family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Karla:wght@400;500;600", disp: { weight: 500, track: "-0.02em", lead: 1, case: "none", scale: 0.95 } },
+      italiana: { name: "Italiana & Manrope", display: "Italiana", text: "Manrope", feel: "Thin, wide and luxurious", href: "family=Italiana&family=Manrope:wght@400;500;600", disp: { weight: 400, track: "0.02em", lead: 1.02, case: "uppercase", scale: 0.9 } },
+      syne: { name: "Syne & Figtree", display: "Syne", text: "Figtree", feel: "Wide, graphic grotesque", href: "family=Syne:wght@500..800&family=Figtree:wght@400;500;600", disp: { weight: 700, track: "-0.04em", lead: 0.92, case: "none", scale: 0.92 } },
+      young: { name: "Young Serif & Work Sans", display: "Young Serif", text: "Work Sans", feel: "Rounded old-style serif", href: "family=Young+Serif&family=Work+Sans:wght@400;500;600", disp: { weight: 400, track: "-0.02em", lead: 1.02, case: "none", scale: 0.92 } },
+      gloock: { name: "Gloock & Outfit", display: "Gloock", text: "Outfit", feel: "Chunky editorial serif", href: "family=Gloock&family=Outfit:wght@400;500;600", disp: { weight: 400, track: "-0.025em", lead: 0.98, case: "none", scale: 0.98 } },
+      instrument: { name: "Instrument Serif & Inter Tight", display: "Instrument Serif", text: "Inter Tight", feel: "Slim, modern Scandinavian serif", href: "family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600", disp: { weight: 400, track: "-0.025em", lead: 0.96, case: "none", scale: 1.1 } },
+      playfair: { name: "Playfair & Mulish", display: "Playfair Display", text: "Mulish", feel: "Glamorous Riviera serif", href: "family=Playfair+Display:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;500;600", disp: { weight: 500, track: "-0.02em", lead: 1.02, case: "none", scale: 0.92 } },
+      bricolage: { name: "Bricolage & Instrument Sans", display: "Bricolage Grotesque", text: "Instrument Sans", feel: "Characterful, friendly grotesque", href: "family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400;500;600", disp: { weight: 650, track: "-0.035em", lead: 0.94, case: "none", scale: 0.94 } },
+      caslon: { name: "Libre Caslon & Franklin", display: "Libre Caslon Display", text: "Libre Franklin", feel: "Country-house traditional", href: "family=Libre+Caslon+Display&family=Libre+Franklin:wght@400;500;600", disp: { weight: 400, track: "-0.01em", lead: 1.04, case: "none", scale: 1.02 } },
+      marcellus: { name: "Marcellus & Nunito Sans", display: "Marcellus", text: "Nunito Sans", feel: "Carved, calm and classical", href: "family=Marcellus&family=Nunito+Sans:opsz,wght@6..12,400..600", disp: { weight: 400, track: "0.01em", lead: 1.06, case: "none", scale: 0.9 } },
+      newsreader: { name: "Newsreader & Inter", display: "Newsreader", text: "Inter", feel: "Bookish, warm text serif", href: "family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Inter:wght@400;500;600", disp: { weight: 380, track: "-0.03em", lead: 0.98, case: "none", scale: 1.02 } },
+      space: { name: "Space Grotesk & Plex Sans", display: "Space Grotesk", text: "IBM Plex Sans", feel: "Technical and crisp", href: "family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600", disp: { weight: 600, track: "-0.04em", lead: 0.94, case: "none", scale: 0.92 } },
+      abril: { name: "Abril Fatface & Lato", display: "Abril Fatface", text: "Lato", feel: "Retro poster", href: "family=Abril+Fatface&family=Lato:wght@400;700", disp: { weight: 400, track: "-0.01em", lead: 1, case: "none", scale: 0.9 } },
+      unbounded: { name: "Unbounded & Onest", display: "Unbounded", text: "Onest", feel: "Bold, rounded and playful", href: "family=Unbounded:wght@400..700&family=Onest:wght@400;500;600", disp: { weight: 500, track: "-0.03em", lead: 1, case: "none", scale: 0.78 } }
+    };
+    var PALETTES = {
+      linen: { name: "Bone & terracotta", pal: { bg: "#F4EFE6", bg2: "#EBE4D7", ink: "#1E1B16", muted: "#5E574C", line: "#D8CFBF", accent: "#A4502E", accentInk: "#FFFFFF", deep: "#2A251F", deepInk: "#F4EFE6" } },
+      fell: { name: "Moss & slate", pal: { bg: "#EEF0EA", bg2: "#E2E6DD", ink: "#17201A", muted: "#4F5A52", line: "#CDD3C8", accent: "#9C5B2E", accentInk: "#FFFFFF", deep: "#1D2A22", deepInk: "#EEF0EA" } },
+      harbour: { name: "Whitewash & sea", pal: { bg: "#F7F6F2", bg2: "#E9EEF0", ink: "#0D2836", muted: "#4A5E69", line: "#D3DDE1", accent: "#0F6E8C", accentInk: "#FFFFFF", deep: "#0D2836", deepInk: "#F7F6F2" } },
+      georgian: { name: "Honey stone & bronze", pal: { bg: "#F3ECE0", bg2: "#E8DECD", ink: "#241C14", muted: "#5F5345", line: "#D6C8B2", accent: "#8A5A2B", accentInk: "#FFFFFF", deep: "#241C14", deepInk: "#F3ECE0" } },
+      nocturne: { name: "Night & brass", dark: true, pal: { bg: "#121110", bg2: "#1B1A18", ink: "#EDE6DA", muted: "#A39B8E", line: "#33302B", accent: "#C9A46B", accentInk: "#121110", deep: "#EDE6DA", deepInk: "#121110" } },
+      modernist: { name: "Concrete & signal", pal: { bg: "#F1F1EE", bg2: "#E4E4E0", ink: "#111111", muted: "#55554F", line: "#CFCFC9", accent: "#C03A12", accentInk: "#FFFFFF", deep: "#111111", deepInk: "#F1F1EE" } },
+      meadow: { name: "Oat & olive", pal: { bg: "#F5F0E4", bg2: "#EAE3D2", ink: "#2B281D", muted: "#5E5948", line: "#D9D0BB", accent: "#5E6E2E", accentInk: "#FFFFFF", deep: "#2F3322", deepInk: "#F5F0E4" } },
+      sunlit: { name: "Cream & tomato", pal: { bg: "#FFF8EE", bg2: "#FBEBD7", ink: "#221E1A", muted: "#5D554C", line: "#EAD9C2", accent: "#C2461C", accentInk: "#FFFFFF", deep: "#1F4F52", deepInk: "#FFF8EE" } },
+      birch: { name: "Birch & lingonberry", pal: { bg: "#F6F5F1", bg2: "#ECEAE3", ink: "#1C1D1F", muted: "#55585C", line: "#D9D7CF", accent: "#B23A3A", accentInk: "#FFFFFF", deep: "#22262A", deepInk: "#F6F5F1" } },
+      riviera: { name: "Riviera navy & coral", pal: { bg: "#FBF7F0", bg2: "#F1E9DC", ink: "#14233A", muted: "#4E5868", line: "#E2D8C6", accent: "#B8432A", accentInk: "#FFFFFF", deep: "#14233A", deepInk: "#FBF7F0" } },
+      cobalt: { name: "Chalk & cobalt", pal: { bg: "#F5F3EF", bg2: "#E9E6F2", ink: "#16151C", muted: "#555360", line: "#DAD7E3", accent: "#3B4FD8", accentInk: "#FFFFFF", deep: "#1B1A2E", deepInk: "#F5F3EF" } },
+      heritage: { name: "Racing green & claret", pal: { bg: "#F4F0E6", bg2: "#E9E2D2", ink: "#1B2620", muted: "#535B54", line: "#D6CDBA", accent: "#7A2631", accentInk: "#FFFFFF", deep: "#1F3A2E", deepInk: "#F4F0E6" } },
+      sage: { name: "Sage & deep teal", pal: { bg: "#F1F3EE", bg2: "#E1E8DF", ink: "#1A2622", muted: "#4F5D57", line: "#CED8CF", accent: "#2F6B62", accentInk: "#FFFFFF", deep: "#24413A", deepInk: "#F1F3EE" } },
+      blush: { name: "Blush & berry", pal: { bg: "#FBF4F1", bg2: "#F4E4DE", ink: "#2A1E1C", muted: "#66524D", line: "#EBD5CD", accent: "#A23E48", accentInk: "#FFFFFF", deep: "#3B2422", deepInk: "#FBF4F1" } },
+      ochre: { name: "Ochre & umber", pal: { bg: "#F7F1E3", bg2: "#EFE3C8", ink: "#262017", muted: "#5D5443", line: "#E0D3B4", accent: "#94570A", accentInk: "#FFFFFF", deep: "#3A2E1A", deepInk: "#F7F1E3" } },
+      mono: { name: "Paper & ink", pal: { bg: "#FFFFFF", bg2: "#F2F2F0", ink: "#0A0A0A", muted: "#575757", line: "#DEDEDB", accent: "#0A0A0A", accentInk: "#FFFFFF", deep: "#0A0A0A", deepInk: "#FFFFFF" } },
+      ember: { name: "Ember & amber", dark: true, pal: { bg: "#17120F", bg2: "#211A16", ink: "#F1E6D8", muted: "#B3A391", line: "#3A2F27", accent: "#E0A458", accentInk: "#17120F", deep: "#F1E6D8", deepInk: "#17120F" } },
+      midnight: { name: "Midnight & ice", dark: true, pal: { bg: "#0F1724", bg2: "#162033", ink: "#E8EDF4", muted: "#9AA7B8", line: "#2A3549", accent: "#7FB3D5", accentInk: "#0F1724", deep: "#E8EDF4", deepInk: "#0F1724" } },
+      pine: { name: "Pine & gold", dark: true, pal: { bg: "#121A15", bg2: "#19241D", ink: "#E7EDE6", muted: "#9DAA9F", line: "#2C3A31", accent: "#C7B37A", accentInk: "#121A15", deep: "#E7EDE6", deepInk: "#121A15" } }
+    };
+    var STYLE = {
+      corners: { sharp: { name: "Sharp", radius: 0, button: 0, image: 0 }, soft: { name: "Soft", radius: 6, button: 6, image: 6 }, round: { name: "Rounded", radius: 14, button: 999, image: 16 }, pebble: { name: "Pebble", radius: 26, button: 999, image: 30 } },
+      buttons: { solid: "Solid", outline: "Outline", link: "Underlined link" },
+      spacing: { compact: "Compact", regular: "Regular", airy: "Airy" },
+      scale: { quiet: "Quiet", regular: "Regular", loud: "Loud" },
+      headings: { sentence: "Sentence case", upper: "Capitals", italic: "Italic" },
+      texture: { none: "None", paper: "Paper", grain: "Film grain" },
+      nav: { classic: "Classic", centered: "Centred", minimal: "Minimal" },
+      images: { plain: "Plain", framed: "Print border", shadow: "Soft shadow" },
+      bands: { soft: "Soft tints", flat: "Flat with rules", bold: "Bold colour bands" }
+    };
+    var STYLE_KEYS = ["font", "palette"].concat(Object.keys(STYLE));
     var DIRECTIONS = {
       linen: {
         name: "Linen & Ink",
         mood: "Quiet editorial. Big light serif headlines, bone paper, terracotta accent. Like a good travel magazine.",
         suits: ["cottage", "townhouse", "barn", "any"],
+        font: "cormorant",
+        palette: "linen",
         fonts: { display: "Cormorant Garamond", text: "Jost", href: "family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500;600" },
         disp: { weight: 500, track: "-0.015em", lead: 0.98, italic: true, case: "none", scale: 1.08 },
         pal: { bg: "#F4EFE6", bg2: "#EBE4D7", ink: "#1E1B16", muted: "#5E574C", line: "#D8CFBF", accent: "#A4502E", accentInk: "#FFFFFF", deep: "#2A251F", deepInk: "#F4EFE6" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["editorial", "split", "cinematic"],
-        texture: "paper"
+        texture: "paper",
+        alts: { fonts: ["newsreader", "playfair"], palettes: ["blush", "ochre"] }
       },
       fell: {
         name: "Fell & Slate",
         mood: "Northern and grounded. Soft modern serif, moss and slate, warm wood accent. For cabins, lodges and fells.",
         suits: ["cabin", "lodge", "hut", "any"],
+        font: "fraunces",
+        palette: "fell",
         fonts: { display: "Fraunces", text: "Hanken Grotesk", href: "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Hanken+Grotesk:wght@400;500;600" },
         disp: { weight: 380, track: "-0.03em", lead: 0.96, italic: true, case: "none", scale: 1 },
         pal: { bg: "#EEF0EA", bg2: "#E2E6DD", ink: "#17201A", muted: "#4F5A52", line: "#CDD3C8", accent: "#9C5B2E", accentInk: "#FFFFFF", deep: "#1D2A22", deepInk: "#EEF0EA" },
         shape: { radius: 4, button: 999, image: 4 },
         heroes: ["cinematic", "mosaic", "split"],
-        texture: "grain"
+        texture: "grain",
+        alts: { fonts: ["instrument", "newsreader"], palettes: ["sage", "pine"] }
       },
       harbour: {
         name: "Harbour Light",
         mood: "Coastal and bright. Confident serif, whitewash and deep sea blue, a sand note. For seaside cottages and harbour flats.",
         suits: ["beach", "cottage", "apartment", "any"],
+        font: "dmserif",
+        palette: "harbour",
         fonts: { display: "DM Serif Display", text: "DM Sans", href: "family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400..600" },
         disp: { weight: 400, track: "-0.02em", lead: 1, italic: true, case: "none", scale: 0.96 },
         pal: { bg: "#F7F6F2", bg2: "#E9EEF0", ink: "#0D2836", muted: "#4A5E69", line: "#D3DDE1", accent: "#0F6E8C", accentInk: "#FFFFFF", deep: "#0D2836", deepInk: "#F7F6F2" },
         shape: { radius: 14, button: 999, image: 14 },
         heroes: ["split", "cinematic", "mosaic"],
-        texture: "none"
+        texture: "none",
+        alts: { fonts: ["playfair", "instrument"], palettes: ["riviera", "birch"] }
       },
       georgian: {
         name: "Bath Stone",
         mood: "Elegant and urban. High-contrast didone headlines, honey stone and ink, a bronze accent. For townhouses and city stays.",
         suits: ["townhouse", "apartment", "any"],
+        font: "bodoni",
+        palette: "georgian",
         fonts: { display: "Bodoni Moda", text: "Karla", href: "family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Karla:wght@400;500;600" },
         disp: { weight: 500, track: "-0.02em", lead: 1, italic: true, case: "none", scale: 0.95 },
         pal: { bg: "#F3ECE0", bg2: "#E8DECD", ink: "#241C14", muted: "#5F5345", line: "#D6C8B2", accent: "#8A5A2B", accentInk: "#FFFFFF", deep: "#241C14", deepInk: "#F3ECE0" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["editorial", "split", "cinematic"],
-        texture: "paper"
+        texture: "paper",
+        alts: { fonts: ["caslon", "playfair"], palettes: ["heritage", "mono"] }
       },
       nocturne: {
         name: "Nocturne",
         mood: "Dark and luxurious. Thin, wide display type on near-black, brass accent, photographs that glow. For design-led and luxury stays.",
         suits: ["luxury", "cabin", "apartment", "any"],
+        font: "italiana",
+        palette: "nocturne",
         fonts: { display: "Italiana", text: "Manrope", href: "family=Italiana&family=Manrope:wght@400;500;600" },
         disp: { weight: 400, track: "0.02em", lead: 1.02, italic: false, case: "uppercase", scale: 0.9 },
         pal: { bg: "#121110", bg2: "#1B1A18", ink: "#EDE6DA", muted: "#A39B8E", line: "#33302B", accent: "#C9A46B", accentInk: "#121110", deep: "#EDE6DA", deepInk: "#121110" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["cinematic", "editorial", "mosaic"],
         texture: "grain",
+        alts: { fonts: ["bodoni", "marcellus"], palettes: ["midnight", "pine"] },
         dark: true
       },
       modernist: {
         name: "Modernist",
         mood: "Architectural and graphic. Wide grotesque headlines, concrete grey, one hot accent. For contemporary builds and design homes.",
         suits: ["modern", "apartment", "any"],
+        font: "syne",
+        palette: "modernist",
         fonts: { display: "Syne", text: "Figtree", href: "family=Syne:wght@500..800&family=Figtree:wght@400;500;600" },
         disp: { weight: 700, track: "-0.04em", lead: 0.92, italic: false, case: "none", scale: 0.92 },
         pal: { bg: "#F1F1EE", bg2: "#E4E4E0", ink: "#111111", muted: "#55554F", line: "#CFCFC9", accent: "#C03A12", accentInk: "#FFFFFF", deep: "#111111", deepInk: "#F1F1EE" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["mosaic", "editorial", "cinematic"],
-        texture: "none"
+        texture: "none",
+        alts: { fonts: ["space", "unbounded"], palettes: ["mono", "cobalt"] }
       },
       meadow: {
         name: "Meadow",
         mood: "Warm and rustic. Rounded old-style serif, oat and olive, honest and generous. For barns, farm stays and shepherd\u2019s huts.",
         suits: ["barn", "farm", "hut", "cottage", "any"],
+        font: "young",
+        palette: "meadow",
         fonts: { display: "Young Serif", text: "Work Sans", href: "family=Young+Serif&family=Work+Sans:wght@400;500;600" },
         disp: { weight: 400, track: "-0.02em", lead: 1.02, italic: false, case: "none", scale: 0.92 },
         pal: { bg: "#F5F0E4", bg2: "#EAE3D2", ink: "#2B281D", muted: "#5E5948", line: "#D9D0BB", accent: "#5E6E2E", accentInk: "#FFFFFF", deep: "#2F3322", deepInk: "#F5F0E4" },
         shape: { radius: 10, button: 999, image: 10 },
         heroes: ["split", "mosaic", "cinematic"],
-        texture: "paper"
+        texture: "paper",
+        alts: { fonts: ["caslon", "gloock"], palettes: ["ochre", "sage"] }
       },
       sunlit: {
         name: "Sunlit",
         mood: "Bright and joyful. Chunky editorial serif, cream and tomato with a teal counterpoint. For family stays, seaside and summer.",
         suits: ["beach", "family", "cottage", "any"],
+        font: "gloock",
+        palette: "sunlit",
         fonts: { display: "Gloock", text: "Outfit", href: "family=Gloock&family=Outfit:wght@400;500;600" },
         disp: { weight: 400, track: "-0.025em", lead: 0.98, italic: false, case: "none", scale: 0.98 },
         pal: { bg: "#FFF8EE", bg2: "#FBEBD7", ink: "#221E1A", muted: "#5D554C", line: "#EAD9C2", accent: "#C2461C", accentInk: "#FFFFFF", deep: "#1F4F52", deepInk: "#FFF8EE" },
         shape: { radius: 18, button: 999, image: 18 },
         heroes: ["split", "mosaic", "cinematic"],
-        texture: "none"
+        texture: "none",
+        alts: { fonts: ["abril", "bricolage"], palettes: ["riviera", "ochre"] }
+      },
+      nordic: {
+        name: "Nordic",
+        mood: "Scandinavian calm. A slim modern serif, birch white and charcoal, a lingonberry accent, lots of air. For lodges, cabins and minimalist homes.",
+        suits: ["cabin", "lodge", "modern", "any"],
+        font: "instrument",
+        palette: "birch",
+        shape: { radius: 6, button: 6, image: 6 },
+        heroes: ["centered", "framed", "split"],
+        texture: "none",
+        alts: { fonts: ["newsreader", "space"], palettes: ["sage", "mono"] }
+      },
+      riviera: {
+        name: "Riviera",
+        mood: "Glamorous and sunny. A Playfair serif, warm white with navy and coral. For sea-view apartments and smart coastal homes.",
+        suits: ["beach", "apartment", "luxury", "any"],
+        font: "playfair",
+        palette: "riviera",
+        shape: { radius: 0, button: 999, image: 0 },
+        heroes: ["arch", "framed", "editorial"],
+        texture: "none",
+        alts: { fonts: ["bodoni", "marcellus"], palettes: ["harbour", "blush"] }
+      },
+      atelier: {
+        name: "Atelier",
+        mood: "Playful and contemporary. A friendly characterful grotesque, chalk and cobalt, rounded shapes. For design-led homes, city flats and younger guests.",
+        suits: ["modern", "apartment", "family", "any"],
+        font: "bricolage",
+        palette: "cobalt",
+        shape: { radius: 22, button: 999, image: 26 },
+        heroes: ["framed", "mosaic", "centered"],
+        texture: "none",
+        alts: { fonts: ["unbounded", "space"], palettes: ["blush", "ochre"] }
+      },
+      manor: {
+        name: "Country House",
+        mood: "Traditional and grand. Caslon headlines, cream and racing green, a claret accent. For manors, rectories, farmhouses and big group houses.",
+        suits: ["farm", "townhouse", "luxury", "any"],
+        font: "caslon",
+        palette: "heritage",
+        shape: { radius: 0, button: 0, image: 0 },
+        heroes: ["editorial", "centered", "arch"],
+        texture: "paper",
+        alts: { fonts: ["cormorant", "newsreader"], palettes: ["georgian", "pine"] }
+      },
+      saltmarsh: {
+        name: "Salt & Sage",
+        mood: "Soft and restorative. A carved classical face, sage and sand, deep teal. For spa breaks, wellness retreats and estuary cottages.",
+        suits: ["beach", "cottage", "luxury", "any"],
+        font: "marcellus",
+        palette: "sage",
+        shape: { radius: 10, button: 999, image: 18 },
+        heroes: ["arch", "split", "centered"],
+        texture: "paper",
+        alts: { fonts: ["instrument", "cormorant"], palettes: ["birch", "harbour"] }
+      },
+      ember: {
+        name: "Ember",
+        mood: "Dark, warm and cosy. A bookish serif on deep brown, amber light. For cabins with hot tubs, winter breaks and romantic hideaways.",
+        suits: ["cabin", "lodge", "luxury", "hut", "any"],
+        font: "newsreader",
+        palette: "ember",
+        shape: { radius: 4, button: 4, image: 4 },
+        heroes: ["cinematic", "framed", "centered"],
+        texture: "grain",
+        alts: { fonts: ["fraunces", "cormorant"], palettes: ["pine", "midnight"] }
       }
     };
+    for (const d of Object.values(DIRECTIONS)) {
+      const f = FONTS[d.font], pl = PALETTES[d.palette];
+      if (!d.fonts) d.fonts = { display: f.display, text: f.text, href: f.href };
+      if (!d.disp) d.disp = Object.assign({ italic: true }, f.disp);
+      if (!d.pal) d.pal = pl.pal;
+      if (pl.dark) d.dark = true;
+    }
     var SECTIONS = {
-      hero: ["cinematic", "split", "editorial", "mosaic", "type"],
-      facts: ["ruled"],
-      story: ["lede", "pull"],
-      highlights: ["numbered", "panels"],
-      gallery: ["grid", "strip"],
-      amenities: ["columns"],
-      reviews: ["wall", "feature"],
-      area: ["itinerary"],
-      host: ["note"],
-      book: ["panel"],
-      faq: ["accordion"],
-      closing: ["banner"]
+      hero: ["cinematic", "split", "editorial", "mosaic", "centered", "framed", "arch", "type"],
+      facts: ["ruled", "tiles", "inline"],
+      story: ["lede", "pull", "photo"],
+      highlights: ["numbered", "panels", "cards"],
+      gallery: ["grid", "strip", "masonry"],
+      amenities: ["columns", "tiles"],
+      reviews: ["wall", "feature", "band", "cards"],
+      area: ["itinerary", "cards"],
+      host: ["note", "centered"],
+      book: ["panel", "centered"],
+      faq: ["accordion", "columns", "centered"],
+      closing: ["banner", "split", "minimal"]
+    };
+    var VARIANT_NAMES = {
+      cinematic: "Cinematic",
+      split: "Split",
+      editorial: "Editorial",
+      mosaic: "Mosaic",
+      centered: "Centred",
+      framed: "Framed",
+      arch: "Arch",
+      type: "Type-led",
+      ruled: "Ruled row",
+      tiles: "Tiles",
+      inline: "One line",
+      lede: "Lede",
+      pull: "Pull quote",
+      photo: "With photo",
+      numbered: "Numbered",
+      panels: "Photo panels",
+      cards: "Cards",
+      grid: "Grid",
+      strip: "Scrolling strip",
+      masonry: "Masonry",
+      columns: "Columns",
+      wall: "Wall",
+      feature: "Featured quote",
+      band: "Colour band",
+      itinerary: "Itinerary",
+      note: "Note",
+      panel: "Dark panel",
+      accordion: "Accordion",
+      banner: "Photo banner",
+      minimal: "Minimal"
+    };
+    var TEMPLATES = {
+      classic: { name: "Classic", note: "Balanced and familiar", v: { hero: "split", facts: "ruled", story: "lede", highlights: "numbered", gallery: "grid", amenities: "columns", reviews: "wall", area: "itinerary", host: "note", book: "panel", faq: "accordion", closing: "banner" } },
+      magazine: { name: "Magazine", note: "Huge type, long-read feel", v: { hero: "editorial", facts: "inline", story: "pull", highlights: "panels", gallery: "strip", amenities: "columns", reviews: "feature", area: "itinerary", host: "note", book: "panel", faq: "columns", closing: "split" } },
+      showcase: { name: "Photo showcase", note: "Photos first, then the story", gallery: 2, v: { hero: "mosaic", facts: "tiles", story: "photo", highlights: "cards", gallery: "masonry", amenities: "tiles", reviews: "cards", area: "cards", host: "centered", book: "centered", faq: "accordion", closing: "banner" } },
+      minimal: { name: "Minimal", note: "Quiet, centred, lots of air", v: { hero: "centered", facts: "inline", story: "lede", highlights: "numbered", gallery: "grid", amenities: "tiles", reviews: "feature", area: "itinerary", host: "centered", book: "centered", faq: "centered", closing: "minimal" } },
+      bold: { name: "Bold", note: "Full-bleed and high contrast", v: { hero: "cinematic", facts: "tiles", story: "pull", highlights: "cards", gallery: "masonry", amenities: "tiles", reviews: "band", area: "cards", host: "centered", book: "panel", faq: "accordion", closing: "banner" } },
+      boutique: { name: "Boutique", note: "Framed photos, soft and refined", v: { hero: "arch", facts: "ruled", story: "photo", highlights: "panels", gallery: "strip", amenities: "columns", reviews: "band", area: "cards", host: "note", book: "centered", faq: "centered", closing: "split" } },
+      cosy: { name: "Cosy", note: "Framed hero, warm and friendly", v: { hero: "framed", facts: "tiles", story: "lede", highlights: "cards", gallery: "grid", amenities: "columns", reviews: "cards", area: "itinerary", host: "centered", book: "panel", faq: "accordion", closing: "minimal" } }
     };
     var ORDER = ["hero", "facts", "story", "highlights", "gallery", "amenities", "reviews", "area", "host", "book", "faq", "closing"];
     var REQUIRED = ["hero", "book", "faq"];
@@ -16914,8 +17143,10 @@ var require_design = __commonJS({
       const x = rgb(a), y = rgb(b);
       return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("");
     }
-    function palette(dir, accent) {
-      const d = DIRECTIONS[dir] || DIRECTIONS.linen;
+    function palette(dir, accent, palKey) {
+      const d0 = DIRECTIONS[dir] || DIRECTIONS.linen;
+      const pre = palKey && PALETTES[palKey];
+      const d = pre ? { pal: pre.pal, dark: !!pre.dark } : d0;
       const p = Object.assign({}, d.pal);
       if (hexOk(accent) && contrast(accent, p.bg) >= 3.2) {
         p.accent = accent.toUpperCase();
@@ -16934,14 +17165,83 @@ var require_design = __commonJS({
       p.deepBtnInk = strong ? p.accentInk : p.deep;
       return p;
     }
+    function seed(str) {
+      let h = 2166136261;
+      for (const ch of String(str)) {
+        h ^= ch.charCodeAt(0);
+        h = Math.imul(h, 16777619) >>> 0;
+      }
+      return h;
+    }
+    function cleanStyle(x) {
+      const o = {};
+      x = x || {};
+      if (FONTS[x.font]) o.font = x.font;
+      if (PALETTES[x.palette]) o.palette = x.palette;
+      for (const k of Object.keys(STYLE)) if (STYLE[k][x[k]]) o[k] = x[k];
+      return o;
+    }
+    function look(spec) {
+      spec = spec || {};
+      const dir = DIRECTIONS[spec.direction] ? spec.direction : "linen", d = DIRECTIONS[dir], st = cleanStyle(spec.style);
+      const font = FONTS[st.font] ? Object.assign({ italic: true }, FONTS[st.font], { disp: Object.assign({ italic: true }, FONTS[st.font].disp) }) : { display: d.fonts.display, text: d.fonts.text, href: d.fonts.href, disp: d.disp };
+      const disp = Object.assign({}, font.disp);
+      if (st.headings === "sentence") disp.case = "none";
+      if (st.headings === "upper") {
+        disp.case = "uppercase";
+        disp.scale = disp.scale * 0.82;
+        disp.track = "0.01em";
+      }
+      disp.scale = +(disp.scale * ({ quiet: 0.86, loud: 1.14 }[st.scale] || 1)).toFixed(3);
+      const palKey = st.palette || null;
+      const dark = palKey ? !!PALETTES[palKey].dark : !!d.dark;
+      const shape = st.corners ? STYLE.corners[st.corners] : d.shape;
+      return {
+        dir,
+        d,
+        style: st,
+        fonts: { display: font.display, text: font.text, href: font.href },
+        disp,
+        italicHead: st.headings === "italic",
+        pal: palette(dir, spec.accent, palKey),
+        dark,
+        shape,
+        texture: st.texture || d.texture,
+        spacing: { compact: 0.7, airy: 1.3 }[st.spacing] || 1,
+        buttons: st.buttons || "solid",
+        nav: st.nav || "classic",
+        images: st.images || "plain",
+        bands: st.bands || "soft"
+      };
+    }
+    function varyStyle(dir, key, used, n) {
+      const d = DIRECTIONS[dir] || DIRECTIONS.linen;
+      const h = seed(key + ":" + (n || 0));
+      const pick = (arr, salt) => arr[(h >>> salt) % arr.length];
+      const same = (used || []).filter((u) => u && u.direction === dir);
+      const style = {};
+      if (same.length || n) {
+        const fonts = [d.font].concat(d.alts.fonts).filter((f2) => !same.some((u) => ((u.style || {}).font || d.font) === f2));
+        const pals = [d.palette].concat(d.alts.palettes).filter((p2) => !same.some((u) => ((u.style || {}).palette || d.palette) === p2));
+        const f = fonts.length ? pick(fonts, 3) : pick(d.alts.fonts, 3), p = pals.length ? pick(pals, 7) : pick(d.alts.palettes, 7);
+        if (f !== d.font) style.font = f;
+        if (p !== d.palette) style.palette = p;
+      }
+      style.spacing = pick(["regular", "airy", "regular", "compact"], 11);
+      style.nav = pick(["classic", "centered", "classic", "minimal"], 13);
+      style.images = pick(["plain", "plain", "framed", "shadow"], 17);
+      style.bands = pick(["soft", "flat", "soft", "bold"], 19);
+      if (h % 5 === 0) style.buttons = "outline";
+      return cleanStyle(style);
+    }
     function qa(spec, facts) {
-      const p = palette(spec.direction, spec.accent);
+      const p = palette(spec.direction, spec.accent, (spec.style || {}).palette);
       const c = spec.copy || {};
       const words = (s) => String(s || "").trim().split(/\s+/).filter(Boolean).length;
       const all = JSON.stringify(c).toLowerCase();
       const found = CLICHES.filter((x) => all.includes(x));
       const types = (spec.sections || []).map((s) => s.type);
-      const imgHero = ["cinematic", "split", "mosaic", "editorial"].includes((spec.sections.find((s) => s.type === "hero") || {}).variant);
+      const imgHero = ["cinematic", "split", "mosaic", "editorial", "centered", "framed", "arch"].includes((spec.sections.find((s) => s.type === "hero") || {}).variant);
       return [
         { ok: contrast(p.ink, p.bg) >= 7, label: "Body text contrast is AAA (" + contrast(p.ink, p.bg).toFixed(1) + ":1)" },
         { ok: contrast(p.accentInk, p.accent) >= 4.5, label: "Buttons pass WCAG AA contrast (" + contrast(p.accentInk, p.accent).toFixed(1) + ":1)" },
@@ -16957,7 +17257,7 @@ var require_design = __commonJS({
         { ok: !!(c.seoTitle && c.seoTitle.length <= 62 && c.seoDescription && c.seoDescription.length <= 160), label: "Search title and description fit Google\u2019s limits" }
       ];
     }
-    module.exports = { PRINCIPLES, CLICHES, DIRECTIONS, SECTIONS, ORDER, REQUIRED, palette, contrast, mix, hexOk, qa };
+    module.exports = { PRINCIPLES, CLICHES, DIRECTIONS, FONTS, PALETTES, STYLE, STYLE_KEYS, SECTIONS, VARIANT_NAMES, TEMPLATES, ORDER, REQUIRED, palette, contrast, mix, hexOk, qa, look, cleanStyle, varyStyle, seed };
   }
 });
 
@@ -17015,10 +17315,22 @@ var require_render = __commonJS({
       };
     }
     var GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
-    function css(dir, pal) {
-      const d = D.DIRECTIONS[dir] || D.DIRECTIONS.linen;
-      const v = "--bg:" + pal.bg + ";--bg2:" + pal.bg2 + ";--ink:" + pal.ink + ";--mut:" + pal.muted + ";--line:" + pal.line + ";--ac:" + pal.accent + ";--acInk:" + pal.accentInk + ";--acT:" + pal.accentText + ";--acD:" + pal.accentDeep + ";--dBtn:" + pal.deepBtn + ";--dBtnI:" + pal.deepBtnInk + ";--deep:" + pal.deep + ";--deepInk:" + pal.deepInk + ";--fd:'" + d.fonts.display + "',Georgia,serif;--ft:'" + d.fonts.text + "',system-ui,sans-serif;--dw:" + d.disp.weight + ";--dt:" + d.disp.track + ";--dl:" + d.disp.lead + ";--dc:" + d.disp.case + ";--ds:" + d.disp.scale + ";--r:" + d.shape.radius + "px;--rb:" + d.shape.button + "px;--ri:" + d.shape.image + "px;--deepMut:" + D.mix(pal.deepInk, pal.deep, 0.32) + ";--deepLine:" + D.mix(pal.deepInk, pal.deep, 0.78);
-      return ":root{" + v + ";color-scheme:" + (d.dark ? "dark" : "light") + "}" + BASE + (d.texture === "grain" ? "body::after{opacity:.06}" : d.texture === "paper" ? "body::after{opacity:.045}" : "body::after{display:none}");
+    var IMGS = ".frame img,.h-ed .img img,.h-cen .wide img,.mos img,.h-arch .main,.hl-pan .pic img,.grid button,.strip img,.st-ph .pic img,.hl-cards img,.msn button,.cl-split .pic img";
+    function css(L) {
+      const pal = L.pal, d = L.d, ds = L.disp, sh = L.shape;
+      const v = "--bg:" + pal.bg + ";--bg2:" + pal.bg2 + ";--ink:" + pal.ink + ";--mut:" + pal.muted + ";--line:" + pal.line + ";--ac:" + pal.accent + ";--acInk:" + pal.accentInk + ";--acT:" + pal.accentText + ";--acD:" + pal.accentDeep + ";--dBtn:" + pal.deepBtn + ";--dBtnI:" + pal.deepBtnInk + ";--deep:" + pal.deep + ";--deepInk:" + pal.deepInk + ";--fd:'" + L.fonts.display + "',Georgia,serif;--ft:'" + L.fonts.text + "',system-ui,sans-serif;--dw:" + ds.weight + ";--dt:" + ds.track + ";--dl:" + ds.lead + ";--dc:" + ds.case + ";--ds:" + ds.scale + ";--r:" + sh.radius + "px;--rb:" + sh.button + "px;--ri:" + sh.image + "px;--sp:" + L.spacing + ";--deepMut:" + D.mix(pal.deepInk, pal.deep, 0.32) + ";--deepLine:" + D.mix(pal.deepInk, pal.deep, 0.78);
+      let x = "";
+      x += L.texture === "grain" ? "body::after{opacity:.06}" : L.texture === "paper" ? "body::after{opacity:.045}" : "body::after{display:none}";
+      if (L.dark) x += "body::after{mix-blend-mode:screen;opacity:.035}";
+      if (L.italicHead) x += ".disp{font-style:italic}.disp em{font-style:normal}";
+      const keep = ":not(.card .btn):not(.mbar .btn):not(.fn-form .btn)";
+      if (L.buttons === "outline") x += ".btn" + keep + ":not(.gh){background:transparent!important;color:inherit!important;border:1.5px solid currentColor!important}.btn" + keep + ":hover{background:color-mix(in srgb,currentColor 9%,transparent)!important;box-shadow:none!important}";
+      if (L.buttons === "link") x += ".btn" + keep + "{background:none!important;color:inherit!important;border:0!important;border-bottom:1.5px solid currentColor!important;border-radius:0!important;padding:0 2px!important;min-height:44px;box-shadow:none!important}.btn" + keep + ":hover{transform:none;gap:16px}.pill{padding-right:26px}";
+      if (L.images === "framed") x += IMGS + "{padding:clamp(6px,.8vw,12px)!important;background:#FFFFFF!important;box-shadow:0 1px 2px rgba(0,0,0,.06),0 22px 44px -26px rgba(0,0,0,.42)}.frame::before{display:none}";
+      if (L.images === "shadow") x += IMGS + "{box-shadow:0 34px 70px -34px rgba(0,0,0,.5)}";
+      if (L.bands === "flat") x += ".sec.alt{background:var(--bg);border-top:1px solid var(--line)}.sec.alt+.sec:not(.alt):not(.dk){border-top:1px solid var(--line)}";
+      if (L.bands === "bold") x += ".sec.alt{background:" + pal.deep + ";color:" + pal.deepInk + ";--bg:" + pal.deep + ";--bg2:" + D.mix(pal.deep, pal.deepInk, 0.08) + ";--ink:" + pal.deepInk + ";--mut:var(--deepMut);--line:var(--deepLine);--acT:var(--acD)}.sec.alt .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}.sec.alt .mono{background:var(--dBtn);color:var(--dBtnI)}";
+      return ":root{" + v + ";color-scheme:" + (L.dark ? "dark" : "light") + "}" + BASE + MORE + x;
     }
     var BASE = `
 *,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}
@@ -17039,7 +17351,7 @@ p{margin:0 0 1.1em}.mut{color:var(--mut)}.num{font-variant-numeric:tabular-nums 
 .btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -14px color-mix(in srgb,var(--ac) 80%,transparent)}
 .btn.gh{background:transparent;color:inherit;border-color:currentColor}.btn.gh:hover{background:color-mix(in srgb,currentColor 8%,transparent);box-shadow:none}
 .btn svg{width:18px;height:18px}
-.sec{padding-block:clamp(84px,11vw,168px);position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
+.sec{padding-block:calc(clamp(84px,11vw,168px) * var(--sp,1));position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
 .rule{height:1px;background:var(--line);border:0;margin:0}
 /* nav */
 .nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,color .4s}
@@ -17182,6 +17494,72 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
 .js [data-rv]{opacity:0;transform:translateY(26px);transition:opacity 1.1s cubic-bezier(.2,.7,.1,1),transform 1.1s cubic-bezier(.2,.7,.1,1)}.js [data-rv].in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js [data-rv]{opacity:1;transform:none}html{scroll-behavior:auto}}
 `;
+    var MORE = `
+/* nav styles */
+.nav.n-cen .w{display:grid;grid-template-columns:1fr auto 1fr}.nav.n-cen ul{justify-self:start}.nav.n-cen .wm{justify-self:center}.nav.n-cen .btn{justify-self:end}
+.nav.n-min .w{height:86px}.nav.n-min .wm{font-size:calc(1.35rem * var(--ds));letter-spacing:.14em;text-transform:uppercase}
+@media(max-width:900px){.nav.n-cen .w{display:flex}}
+/* hero: centred */
+.h-cen{padding-top:clamp(130px,15vw,190px);text-align:center}.h-cen .eb{justify-content:center}.h-cen .eb::after{content:"";width:28px;height:1px;background:currentColor;opacity:.7}
+.h-cen .disp{max-width:15em;margin-inline:auto}.h-cen .lede{margin:28px auto 0}.h-cen .acts{justify-content:center;margin-top:36px}
+.h-cen .wide{margin:clamp(52px,7vw,96px) auto 0;padding-inline:clamp(20px,5vw,64px);max-width:1440px}.h-cen .wide img{width:100%;aspect-ratio:21/9;object-fit:cover;border-radius:var(--ri)}
+@media(max-width:760px){.h-cen .wide img{aspect-ratio:4/3}}
+/* hero: framed */
+.h-frm{padding:92px clamp(10px,1.6vw,22px) 0}.h-frm .ph{border-radius:max(var(--ri),2px);overflow:hidden;height:min(84svh,880px);min-height:520px}.h-frm .ph img{width:100%;height:100%;object-fit:cover}
+.h-frm .w{position:relative;z-index:2}.h-frm .panel{background:var(--bg);max-width:740px;margin-top:calc(-1 * clamp(150px,20vw,280px));padding:clamp(28px,4vw,60px) clamp(24px,4vw,60px) 0 0;border-radius:0 var(--r) 0 0;position:relative}
+.h-frm .panel::before{content:"";position:absolute;inset:0 0 0 -100vw;background:var(--bg);z-index:-1;border-radius:inherit}
+.h-frm .h1{font-size:calc(clamp(2.7rem,6vw,6rem) * var(--ds))}.h-frm .lede{margin-top:24px}.h-frm .acts{margin-top:32px}
+@media(max-width:760px){.h-frm .ph{height:62svh;min-height:380px}.h-frm .panel{margin-top:-70px;padding-top:28px}}
+/* hero: arch */
+.h-arch{padding-top:clamp(120px,13vw,160px);padding-bottom:clamp(60px,8vw,110px)}.h-arch .w{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(36px,6vw,96px);align-items:center}
+.h-arch .lede{margin-top:28px}.h-arch .acts{margin-top:40px}.h-arch .ar-w{position:relative;max-width:520px;justify-self:end;width:100%}
+.h-arch .main{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:999px 999px var(--ri) var(--ri)}
+.h-arch .sub{position:absolute;left:-14%;bottom:8%;width:38%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:8px solid var(--bg)}
+.h-arch .badge{position:absolute;right:-4%;top:12%;width:112px;height:112px;border-radius:50%;background:var(--ac);color:var(--acInk);display:grid;place-items:center;text-align:center;font:600 12px/1.25 var(--ft);letter-spacing:.06em;transform:rotate(-8deg)}
+.h-arch .badge b{display:block;font:var(--dw) 1.6rem/1 var(--fd)}
+@media(max-width:900px){.h-arch .w{grid-template-columns:1fr}.h-arch .ar-w{justify-self:center;max-width:420px}.h-arch .sub{left:-6%}}
+/* facts: tiles and one line */
+.facts.ft-tiles{border:0;padding-block:clamp(28px,4vw,56px)}.ft-tiles ul{gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.ft-tiles li,.ft-tiles li:first-child{border:0;padding:26px 24px;background:var(--bg2);border-radius:var(--r)}
+.facts.ft-inline{border-block:0;padding-block:clamp(24px,3vw,40px)}.ft-inline ul{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 0}.ft-inline li,.ft-inline li:first-child{border:0;padding:6px 22px;display:flex;align-items:baseline;gap:9px}
+.ft-inline li+li{border-left:1px solid var(--line)}.ft-inline b{display:inline;font-size:calc(1.6rem * var(--ds))}.ft-inline span{display:inline;margin:0}
+@media(max-width:700px){.ft-inline li+li{border-left:0;border-top:0}}
+/* story with a photo */
+.st-ph .w{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,110px);align-items:center}.st-ph .pic img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--ri)}.st-ph .h2{margin-bottom:28px}
+@media(max-width:900px){.st-ph .w{grid-template-columns:1fr}}
+/* highlight cards */
+.hl-cards .hd{margin-bottom:56px;max-width:720px}.hl-cards ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.hl-cards li{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}.hl-cards img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.hl-cards .bd{padding:28px 28px 30px}.hl-cards .n{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--acT);font-weight:600;display:block;margin-bottom:14px}.hl-cards h3{margin-bottom:12px}
+/* masonry gallery */
+.msn{columns:3 260px;column-gap:14px}.msn button{display:block;width:100%;padding:0;border:0;background:none;margin:0 0 14px;cursor:zoom-in;overflow:hidden;border-radius:var(--ri);break-inside:avoid}
+.msn img{width:100%;height:auto;transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}.msn button:nth-child(3n+1) img{aspect-ratio:4/5;object-fit:cover}.msn button:nth-child(3n+2) img{aspect-ratio:1;object-fit:cover}.msn button:nth-child(3n) img{aspect-ratio:3/2;object-fit:cover}.msn button:hover img{transform:scale(1.04)}
+/* amenity tiles */
+.am.am-t .w{grid-template-columns:1fr}.am.am-t .hd{margin-bottom:44px;max-width:720px}.am.am-t ul.tl{columns:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.am.am-t ul.tl li{border:1px solid var(--line);border-radius:var(--r);padding:20px 20px;background:color-mix(in srgb,var(--bg) 60%,transparent)}
+/* reviews: colour band and cards */
+.rv-band{text-align:center}.rv-band .eb{justify-content:center}.rv-band .score{justify-content:center}.rv-band blockquote{margin:0 auto;max-width:20em;font-size:calc(clamp(1.9rem,3.8vw,3.4rem) * var(--ds))}.rv-band figcaption{margin-top:28px;color:var(--deepMut)}
+.rv-band .stars{color:var(--acD)}.rv-band .more{margin:64px auto 0;max-width:1000px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:36px;text-align:left;border-top:1px solid var(--deepLine);padding-top:36px}.rv-band .more blockquote{font:400 16px/1.6 var(--ft);margin:10px 0;max-width:none}
+.rv-cards .row{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
+.rv-cards figure{flex:0 0 min(84vw,390px);scroll-snap-align:start;margin:0;padding:32px;border-radius:var(--r);background:var(--bg2);display:flex;flex-direction:column}.rv-cards blockquote{margin:16px 0 22px;flex:1}.rv-cards figcaption{font-weight:600;font-size:14px}
+/* area cards */
+.ar-c .hd{max-width:720px;margin-bottom:52px}.ar-c ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.ar-c li{padding:30px 28px;border-radius:var(--r);border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}.ar-c li .i{font:var(--dw) 2.4rem/1 var(--fd);color:var(--acT)}
+.ar-c li b{font:var(--dw) calc(1.55rem * var(--ds))/1.15 var(--fd);letter-spacing:var(--dt);text-transform:var(--dc)}.ar-c .far{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acT);font-weight:600}.ar-c li p{margin:0;color:var(--mut)}
+/* host: centred */
+.ho-c{text-align:center}.ho-c .w{display:block;max-width:880px}.ho-c .mono{margin:0 auto 30px}.ho-c .eb{justify-content:center}
+/* booking: centred on the page colour */
+.bk-c .w{display:block;max-width:900px}.bk-c .hd{text-align:center;max-width:680px;margin:0 auto 46px}.bk-c .eb{justify-content:center}.bk-c .card{border:1px solid var(--line);box-shadow:0 30px 70px -40px rgba(0,0,0,.35)}
+.bk-c .save{margin:22px auto 0;border-color:var(--line);display:inline-block}.bk-c .save b{color:var(--acT)}
+/* faq: columns and centred */
+.fq-cols .hd{max-width:720px;margin-bottom:52px}.fq-cols dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:34px 56px}.fq-cols dt{font:var(--dw) calc(1.3rem * var(--ds))/1.3 var(--fd);letter-spacing:var(--dt);margin-bottom:10px}.fq-cols dd{margin:0;color:var(--mut)}
+.fq-cols dl>div{border-top:1px solid var(--line);padding-top:22px}
+.fq-c .w{display:block;max-width:860px}.fq-c .hd{text-align:center;margin-bottom:46px}.fq-c .eb{justify-content:center}
+/* closing: split and minimal */
+.cl-split{display:grid;grid-template-columns:1fr 1fr;min-height:64vh;background:var(--deep);color:var(--deepInk)}.cl-split .pic img{width:100%;height:100%;object-fit:cover;border-radius:0}
+.cl-split .tx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(40px,7vw,110px)}.cl-split .disp{margin-bottom:34px;max-width:11em}.cl-split .disp em{color:var(--acD)}.cl-split .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}
+@media(max-width:820px){.cl-split{grid-template-columns:1fr}.cl-split .pic img{aspect-ratio:4/3}}
+.cl-min{text-align:center;background:var(--bg2)}.cl-min .disp{max-width:13em;margin:0 auto 34px}
+`;
     function art(kind) {
       const s = 'fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"';
       if (/beach|lake|harbour|cottage/.test(kind) && kind !== "cottage") return '<svg viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true"><path ' + s + ' d="M0 150 C120 130 240 170 360 150 S600 130 720 150 960 170 1080 150 1320 130 1440 150"/><path ' + s + ' opacity=".6" d="M0 195 C140 178 260 210 400 195 S660 178 800 195 1060 210 1200 195 1360 182 1440 190"/><path ' + s + ' opacity=".35" d="M0 240 C160 226 300 252 460 240 S760 226 920 240 1220 252 1440 236"/><circle ' + s + ' cx="1110" cy="70" r="34"/></svg>';
@@ -17197,6 +17575,7 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
     }
     var fmtInline = (t) => esc(t).replace(/\*([^*]{1,40})\*/, "<em>$1</em>").replace(/\*/g, "");
     var img = (ph, attrs) => ph ? '<img src="' + esc(ph.url) + '" alt="' + esc(ph.alt || ph.cap || "") + '" ' + (attrs || 'loading="lazy" decoding="async"') + ">" : "";
+    var secHd = (eb, title, cls) => '<div class="hd' + (cls ? " " + cls : "") + '"><p class="eb" data-rv>' + esc(eb) + '</p><h2 class="disp h2" data-rv>' + fmtInline(title) + "</h2></div>";
     var ctaBtn = (c, ghost) => '<a class="btn' + (ghost ? " gh" : "") + '" href="#book">' + esc(c || "Check dates") + ARROW + "</a>";
     var R = {
       hero(sec, f, c, ctx) {
@@ -17206,14 +17585,20 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
         if (v === "split" && ph[0]) return '<header class="hero h-split" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><figure class="frame fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + (ph[0].cap ? "<figcaption>" + esc(ph[0].cap) + "</figcaption>" : "") + "</figure></div></header>";
         if (v === "editorial" && ph[0]) return '<header class="hero h-ed" id="top"><div class="w"><div class="top"><div style="grid-column:1/-1">' + eb + "</div>" + headline(c.headline) + '<div class="meta fade"><p class="lede">' + esc(c.subhead) + '</p><div class="acts">' + ctaBtn(c.cta) + '</div><p class="note mut" style="margin-top:18px;font-size:14px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + '</p></div><figure class="img fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + "<figcaption><span>" + esc(ph[0].cap || f.name) + "</span><span>" + esc(f.town) + "</span></figcaption></figure></div></div></header>";
         if (v === "mosaic" && ph.length >= 3) return '<header class="hero h-mos" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><div class="mos fade">' + ph.slice(0, 3).map((x, i) => img(x, i ? 'loading="lazy"' : 'fetchpriority="high"')).join("") + "</div></div></header>";
+        if (v === "centered" && ph[0]) return '<header class="hero h-cen" id="top"><div class="w">' + eb.replace('class="eb fade"', 'class="eb fade"') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><figure class="wide fade" style="margin-bottom:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + "</figure></header>";
+        if (v === "framed" && ph[0]) return '<header class="hero h-frm" id="top"><div class="ph zoom">' + img(ph[0], 'fetchpriority="high" decoding="async"') + '</div><div class="w"><div class="panel">' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + "</div></div></div></header>";
+        if (v === "arch" && ph[0]) return '<header class="hero h-arch" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><div class="ar-w fade">' + img(ph[0], 'class="main" fetchpriority="high" decoding="async"') + (ph[1] ? img(ph[1], 'class="sub" loading="lazy"') : "") + '<span class="badge" aria-hidden="true"><span><b class="num">' + f.maxGuests + "</b>guests</span></span></div></div></header>";
         return '<header class="hero h-type" id="top"><div class="art fade">' + art(ctx.kindHint || f.kind) + '</div><div class="w">' + eb.replace('class="eb', 'class="eb') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + '<span class="note" style="color:var(--deepMut)">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 no booking fees</span></div></div></header>";
       },
       facts(sec, f) {
         const cells = [[f.maxGuests, "Guests"], [f.bedrooms, f.bedrooms === 1 ? "Bedroom" : "Bedrooms"], [f.baths, f.baths === 1 ? "Bathroom" : "Bathrooms"], [money(f.nightly), "From, a night"], [f.pets ? "Yes" : "No", "Dogs welcome"], [f.minNights, "Night minimum"]];
-        return '<section class="facts" aria-label="At a glance"><div class="w"><ul>' + cells.map((x) => '<li data-rv><b class="num">' + esc(x[0]) + "</b><span>" + x[1] + "</span></li>").join("") + "</ul></div></section>";
+        const cls = sec.variant === "tiles" ? " ft-tiles" : sec.variant === "inline" ? " ft-inline" : "";
+        return '<section class="facts' + cls + '" aria-label="At a glance"><div class="w"><ul>' + cells.map((x) => '<li data-rv><b class="num">' + esc(x[0]) + "</b><span>" + x[1] + "</span></li>").join("") + "</ul></div></section>";
       },
       story(sec, f, c) {
         const paras = (c.story && c.story.length ? c.story : [f.about]).filter(Boolean).map((x) => "<p>" + esc(x) + "</p>").join("");
+        const sp = f.photos[1] || f.photos[0];
+        if (sec.variant === "photo" && sp) return '<section class="sec st-ph" id="stay"><div class="w"><div class="pic" data-rv>' + img(sp) + '</div><div><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2><div class="txt" data-rv>' + paras + "</div></div></div></section>";
         if (sec.variant === "pull") return '<section class="sec st-pull" id="stay"><div class="w"><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><blockquote class="disp" data-rv>' + fmtInline(c.pull || c.storyTitle || f.headline) + '</blockquote><div class="txt' + ((c.story || []).join(" ").length > 520 ? " cols" : "") + '" data-rv>' + paras + "</div></div></section>";
         return '<section class="sec st-lede" id="stay"><div class="w"><div><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2></div><div class="txt lede" style="max-width:none;color:var(--ink)" data-rv>' + paras + "</div></div></section>";
       },
@@ -17224,17 +17609,24 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
           const pics = f.photos.slice(1).concat(f.photos);
           return '<section class="sec hl-pan alt"><div class="w">' + items.slice(0, 3).map((h, i) => '<div class="row"><div class="pic" data-rv>' + img(pics[i]) + '</div><div data-rv><span class="n">' + String(i + 1).padStart(2, "0") + " \u2014 " + esc(h.eyebrow || "") + '</span><h3 class="disp">' + fmtInline(h.title) + '</h3><p class="lede">' + esc(h.text) + "</p></div></div>").join("") + "</div></section>";
         }
+        if (sec.variant === "cards") {
+          const pics = f.photos.length >= 4 ? f.photos.slice(1).concat(f.photos) : [];
+          return '<section class="sec hl-cards alt"><div class="w">' + secHd(c.highlightsEyebrow || "Why guests come back", c.highlightsTitle || "What makes it") + "<ol>" + items.map((h, i) => "<li data-rv>" + (pics[i] ? img(pics[i]) : "") + '<div class="bd"><span class="n">' + String(i + 1).padStart(2, "0") + (h.eyebrow ? " \xB7 " + esc(h.eyebrow) : "") + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut" style="margin:0">' + esc(h.text) + "</p></div></li>").join("") + "</ol></div></section>";
+        }
         return '<section class="sec hl-num"><div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.highlightsEyebrow || "Why guests come back") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.highlightsTitle || "What makes it") + "</h2></div></div><ol>" + items.map((h, i) => '<li data-rv><span class="n">' + String(i + 1).padStart(2, "0") + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut">' + esc(h.text) + "</p></li>").join("") + "</ol></div></section>";
       },
       gallery(sec, f, c) {
         if (f.photos.length < 4) return "";
         const hd = '<div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.galleryEyebrow || "Look around") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.galleryTitle || "Inside and out") + '</h2></div><span class="mut num" data-rv>' + plural(f.photos.length, "photo") + "</span></div></div>";
+        if (sec.variant === "masonry") return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="msn" data-rv>' + f.photos.slice(0, 15).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + "</button>").join("") + '</div></div><dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
         if (sec.variant === "strip") return '<section class="sec gal" id="gallery">' + hd + '<div class="strip" data-rv>' + f.photos.map((x) => "<figure>" + img(x) + (x.cap ? "<figcaption>" + esc(x.cap) + "</figcaption>" : "") + "</figure>").join("") + "</div></section>";
         return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="grid" data-rv>' + f.photos.slice(0, 14).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + "</button>").join("") + '</div></div><dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
       },
       amenities(sec, f, c) {
         if (!f.amenities.length) return "";
         const tm = [[f.checkin, "Check-in from"], [f.checkout, "Checkout by"], [plural(f.minNights, "night"), "Minimum stay"]];
+        const rules = f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? "<li>Parking: " + esc(f.parking) + "</li>" : "") + f.rules.map((r) => "<li>" + esc(r) + "</li>").join("") + "</ul>" : "";
+        if (sec.variant === "tiles") return '<section class="sec am am-t" id="details"><div class="w">' + secHd(c.amenitiesEyebrow || "The details", c.amenitiesTitle || "Everything you need") + '<div data-rv><ul class="tl">' + f.amenities.map((a) => "<li>" + esc(a) + "</li>").join("") + '</ul><div class="tm">' + tm.map((x) => "<div><b>" + esc(x[0]) + "</b><span>" + x[1] + "</span></div>").join("") + "</div>" + rules + "</div></div></section>";
         return '<section class="sec am alt" id="details"><div class="w"><div><p class="eb" data-rv>' + esc(c.amenitiesEyebrow || "The details") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.amenitiesTitle || "Everything you need") + "</h2></div><div data-rv><ul>" + f.amenities.map((a) => "<li>" + esc(a) + "</li>").join("") + '</ul><div class="tm">' + tm.map((x) => "<div><b>" + esc(x[0]) + "</b><span>" + x[1] + "</span></div>").join("") + "</div>" + (f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? "<li>Parking: " + esc(f.parking) + "</li>" : "") + f.rules.map((r) => "<li>" + esc(r) + "</li>").join("") + "</ul>" : "") + "</div></div></section>";
       },
       reviews(sec, f, c) {
@@ -17245,32 +17637,44 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
         const fig = (r) => '<figure data-rv><span class="stars" aria-label="' + r.stars + ' out of 5">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + "</blockquote><figcaption>" + esc(r.name) + "</figcaption></figure>";
         const note = f.live && rv.length ? '<p class="mut" style="font-size:13px;margin-top:20px">Every review is from a guest who stayed and chose to share it, whatever their rating.</p>' : "";
         if (sec.variant === "feature" && rv.length) return '<section class="sec rv feat" id="reviews"><div class="w">' + hd + score + '<figure style="margin:0" data-rv><blockquote class="disp">\u201C' + esc(rv[0].text) + "\u201D</blockquote><figcaption>" + esc(rv[0].name) + ' \xB7 <span class="stars">' + "\u2605".repeat(rv[0].stars) + "</span></figcaption></figure>" + (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map((r) => '<figure style="margin:0" data-rv><span class="stars">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + '</blockquote><figcaption class="mut">' + esc(r.name) + "</figcaption></figure>").join("") + "</div>" : "") + note + "</div></section>";
+        if (sec.variant === "band") return '<section class="sec rv rv-band dk" id="reviews"><div class="w"><p class="eb" data-rv>' + esc(c.reviewsEyebrow || "Guests say") + "</p>" + score + (rv.length ? '<figure style="margin:0" data-rv><blockquote class="disp">\u201C' + esc(rv[0].text) + "\u201D</blockquote><figcaption>" + esc(rv[0].name) + ' \xB7 <span class="stars">' + "\u2605".repeat(rv[0].stars) + "</span></figcaption></figure>" : "") + (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map((r) => '<figure style="margin:0" data-rv><span class="stars">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + '</blockquote><figcaption style="margin:0">' + esc(r.name) + "</figcaption></figure>").join("") + "</div>" : "") + note.replace('class="mut"', 'style="color:var(--deepMut);font-size:13px;margin-top:28px"').replace(' style="font-size:13px;margin-top:20px"', "") + "</div></section>";
+        if (sec.variant === "cards" && rv.length) return '<section class="sec rv rv-cards" id="reviews"><div class="w">' + hd + score + '<div class="row" data-rv>' + rv.slice(0, 9).map((r) => '<figure><span class="stars" aria-label="' + r.stars + ' out of 5">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + "</blockquote><figcaption>" + esc(r.name) + "</figcaption></figure>").join("") + "</div>" + note + "</div></section>";
         return '<section class="sec rv" id="reviews"><div class="w">' + hd + score + (rv.length ? '<div class="wall">' + rv.slice(0, 9).map(fig).join("") + "</div>" : "") + note + "</div></section>";
       },
       area(sec, f, c) {
         if (!f.guide.length) return "";
+        if (sec.variant === "cards") return '<section class="sec ar-c" id="area"><div class="w"><div class="hd"><p class="eb" data-rv>' + esc(c.areaEyebrow || "Around " + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || "Days out, picked by your host") + "</h2>" + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + "</p>" : "") + "</div><ol>" + f.guide.map((g, i) => '<li data-rv><span class="i num">' + String(i + 1).padStart(2, "0") + "</span><b>" + esc(g.place) + "</b>" + (g.far ? '<span class="far">' + esc(g.far) + "</span>" : "") + (g.tip ? "<p>" + esc(g.tip) + "</p>" : "") + "</li>").join("") + "</ol></div></section>";
         return '<section class="sec ar" id="area"><div class="w"><div><p class="eb" data-rv>' + esc(c.areaEyebrow || "Around " + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || "Days out, picked by your host") + "</h2>" + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + "</p>" : "") + "</div><ol>" + f.guide.map((g) => "<li data-rv><b>" + esc(g.place) + "</b>" + (g.far ? '<span class="far">' + esc(g.far) + "</span>" : "<span></span>") + (g.tip ? "<p>" + esc(g.tip) + "</p>" : "") + "</li>").join("") + "</ol></div></section>";
       },
       host(sec, f, c) {
         const note = c.hostNote || f.hostNote;
         if (!note && !f.owner) return "";
+        if (sec.variant === "centered") return '<section class="sec ho ho-c"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || "H")[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || "Your host") + '</p><blockquote class="disp">\u201C' + esc(note || "Message me any time before or during your stay.") + '\u201D</blockquote><p class="mut">' + esc((f.owner ? f.owner + ", " : "") + f.business) + "</p></div></div></section>";
         return '<section class="sec ho alt"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || "H")[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || "Your host") + '</p><blockquote class="disp">\u201C' + esc(note || "Message me any time before or during your stay.") + '\u201D</blockquote><p class="mut">' + esc((f.owner ? f.owner + ", " : "") + f.business) + "</p></div></div></section>";
       },
       book(sec, f, c, ctx) {
         const save = Math.round((f.nightly * 3 + f.cleaning) * 0.142);
+        if (sec.variant === "centered") return '<section class="sec bk bk-c alt" id="book"><div class="w"><div class="hd"><p class="eb" data-rv>' + esc(c.bookEyebrow || "Book direct") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || "Pick your dates") + '</h2><p class="lede" style="margin:24px auto 0" data-rv>' + esc(c.bookText || "Book here with " + (f.owner || "your host") + " and pay no platform booking fee.") + '</p><div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div><div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + ".</p></noscript></div></div></section>";
         return '<section class="sec bk dk" id="book"><div class="w"><div><p class="eb" data-rv>' + esc(c.bookEyebrow || "Book direct") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || "Pick your dates") + '</h2><p class="lede" style="margin-top:24px;color:var(--deepMut)" data-rv>' + esc(c.bookText || "Book here with " + (f.owner || "your host") + " and pay no platform booking fee.") + '</p><div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div><div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + ".</p></noscript></div></div></section>";
       },
       faq(sec, f, c) {
+        const qs = f.faqs.slice(0, 12);
+        if (sec.variant === "columns") return '<section class="sec fq-cols" id="faq"><div class="w">' + secHd(c.faqEyebrow || "Good to know", c.faqTitle || "Questions guests ask") + "<dl data-rv>" + qs.map(([q, a]) => "<div><dt>" + esc(q) + "</dt><dd>" + esc(a) + "</dd></div>").join("") + "</dl></div></section>";
+        if (sec.variant === "centered") return '<section class="sec fq fq-c" id="faq"><div class="w">' + secHd(c.faqEyebrow || "Good to know", c.faqTitle || "Questions guests ask") + "<div data-rv>" + qs.map(([q, a], i) => "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(q) + "</summary><p>" + esc(a) + "</p></details>").join("") + "</div></div></section>";
         return '<section class="sec fq" id="faq"><div class="w"><div><p class="eb" data-rv>' + esc(c.faqEyebrow || "Good to know") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.faqTitle || "Questions guests ask") + "</h2></div><div data-rv>" + f.faqs.slice(0, 12).map(([q, a], i) => "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(q) + "</summary><p>" + esc(a) + "</p></details>").join("") + "</div></div></section>";
       },
       closing(sec, f, c) {
         const ph = f.photos[f.photos.length - 1];
+        if (sec.variant === "split" && ph) return '<section class="cl-split"><div class="pic">' + img(ph) + '</div><div class="tx" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
+        if (sec.variant === "minimal" || sec.variant === "split" && !ph) return '<section class="sec cl-min"><div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
         return '<section class="cl' + (ph ? "" : " np") + '">' + (ph ? img(ph) : "") + '<div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
       }
     };
-    function nav(f, c, types, overlay) {
+    function nav(f, c, types, overlay, kind) {
       const links = [["stay", "The stay", "story"], ["gallery", "Gallery", "gallery"], ["area", "Area", "area"], ["reviews", "Reviews", "reviews"], ["faq", "FAQ", "faq"]].filter((x) => types.includes(x[2]));
-      return '<nav class="nav' + (overlay ? " ov" : " solid") + '" id="nav" aria-label="Main"><div class="w"><a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + "</a><ul>" + links.map((x) => '<li><a href="#' + x[0] + '">' + x[1] + "</a></li>").join("") + '</ul><a class="btn" href="#book">Check dates</a></div></nav>';
+      const wm = '<a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + "</a>", ul = "<ul>" + links.map((x) => '<li><a href="#' + x[0] + '">' + x[1] + "</a></li>").join("") + "</ul>", bt = '<a class="btn" href="#book">Check dates</a>';
+      const cls = kind === "centered" ? " n-cen" : kind === "minimal" ? " n-min" : "";
+      return '<nav class="nav' + (overlay ? " ov" : " solid") + cls + '" id="nav" aria-label="Main"><div class="w">' + (kind === "centered" ? ul + wm + bt : kind === "minimal" ? wm + bt : wm + ul + bt) + "</div></nav>";
     }
     function footer(f, c, url) {
       return '<footer class="ft"><div class="w"><p class="disp big">' + esc(f.name) + '</p><div class="cols"><span>' + esc(f.area) + "</span><span>" + esc(c.footerLine || "Book direct with your host. No platform fees.") + "</span><span>" + esc(f.business) + ' \xB7 <a href="' + esc(url.replace(/\/$/, "") + "/llms.txt") + '">llms.txt</a></span></div></div></footer><div class="mbar" id="mbar"><div><small>From</small><b class="num">' + money(f.nightly) + '</b> <small style="display:inline">night</small></div><a class="btn" href="#book">Check dates</a></div>';
@@ -17315,22 +17719,22 @@ if(!j.ok){st.err=j.error||'Those dates could not be booked.';draw();return}if(j.
 st.done=j.invoiceUrl?{t:'You are booked',p:'Your invoice with the bank details is on its way to '+em+'. Pay within '+K.bank.days+' days to keep the dates.',u:j.tripUrl}:j.request?{t:'Request sent',p:'Your host will confirm shortly and email you a secure payment link.',u:j.tripUrl}:{t:'You are booked',p:'Your confirmation is on its way to '+em+'.',u:j.tripUrl};draw()}).catch(function(){st.busy=false;st.err='Something went wrong. Try again.';draw()})}
 draw()})();`;
     function head(o) {
-      const d = D.DIRECTIONS[o.dir] || D.DIRECTIONS.linen;
-      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + '</title><meta name="description" content="' + esc(o.description) + '">' + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + '<meta name="theme-color" content="' + esc(o.pal.bg) + '">' + (o.extra || "") + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + d.fonts.href + '&display=swap">' + (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : "") + "<style>" + css(o.dir, o.pal) + "</style></head>";
+      const L = o.look || D.look({ direction: o.dir, accent: o.accent });
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + '</title><meta name="description" content="' + esc(o.description) + '">' + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + '<meta name="theme-color" content="' + esc(L.pal.bg) + '">' + (o.extra || "") + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + L.fonts.href + '&display=swap">' + (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : "") + "<style>" + css(L) + "</style></head>";
     }
     function site(s, p, spec, ctx) {
-      const f = facts(s, p, ctx), c = spec.copy || {}, pal = D.palette(spec.direction, spec.accent);
+      const f = facts(s, p, ctx), c = spec.copy || {}, L = D.look(spec);
       let secs = (spec.sections || []).filter((x) => R[x.type]);
       const heroSec = secs.find((x) => x.type === "hero");
       if (heroSec && heroSec.variant !== "type" && !f.photos.length) heroSec.variant = "type";
       if (heroSec && heroSec.variant === "mosaic" && f.photos.length < 3) heroSec.variant = f.photos.length ? "split" : "type";
-      const body = secs.map((x) => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx))).join("");
+      const body = secs.map((x) => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx)).replace(/^<(\w+)/, '<$1 data-sec="' + x.type + '"')).join("");
       const types = secs.map((x) => x.type);
       const overlay = heroSec && heroSec.variant === "cinematic";
       const typeHero = heroSec && heroSec.variant === "type";
       const title = c.seoTitle || seo.titleOf(p), description = c.seoDescription || seo.descOf(p);
       const boot = { book: { url: ctx.bookUrl, pid: p.id, nightly: f.nightly, weekend: f.weekend, cleaning: f.cleaning, pets: f.pets, petFee: f.petFee, minNights: f.minNights, maxGuests: f.maxGuests, today: ctx.today, blocked: ctx.blocked || [], promos: ctx.promos || {}, stripe: !!ctx.stripe, bank: ctx.bank && ctx.bank.on ? { days: ctx.bank.days || 7 } : null, business: f.business } };
-      return head({ dir: spec.direction, pal, title, description, robots: ctx.preview ? "noindex" : null, preload: overlay || heroSec && heroSec.variant !== "type" ? (f.photos[0] || {}).url : null, extra: ctx.preview ? "" : seo.head(s, p, ctx.url) }) + '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero) + "<main>" + body + "</main>" + footer(f, c, ctx.url) + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)">' + ctx.banner + "</div>" : "") + "<script>window.__ST__=" + JSON.stringify(boot).replace(/</g, "\\u003c") + "</script><script>" + CLIENT + "</script></body></html>";
+      return head({ look: L, title, description, robots: ctx.preview ? "noindex" : null, preload: overlay || heroSec && heroSec.variant !== "type" ? (f.photos[0] || {}).url : null, extra: ctx.preview ? "" : seo.head(s, p, ctx.url) }) + '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero, L.nav) + "<main>" + body + "</main>" + footer(f, c, ctx.url) + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)">' + ctx.banner + "</div>" : "") + "<script>window.__ST__=" + JSON.stringify(boot).replace(/</g, "\\u003c") + "</script><script>" + CLIENT + "</script></body></html>";
     }
     module.exports = { site, facts, head, css, R, CLIENT, ARROW, fmtInline, headline, img, money, footer };
   }
@@ -17413,7 +17817,7 @@ var require_funnels = __commonJS({
       return 'Write the pages for a "' + t.name + '" funnel for this UK holiday let. ' + t.blurb + "\n\nSteps: " + t.steps.join(", ") + ". optin pages have a short form (name, email); offer pages show a promo code and send guests to book; thanks pages follow an opt-in.\nFacts: " + JSON.stringify({ name: f.name, town: f.town, area: f.area, kind: f.kind, sleeps: f.maxGuests, bedrooms: f.bedrooms, dogs: f.pets, fromPerNight: "\xA3" + f.nightly, amenities: f.amenities, about: f.about, areaGuide: f.guide.map((g) => g.place) }) + "\nOffer details: " + JSON.stringify({ promoCode: o.code, discountPercent: o.pct, season: o.season || "", hostNotes: o.notes || "" }) + '\n\nRules: UK English, sentence case, specific and sensory, facts only. headline under nine words; wrap one word in *asterisks* for italic emphasis. subhead one or two sentences. points: three short benefit lines (empty array for thanks steps). button: a first-person action under five words ("Send me the guide"). fine: one reassuring line about email consent for optin steps, otherwise empty. urgency: an honest reason to act now for offer steps (never fake scarcity or countdowns), otherwise empty. text: for thanks steps, two sentences on what happens next; otherwise empty. name: a short internal name for the funnel. Banned: ' + D.CLICHES.join(", ") + ".";
     }
     function page(s, p, fn, step, ctx) {
-      const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || "linen", pal = D.palette(dir, fn.accent || ctx.accent), c = (fn.copy || {})[step] || {};
+      const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || "linen", L = D.look({ direction: dir, accent: fn.accent || ctx.accent, style: fn.style || ctx.style }), c = (fn.copy || {})[step] || {};
       const ph = f.photos[0];
       const book = ctx.siteUrl + (ctx.siteUrl.includes("?") ? "&" : "?") + (fn.code ? "promo=" + encodeURIComponent(fn.code) + "&" : "") + "utm_source=funnel&utm_campaign=" + encodeURIComponent(fn.id) + "#book";
       const h1 = '<h1 class="disp h1" style="font-size:calc(clamp(2.6rem,6vw,5.6rem) * var(--ds))">' + fmtInline(c.headline || "") + "</h1>";
@@ -17431,7 +17835,7 @@ var require_funnels = __commonJS({
         main = '<section class="fn-hero"><div class="w"><div><p class="eb">' + esc(c.eyebrow || "") + "</p>" + h1 + '<p class="lede">' + esc(c.subhead || "") + "</p>" + pts + gapList + (fn.code ? '<div class="code" aria-label="Promo code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px;margin:0">' + fn.pct + "% off your nights. Applied automatically on the next page.</p>" : "") + '<div class="acts" style="margin-top:30px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "Check dates") + ARROW + "</a>" + (c.urgency ? '<span class="urg">' + esc(c.urgency) + "</span>" : "") + '</div><p class="mut" style="font-size:14px;margin-top:22px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + (f.rating && f.reviewCount ? " \xB7 rated " + Number(f.rating).toFixed(2) + " by " + f.reviewCount + " guests" : "") + "</p></div>" + pic + "</div></section>";
       }
       const navb = '<nav class="nav solid" aria-label="Main"><div class="w"><a class="wm" href="' + esc(ctx.siteUrl) + '">' + esc(f.short) + '</a><a class="btn" href="' + esc(book) + '">Check dates</a></div></nav>';
-      return head({ dir, pal, title: (c.headline || fn.name || f.name).replace(/\*/g, "") + " \xB7 " + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === "thanks" ? "noindex" : null, preload: ph && ph.url }) + "<body>" + navb + "<main>" + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + " \xB7 " + esc(f.area) + "</span><span>" + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + "</div>" : "") + '<script>document.documentElement.classList.add("js")</script></body></html>';
+      return head({ look: L, title: (c.headline || fn.name || f.name).replace(/\*/g, "") + " \xB7 " + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === "thanks" ? "noindex" : null, preload: ph && ph.url }) + "<body>" + navb + "<main>" + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + " \xB7 " + esc(f.area) + "</span><span>" + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + "</div>" : "") + '<script>document.documentElement.classList.add("js")</script></body></html>';
     }
     module.exports = { TEMPLATES, rulesCopy, schema, aiPrompt, page, gaps };
   }
@@ -17442,17 +17846,56 @@ var require_generate = __commonJS({
   "server/studio/generate.js"(exports, module) {
     var D = require_design();
     var { facts } = require_render();
-    var VIBES = { calm: "calm and restful", luxe: "luxurious and design-led", family: "warm, joyful and family-friendly", rustic: "rustic, honest and cosy", coastal: "bright and coastal", urban: "elegant and urban", adventurous: "outdoorsy and adventurous", romantic: "romantic, for couples" };
-    var VIBE_DIR = { calm: "linen", luxe: "nocturne", family: "sunlit", rustic: "meadow", coastal: "harbour", urban: "georgian", adventurous: "fell", romantic: "linen" };
+    var VIBES = {
+      calm: "calm and restful",
+      luxe: "luxurious and design-led",
+      family: "warm, joyful and family-friendly",
+      rustic: "rustic, honest and cosy",
+      coastal: "bright and coastal",
+      urban: "elegant and urban",
+      adventurous: "outdoorsy and adventurous",
+      romantic: "romantic, for couples",
+      cosy: "dark, cosy and wintry",
+      minimal: "minimal and Scandinavian",
+      playful: "playful and contemporary",
+      grand: "grand and traditional",
+      wellness: "soft, restorative, spa-like",
+      glamorous: "glamorous and sunny"
+    };
+    var VIBE_DIR = { calm: "linen", luxe: "nocturne", family: "sunlit", rustic: "meadow", coastal: "harbour", urban: "georgian", adventurous: "fell", romantic: "ember", cosy: "ember", minimal: "nordic", playful: "atelier", grand: "manor", wellness: "saltmarsh", glamorous: "riviera" };
+    var DIR_TEMPLATES = {
+      linen: ["magazine", "classic", "minimal"],
+      fell: ["classic", "bold", "cosy"],
+      harbour: ["classic", "showcase", "cosy"],
+      georgian: ["magazine", "boutique", "classic"],
+      nocturne: ["bold", "magazine", "showcase"],
+      modernist: ["showcase", "bold", "minimal"],
+      meadow: ["cosy", "classic", "showcase"],
+      sunlit: ["cosy", "showcase", "classic"],
+      nordic: ["minimal", "showcase", "classic"],
+      riviera: ["boutique", "magazine", "bold"],
+      atelier: ["showcase", "cosy", "bold"],
+      manor: ["magazine", "boutique", "classic"],
+      saltmarsh: ["boutique", "minimal", "cosy"],
+      ember: ["bold", "cosy", "boutique"]
+    };
     function guessDirection(f, brief) {
       if (brief && D.DIRECTIONS[brief.direction]) return brief.direction;
       if (brief && VIBE_DIR[brief.vibe]) return VIBE_DIR[brief.vibe];
       const t = (f.name + " " + f.about + " " + f.area + " " + f.amenities.join(" ")).toLowerCase();
+      if (/manor|rectory|grange|hall\b|estate|country house/.test(t)) return "manor";
       if (/barn|farm|shepherd|hut|meadow|orchard/.test(t)) return "meadow";
       if (/sea|beach|harbour|coast|bay|cove|surf/.test(t)) return "harbour";
       if (/contemporary|modern|architect|glass|concrete/.test(t)) return "modernist";
-      if (/spa|sauna|luxury|boutique/.test(t)) return "nocturne";
+      if (/wellness|yoga|retreat|\bspa\b/.test(t)) return "saltmarsh";
+      if (/scandi|nordic|minimalist/.test(t)) return "nordic";
+      if (/sauna|luxury|boutique/.test(t)) return "nocturne";
       return { cabin: "fell", lake: "harbour", city: "georgian" }[f.theme] || "linen";
+    }
+    function pickHero(dir, n, key, tries) {
+      if (!n) return "type";
+      const ok = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes.filter((h) => (h !== "mosaic" || n >= 3) && (h !== "arch" || n >= 2));
+      return ok.length ? ok[(D.seed(key) + (tries || 0)) % ok.length] : "split";
     }
     function heroFor(dir, n) {
       const order = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes;
@@ -17521,6 +17964,30 @@ var require_generate = __commonJS({
         seoDescription: trunc((f.headline ? f.headline + " " : "") + "Sleeps " + f.maxGuests + " in " + f.town + ". Book direct from \xA3" + f.nightly + " a night with no platform fees.", 160)
       };
     }
+    function usedLooks(s, pid) {
+      return Object.entries((s && s.studio || {}).sites || {}).filter(([k]) => k !== pid).map(([, x]) => x.published || x.draft).filter(Boolean).map((x) => ({ direction: x.direction, style: x.style || {}, template: x.template || "" }));
+    }
+    function fromTemplate(f, tpl, hero) {
+      const T = D.TEMPLATES[tpl] || D.TEMPLATES.classic, n = f.photos.length, v = Object.assign({}, T.v);
+      if (hero) v.hero = hero;
+      if (!n) v.hero = "type";
+      else if (v.hero === "mosaic" && n < 3) v.hero = "split";
+      if (v.highlights === "panels" && n < 4) v.highlights = "numbered";
+      const secs = [{ type: "hero", variant: v.hero }, { type: "facts", variant: v.facts }, { type: "story", variant: v.story }, { type: "highlights", variant: v.highlights }];
+      if (n >= 6) secs.splice(T.gallery || secs.length, 0, { type: "gallery", variant: v.gallery });
+      if (f.amenities.length) secs.push({ type: "amenities", variant: v.amenities });
+      if (f.reviews.length || f.rating && f.reviewCount) secs.push({ type: "reviews", variant: v.reviews === "cards" && f.reviews.length < 3 ? "feature" : v.reviews });
+      if (f.guide.length) secs.push({ type: "area", variant: v.area });
+      secs.push({ type: "host", variant: v.host }, { type: "book", variant: v.book }, { type: "faq", variant: v.faq }, { type: "closing", variant: v.closing });
+      return secs;
+    }
+    function templateFor(dir, key, used, n) {
+      const prefs = (DIR_TEMPLATES[dir] || ["classic"]).concat(Object.keys(D.TEMPLATES));
+      const taken = new Set((used || []).map((u) => u.template));
+      const free = prefs.filter((t, i) => prefs.indexOf(t) === i && !taken.has(t));
+      const list = free.length ? free : prefs;
+      return list[(D.seed(key) + (n || 0)) % Math.min(list.length, 3)];
+    }
     function layoutFor(f, dir, hero) {
       const n = f.photos.length;
       const secs = [{ type: "hero", variant: hero }, { type: "facts", variant: "ruled" }, { type: "story", variant: dir === "linen" || dir === "georgian" ? "pull" : "lede" }, { type: "highlights", variant: n >= 4 ? "panels" : "numbered" }];
@@ -17537,6 +18004,8 @@ var require_generate = __commonJS({
       const out = { v: 1 };
       out.direction = D.DIRECTIONS[r.direction] ? r.direction : fallback.direction;
       out.accent = D.hexOk(r.accent) ? r.accent.toUpperCase() : null;
+      out.style = D.cleanStyle(r.style !== void 0 ? r.style : fallback.style);
+      out.template = D.TEMPLATES[r.template] ? r.template : fallback.template || null;
       const seen = /* @__PURE__ */ new Set();
       let secs = [];
       for (const s of Array.isArray(r.sections) ? r.sections : []) {
@@ -17640,21 +18109,24 @@ var require_generate = __commonJS({
         story: { type: "array", items: s },
         highlights: { type: "array", items: { type: "object", additionalProperties: false, required: ["eyebrow", "title", "text"], properties: { eyebrow: s, title: s, text: s } } }
       }) };
-      return { type: "object", additionalProperties: false, required: ["rationale", "direction", "accent", "heroVariant", "sections", "copy"], properties: {
+      const opt = (keys) => ({ type: "string", enum: [""].concat(keys) });
+      const style = { type: "object", additionalProperties: false, required: D.STYLE_KEYS, properties: Object.assign({ font: opt(Object.keys(D.FONTS)), palette: opt(Object.keys(D.PALETTES)) }, Object.fromEntries(Object.keys(D.STYLE).map((k) => [k, opt(Object.keys(D.STYLE[k]))]))) };
+      return { type: "object", additionalProperties: false, required: ["rationale", "direction", "accent", "style", "heroVariant", "sections", "copy"], properties: {
         rationale: s,
         direction: { type: "string", enum: Object.keys(D.DIRECTIONS) },
         accent: s,
+        style,
         heroVariant: { type: "string", enum: D.SECTIONS.hero },
         sections: { type: "array", items: { type: "object", additionalProperties: false, required: ["type", "variant"], properties: { type: { type: "string", enum: Object.keys(D.SECTIONS) }, variant: s } } },
         copy
       } };
     }
-    var SYSTEM = () => "You are the art director and copywriter at a small, award-winning studio that builds direct-booking websites for UK holiday lets. Clients pay \xA310,000 for a site from you, and every page must look and read like it. You do not write code. You choose from a tested design system and write the words; the studio's renderer builds the page.\n\nDesign principles you work to:\n" + D.PRINCIPLES.map((x, i) => i + 1 + ". " + x).join("\n") + "\n\nArt directions (pick exactly one, the one that fits this home and the host's brief best; do not default to the first):\n" + Object.entries(D.DIRECTIONS).map(([k, d]) => "- " + k + ": " + d.name + " \u2014 " + d.mood + " Fonts: " + d.fonts.display + " with " + d.fonts.text + ". Default accent " + d.pal.accent + " on " + d.pal.bg + ".").join("\n") + "\n\nSections and their layouts (type: variants): " + Object.entries(D.SECTIONS).map(([k, v]) => k + ": " + v.join("/")).join("; ") + `. hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".
+    var SYSTEM = () => "You are the art director and copywriter at a small, award-winning studio that builds direct-booking websites for UK holiday lets. Clients pay \xA310,000 for a site from you, and every page must look and read like it. You do not write code. You choose from a tested design system and write the words; the studio's renderer builds the page.\n\nDesign principles you work to:\n" + D.PRINCIPLES.map((x, i) => i + 1 + ". " + x).join("\n") + "\n\nArt directions (pick exactly one, the one that fits this home and the host's brief best; do not default to the first):\n" + Object.entries(D.DIRECTIONS).map(([k, d]) => "- " + k + ": " + d.name + " \u2014 " + d.mood + " Fonts: " + d.fonts.display + " with " + d.fonts.text + ". Default accent " + d.pal.accent + " on " + d.pal.bg + ".").join("\n") + "\n\nstyle: optional overrides on top of the direction, so no two sites look alike. Use an empty string to keep what the direction does. font (pairings): " + Object.entries(D.FONTS).map(([k, x]) => k + " = " + x.display + " & " + x.text + " (" + x.feel + ")").join("; ") + ". palette: " + Object.entries(D.PALETTES).map(([k, x]) => k + " = " + x.name + (x.dark ? " (dark)" : "")).join("; ") + ". " + Object.entries(D.STYLE).map(([k, v]) => k + ": " + Object.keys(v).join("/")).join("; ") + ". (corners: shape of cards, buttons and photos; buttons: solid, outline or underlined link; spacing: space between sections; scale: headline size; headings: case or italic; texture: background texture; nav: the top bar layout; images: photo treatment; bands: how alternate sections are coloured.) Choose a combination that suits the home and is clearly different from the host's other sites when they are listed. Keep it coherent: change two to five things, not everything.\n\nSections and their layouts (type: variants): " + Object.entries(D.SECTIONS).map(([k, v]) => k + ": " + v.join("/")).join("; ") + `. hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm: mix layouts (for example a band of reviews, cards for the area, a split closing) rather than the first layout of every section. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, arch hero looks best with 2+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".
 
 accent: a hex colour (#RRGGBB) that suits the photos and the place, or an empty string to keep the direction's accent. It must read on the direction's background.
 
 Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only. Never invent prices, distances, awards, ratings, reviews, amenities or features that are not in the facts. headline: under nine words, one promise; you may put a line break as \\n (max 3 lines) and wrap one word in *asterisks* to set it in italic accent. Titles may also use *one* emphasised word. subhead: one or two sentences. story: two or three short paragraphs about the stay. pull: one line worth quoting. highlights: exactly three, each a real feature from the facts. hostNote: only polish the host's own note if one is given, otherwise empty. seoTitle under 60 characters including the home name and town; seoDescription 140 to 155 characters with a reason to book direct. Banned words and phrases: ` + D.CLICHES.join(", ") + ".\n\nrationale: two sentences on why this direction and layout suit this home.";
-    function userPrompt(f, brief, previous, avoid) {
+    function userPrompt(f, brief, previous, avoid, used) {
       const fx = {
         name: f.name,
         area: f.area,
@@ -17682,7 +18154,7 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
         host: f.owner + " at " + f.business
       };
       const b = brief || {};
-      return "The home:\n" + JSON.stringify(fx, null, 1) + "\n\nThe host's brief:\n- Feel: " + (VIBES[b.vibe] || "your call") + "\n- Guests they want: " + (str(b.audience, 200) || "not said") + "\n" + (b.direction && D.DIRECTIONS[b.direction] ? "- They chose the direction: " + b.direction + "\n" : "") + (b.notes ? "- Notes from the host: " + str(b.notes, 600) + "\n" : "") + (avoid && avoid.length ? "- Try a different direction from: " + avoid.join(", ") + "\n" : "") + (previous ? "\nTheir current site spec (revise it; keep what works):\n" + JSON.stringify({ direction: previous.direction, accent: previous.accent, sections: previous.sections, copy: previous.copy }) + "\n" : "") + (b.instruction ? "\nWhat the host asked you to change: " + str(b.instruction, 600) + "\n" : "") + "\nReturn the site spec.";
+      return "The home:\n" + JSON.stringify(fx, null, 1) + "\n\nThe host's brief:\n- Feel: " + (VIBES[b.vibe] || "your call") + "\n- Guests they want: " + (str(b.audience, 200) || "not said") + "\n" + (b.direction && D.DIRECTIONS[b.direction] ? "- They chose the direction: " + b.direction + "\n" : "") + (b.notes ? "- Notes from the host: " + str(b.notes, 600) + "\n" : "") + (avoid && avoid.length ? "- Try a different direction from: " + avoid.join(", ") + "\n" : "") + (used && used.length ? "- The host's other homes already use these looks, so make this one clearly different (another direction, or at least another font, palette and layout): " + JSON.stringify(used.slice(0, 8)) + "\n" : "") + (previous ? "\nTheir current site spec (revise it; keep what works):\n" + JSON.stringify({ direction: previous.direction, accent: previous.accent, style: previous.style || {}, sections: previous.sections, copy: previous.copy }) + "\n" : "") + (b.instruction ? "\nWhat the host asked you to change: " + str(b.instruction, 600) + "\n" : "") + "\nReturn the site spec.";
     }
     module.exports = function(cfg) {
       const key = cfg.ai.anthropic, base = cfg.ai.anthropicBase || "https://api.anthropic.com", model = cfg.ai.studioModel || "claude-opus-5-5";
@@ -17712,27 +18184,32 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
       async function design(s, p, brief, opts) {
         opts = opts || {};
         const f = facts(s, p, opts);
-        const dir = guessDirection(f, brief && !brief.instruction ? brief : null);
-        const fallback = { direction: dir, sections: layoutFor(f, dir, heroFor(dir, f.photos.length)), copy: rulesCopy(f, dir) };
+        const used = usedLooks(s, p.id), tries = (opts.avoid || []).length;
+        let dir = guessDirection(f, brief && !brief.instruction ? brief : null);
+        if (opts.avoid && opts.avoid.length) {
+          const keys = Object.keys(D.DIRECTIONS).filter((k) => !opts.avoid.includes(k));
+          dir = keys[(D.seed(p.id) + tries * 5) % keys.length];
+        }
+        const build = (d) => {
+          const tpl = templateFor(d, p.id, used, tries);
+          return { direction: d, template: tpl, style: D.varyStyle(d, p.id, used, tries), sections: fromTemplate(f, tpl, pickHero(d, f.photos.length, p.id, tries)), copy: rulesCopy(f, d) };
+        };
+        const fallback = build(dir);
         if (!enabled) {
-          const spec2 = normalize(Object.assign({}, fallback, opts.previous && brief && brief.instruction ? { direction: opts.previous.direction } : {}), f, fallback);
-          if (opts.avoid && opts.avoid.length) {
-            const keys = Object.keys(D.DIRECTIONS).filter((k) => !opts.avoid.includes(k));
-            spec2.direction = keys[opts.avoid.length * 3 % keys.length];
-            spec2.sections = layoutFor(f, spec2.direction, heroFor(spec2.direction, f.photos.length));
-          }
+          const keep = opts.previous && brief && brief.instruction;
+          const spec2 = normalize(keep ? Object.assign({}, fallback, { direction: opts.previous.direction, style: opts.previous.style || {}, sections: opts.previous.sections, template: opts.previous.template }) : fallback, f, fallback);
           spec2.by = "rules";
           spec2.qa = D.qa(spec2, f);
           return spec2;
         }
         const content = [];
         f.photos.filter((x) => /^https:\/\//.test(x.url)).slice(0, 4).forEach((x) => content.push({ type: "image", source: { type: "url", url: x.url } }));
-        content.push({ type: "text", text: userPrompt(f, brief, opts.previous, opts.avoid) });
+        content.push({ type: "text", text: userPrompt(f, brief, opts.previous, opts.avoid, used) });
         let spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
         let checks = D.qa(spec, f);
         const fixable = checks.filter((x) => !x.ok && x.fix && !/photo/i.test(x.label));
         if (fixable.length) {
-          content[content.length - 1] = { type: "text", text: userPrompt(f, brief, spec, opts.avoid) + "\n\nYour last version failed these design checks. Fix them and keep everything else: " + fixable.map((x) => x.label + " (" + x.fix + ")").join("; ") };
+          content[content.length - 1] = { type: "text", text: userPrompt(f, brief, spec, opts.avoid, used) + "\n\nYour last version failed these design checks. Fix them and keep everything else: " + fixable.map((x) => x.label + " (" + x.fix + ")").join("; ") };
           try {
             spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
             checks = D.qa(spec, f);
@@ -17750,6 +18227,10 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
     module.exports.layoutFor = layoutFor;
     module.exports.guessDirection = guessDirection;
     module.exports.heroFor = heroFor;
+    module.exports.fromTemplate = fromTemplate;
+    module.exports.pickHero = pickHero;
+    module.exports.usedLooks = usedLooks;
+    module.exports.DIR_TEMPLATES = DIR_TEMPLATES;
   }
 });
 
@@ -17815,7 +18296,19 @@ var require_studio = __commonJS({
       async function host(req, res, p, m, w, headers) {
         const api = p.replace(/^\/api\/demo\//, "/api/");
         const s = w.state;
-        if (api === "/api/studio/meta" && m === "GET") return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + " & " + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES }, 200, headers), true;
+        if (api === "/api/studio/meta" && m === "GET") return json(res, {
+          ai: gen.enabled,
+          principles: D.PRINCIPLES,
+          directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + " & " + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark, font: d.font, palette: d.palette }])),
+          sections: D.SECTIONS,
+          vibes: Gen.VIBES,
+          templates: FN.TEMPLATES,
+          fonts: Object.fromEntries(Object.entries(D.FONTS).map(([k, x]) => [k, { name: x.name, display: x.display, text: x.text, feel: x.feel, href: x.href }])),
+          palettes: D.PALETTES,
+          style: D.STYLE,
+          pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])),
+          variantNames: D.VARIANT_NAMES
+        }, 200, headers), true;
         if (api === "/api/studio/generate" && m === "POST") {
           limited(w, "gen", w.kind === "demo" ? 12 : 40);
           const j = await jsonBody(req, 2e4);
@@ -17857,10 +18350,52 @@ var require_studio = __commonJS({
           if (!cur || !cur.draft) throw err(400, "Design a site first.");
           const f = render.facts(s, prop);
           const x = j.patch || {};
-          const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === "" ? null : x.accent || cur.draft.accent, heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}) };
+          const merged = {
+            direction: x.direction || cur.draft.direction,
+            accent: x.accent === "" ? null : x.accent || cur.draft.accent,
+            heroVariant: x.heroVariant,
+            sections: x.sections || cur.draft.sections,
+            copy: Object.assign({}, cur.draft.copy, x.copy || {}),
+            style: Object.assign({}, cur.draft.style || {}),
+            template: x.template || cur.draft.template || null
+          };
+          if (x.direction && x.direction !== cur.draft.direction) {
+            delete merged.style.font;
+            delete merged.style.palette;
+          }
+          if (x.style && typeof x.style === "object") for (const [k, v] of Object.entries(x.style)) {
+            if (!D.STYLE_KEYS.includes(k)) continue;
+            if (v === "" || v == null) delete merged.style[k];
+            else merged.style[k] = String(v);
+          }
+          if (x.style === null) merged.style = {};
+          if (x.template && D.TEMPLATES[x.template]) {
+            const have = new Set(merged.sections.map((q) => q.type)), T = D.TEMPLATES[x.template];
+            const laid = Gen.fromTemplate(f, x.template).filter((q) => have.has(q.type));
+            merged.sections.forEach((q) => {
+              if (!laid.some((r) => r.type === q.type)) laid.splice(Math.max(1, laid.findIndex((r) => r.type === "book")), 0, { type: q.type, variant: T.v[q.type] || q.variant });
+            });
+            merged.sections = laid;
+          }
+          if (x.shuffle) {
+            const n = (cur.shuffles || 0) + 1 + Math.floor(Math.random() * 1e3);
+            merged.style = D.varyStyle(merged.direction, prop.id, [{ direction: merged.direction, style: cur.draft.style || {} }], n);
+            if (n % 3) {
+              const opts = D.DIRECTIONS[merged.direction].alts.fonts.concat([D.DIRECTIONS[merged.direction].font]);
+              merged.style.font = opts[n % opts.length];
+            }
+            merged.style.corners = Object.keys(D.STYLE.corners)[n % 4];
+            const tpls = Object.keys(D.TEMPLATES).filter((t) => t !== cur.draft.template);
+            const tpl = tpls[n % tpls.length];
+            const have = new Set(merged.sections.map((q) => q.type));
+            merged.sections = Gen.fromTemplate(f, tpl, Gen.pickHero(merged.direction, f.photos.length, prop.id, n)).filter((q) => have.has(q.type));
+            merged.template = tpl;
+            merged.style = D.cleanStyle(merged.style);
+          }
           if (x.heroVariant) merged.sections = merged.sections.map((q) => q.type === "hero" ? { type: "hero", variant: x.heroVariant } : q);
-          const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy };
+          const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy, style: {} };
           const spec = Object.assign(gen.normalize(merged, f, fallback), { by: cur.draft.by, at: (/* @__PURE__ */ new Date()).toISOString(), rationale: cur.draft.rationale });
+          if (x.template || x.shuffle) spec.template = merged.template;
           if (x.heroVariant && x.heroVariant !== "type" && !f.photos.length) spec.note = "Add photos in Website & SEO to use an image-led hero.";
           spec.qa = D.qa(spec, f);
           await save(w.id, (S) => {
@@ -17945,6 +18480,7 @@ var require_studio = __commonJS({
             by,
             direction: look.direction || gen.guessDirection(f, null),
             accent: look.accent || null,
+            style: look.style || null,
             createdAt: s.today,
             stats: { views: {}, leads: 0 }
           };
