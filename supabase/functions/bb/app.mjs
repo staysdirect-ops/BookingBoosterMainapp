@@ -18,7 +18,232 @@ var __commonJS = (cb, mod) => function __require2() {
 // bb:bb-embedded-files
 var require_bb_embedded_files = __commonJS({
   "bb:bb-embedded-files"(exports, module) {
-    module.exports = { "/app/web/src/app-grow.css": { "t": `/* Host console: Grow, Get found and Settings views (app-grow.js). Everything is scoped under .ag and reflows by
+    module.exports = { "/app/web/src/app-events.css": { "t": "/* Host console: Event ads (app-events.js). Lives inside .ag, so it reflows with the container. */\n.ea .ea-find { padding: 18px 20px; }\n.ea .ea-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 12px; align-items: end; }\n.ea .ea-form .btn { margin-bottom: 14px; justify-content: center; }\n.ea .ea-form .ea-wide { grid-column: span 2; }\n.ea .ea-srcs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }\n.ea .ea-srcs small { margin-right: 4px; }\n.ea .ea-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px dashed var(--line-2); color: var(--muted); }\n.ea .ea-chip.on { border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); }\n.ea .ea-chip .ic { width: 12px; height: 12px; color: var(--good); }\n.ea .ea-last { font-size: 12.5px; margin: 10px 0 0; padding: 0; }\n.ea .ea-kpis { margin: 16px 0; }\n.ea .ea-list { display: grid; gap: 10px; margin-bottom: 16px; }\n.ea .ea-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 16px; }\n.ea .ea-date { display: grid; place-items: center; text-align: center; width: 58px; height: 62px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-date b { font: 600 22px/1 var(--font-display, inherit); }\n.ea .ea-date small { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-main { display: grid; gap: 3px; min-width: 0; }\n.ea .ea-main > b { font-size: 15px; }\n.ea .ea-main small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12.5px; }\n.ea .ea-main small .ic { width: 13px; height: 13px; }\n.ea .ea-src { color: var(--muted); }\n.ea .ea-src a { color: inherit; text-decoration: underline; }\n.ea .ea-act { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; max-width: 320px; }\n.ea .ea-act small { font-size: 12px; }\n@container ag (max-width: 720px) { .ea .ea-row { grid-template-columns: 58px minmax(0, 1fr); } .ea .ea-act { grid-column: 1 / -1; justify-content: flex-start; max-width: none; } .ea .ea-form .ea-wide { grid-column: auto; } }\n.ea .ea-full { margin: 0 0 16px; }\n.ea .ea-full summary { cursor: pointer; font-size: 13px; color: var(--muted); margin-bottom: 10px; }\n/* ad pack */\n.ea .ea-tabs { margin: 4px 0 12px; flex-wrap: wrap; }\n.ea .ea-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 24px; align-items: start; }\n@container ag (max-width: 900px) { .ea .ea-two { grid-template-columns: minmax(0, 1fr); } }\n.ea .ea-cnt { font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); margin-left: 6px; }\n.ea .ea-cnt.bad, .ea .err { color: var(--bad); }\n.ea .ea-note { font-size: 12.5px; margin: 10px 0 0; overflow-wrap: anywhere; }\n.ea .ea-warn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); font-size: 13.5px; margin: 0 0 12px; }\n.ea .ea-warn .ic { width: 16px; height: 16px; flex: none; }\n.ea .lnk { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; color: inherit; }\n.ea .ea-fb { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }\n.ea .ea-fb-h { display: flex; gap: 10px; align-items: center; padding: 12px 14px 0; }\n.ea .ea-fb-h b { display: block; font-size: 14px; } .ea .ea-fb-h small { font-size: 12px; color: var(--muted); }\n.ea .ea-av { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: var(--primary-ink, #fff); font-weight: 700; flex: none; }\n.ea .ea-av.sm { width: 22px; height: 22px; font-size: 11px; }\n.ea .ea-fb > p { font-size: 14px; line-height: 1.45; margin: 10px 14px 12px; }\n.ea .ea-fb canvas { display: block; width: 100%; height: auto; }\n.ea .ea-fb-f { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-2); }\n.ea .ea-fb-f div { display: grid; gap: 2px; min-width: 0; } .ea .ea-fb-f small { font-size: 11.5px; color: var(--muted); } .ea .ea-fb-f b { font-size: 15px; }\n.ea .ea-imgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 260px)); gap: 18px; margin-top: 24px; align-items: start; }\n.ea .ea-imgs figure { margin: 0; display: grid; gap: 8px; }\n.ea .ea-imgs canvas { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }\n.ea .ea-imgs figcaption { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }\n.ea .ea-imgs .ea-note { grid-column: 1 / -1; }\n.ea .ea-g { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; font-family: Arial, system-ui, sans-serif; background: var(--surface); }\n.ea .ea-g small { font-weight: 700; font-size: 12px; }\n.ea .ea-g-u { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 6px 0; }\n.ea .ea-g b { display: block; color: #1a0dab; font-weight: 400; font-size: 19px; line-height: 1.3; }\n.ea .ea-g p { font-size: 14px; color: var(--ink-2, #4d5156); margin: 4px 0 0; }\n.ea .ea-plan { display: grid; gap: 18px; }\n.ea .ea-when { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }\n.ea .ea-when > div { display: grid; gap: 2px; padding: 14px 16px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-when small { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-when b { font-size: 20px; } .ea .ea-when span { font-size: 12.5px; }\n.ea .ea-tc { padding: 16px 18px; }\n.ea .ea-tc h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 15px; } .ea .ea-tc h4 .ic { width: 16px; height: 16px; }\n.ea .ea-tc dl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px 12px; margin: 0; font-size: 13.5px; }\n.ea .ea-tc dt { color: var(--muted); } .ea .ea-tc dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }\n.ea .ea-pv { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; height: 520px; }\n.ea .ea-pv iframe { width: 166%; height: 166%; border: 0; transform: scale(.6); transform-origin: 0 0; }\n.ea .ea-save { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }\n.ea .ea-status { display: flex; align-items: center; gap: 8px; margin: 14px 0; }\n" }, "/app/web/src/app-events.js": { "t": `/* Bookingbooster: Event ads in the host console (Grow \u2192 Event ads).
+   Finds events, training courses and conferences near each home that run for two or more days, shows which nights
+   are still free for each one, and writes a ready-to-run ad pack: Facebook and Instagram ads with images drawn from the
+   home's photo, a Google search ad with keywords, who to target and when, and a landing page with the dates and a code. */
+(function () {
+  const BB = window.BB; BB.appViews = BB.appViews || {};
+  const V = BB.appViews, esc = BB.esc, I = BB.icon;
+  const S = () => BB.store.get();
+  const demo = () => !!(BB.BOOT && BB.BOOT.mode === 'demo');
+  const API = () => (demo() ? '/api/demo/' : '/api/');
+  const live = () => !!(BB.api && BB.BOOT && (BB.BOOT.mode === 'host' || BB.BOOT.mode === 'demo'));
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const P = s => new Date(s + 'T00:00:00Z'), add = (s, n) => { const x = P(s); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+  const dm = s => P(s).getUTCDate() + ' ' + MON[P(s).getUTCMonth()];
+  const range = (a, b) => a === b ? dm(a) : P(a).getUTCMonth() === P(b).getUTCMonth() ? P(a).getUTCDate() + '\u2013' + dm(b) : dm(a) + ' \u2013 ' + dm(b);
+  const KIND_ICON = { course: 'pen', conference: 'users', expo: 'tag', show: 'star', festival: 'play', sport: 'bolt', exam: 'check', other: 'cal' };
+  const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
+
+  /* ---------- data from the server (events come back with how they sit against the calendar today) ---------- */
+  const D = { list: null, busy: false, loading: null, open: null };
+  async function load(inst, force) {
+    if (D.loading || (D.list && !force)) return;
+    D.loading = BB.api.call(API() + 'eventads/list', null, 'GET').then(j => { D.list = j; }).catch(e => BB.toast(e.message, 'bad')).finally(() => { D.loading = null; inst.render(); });
+  }
+  async function call(inst, path, body, okMsg) {
+    try { const j = await BB.api.call(API() + 'eventads/' + path, body); if (j.state) BB.api.accept(j); if (okMsg) BB.toast(okMsg, 'good'); await load(inst, true); return j; }
+    catch (e) { BB.toast(e.message, 'bad'); return null; }
+    finally { inst.render(); }
+  }
+  const ads = () => (((S().studio || {}).events || {}).ads) || [];
+  const fnOf = a => (((S().studio || {}).funnels) || []).find(f => f.id === a.funnelId);
+
+  /* ---------- the ad images, drawn on a canvas so the host can download them as PNGs ---------- */
+  const IMG = {};
+  function photo(p, inst) {
+    const u = ((p.photos || [])[0] || {}).url; if (!u) return null;
+    if (IMG[u]) return IMG[u].ok ? IMG[u].img : null;
+    const img = new Image(); IMG[u] = { img, ok: false }; img.crossOrigin = 'anonymous';
+    img.onload = () => { IMG[u].ok = true; inst.render(); }; img.src = u; return null;
+  }
+  function wrap(c, text, x, y, max, lh, lines) {
+    const words = String(text).split(' '); let line = '', n = 0;
+    for (let i = 0; i < words.length; i++) {
+      const t = line ? line + ' ' + words[i] : words[i];
+      if (c.measureText(t).width > max && line) { if (n === lines - 1) { c.fillText(line + '\u2026', x, y); return y + lh; } c.fillText(line, x, y); y += lh; n++; line = words[i]; } else line = t;
+    }
+    if (line) { c.fillText(line, x, y); y += lh; } return y;
+  }
+  function draw(cv, a, p, img) {
+    const c = cv.getContext('2d'), W = cv.width, H = cv.height, tall = H > W, pad = 84, col = p.color || '#2F5D46';
+    c.clearRect(0, 0, W, H);
+    if (img) { const r = Math.max(W / img.width, H / img.height), w = img.width * r, h = img.height * r; c.drawImage(img, (W - w) / 2, (H - h) / 2, w, h); }
+    else { const g = c.createLinearGradient(0, 0, W, H); g.addColorStop(0, col); g.addColorStop(1, '#14130F'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+      c.globalAlpha = 0.08; c.fillStyle = '#fff'; for (let i = 0; i < 9; i++) { c.beginPath(); c.arc(W * 0.85, H * 0.18, 120 + i * 90, 0, 7); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke(); } c.globalAlpha = 1; }
+    const sh = c.createLinearGradient(0, H * (tall ? 0.35 : 0.25), 0, H); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.82)'); c.fillStyle = sh; c.fillRect(0, 0, W, H);
+    // the event, as a label at the top
+    c.font = '700 30px system-ui, -apple-system, Segoe UI, sans-serif'; const tag = ('For ' + a.event.name).toUpperCase().slice(0, 44); const tw = c.measureText(tag).width;
+    c.fillStyle = 'rgba(255,255,255,.94)'; roundRect(c, pad, pad, tw + 44, 62, 31); c.fill(); c.fillStyle = '#111'; c.fillText(tag, pad + 22, pad + 42);
+    // headline, dates and the home
+    let y = H - (tall ? 760 : 470);
+    c.fillStyle = '#fff'; c.font = '500 ' + (tall ? 92 : 80) + 'px Georgia, "Times New Roman", serif';
+    y = wrap(c, 'Stay near ' + (a.event.venue || a.event.town || p.area) , pad, y, W - pad * 2, tall ? 102 : 88, 2);
+    c.font = '700 44px system-ui, -apple-system, Segoe UI, sans-serif'; c.fillStyle = '#FFE8A8';
+    y = wrap(c, 'Free ' + range(a.stay.from, a.stay.to) + ' \xB7 ' + a.stay.n + ' night' + (a.stay.n === 1 ? '' : 's'), pad, y + 18, W - pad * 2, 54, 1);
+    c.font = '400 36px system-ui, -apple-system, Segoe UI, sans-serif'; c.fillStyle = 'rgba(255,255,255,.9)';
+    y = wrap(c, p.name + ' \xB7 ' + p.bedrooms + ' bedrooms \xB7 sleeps ' + p.maxGuests, pad, y + 8, W - pad * 2, 46, 2);
+    // the offer, as a button
+    const btn = a.code ? 'Book direct \xB7 ' + a.pct + '% off with ' + a.code : 'Book direct, no booking fees';
+    c.font = '700 38px system-ui, -apple-system, Segoe UI, sans-serif'; const bw = Math.min(W - pad * 2, c.measureText(btn).width + 70);
+    c.fillStyle = '#fff'; roundRect(c, pad, y + 26, bw, 88, 44); c.fill(); c.fillStyle = '#111'; c.fillText(btn, pad + 35, y + 84);
+    c.font = '500 28px system-ui, -apple-system, Segoe UI, sans-serif'; c.fillStyle = 'rgba(255,255,255,.75)'; if (tall) c.fillText(String(S().account.business || '').slice(0, 50), pad, H - 200);
+  }
+  function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function paint(inst) {
+    inst.root.querySelectorAll('canvas[data-ea]').forEach(cv => { const a = ads().find(x => x.id === cv.dataset.ea), p = a && S().properties.find(x => x.id === a.propertyId); if (a && p) draw(cv, a, p, photo(p, inst)); });
+  }
+
+  /* ---------- actions ---------- */
+  const H = {};
+  const pid = inst => inst.st.ea_home || (S().properties[0] || {}).id;
+  H['ea-find'] = async inst => { if (D.busy) return; D.busy = true; inst.render(); const pr = Object.assign({ radius: 25, minDays: 2, months: 6 }, (D.list || {}).prefs, inst.st.ea_prefs || {});
+    const j = await call(inst, 'find', Object.assign({ propertyId: pid(inst) }, pr)); D.busy = false;
+    if (j) BB.toast(j.events.filter(e => e.propertyId === pid(inst)).length ? (j.added ? j.added + ' new event' + (j.added === 1 ? '' : 's') + ' found' : 'No new events this time') : 'Nothing found yet. Try a wider area or add one yourself.', 'good');
+    inst.render(); };
+  H['ea-home'] = (inst, v) => inst.set({ ea_home: v });
+  H['ea-make'] = async (inst, v) => { if (inst.st.ea_making) return; inst.st.ea_making = v; inst.render(); const f = inst.st.ea_offer || {};
+    const j = await call(inst, 'create', { eventId: v, pct: f.pct != null ? +f.pct : 10, code: f.code || '', landing: true }); inst.st.ea_making = null;
+    if (j && j.ad) { inst.st.ea_open = j.ad.id; inst.st.ea_tab = 'meta'; BB.toast('Your ads are ready', 'good'); } inst.render(); };
+  H['ea-open'] = (inst, v) => inst.set({ ea_open: v, ea_tab: 'meta', ea_wd: null });
+  H['ea-close'] = inst => inst.set({ ea_open: null });
+  H['ea-tab'] = (inst, v) => inst.set({ ea_tab: v, ea_wd: null });
+  H['ea-hide'] = (inst, v) => call(inst, 'hide', { id: v }, 'Hidden');
+  H['ea-addform'] = inst => inst.set({ ea_add: !inst.st.ea_add, ea_new: inst.st.ea_new || { kind: 'course' } });
+  H['ea-add'] = async inst => { const n = inst.st.ea_new || {}; const j = await call(inst, 'add', Object.assign({ propertyId: pid(inst) }, n), 'Event added'); if (j) inst.set({ ea_add: false, ea_new: { kind: 'course' } }); };
+  H['ea-dl'] = (inst, v) => { const cv = inst.root.querySelector('canvas[data-ea][data-f="' + v + '"]'); if (!cv) return;
+    try { cv.toBlob(b => { const u = URL.createObjectURL(b), l = document.createElement('a'); l.href = u; l.download = 'event-ad-' + v + '.png'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }, 'image/png'); }
+    catch (_) { BB.toast('This photo cannot be downloaded from here. Right-click the image and save it instead.', 'bad'); } };
+  H['ea-copy'] = (inst, v, el) => { const a = ads().find(x => x.id === inst.st.ea_open); if (!a) return; const t = { primary: a.meta.primary, headline: a.meta.headline, description: a.meta.description, heads: a.google.headlines.join('\\n'), descs: a.google.descriptions.join('\\n'), kw: a.google.keywords.map(k => '"' + k + '"').join('\\n'), neg: a.google.negatives.join('\\n'), url: linkOf(a) }[v]; BB.copy(t || '', el); };
+  H['ea-save'] = inst => { const d = inst.st.ea_wd || {}, pt = {}; ['primary', 'headline', 'description'].forEach(k => { if (d[k] != null) (pt.meta = pt.meta || {})[k] = d[k]; }); ['headlines', 'descriptions', 'keywords'].forEach(k => { if (d[k] != null) (pt.google = pt.google || {})[k] = d[k]; });
+    inst.st.ea_wd = null; call(inst, 'edit', { id: inst.st.ea_open, patch: pt }, 'Saved'); };
+  H['ea-status'] = (inst, v, el) => call(inst, 'edit', { id: v, patch: { status: el.dataset.s } }, el.dataset.s === 'running' ? 'Marked as running' : 'Saved');
+  H['ea-live'] = async (inst, v) => { try { const j = await BB.api.call(API() + 'funnels/edit', { id: v, patch: { status: 'live' } }); BB.api.accept(j); BB.toast('Landing page is live', 'good'); } catch (e) { BB.toast(e.message, 'bad'); } inst.render(); };
+  H['ea-del'] = (inst, v) => { if (inst.st.ea_del !== v) { inst.set({ ea_del: v }); return; } inst.st.ea_del = null; inst.st.ea_open = null; call(inst, 'delete', { id: v, landing: true }, 'Ads deleted'); };
+
+  function linkOf(a) {
+    const f = fnOf(a), slug = (BB.BOOT && BB.BOOT.slug) || ((Object.values((BB.BOOT && BB.BOOT.siteUrls) || {})[0] || '').match(/\\/s\\/([^/]+)/) || [])[1] || 'host';
+    const base = f ? location.origin + (demo() ? '/demo/funnel/' + f.id + '/offer' : '/f/' + slug + '/' + f.id) : (((BB.BOOT && BB.BOOT.siteUrls) || {})[a.propertyId] || location.origin);
+    return base + (base.includes('?') ? '&' : '?') + 'utm_medium=paid&utm_campaign=' + encodeURIComponent((a.code || a.id).toLowerCase());
+  }
+
+  /* ---------- views ---------- */
+  function fitPill(ft) {
+    return ft.status === 'free' ? BB.pill('good', ft.free + ' night' + (ft.free === 1 ? '' : 's') + ' free') : ft.status === 'part' ? BB.pill('warn', ft.free + ' of ' + ft.nights + ' nights free') : BB.pill('muted', 'Booked');
+  }
+  function eventRow(e, st) {
+    const a = ads().find(x => x.eventId === e.id), ft = e.fit, making = st.ea_making === e.id;
+    return '<div class="a-card ea-row"><div class="ea-date"><b>' + P(e.start).getUTCDate() + '</b><small>' + MON[P(e.start).getUTCMonth()] + '</small></div>' +
+      '<div class="ea-main"><b>' + esc(e.name) + '</b><small>' + I(KIND_ICON[e.kind] || 'cal') + esc((D.list.meta.kinds || {})[e.kind] || 'Event') + ' \xB7 ' + range(e.start, e.end) + ' \xB7 ' + e.days + ' days' + (e.venue || e.town ? ' \xB7 ' + esc([e.venue, e.town].filter((x, i, l) => x && l.indexOf(x) === i && !(i && l[0].includes(x))).join(', ')) : '') + (e.attendance ? ' \xB7 about ' + Number(e.attendance).toLocaleString('en-GB') + ' people' : '') + '</small>' +
+      (e.audience || e.why ? '<small class="muted">' + esc(e.audience || e.why) + '</small>' : '') +
+      '<small class="ea-src">' + esc(e.source === 'web' ? 'Found by web search' : e.source === 'sample' ? 'Sample event for the demo' : e.source === 'manual' ? 'Added by you' : 'From ' + ((D.list.meta.sources || []).find(x => x.id === e.source) || {}).name) + (e.url ? ' \xB7 <a href="' + esc(e.url) + '" target="_blank" rel="noopener">Check the dates</a>' : '') + '</small></div>' +
+      '<div class="ea-act">' + fitPill(ft) + (ft.stay ? '<small class="muted">' + range(ft.stay.from, ft.stay.to) + ' \xB7 ' + BB.money(ft.value) + '</small>' : '') +
+      (a ? '<button class="btn sm" data-ea="ea-open" data-v="' + a.id + '">' + I('chart') + 'Open ads</button>' : ft.stay ? '<button class="btn sm primary" data-ea="ea-make" data-v="' + e.id + '"' + (making ? ' disabled' : '') + '>' + I('spark') + (making ? 'Writing your ads\u2026' : 'Create ads') + '</button>' : '') +
+      '<button class="btn sm ghost" data-ea="ea-hide" data-v="' + e.id + '" aria-label="Hide ' + esc(e.name) + '">' + I('x') + '</button></div></div>';
+  }
+  function listView(inst) {
+    const st = inst.st, s = S(), L = D.list, home = pid(inst), pr = Object.assign({ radius: 25, minDays: 2, months: 6 }, L.prefs, st.ea_prefs || {});
+    const scan = (L.scans || {})[home], evs = (L.events || []).filter(e => e.propertyId === home), open = evs.filter(e => e.fit.status !== 'booked'), full = evs.filter(e => e.fit.status === 'booked');
+    const sel = (k, opts, lab) => '<label class="field"><span>' + lab + '</span><select data-eaf="pr.' + k + '">' + opts.map(([v, t]) => '<option value="' + v + '"' + (+pr[k] === v ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>';
+    const srcs = (L.meta.sources || []).map(x => '<span class="ea-chip' + (x.on ? ' on' : '') + '" title="' + esc(x.finds + ' ' + x.price + '.') + '">' + (x.on ? I('check') : '') + esc(x.name) + '</span>').join('');
+    const n = new Set(ads().filter(a => a.propertyId === home).map(a => a.eventId)).size;
+    return '<section class="a-card ag-card ea-find"><div class="ea-form">' +
+      (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-eaf="home">' + s.properties.map(p => '<option value="' + p.id + '"' + (p.id === home ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
+      sel('radius', [[10, 'Within 10 miles'], [25, 'Within 25 miles'], [50, 'Within 50 miles']], 'Area') + sel('minDays', [[2, '2 days or more'], [3, '3 days or more'], [5, '5 days or more']], 'How long') + sel('months', [[3, 'Next 3 months'], [6, 'Next 6 months'], [12, 'Next 12 months']], 'When') +
+      '<button class="btn primary" data-ea="ea-find"' + (D.busy ? ' disabled' : '') + '>' + I('search') + (D.busy ? 'Searching\u2026 this can take a minute' : 'Find events') + '</button></div>' +
+      '<div class="ea-srcs"><small class="muted">Sources</small>' + srcs + '</div>' +
+      (scan ? '<p class="muted ea-last">Last search ' + new Date(scan.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + (scan.place ? ' around ' + esc(scan.place) : '') + ': ' + scan.sources.map(x => esc(((L.meta.sources || []).find(q => q.id === x.id) || { name: 'Samples' }).name) + ' ' + (x.error ? 'did not answer' : x.n)).join(', ') + '.</p>' : '') + '</section>' +
+      '<div class="sb-kpis ea-kpis"><div><small>Events found</small><b class="num">' + evs.length + '</b></div><div><small>With free nights</small><b class="num">' + open.length + '</b></div><div><small>Free nights to sell</small><b class="num">' + open.reduce((t, e) => t + (e.fit.stay ? (P(e.fit.stay.to) - P(e.fit.stay.from)) / 864e5 : 0), 0) + '</b></div><div><small>Worth</small><b class="num">' + BB.money(open.reduce((t, e) => t + e.fit.value, 0)) + '</b></div><div><small>Ad packs</small><b class="num">' + n + '</b></div></div>' +
+      (open.length ? '<div class="ea-list">' + open.map(e => eventRow(e, st)).join('') + '</div>'
+        : '<div class="a-card ag-card sb-fempty"><span class="disp">Fill the nights other people\u2019s <em>events</em> create</span><p class="muted">Courses, conferences, county shows and tournaments bring people who need a bed for a few nights. Find the ones near you, see which of your nights are still free, and get ready-made ads that say \u201Cwe\u2019re free that week\u201D.</p><button class="btn primary" data-ea="ea-find">' + I('search') + 'Find events</button></div>') +
+      (full.length ? '<details class="ea-full"><summary>' + full.length + ' event' + (full.length === 1 ? '' : 's') + ' you are already booked for</summary><div class="ea-list">' + full.map(e => eventRow(e, st)).join('') + '</div></details>' : '') +
+      '<section class="a-card ag-card"><div class="a-card-h"><h3>Know about one we missed?</h3><button class="btn sm ghost" data-ea="ea-addform">' + I(st.ea_add ? 'x' : 'plus') + (st.ea_add ? 'Cancel' : 'Add an event') + '</button></div>' +
+      (st.ea_add ? (() => { const v = st.ea_new || {}; return '<p class="muted" style="margin:0 0 12px">A course at the local college, a contract at the hospital, a wedding fair: anything that brings people for two nights or more.</p><div class="ea-form">' +
+        '<label class="field ea-wide"><span>Name</span><input data-eaf="new.name" id="ea-n-name" maxlength="120" placeholder="SMSTS site manager course" value="' + esc(v.name || '') + '"></label>' +
+        '<label class="field"><span>Type</span><select data-eaf="new.kind">' + Object.entries(L.meta.kinds).map(([k, t]) => '<option value="' + k + '"' + (v.kind === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
+        '<label class="field"><span>First day</span><input type="date" data-eaf="new.start" id="ea-n-start" value="' + esc(v.start || '') + '"></label><label class="field"><span>Last day</span><input type="date" data-eaf="new.end" id="ea-n-end" value="' + esc(v.end || '') + '"></label>' +
+        '<label class="field"><span>Venue</span><input data-eaf="new.venue" id="ea-n-venue" maxlength="100" value="' + esc(v.venue || '') + '"></label><label class="field ea-wide"><span>Link <em class="muted">optional</em></span><input data-eaf="new.url" id="ea-n-url" type="url" placeholder="https://" value="' + esc(v.url || '') + '"></label></div>' +
+        '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-add">' + I('plus') + 'Add event</button></div>'; })() : '') + '</section>';
+  }
+
+  function adView(inst, a) {
+    const st = inst.st, p = S().properties.find(x => x.id === a.propertyId) || {}, f = fnOf(a), tab = st.ea_tab || 'meta', d = st.ea_wd = st.ea_wd || {}, pl = a.plan || {};
+    const val = (k, v) => d[k] != null ? d[k] : v;
+    const cnt = (v, n) => '<em class="ea-cnt' + (String(v).length > n ? ' bad' : '') + '">' + String(v).length + '/' + n + '</em>';
+    const fld = (k, lab, v, n, rows) => '<label class="field"><span>' + lab + ' ' + cnt(val(k, v), n) + '</span>' + (rows ? '<textarea rows="' + rows + '" data-eaf="wd.' + k + '" id="ea-w-' + k + '">' + esc(val(k, v)) + '</textarea>' : '<input data-eaf="wd.' + k + '" id="ea-w-' + k + '" value="' + esc(val(k, v)) + '">') + '</label>';
+    const copyBtn = (k, t) => '<button type="button" class="btn sm ghost" data-ea="ea-copy" data-v="' + k + '">' + I('out') + (t || 'Copy') + '</button>';
+    const dirty = Object.keys(d).length;
+    const url = linkOf(a), host = url.replace(/^https?:\\/\\//, '').split(/[/?]/)[0];
+    let body = '';
+    if (tab === 'meta') {
+      body = '<div class="ea-two"><div>' + fld('primary', 'Primary text', a.meta.primary, 600, 5) + fld('headline', 'Headline', a.meta.headline, 40) + fld('description', 'Description', a.meta.description, 30) +
+        '<div class="ag-acts-row">' + copyBtn('primary', 'Copy text') + copyBtn('headline', 'Copy headline') + copyBtn('url', 'Copy link') + '</div>' +
+        '<p class="muted ea-note">Button: <b>Book now</b>. Link: <span class="mono">' + esc(url) + '</span></p></div>' +
+        '<div class="ea-fb"><div class="ea-fb-h"><span class="ea-av">' + esc(String(S().account.business || 'B')[0]) + '</span><div><b>' + esc(S().account.business || '') + '</b><small>Sponsored</small></div></div><p>' + esc(val('primary', a.meta.primary)) + '</p>' +
+        '<canvas data-ea="' + a.id + '" data-f="square" width="1080" height="1080"></canvas><div class="ea-fb-f"><div><small>' + esc(host.toUpperCase()) + '</small><b>' + esc(val('headline', a.meta.headline)) + '</b><small>' + esc(val('description', a.meta.description)) + '</small></div><span class="btn sm">Book now</span></div></div></div>' +
+        '<div class="ea-imgs"><figure><canvas data-ea="' + a.id + '" data-f="feed" width="1080" height="1080"></canvas><figcaption>Feed \xB7 1080 \xD7 1080 <button class="btn sm" data-ea="ea-dl" data-v="feed">Download</button></figcaption></figure>' +
+        '<figure><canvas data-ea="' + a.id + '" data-f="story" width="1080" height="1920"></canvas><figcaption>Stories and Reels \xB7 1080 \xD7 1920 <button class="btn sm" data-ea="ea-dl" data-v="story">Download</button></figcaption></figure>' +
+        '<p class="muted ea-note">' + ((p.photos || []).length ? 'Drawn from your first photo.' : 'Add photos in Website &amp; SEO and your first one goes behind the words.') + ' Never use the event\u2019s own logo or photos unless the organiser says you can.</p></div>';
+    } else if (tab === 'google') {
+      const hs = val('headlines', a.google.headlines.join('\\n')).split('\\n').filter(Boolean), ds = val('descriptions', a.google.descriptions.join('\\n')).split('\\n').filter(Boolean);
+      body = '<div class="ea-two"><div>' +
+        '<label class="field"><span>Headlines, one per line <em class="ea-cnt">' + hs.length + '/15, 30 characters each</em></span><textarea rows="9" data-eaf="wd.headlines" id="ea-w-headlines">' + esc(hs.join('\\n')) + '</textarea></label>' +
+        (hs.some(x => x.length > 30) ? '<p class="err">' + hs.filter(x => x.length > 30).length + ' headline(s) are over 30 characters. Google will not accept them.</p>' : '') +
+        '<label class="field"><span>Descriptions, one per line <em class="ea-cnt">' + ds.length + '/4, 90 characters each</em></span><textarea rows="4" data-eaf="wd.descriptions" id="ea-w-descriptions">' + esc(ds.join('\\n')) + '</textarea></label>' +
+        '<label class="field"><span>Keywords, one per line <em class="ea-cnt">phrase match</em></span><textarea rows="6" data-eaf="wd.keywords" id="ea-w-keywords">' + esc(val('keywords', a.google.keywords.join('\\n'))) + '</textarea></label>' +
+        '<div class="ag-acts-row">' + copyBtn('heads', 'Copy headlines') + copyBtn('descs', 'Copy descriptions') + copyBtn('kw', 'Copy keywords') + copyBtn('neg', 'Copy negatives') + '</div>' +
+        '<p class="muted ea-note">Negative keywords: ' + a.google.negatives.map(esc).join(', ') + '.</p></div>' +
+        '<div><div class="ea-g"><small>Sponsored</small><div class="ea-g-u"><span class="ea-av sm">' + esc(String(S().account.business || 'B')[0]) + '</span><span>' + esc(host) + '</span></div><b>' + hs.slice(0, 3).map(esc).join(' | ') + '</b><p>' + esc(ds[0] || '') + ' ' + esc(ds[1] || '') + '</p></div>' +
+        '<div class="ea-g"><small>Sponsored</small><div class="ea-g-u"><span class="ea-av sm">' + esc(String(S().account.business || 'B')[0]) + '</span><span>' + esc(host) + '</span></div><b>' + [hs[3], hs[0], hs[8]].filter(Boolean).map(esc).join(' | ') + '</b><p>' + esc(ds[2] || ds[0] || '') + '</p></div>' +
+        '<p class="muted ea-note">Google mixes your headlines and descriptions to find the best ones. These are two of the ways it might show.</p></div></div>';
+    } else if (tab === 'target') {
+      const m = pl.meta || {}, g = pl.google || {};
+      body = '<div class="ea-plan"><div class="ea-when"><div><small>Run the ads</small><b>' + dm(pl.runFrom) + ' \u2013 ' + dm(pl.runTo) + '</b><span class="muted">' + pl.days + ' days, ending 2 days before arrival</span></div><div><small>Suggested spend</small><b>' + BB.money(pl.total) + '</b><span class="muted">about 12% of what the stay is worth (' + BB.money(pl.value) + ')</span></div><div><small>Break even</small><b>1 booking</b><span class="muted">One stay pays for the whole campaign</span></div></div>' +
+        '<div class="ea-two"><div class="a-card ea-tc"><h4>' + I('users') + 'Facebook and Instagram</h4><dl>' +
+        '<dt>Budget</dt><dd>' + BB.money(m.budget) + ' in total, about ' + BB.money(m.daily) + ' a day</dd><dt>Objective</dt><dd>' + esc(m.objective) + '</dd><dt>Where</dt><dd>' + esc(m.location) + '</dd><dt>Age</dt><dd>' + esc(m.age) + '</dd>' +
+        '<dt>Interests</dt><dd>' + (a.audience.interests || []).map(x => '<span class="ea-chip on">' + esc(x) + '</span>').join(' ') + '</dd>' + ((a.audience.jobs || []).length ? '<dt>Job titles</dt><dd>' + a.audience.jobs.map(x => '<span class="ea-chip on">' + esc(x) + '</span>').join(' ') + '</dd>' : '') +
+        '<dt>Placements</dt><dd>' + esc(m.placements) + '</dd><dt>Also</dt><dd>Add a second ad set for people who visited your site in the last 60 days, if your Meta pixel is on.</dd></dl>' + (a.audience.notes ? '<p class="muted ea-note">' + esc(a.audience.notes) + '</p>' : '') + '</div>' +
+        '<div class="a-card ea-tc"><h4>' + I('search') + 'Google search</h4><dl><dt>Budget</dt><dd>' + BB.money(g.budget) + ' in total, about ' + BB.money(g.daily) + ' a day</dd><dt>Bidding</dt><dd>' + esc(g.bidding) + '</dd><dt>Networks</dt><dd>' + esc(g.network) + '</dd><dt>Where</dt><dd>' + esc(g.location) + '</dd>' +
+        '<dt>Keywords</dt><dd>' + a.google.keywords.length + ' phrase-match keywords (see Google search)</dd><dt>Schedule</dt><dd>' + dm(pl.runFrom) + ' to ' + dm(pl.runTo) + ', all day</dd></dl></div></div>' +
+        '<p class="muted ea-note">Bookings made with code <b class="mono">' + esc(a.code || '\u2014') + '</b> are counted against this campaign in Funnels. Turn the ads off as soon as the dates are booked.</p></div>';
+    } else {
+      body = f ? '<div class="ea-two"><div><p>The ads send people to a page made for ' + esc(a.event.name) + ', in your site\u2019s style. It shows the free dates and the code, and the button opens your booking calendar with those dates already picked.</p>' +
+        '<p class="ea-status">Status: ' + BB.pill(f.status === 'live' ? 'good' : 'warn', f.status === 'live' ? 'Live' : 'Draft, not live yet') + '</p><div class="ag-acts-row">' + (f.status === 'live' ? copyBtn('url', 'Copy link') : '<button class="btn primary" data-ea="ea-live" data-v="' + f.id + '">' + I('send') + 'Make it live</button>') + '<a class="btn ghost" href="#funnels">Edit the words in Funnels</a></div></div>' +
+        '<div class="ea-pv"><iframe title="Landing page preview" loading="lazy" src="' + (demo() ? '/demo/' : '/app/') + 'funnel/' + f.id + '/offer?bare=1"></iframe></div></div>' : '<p class="muted">These ads link straight to your booking site.</p>';
+    }
+    return '<div class="sb-fdetail"><button type="button" class="ag-back" data-ea="ea-close">' + I('back') + 'All events</button>' +
+      '<div class="a-vh sb-fh"><div><h2 class="disp">' + esc(a.event.name) + '</h2><p>' + range(a.event.start, a.event.end) + (a.event.venue ? ' \xB7 ' + esc(a.event.venue) : '') + ' \xB7 ' + esc(p.name || '') + ' free ' + range(a.stay.from, a.stay.to) + ' (' + a.stay.n + ' nights)' + (a.code ? ' \xB7 code <b class="mono">' + esc(a.code) + '</b>, ' + a.pct + '% off' : '') + (a.by === 'ai' ? ' \xB7 written by Claude' : '') + '</p></div><div class="a-acts">' +
+      (a.status === 'running' ? BB.pill('good', 'Running') + '<button class="btn" data-ea="ea-status" data-v="' + a.id + '" data-s="done">Mark as finished</button>' : '<button class="btn" data-ea="ea-status" data-v="' + a.id + '" data-s="running">' + I('check') + 'I have started these ads</button>') + '</div></div>' +
+      (f && f.status !== 'live' && tab !== 'landing' ? '<p class="ea-warn">' + I('bell') + 'The landing page is still a draft. <button class="lnk" data-ea="ea-tab" data-v="landing">Make it live</button> before you start the ads.</p>' : '') +
+      '<div class="seg sb-tabs ea-tabs" role="group" aria-label="Ad pack">' + [['meta', 'Facebook & Instagram'], ['google', 'Google search'], ['target', 'Who, when and budget'], ['landing', 'Landing page']].map(([k, t]) => '<button type="button" aria-pressed="' + (k === tab) + '" data-ea="ea-tab" data-v="' + k + '">' + t + '</button>').join('') + '</div>' +
+      '<div class="a-card ag-card">' + body + (tab === 'meta' || tab === 'google' ? '<div class="ag-acts-row ea-save"><button class="btn primary" data-ea="ea-save"' + (dirty ? '' : ' disabled') + '>' + I('check') + 'Save changes</button></div>' : '') + '</div>' +
+      '<button class="btn ghost danger" data-ea="ea-del" data-v="' + a.id + '">' + (st.ea_del === a.id ? 'Tap again to delete these ads and their landing page' : 'Delete these ads') + '</button></div>';
+  }
+
+  V.eventads = {
+    label: 'Event ads', group: 'Grow', icon: 'cal', order: 27,
+    render(inst) {
+      const sub = 'Find courses, conferences, shows and festivals near your home that last two days or more, see which nights are still free, and get ready-to-run ads for them.';
+      if (!live()) return '<div class="ag sb ea">' + vh('Event ads', sub) + '</div>';
+      if (!D.list) { load(inst); return '<div class="ag sb ea">' + vh('Event ads', 'Loading\u2026') + '</div>'; }
+      const a = inst.st.ea_open && ads().find(x => x.id === inst.st.ea_open);
+      return '<div class="ag sb ea">' + (a ? adView(inst, a) : vh('Event ads', sub) + listView(inst)) + '</div>';
+    },
+    after(inst) { paint(inst); },
+    click(ev, inst) { const a = ev.target.closest('[data-ea]'); if (a && a.tagName !== 'CANVAS' && H[a.dataset.ea]) { ev.preventDefault(); H[a.dataset.ea](inst, a.dataset.v, a); } },
+    input(ev, inst) {
+      const el = ev.target, k = el.dataset && el.dataset.eaf; if (!k) return; const st = inst.st;
+      if (k === 'home') { st.ea_home = el.value; inst.render(); return; }
+      const [sc, f] = k.split('.');
+      if (sc === 'pr') { st.ea_prefs = Object.assign({}, st.ea_prefs, { [f]: +el.value }); return; }
+      if (sc === 'new') { (st.ea_new = st.ea_new || {})[f] = el.value; if (f === 'start' && !st.ea_new.end) { st.ea_new.end = el.value; inst.render(); } return; }
+      if (sc === 'wd') { const was = Object.keys(st.ea_wd || {}).length; (st.ea_wd = st.ea_wd || {})[f] = el.value; if (!was) inst.render(); }
+    },
+    change(ev, inst) { if (ev.target.tagName === 'SELECT') V.eventads.input(ev, inst); },
+  };
+})();
+` }, "/app/web/src/app-grow.css": { "t": `/* Host console: Grow, Get found and Settings views (app-grow.js). Everything is scoped under .ag and reflows by
    container width, so the same views work in the full console, the ~800px live demo and on phones. */
 .ag { container: ag / inline-size; display: grid; gap: 18px; min-width: 0; }
 .ag > * { min-width: 0; }
@@ -1927,7 +2152,7 @@ var require_bb_embedded_files = __commonJS({
   /* =====================================================================
      FUNNELS
      ===================================================================== */
-  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart' };
+  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart', event: 'cal' };
   const STEP_NAME = { optin: 'Sign-up page', offer: 'Offer page', thanks: 'Thank-you page' };
   const FH = {};
   const fns = () => ((S().studio || {}).funnels) || [];
@@ -1963,7 +2188,7 @@ var require_bb_embedded_files = __commonJS({
       if (st.fn_new) {
         const t = st.fn_tpl, f = st.fn_form || {};
         main = '<section class="a-card ag-card"><div class="a-card-h"><h3>' + (t ? M.templates[t].name : 'What should this funnel do?') + '</h3><button class="btn sm ghost" data-ag="fn-cancel">' + I('x') + 'Cancel</button></div>' +
-          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' \xB7 ' + x.steps.map(z => STEP_NAME[z]).join(' \u2192 ') + '</em></button>').join('') + '</div>'
+          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).filter(([, x]) => !x.hidden).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' \xB7 ' + x.steps.map(z => STEP_NAME[z]).join(' \u2192 ') + '</em></button>').join('') + '</div>'
             : '<p class="muted" style="margin:0 0 14px">' + esc(M.templates[t].blurb) + '</p><div class="sb-fform">' +
               (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-agf="fn.propertyId">' + s.properties.map(p => '<option value="' + p.id + '"' + (f.propertyId === p.id ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
               '<label class="field"><span>Discount for guests who book</span><select data-agf="fn.pct">' + [5, 10, 15, 20, 25].map(x => '<option' + (+f.pct === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></label>' +
@@ -13447,6 +13672,8 @@ var require_config = __commonJS({
         addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
       }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
       ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
+      // Event ads: where local events, courses and conferences come from (server/studio/events.js). All optional.
+      events: { ticketmaster: E.TICKETMASTER_API_KEY, ticketmasterBase: E.TICKETMASTER_API_BASE, predicthq: E.PREDICTHQ_TOKEN, predicthqBase: E.PREDICTHQ_API_BASE, postcodesBase: E.POSTCODES_API_BASE, webSearch: E.EVENT_WEB_SEARCH !== "off" },
       // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
       credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
       // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
@@ -14150,7 +14377,7 @@ var require_build = __commonJS({
     var crypto = __require("crypto");
     var S = path.join(__dirname, "src");
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
-    var MODS = ["site", "app", "app-grow", "app-seo", "app-studio", "mobile", "property", "guest"];
+    var MODS = ["site", "app", "app-grow", "app-seo", "app-studio", "app-events", "mobile", "property", "guest"];
     function build() {
       const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css"), rd("site-social.css")]).join("\n");
       const core = [rd("store.js"), rd("store-ext.js"), rd("seo-rules.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
@@ -15597,7 +15824,7 @@ var require_credits = __commonJS({
     };
     var DEAREST = [10, 50, 1];
     var priceOf = (model) => PRICES[String(model || "").replace(/-\d{8}$/, "")] || DEAREST;
-    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", seo: "Search writer", other: "AI" };
+    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", seo: "Search writer", eventads: "Event ads", other: "AI" };
     module.exports = function({ cfg, db, log }) {
       const C = cfg.credits;
       const q = {
@@ -15698,7 +15925,8 @@ var require_credits = __commonJS({
       }
       function cost(model, usage) {
         const u = usage || {}, [pin, pout, pread] = priceOf(model);
-        const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6;
+        const searches = num((u.server_tool_use || {}).web_search_requests);
+        const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6 + searches * 0.01;
         return Math.max(0, Math.ceil(dollars * C.usdToGbp * C.markup * UNIT - 1e-6));
       }
       async function charge(wid, feature, model, usage) {
@@ -19541,6 +19769,8 @@ function nights(a,b){var o=[];for(var x=a;x<b;x=add(x,1))o.push(x);return o}func
 function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 function gbp(n){return '\xA3'+Math.round(n).toLocaleString('en-GB')}var MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
 if(!st.m){st.m=K.today.slice(0,7)}
+// dates passed in the link (from an event ad or funnel) are picked for the guest when they are still free
+(function(){var ci=qs.get('checkin')||'',co=qs.get('checkout')||'';if(ci.length===10&&co.length===10&&!isNaN(P(ci))&&!isNaN(P(co))&&ci>K.today&&co>ci&&free(ci,co)){st.a=ci;st.b=co;st.m=ci.slice(0,7)}})();
 function quote(){if(!st.a||!st.b)return null;var ns=nights(st.a,st.b),n=ns.reduce(function(s,x){var w=P(x).getUTCDay();return s+K.nightly+((w===5||w===6)?K.weekend:0)},0);var g=val('ad')+val('ch'),pet=K.pets&&chk('pt')?K.petFee:0;var pc=st.promo&&K.promos[fnv(st.promo)]||0,disc=Math.round(n*pc/100);
 var pr=[];if(ns.length<K.minNights)pr.push('The minimum stay is '+K.minNights+' nights.');if(g>K.maxGuests)pr.push('This home sleeps '+K.maxGuests+'.');if(!free(st.a,st.b))pr.push('Some of those nights are taken.');
 return{n:ns.length,nightly:n,clean:K.cleaning,pet:pet,pc:pc,disc:disc,total:n+K.cleaning+pet-disc,pr:pr}}
@@ -19601,6 +19831,8 @@ var require_funnels = __commonJS({
       waitlist: { name: "First dibs on dates", blurb: "Let people join a priority list for a season or event before the dates open to everyone.", steps: ["optin", "thanks"], goal: "leads" },
       offer: { name: "Special offer", blurb: "A focused sales page for one offer, with a promo code that takes guests straight to booking.", steps: ["offer"], goal: "bookings" },
       lastminute: { name: "Last-minute dates", blurb: "Shows your next free dates, live from your calendar, with a code to fill them.", steps: ["offer"], goal: "bookings" },
+      // made by Event ads (server/studio/events.js), not from the funnel picker: one event, its dates and a code
+      event: { name: "Event stay", blurb: "A page for one nearby event or course, with the free nights for it and a code.", steps: ["offer"], goal: "bookings", hidden: true },
       comeback: { name: "Welcome back", blurb: "For past guests: a returning-guest discount and first pick of next season.", steps: ["optin", "thanks"], goal: "leads" }
     };
     function gaps(s, p, today, D2) {
@@ -19669,7 +19901,7 @@ var require_funnels = __commonJS({
     function page(s, p, fn, step, ctx) {
       const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || "linen", L = D.look({ direction: dir, accent: fn.accent || ctx.accent, style: fn.style || ctx.style }), c = (fn.copy || {})[step] || {};
       const ph = f.photos[0];
-      const book = ctx.siteUrl + (ctx.siteUrl.includes("?") ? "&" : "?") + (fn.code ? "promo=" + encodeURIComponent(fn.code) + "&" : "") + "utm_source=funnel&utm_campaign=" + encodeURIComponent(fn.id) + "#book";
+      const book = ctx.siteUrl + (ctx.siteUrl.includes("?") ? "&" : "?") + (fn.code ? "promo=" + encodeURIComponent(fn.code) + "&" : "") + (fn.stay ? "checkin=" + fn.stay.from + "&checkout=" + fn.stay.to + "&" : "") + "utm_source=funnel&utm_campaign=" + encodeURIComponent(fn.id) + "#book";
       const h1 = '<h1 class="disp h1" style="font-size:calc(clamp(2.6rem,6vw,5.6rem) * var(--ds))">' + fmtInline(c.headline || "") + "</h1>";
       const pts = (c.points || []).filter(Boolean).length ? '<ul class="fn-pts">' + c.points.filter(Boolean).map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
       const pic = ph ? '<figure class="frame" style="margin:0">' + img(ph, 'fetchpriority="high"') + "</figure>" : '<div class="frame" aria-hidden="true" style="aspect-ratio:4/5;background:var(--deep);border-radius:var(--ri);display:grid;place-items:center;color:var(--deepInk)"><span class="disp" style="font-size:calc(clamp(2.4rem,5vw,4.4rem) * var(--ds));text-align:center;padding:30px">' + esc(f.name) + "</span></div>";
@@ -19681,13 +19913,374 @@ var require_funnels = __commonJS({
         main = '<section class="fn-hero"><div class="w"><div>' + h1 + '<p class="lede">' + esc(c.text || c.subhead || "") + "</p>" + (fn.code && fn.template === "comeback" ? '<div class="code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px">' + fn.pct + "% off your nights when you book direct</p>" : "") + '<div class="acts" style="margin-top:34px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "See dates") + ARROW + "</a></div></div>" + pic + "</div></section>" + extra;
       } else {
         const gp = fn.template === "lastminute" ? gaps(s, p, ctx.today) : [];
-        const gapList = fn.template === "lastminute" ? gp.length ? '<ul class="fn-pts">' + gp.map((g) => "<li><b>" + fmtD(g.from) + " \u2013 " + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + " night" + (g.n === 1 ? "" : "s") + " free</span></li>").join("") + "</ul>" : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>' : "";
+        const stayLine = fn.template === "event" && fn.stay ? '<ul class="fn-pts"><li><b>Arrive ' + fmtD(fn.stay.from) + ", leave " + fmtD(fn.stay.to) + '</b>&nbsp;<span class="mut">' + fn.stay.n + " night" + (fn.stay.n === 1 ? "" : "s") + " free" + (fn.event ? " for " + esc(fn.event.name) : "") + "</span></li></ul>" : "";
+        const gapList = stayLine + (fn.template === "lastminute" ? gp.length ? '<ul class="fn-pts">' + gp.map((g) => "<li><b>" + fmtD(g.from) + " \u2013 " + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + " night" + (g.n === 1 ? "" : "s") + " free</span></li>").join("") + "</ul>" : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>' : "");
         main = '<section class="fn-hero"><div class="w"><div><p class="eb">' + esc(c.eyebrow || "") + "</p>" + h1 + '<p class="lede">' + esc(c.subhead || "") + "</p>" + pts + gapList + (fn.code ? '<div class="code" aria-label="Promo code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px;margin:0">' + fn.pct + "% off your nights. Applied automatically on the next page.</p>" : "") + '<div class="acts" style="margin-top:30px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "Check dates") + ARROW + "</a>" + (c.urgency ? '<span class="urg">' + esc(c.urgency) + "</span>" : "") + '</div><p class="mut" style="font-size:14px;margin-top:22px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + (f.rating && f.reviewCount ? " \xB7 rated " + Number(f.rating).toFixed(2) + " by " + f.reviewCount + " guests" : "") + "</p></div>" + pic + "</div></section>";
       }
       const navb = '<nav class="nav solid" aria-label="Main"><div class="w"><a class="wm" href="' + esc(ctx.siteUrl) + '">' + esc(f.short) + '</a><a class="btn" href="' + esc(book) + '">Check dates</a></div></nav>';
       return head({ look: L, title: (c.headline || fn.name || f.name).replace(/\*/g, "") + " \xB7 " + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === "thanks" ? "noindex" : null, preload: ph && ph.url }) + "<body>" + navb + "<main>" + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + " \xB7 " + esc(f.area) + "</span><span>" + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + "</div>" : "") + '<script>document.documentElement.classList.add("js")</script></body></html>';
     }
     module.exports = { TEMPLATES, rulesCopy, schema, aiPrompt, page, gaps };
+  }
+});
+
+// server/studio/events.js
+var require_events = __commonJS({
+  "server/studio/events.js"(exports, module) {
+    var crypto = __require("crypto");
+    var KINDS = { course: "Training course", conference: "Conference", expo: "Trade show", show: "Show or fair", festival: "Festival", sport: "Sports event", exam: "Exam or assessment", other: "Event" };
+    var WHO = {
+      course: { who: "people on the course", need: "a quiet room, a desk and fast Wi-Fi after a long day", meta: ["Professional development", "Vocational education", "Business travellers"] },
+      conference: { who: "delegates and speakers", need: "a calm base close to the venue", meta: ["Business travellers", "Conferences", "Professional networking"] },
+      expo: { who: "exhibitors and visitors", need: "room for the team and parking for the van", meta: ["Trade shows", "Business travellers", "Small business owners"] },
+      show: { who: "visitors, exhibitors and traders", need: "a whole house for the family or the team", meta: ["Agricultural shows", "Country life", "Family days out"] },
+      festival: { who: "festival-goers", need: "a proper bed and a shower after the day", meta: ["Music festivals", "Live events", "Weekend breaks"] },
+      sport: { who: "competitors, teams and supporters", need: "space for the whole team and kit", meta: ["Sports fans", "Amateur sport", "Travel"] },
+      exam: { who: "candidates", need: "a good night\u2019s sleep close by", meta: ["Further education", "Professional certification"] },
+      other: { who: "people travelling in for it", need: "somewhere comfortable close by", meta: ["Travel", "Weekend breaks"] }
+    };
+    var SOURCES = {
+      web: { name: "Web search by Claude", key: "ANTHROPIC_API_KEY", price: "About 1p a search from your AI credit", finds: "Training courses, conferences, trade shows, county shows, festivals and anything else on the open web." },
+      predicthq: { name: "PredictHQ", key: "PREDICTHQ_TOKEN", price: "Paid, with a free trial", finds: "Conferences, expos, sport and festivals, with expected attendance." },
+      ticketmaster: { name: "Ticketmaster", key: "TICKETMASTER_API_KEY", price: "Free key", finds: "Shows, festivals, sport and concerts sold through Ticketmaster." },
+      manual: { name: "Added by you", key: "", price: "Free", finds: "Any event, course or contract you know about." }
+    };
+    var ISO = /^\d{4}-\d{2}-\d{2}$/;
+    var P = (s) => /* @__PURE__ */ new Date(s + "T00:00:00Z");
+    var add = (s, n) => {
+      const x = P(s);
+      x.setUTCDate(x.getUTCDate() + n);
+      return x.toISOString().slice(0, 10);
+    };
+    var diff = (a, b) => Math.round((P(b) - P(a)) / 864e5);
+    var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var dm = (s) => P(s).getUTCDate() + " " + MON[P(s).getUTCMonth()];
+    function range(a, b) {
+      if (a === b) return dm(a);
+      const A = P(a), B = P(b);
+      return A.getUTCMonth() === B.getUTCMonth() ? A.getUTCDate() + "\u2013" + dm(b) : dm(a) + " \u2013 " + dm(b);
+    }
+    var clean = (x, n) => String(x == null ? "" : x).replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, n);
+    function norm(e, source, propertyId) {
+      e = e || {};
+      const start = String(e.start || "").slice(0, 10), end0 = String(e.end || e.start || "").slice(0, 10);
+      if (!ISO.test(start) || isNaN(P(start))) return null;
+      const end = ISO.test(end0) && end0 >= start ? end0 : start;
+      const name = clean(e.name, 120);
+      if (!name) return null;
+      const url = /^https?:\/\/[^\s]+$/i.test(String(e.url || "")) ? String(e.url).slice(0, 400) : "";
+      const att = parseInt(e.attendance, 10);
+      return {
+        id: "ev" + crypto.createHash("sha1").update(propertyId + "|" + name.toLowerCase() + "|" + start).digest("hex").slice(0, 10),
+        propertyId,
+        name,
+        kind: KINDS[e.kind] ? e.kind : "other",
+        start,
+        end,
+        days: diff(start, end) + 1,
+        venue: clean(e.venue, 100),
+        town: clean(e.town, 60),
+        url,
+        audience: clean(e.audience, 160),
+        why: clean(e.why, 200),
+        attendance: att > 0 ? att : null,
+        source: SOURCES[source] || source === "sample" ? source : "manual"
+      };
+    }
+    var unday = (n) => n.replace(/\s*[-–:|(]\s*(day \d+|(mon|tues|wednes|thurs|fri|satur|sun)day.*|weekend.*|\d+ day.*)\)?$/i, "").trim();
+    var base = (n) => unday(n).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    function merge(list) {
+      const out = [];
+      list.slice().sort((a, b) => a.start.localeCompare(b.start)).forEach((e) => {
+        const same = out.find((x) => base(x.name) === base(e.name) && (x.venue || "") === (e.venue || "") && e.start <= add(x.end, 1));
+        if (same) {
+          if (e.end > same.end) {
+            same.end = e.end;
+            same.days = diff(same.start, same.end) + 1;
+          }
+          same.name = unday(same.name) || same.name;
+          same.url = same.url || e.url;
+          same.attendance = same.attendance || e.attendance;
+          return;
+        }
+        out.push(Object.assign({}, e));
+      });
+      return out;
+    }
+    function fit(ev, blocked, p, today) {
+      const from = ev.start > today ? add(ev.start, -1) : add(today, 1), to = ev.end > from ? ev.end : add(from, 1);
+      const nights = [];
+      for (let x = from; x < to; x = add(x, 1)) nights.push(x);
+      const free = nights.filter((x) => !blocked.has(x));
+      let best = null, run = null;
+      nights.forEach((x) => {
+        if (!blocked.has(x)) {
+          run = run && add(run.to, 0) === x ? { from: run.from, to: add(x, 1) } : { from: x, to: add(x, 1) };
+          if (!best || diff(run.from, run.to) > diff(best.from, best.to)) best = Object.assign({}, run);
+        } else run = null;
+      });
+      const n = best ? diff(best.from, best.to) : 0, min = Math.max(1, +p.minNights || 1);
+      const status = !free.length ? "booked" : free.length === nights.length ? "free" : "part";
+      return { from, to, nights: nights.length, free: free.length, status: n && n < min ? "booked" : status, stay: best && n >= min ? best : null, value: best && n >= min ? n * (+p.nightly || 0) + (+p.cleaning || 0) : 0 };
+    }
+    var PC = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
+    async function locate(cfg, p) {
+      if (+p.lat && +p.lng) return { lat: +p.lat, lng: +p.lng, place: p.area || "" };
+      const m = String(p.address || "").match(PC) || String(p.area || "").match(PC);
+      const api = cfg.events.postcodesBase || "https://api.postcodes.io";
+      try {
+        if (m) {
+          const r = await fetch(api + "/postcodes/" + encodeURIComponent(m[1] + m[2]), { signal: AbortSignal.timeout(6e3) });
+          if (r.ok) {
+            const j = (await r.json()).result;
+            if (j) return { lat: j.latitude, lng: j.longitude, place: j.admin_district || j.parish || "", postcode: m[1].toUpperCase() + " " + m[2].toUpperCase() };
+          }
+        }
+        const town = String(p.area || "").split(",")[0].trim();
+        if (town) {
+          const r = await fetch(api + "/places?limit=1&q=" + encodeURIComponent(town), { signal: AbortSignal.timeout(6e3) });
+          if (r.ok) {
+            const j = ((await r.json()).result || [])[0];
+            if (j) return { lat: j.latitude, lng: j.longitude, place: j.name_1 || town };
+          }
+        }
+      } catch (_) {
+      }
+      return null;
+    }
+    async function ticketmaster(cfg, loc, o) {
+      const q = new URLSearchParams({ apikey: cfg.events.ticketmaster, latlong: loc.lat + "," + loc.lng, radius: String(o.radius), unit: "miles", countryCode: "GB", startDateTime: o.from + "T00:00:00Z", endDateTime: o.to + "T23:59:59Z", size: "200", sort: "date,asc" });
+      const r = await fetch((cfg.events.ticketmasterBase || "https://app.ticketmaster.com") + "/discovery/v2/events.json?" + q, { signal: AbortSignal.timeout(1e4) });
+      if (!r.ok) throw new Error("Ticketmaster answered " + r.status);
+      const seg = { Sports: "sport", Music: "festival", "Arts & Theatre": "show", Miscellaneous: "show" };
+      return (((await r.json())._embedded || {}).events || []).map((e) => {
+        const v = ((e._embedded || {}).venues || [])[0] || {}, c = ((e.classifications || [])[0] || {}).segment || {};
+        return { name: e.name, start: ((e.dates || {}).start || {}).localDate, end: ((e.dates || {}).end || {}).localDate, venue: v.name, town: (v.city || {}).name, url: e.url, kind: seg[c.name] || "other" };
+      });
+    }
+    async function predicthq(cfg, loc, o) {
+      const q = new URLSearchParams({ within: o.radius + "mi@" + loc.lat + "," + loc.lng, "active.gte": o.from, "active.lte": o.to, category: "conferences,expos,festivals,sports,community,performing-arts", limit: "200", sort: "start" });
+      const r = await fetch((cfg.events.predicthqBase || "https://api.predicthq.com") + "/v1/events/?" + q, { headers: { authorization: "Bearer " + cfg.events.predicthq, accept: "application/json" }, signal: AbortSignal.timeout(1e4) });
+      if (!r.ok) throw new Error("PredictHQ answered " + r.status);
+      const cat = { conferences: "conference", expos: "expo", festivals: "festival", sports: "sport", community: "show", "performing-arts": "show" };
+      return ((await r.json()).results || []).map((e) => {
+        const v = (e.entities || []).find((x) => x.type === "venue") || {};
+        return { name: e.title, start: String(e.start_local || e.start || "").slice(0, 10), end: String(e.predicted_end_local || e.end_local || e.end || "").slice(0, 10), venue: v.name, town: "", kind: cat[e.category] || "other", attendance: e.phq_attendance, url: "" };
+      });
+    }
+    function webPrompt(f, loc, o) {
+      return "Find events near this UK holiday let that will bring people who need somewhere to stay for " + o.minDays + " or more nights in a row.\n\nThe home: " + JSON.stringify({ name: f.name, area: f.area, town: f.town, postcode: loc && loc.postcode || "", sleeps: f.maxGuests, bedrooms: f.bedrooms, about: String(f.about || "").slice(0, 500) }) + "\nSearch area: within about " + o.radius + " miles of " + (f.town || f.area) + ". Dates: " + o.from + " to " + o.to + ".\n\nLook for, in this order: multi-day professional training courses held at local venues (construction and site safety such as SMSTS, SSSTS and NEBOSH, first aid at work, NHS and nursing, teaching, HGV and plant, trades), conferences and trade shows at local event centres, county and agricultural shows, festivals, sports tournaments and championships, exams and assessment centres, university events such as graduations, and anything else that runs for " + o.minDays + '+ consecutive days. Check each one on its own page. Skip single-day events, online-only courses and anything you could not find a date for.\n\nAnswer with JSON only, no other text: {"events":[{"name":"","kind":"course|conference|expo|show|festival|sport|exam|other","start":"YYYY-MM-DD","end":"YYYY-MM-DD","venue":"","town":"","url":"the page that confirms the dates","audience":"who travels for it, in a few words","attendance":0,"why":"one line on why its visitors need a place to stay"}]}. At most 15 events, soonest first. For a course that runs every month, give the next three dates as separate events. attendance is your best estimate or 0.';
+    }
+    async function web(cfg, f, loc, o, onUsage) {
+      const key = cfg.ai.anthropic, root = cfg.ai.anthropicBase || "https://api.anthropic.com", model = cfg.ai.studioModel || "claude-opus-5-5";
+      const messages = [{ role: "user", content: webPrompt(f, loc, o) }], seen = /* @__PURE__ */ new Set();
+      let text = "";
+      for (let turn = 0; turn < 3; turn++) {
+        const body = {
+          model,
+          max_tokens: 16e3,
+          system: "You are a careful local events researcher for UK holiday let hosts. You only report events you found on real pages, with their real dates.",
+          messages,
+          tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 8, user_location: { type: "approximate", country: "GB", city: f.town || void 0 } }],
+          output_config: { effort: "medium" },
+          fallbacks: "default"
+        };
+        const r = await fetch(root + "/v1/messages", { method: "POST", signal: AbortSignal.timeout(17e4), headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-beta": "server-side-fallback-2026-07-01", "content-type": "application/json" }, body: JSON.stringify(body) });
+        if (!r.ok) {
+          const t = await r.text().catch(() => "");
+          throw new Error("Claude answered " + r.status + " " + t.slice(0, 160));
+        }
+        const j = await r.json();
+        if (onUsage) await onUsage(j.model || model, j.usage);
+        if (j.stop_reason === "refusal") throw new Error("Claude declined this search");
+        (j.content || []).forEach((c) => {
+          if (c.type === "web_search_tool_result" && Array.isArray(c.content)) c.content.forEach((x) => x.url && seen.add(x.url));
+          if (c.type === "text") text += c.text;
+        });
+        if (j.stop_reason !== "pause_turn") break;
+        messages.push({ role: "assistant", content: j.content });
+        text = "";
+      }
+      const a = text.indexOf("{"), b = text.lastIndexOf("}");
+      let out;
+      try {
+        out = JSON.parse(text.slice(a, b + 1));
+      } catch (_) {
+        throw new Error("Claude did not return a usable list of events");
+      }
+      const hosts = new Set([...seen].map((u) => {
+        try {
+          return new URL(u).host;
+        } catch (_) {
+          return "";
+        }
+      }));
+      return (out.events || []).map((e) => {
+        let ok = false;
+        try {
+          ok = seen.has(e.url) || hosts.has(new URL(e.url).host);
+        } catch (_) {
+        }
+        return Object.assign({}, e, { url: ok ? e.url : "" });
+      });
+    }
+    function samples(p, today) {
+      const at = (n, d) => ({ start: add(today, n), end: add(today, n + d - 1) });
+      const S = {
+        laurel: [["Mountain Leader training course", "course", "Ambleside", "Ambleside", "Trainee Mountain Leaders on a six-day course", 38, 6], ["Lakeland Fell Running Championships", "sport", "Keswick", "Keswick", "Runners and their support crews", 52, 3], ["Cumbria Outdoor Trade Show", "expo", "Kendal Leisure Centre", "Kendal", "Outdoor brands and buyers", 96, 2]],
+        lakeside: [["RYA Day Skipper practical course", "course", "Falmouth Marina", "Falmouth", "Sailors on a five-day practical", 24, 5], ["St Ives Arts Week", "festival", "Around the harbour", "St Ives", "Artists, makers and visitors", 61, 7], ["Cornwall Surf Championships", "sport", "Fistral Beach", "Newquay", "Surfers, judges and families", 120, 3]],
+        loft: [["NHS clinical skills course", "course", "Royal United Hospital", "Bath", "Nurses and doctors on a three-day course", 20, 3], ["University of Bath graduation week", "other", "University of Bath", "Bath", "Graduates and their families", 228, 4], ["Bath Digital Conference", "conference", "The Assembly Rooms", "Bath", "Delegates from tech and media", 140, 2]]
+      };
+      return (S[p.id] || []).map((x) => Object.assign({ name: x[0], kind: x[1], venue: x[2], town: x[3], audience: x[4], url: "", why: "Sample event for the demo" }, at(x[5], x[6])));
+    }
+    async function find(cfg, f, p, o, opts) {
+      opts = opts || {};
+      const loc = opts.demo ? null : await locate(cfg, p);
+      const jobs = [];
+      if (opts.demo) jobs.push(["sample", async () => samples(p, o.today)]);
+      else {
+        if (cfg.ai.anthropic && cfg.events.webSearch) jobs.push(["web", () => web(cfg, f, loc, o, opts.onUsage)]);
+        if (cfg.events.predicthq && loc) jobs.push(["predicthq", () => predicthq(cfg, loc, o)]);
+        if (cfg.events.ticketmaster && loc) jobs.push(["ticketmaster", () => ticketmaster(cfg, loc, o)]);
+      }
+      const res = await Promise.all(jobs.map(([id, fn]) => fn().then((list) => ({ id, list }), (e) => ({ id, list: [], error: e.message }))));
+      let all = [];
+      res.forEach((r) => {
+        all = all.concat(r.list.map((e) => norm(e, r.id, p.id)).filter(Boolean));
+      });
+      const keep = (e) => e.days >= o.minDays && e.end > o.today && e.start <= o.to;
+      const events = merge(all).filter(keep);
+      return { events, loc, sources: res.map((r) => ({ id: r.id, n: merge(r.list.map((e) => norm(e, r.id, p.id)).filter(Boolean)).filter(keep).length, error: r.error || "" })) };
+    }
+    var fits = (n, list) => [...new Set(list.map((x) => clean(x, 200)).filter((x) => x && x.length <= n))];
+    var title = (s) => s.replace(/\b([a-z])/g, (m, c) => c.toUpperCase());
+    function shortName(ev) {
+      const n = ev.name.replace(/\s*\(.*?\)\s*/g, " ").replace(/\s+\d{4}$/, "").replace(/\s+/g, " ").trim();
+      if (n.length <= 24) return n;
+      let out = "";
+      for (const w of n.split(" ")) {
+        if ((out + " " + w).trim().length > 24) break;
+        out = (out + " " + w).trim();
+      }
+      return out || n.slice(0, 24);
+    }
+    var plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+    function rulesAds(f, ev, ft, o) {
+      const W = WHO[ev.kind] || WHO.other, st = ft.stay || { from: ft.from, to: ft.to }, n = diff(st.from, st.to), dates = range(st.from, st.to);
+      const near = ev.venue ? ev.venue : ev.town || f.town, sn0 = shortName(ev), sn = sn0 === ev.name.replace(/\s+\d{4}$/, "").trim() ? sn0 : "", code = o.code, pct = o.pct;
+      const perks = [plural(f.bedrooms, "bedroom") + ", sleeps " + f.maxGuests].concat(f.amenities.filter((a) => /wi-?fi|parking|kitchen|desk|ev charg|washer|garden/i.test(a)).slice(0, 2));
+      const primary = (ev.kind === "course" ? "On the " + ev.name + "? " : "Coming for " + ev.name + "? ") + "Stay at " + f.short + ", near " + near + ". The whole home is free " + dates + " (" + plural(n, "night") + "): " + perks.join(" \xB7 ") + ". Book direct with code " + code + " and save " + pct + "%.";
+      const headline = fits(40, ["Stay near " + near + ", " + dates, "Free " + dates + " near " + near, sn ? "Free for " + sn + ", " + dates : "", "Your base for " + ev.name, "Free " + dates + " \xB7 " + f.short])[0] || ("Free " + dates + " \xB7 " + f.short).slice(0, 40);
+      const description = fits(30, ["Book direct \xB7 " + pct + "% off", "Sleeps " + f.maxGuests + " \xB7 " + pct + "% off", pct + "% off with " + code])[0];
+      const heads = fits(30, [
+        sn ? "Stay Near " + sn : "",
+        sn ? sn + " Accommodation" : "",
+        sn ? "Rooms for " + sn : "",
+        "Near " + near,
+        "Stay Near " + near,
+        title(f.short),
+        "Whole Home, Sleeps " + f.maxGuests,
+        plural(f.bedrooms, "Bedroom") + ", Book Direct",
+        "Free " + dates,
+        n + " Nights Free " + dates,
+        "Book Direct & Save " + pct + "%",
+        "Code " + code + " for " + pct + "% Off",
+        "Places to Stay in " + f.town,
+        f.town + " Short Stay",
+        "No Booking Fees",
+        "Self Check-In",
+        /wi-?fi/i.test(f.amenities.join(" ")) ? "Fast Wi-Fi Included" : "",
+        /parking/i.test(f.amenities.join(" ")) ? "Parking Included" : "",
+        f.rating >= 4.5 ? "Rated " + Number(f.rating).toFixed(2).replace(/0$/, "") + " by Guests" : ""
+      ]).slice(0, 15);
+      const descs = fits(90, [
+        "The whole home near " + near + ", free " + dates + ". Book direct and save " + pct + "%.",
+        plural(f.bedrooms, "bedroom") + ", sleeps " + f.maxGuests + ". " + W.need[0].toUpperCase() + W.need.slice(1) + ".",
+        "Use code " + code + " for " + pct + "% off. No platform fees, and you deal with the host direct.",
+        "Ideal for " + W.who + " at " + ev.name + ". Check dates and book in two minutes.",
+        "Free " + dates + " for " + ev.name + ". Book direct, save " + pct + "%.",
+        "Free " + dates + " near " + near + ". Book direct, save " + pct + "%."
+      ]).slice(0, 4);
+      const where = ev.town || f.town, home = f.town && f.town !== where ? f.town.toLowerCase() : "", kw = fits(80, [
+        home ? home + " accommodation" : "",
+        home ? "places to stay " + home : "",
+        ev.name.toLowerCase() + " accommodation",
+        "where to stay " + ev.name.toLowerCase(),
+        "accommodation near " + near.toLowerCase(),
+        "hotels near " + near.toLowerCase(),
+        where.toLowerCase() + " accommodation",
+        "places to stay " + where.toLowerCase(),
+        where.toLowerCase() + " short let",
+        ev.kind === "course" || ev.kind === "expo" ? "contractor accommodation " + where.toLowerCase() : "holiday let " + where.toLowerCase(),
+        ev.kind === "course" ? "business accommodation " + where.toLowerCase() : "group accommodation " + where.toLowerCase()
+      ]);
+      const landing = {
+        eyebrow: (KINDS[ev.kind] + " \xB7 " + range(ev.start, ev.end)).slice(0, 60),
+        headline: sn ? "Your base for *" + sn + "*" : "Your base for the *" + KINDS[ev.kind].toLowerCase() + "*",
+        subhead: "The whole of " + f.short + " is free " + dates + ", close to " + near + ". Book direct with the code below and save " + pct + "%.",
+        points: [perks[0][0].toUpperCase() + perks[0].slice(1), W.need[0].toUpperCase() + W.need.slice(1), "Check-in from " + f.checkin + ", no platform fees"].map((x) => clean(x, 110)),
+        button: "Book these dates",
+        urgency: "Only these dates are open for " + (sn || "it")
+      };
+      return { meta: { primary: clean(primary, 600), headline, description, cta: "Book now" }, google: { headlines: heads, descriptions: descs, keywords: kw, negatives: ["jobs", "careers", "salary", "parking only", "camping", "hostel"] }, audience: { interests: W.meta.slice(), jobs: [], notes: "" }, landing };
+    }
+    var adSchema = () => {
+      const s = { type: "string" }, arr = { type: "array", items: s };
+      return { type: "object", additionalProperties: false, required: ["meta", "google", "audience", "landing"], properties: {
+        meta: { type: "object", additionalProperties: false, required: ["primary", "headline", "description"], properties: { primary: s, headline: s, description: s } },
+        google: { type: "object", additionalProperties: false, required: ["headlines", "descriptions", "keywords"], properties: { headlines: arr, descriptions: arr, keywords: arr } },
+        audience: { type: "object", additionalProperties: false, required: ["interests", "jobs", "notes"], properties: { interests: arr, jobs: arr, notes: s } },
+        landing: { type: "object", additionalProperties: false, required: ["eyebrow", "headline", "subhead", "points", "button", "urgency"], properties: { eyebrow: s, headline: s, subhead: s, points: arr, button: s, urgency: s } }
+      } };
+    };
+    function adPrompt(f, ev, ft, o) {
+      const st = ft.stay;
+      return "Write paid ads that sell a stay at this UK holiday let to people travelling for an event nearby.\n\nThe home: " + JSON.stringify({ name: f.name, short: f.short, town: f.town, area: f.area, sleeps: f.maxGuests, bedrooms: f.bedrooms, baths: f.baths, fromPerNight: "\xA3" + f.nightly, amenities: f.amenities, about: String(f.about || "").slice(0, 600), rating: f.rating || null, rules: f.rules.slice(0, 4) }) + "\nThe event: " + JSON.stringify({ name: ev.name, kind: KINDS[ev.kind], dates: ev.start + " to " + ev.end, venue: ev.venue, town: ev.town, audience: ev.audience, attendance: ev.attendance }) + "\nFree nights to sell: check in " + st.from + ", check out " + st.to + " (" + diff(st.from, st.to) + " nights). Promo code " + o.code + " gives " + o.pct + "% off when booked direct.\n\nRules: UK English, sentence case, specific, facts only, never claim distances or travel times you were not given. Never use the event organiser\u2019s logo, or say or imply the home is official or endorsed by the event. meta (Facebook and Instagram): primary up to 300 characters, lead with the event and the dates; headline up to 40 characters; description up to 30 characters. google (responsive search ad): 12 to 15 headlines of at most 30 characters each, Title Case, varied (event, dates, the home, the offer, trust); 4 descriptions of at most 90 characters; 8 to 15 keywords people would search when looking for somewhere to stay for this event. audience: 3 to 6 Facebook detailed-targeting interests these travellers are likely to have; up to 6 job titles if the event is professional (empty for leisure events); notes: one sentence of targeting advice. landing: a short landing page: eyebrow under 60 characters, headline under nine words with one word wrapped in *asterisks*, subhead one or two sentences, three short benefit points, a button under five words, urgency an honest reason to book now (no fake scarcity).";
+    }
+    function mergeAds(r, base2) {
+      const a = r || {}, m = a.meta || {}, g = a.google || {}, au = a.audience || {}, l = a.landing || {};
+      const list = (x, n, max, fb) => {
+        const v = fits(n, Array.isArray(x) ? x : []).slice(0, max);
+        return v.length ? v : fb;
+      };
+      return {
+        meta: { primary: clean(m.primary, 600) || base2.meta.primary, headline: fits(40, [m.headline])[0] || base2.meta.headline, description: fits(30, [m.description])[0] || base2.meta.description, cta: "Book now" },
+        google: { headlines: list(g.headlines, 30, 15, base2.google.headlines), descriptions: list(g.descriptions, 90, 4, base2.google.descriptions), keywords: list(g.keywords, 80, 20, base2.google.keywords), negatives: base2.google.negatives },
+        audience: { interests: list(au.interests, 60, 8, base2.audience.interests), jobs: list(au.jobs, 60, 8, []), notes: clean(au.notes, 300) },
+        landing: { eyebrow: clean(l.eyebrow, 60) || base2.landing.eyebrow, headline: clean(l.headline, 90) || base2.landing.headline, subhead: clean(l.subhead, 260) || base2.landing.subhead, points: list(l.points, 110, 4, base2.landing.points), button: clean(l.button, 32) || base2.landing.button, urgency: clean(l.urgency, 80) || base2.landing.urgency }
+      };
+    }
+    function plan(f, ev, ft, today, loc) {
+      const st = ft.stay, lead = ev.kind === "course" || ev.kind === "exam" ? 35 : ev.kind === "festival" || ev.kind === "show" ? 56 : 42;
+      const total = Math.max(30, Math.min(400, Math.round(ft.value * 0.12 / 5) * 5)), want = Math.max(7, Math.min(lead, Math.floor(total / 3)));
+      const runTo = add(st.from, -2) > today ? add(st.from, -2) : add(today, 1), runFrom = add(runTo, -(want - 1)) > today ? add(runTo, -(want - 1)) : today;
+      const days = Math.max(1, diff(runFrom, runTo) + 1);
+      const per = (x) => Math.max(1, Math.round(x / days));
+      return {
+        runFrom,
+        runTo,
+        days,
+        total,
+        value: ft.value,
+        meta: {
+          budget: Math.round(total * 0.6),
+          daily: per(total * 0.6),
+          objective: "Sales (or Traffic if the Meta pixel is not on your site yet)",
+          placements: "Advantage+ placements: Facebook and Instagram feeds, Stories and Reels",
+          location: "People living in the United Kingdom, excluding " + (ev.town || f.town) + " and 20 miles around it (locals do not need a bed)",
+          age: ev.kind === "course" || ev.kind === "conference" || ev.kind === "expo" ? "23 to 60" : "25 to 65"
+        },
+        google: {
+          budget: total - Math.round(total * 0.6),
+          daily: per(total - Math.round(total * 0.6)),
+          bidding: "Maximise clicks with a \xA31.50 maximum CPC, then Maximise conversions once you have 15 bookings",
+          network: "Search only. Turn off the Display network",
+          location: 'United Kingdom, set to "Presence or interest", so people searching for ' + (ev.town || f.town) + " from anywhere see it",
+          radius: loc ? { lat: loc.lat, lng: loc.lng } : null
+        }
+      };
+    }
+    module.exports = { KINDS, WHO, SOURCES, find, fit, merge, norm, rulesAds, adPrompt, adSchema, mergeAds, plan, range, add, diff, samples, locate, base };
   }
 });
 
@@ -20091,6 +20684,7 @@ var require_studio = __commonJS({
     var D = require_design();
     var render = require_render();
     var FN = require_funnels();
+    var EV = require_events();
     var Gen = require_generate();
     module.exports = function(o) {
       const { cfg, ws, auth, pub, urls, stripeReady, log, json, jsonBody, send, err, ip } = o;
@@ -20157,7 +20751,8 @@ var require_studio = __commonJS({
           palettes: D.PALETTES,
           style: D.STYLE,
           pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])),
-          variantNames: D.VARIANT_NAMES
+          variantNames: D.VARIANT_NAMES,
+          events: eventsMeta(w)
         }, 200, headers), true;
         if (api === "/api/studio/generate" && m === "POST") {
           limited(w, "gen", w.kind === "demo" ? 12 : 40);
@@ -20370,6 +20965,208 @@ var require_studio = __commonJS({
           await save(w.id, (S) => {
             const sx = st(S);
             sx.funnels = sx.funnels.filter((q) => q.id !== j.id);
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api.startsWith("/api/eventads/")) return eventAds(req, res, api, m, w, headers);
+        return false;
+      }
+      const evs = (s) => {
+        const x = st(s);
+        x.events = x.events || { found: [], ads: [], scans: {}, prefs: {} };
+        return x.events;
+      };
+      function eventsMeta(w) {
+        const E = cfg.events || {}, demo = w.kind === "demo";
+        const on = { web: !!(cfg.ai.anthropic && E.webSearch), predicthq: !!E.predicthq, ticketmaster: !!E.ticketmaster, manual: true };
+        return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: demo ? id === "manual" : on[id] }, x)) };
+      }
+      function withFit(s, list) {
+        return list.map((e) => {
+          const p = s.properties.find((x) => x.id === e.propertyId);
+          if (!p) return null;
+          return Object.assign({}, e, { fit: EV.fit(e, new Set(blockedNights(s, p.id)), p, s.today) });
+        }).filter(Boolean);
+      }
+      async function eventAds(req, res, api, m, w, headers) {
+        const s = w.state, E = s.studio && s.studio.events;
+        const home = (id) => {
+          const p = s.properties.find((x) => x.id === id) || s.properties[0];
+          if (!p) throw err(400, "Add a home first.");
+          return p;
+        };
+        if (api === "/api/eventads/list" && m === "GET") {
+          const x = E || { found: [], ads: [], scans: {}, prefs: {} };
+          return json(res, { events: withFit(s, x.found.filter((e) => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w) }, 200, headers), true;
+        }
+        if (api === "/api/eventads/find" && m === "POST") {
+          limited(w, "events", w.kind === "demo" ? 12 : 20);
+          const j = await jsonBody(req, 2e3), p = home(j.propertyId), demo = w.kind === "demo";
+          const o2 = { today: s.today, radius: [10, 25, 50].includes(+j.radius) ? +j.radius : 25, minDays: [2, 3, 5].includes(+j.minDays) ? +j.minDays : 2, months: [3, 6, 12].includes(+j.months) ? +j.months : 6 };
+          o2.from = EV.add(s.today, 1);
+          o2.to = EV.add(s.today, Math.round(o2.months * 30.5));
+          const meta = eventsMeta(w);
+          if (!demo && !meta.sources.some((x) => x.on && x.id !== "manual")) throw err(400, "No event sources are switched on yet. Add an event yourself below, or ask us to turn on web search.");
+          if (!demo && meta.sources.find((x) => x.id === "web").on) await credits.check(w.id);
+          const r = await EV.find(cfg, render.facts(s, p), p, o2, { demo, onUsage: credits.meter(w.id, "eventads") });
+          let added = 0;
+          await save(w.id, (S, BB) => {
+            const x = evs(S);
+            r.events.forEach((e) => {
+              const old = x.found.find((q) => q.id === e.id);
+              if (old) {
+                if (!old.url && e.url) old.url = e.url;
+                return;
+              }
+              x.found.push(e);
+              added++;
+            });
+            x.found = x.found.filter((e) => e.end >= S.today || x.ads.some((a) => a.eventId === e.id)).sort((a, b) => a.start.localeCompare(b.start));
+            S.properties.forEach((q) => {
+              const mine = x.found.filter((e) => e.propertyId === q.id);
+              if (mine.length > 80) {
+                const drop = new Set(mine.slice(80).map((e) => e.id));
+                x.found = x.found.filter((e) => !drop.has(e.id));
+              }
+            });
+            x.prefs = { radius: o2.radius, minDays: o2.minDays, months: o2.months };
+            x.scans[p.id] = { at: (/* @__PURE__ */ new Date()).toISOString(), place: r.loc && r.loc.place || "", sources: r.sources };
+            BB.log("campaign", "Event ads", "Looked for events near " + p.name + ": " + r.events.length + " found, " + added + " new.", p.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          const w2 = await ws.open(w.id), x2 = w2.state.studio.events;
+          return json(res, { events: withFit(w2.state, x2.found.filter((e) => !e.hidden)), ads: x2.ads, scans: x2.scans, prefs: x2.prefs, added, sources: r.sources, state: w2.state, version: await ws.version(w.id) }, 200, headers), true;
+        }
+        if (api === "/api/eventads/add" && m === "POST") {
+          const j = await jsonBody(req, 4e3), p = home(j.propertyId);
+          const e = EV.norm(Object.assign({}, j, { kind: j.kind }), "manual", p.id);
+          if (!e) throw err(400, "Add the event\u2019s name and its first day.");
+          if (e.end <= s.today) throw err(400, "That event is already over.");
+          await save(w.id, (S) => {
+            const x = evs(S);
+            x.found = x.found.filter((q) => q.id !== e.id);
+            x.found.push(e);
+            x.found.sort((a, b) => a.start.localeCompare(b.start));
+          });
+          return reply(res, w.id, { event: e }, headers), true;
+        }
+        if (api === "/api/eventads/hide" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await save(w.id, (S) => {
+            const e = evs(S).found.find((q) => q.id === j.id);
+            if (e) e.hidden = !j.show;
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/eventads/create" && m === "POST") {
+          limited(w, "evad", w.kind === "demo" ? 12 : 40);
+          const j = await jsonBody(req, 2e3), ev = E && E.found.find((q) => q.id === j.eventId);
+          if (!ev) throw err(404, "Event not found");
+          const p = home(ev.propertyId), ft = EV.fit(ev, new Set(blockedNights(s, p.id)), p, s.today);
+          if (!ft.stay) throw err(400, "Those nights are already booked, so there is nothing to advertise.");
+          const pct = Math.max(0, Math.min(30, parseInt(j.pct, 10) >= 0 ? parseInt(j.pct, 10) : 10));
+          const code = pct ? String(j.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14) || (ev.name.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6) || "EVENT") + pct : "";
+          const f = render.facts(s, p), o2 = { code, pct };
+          let copy = EV.rulesAds(f, ev, ft, o2), by = "rules";
+          if (gen.enabled) {
+            await credits.check(w.id);
+            try {
+              copy = EV.mergeAds(await gen.ask("You write honest, high-performing paid social and search ads for UK holiday lets.", [{ type: "text", text: EV.adPrompt(f, ev, ft, o2) }], EV.adSchema(), credits.meter(w.id, "eventads")), copy);
+              by = "ai";
+            } catch (e) {
+              log("event ads", e.message);
+            }
+          }
+          const scan = (E.scans || {})[p.id] || {};
+          const plan = EV.plan(f, ev, ft, s.today, null);
+          const site = ((s.studio || {}).sites || {})[p.id] || {}, look = site.published || site.draft || {};
+          const stay = Object.assign({}, ft.stay, { n: EV.diff(ft.stay.from, ft.stay.to) });
+          let fnl = null;
+          if (j.landing !== false) {
+            fnl = {
+              id: "fn" + crypto.randomBytes(4).toString("hex"),
+              name: ("Event \xB7 " + ev.name).slice(0, 60),
+              template: "event",
+              propertyId: p.id,
+              status: "draft",
+              code,
+              pct,
+              season: "",
+              steps: ["offer"],
+              copy: { offer: Object.assign({ fine: "", text: "" }, copy.landing) },
+              by,
+              stay,
+              event: { id: ev.id, name: ev.name, start: ev.start, end: ev.end },
+              direction: look.direction || gen.guessDirection(f, null),
+              accent: look.accent || null,
+              style: look.style || null,
+              createdAt: s.today,
+              stats: { views: {}, leads: 0 }
+            };
+          }
+          const ad = {
+            id: "ea" + crypto.randomBytes(4).toString("hex"),
+            eventId: ev.id,
+            propertyId: p.id,
+            event: { name: ev.name, kind: ev.kind, start: ev.start, end: ev.end, venue: ev.venue, town: ev.town, url: ev.url },
+            stay,
+            code,
+            pct,
+            by,
+            meta: copy.meta,
+            google: copy.google,
+            audience: copy.audience,
+            plan,
+            funnelId: fnl && fnl.id,
+            place: scan.place || "",
+            status: "draft",
+            createdAt: s.today
+          };
+          delete ad.landing;
+          await save(w.id, (S, BB) => {
+            const x = evs(S);
+            x.ads = x.ads.filter((a) => a.eventId !== ev.id || a.status === "running");
+            x.ads.unshift(ad);
+            if (fnl) st(S).funnels.unshift(fnl);
+            if (code) S.promos[code] = S.promos[code] || pct;
+            BB.log("campaign", "Event ads", "Wrote ads for " + ev.name + " (" + EV.range(stay.from, stay.to) + ", " + stay.n + " nights at " + p.name + ")" + (code ? " with code " + code : "") + ".", ad.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, { ad }, headers), true;
+        }
+        if (api === "/api/eventads/edit" && m === "POST") {
+          const j = await jsonBody(req, 2e4);
+          await save(w.id, (S, BB) => {
+            const a = evs(S).ads.find((q) => q.id === j.id);
+            if (!a) throw err(404, "Ads not found");
+            const pt = j.patch || {};
+            const t = (x, n) => String(x || "").replace(/[<>]/g, "").trim().slice(0, n);
+            if (pt.meta) {
+              if (typeof pt.meta.primary === "string") a.meta.primary = t(pt.meta.primary, 600);
+              if (typeof pt.meta.headline === "string") a.meta.headline = t(pt.meta.headline, 40);
+              if (typeof pt.meta.description === "string") a.meta.description = t(pt.meta.description, 30);
+            }
+            if (pt.google) {
+              const L = (v, n, max) => (Array.isArray(v) ? v : String(v || "").split("\n")).map((x) => t(x, n)).filter(Boolean).slice(0, max);
+              if (pt.google.headlines != null) a.google.headlines = L(pt.google.headlines, 30, 15);
+              if (pt.google.descriptions != null) a.google.descriptions = L(pt.google.descriptions, 90, 4);
+              if (pt.google.keywords != null) a.google.keywords = L(pt.google.keywords, 80, 30);
+            }
+            if (pt.status === "running" || pt.status === "draft" || pt.status === "done") {
+              a.status = pt.status;
+              if (pt.status === "running") BB.log("campaign", "Event ads", "Ads for " + a.event.name + " are marked as running.", a.id);
+            }
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/eventads/delete" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await save(w.id, (S) => {
+            const x = evs(S);
+            const a = x.ads.find((q) => q.id === j.id);
+            x.ads = x.ads.filter((q) => q.id !== j.id);
+            if (a && a.funnelId && j.landing) st(S).funnels = st(S).funnels.filter((q) => q.id !== a.funnelId);
           });
           return reply(res, w.id, {}, headers), true;
         }
@@ -21647,7 +22444,7 @@ var require_server = __commonJS({
           const w = await ws.open(wid);
           if (await seoApi(req, res, p.replace("/api/demo/", "/api/"), m, w, false, headers)) return;
         }
-        if (p.startsWith("/api/demo/studio/") || p.startsWith("/api/demo/funnels/")) {
+        if (p.startsWith("/api/demo/studio/") || p.startsWith("/api/demo/funnels/") || p.startsWith("/api/demo/eventads/")) {
           const w = await ws.open(wid);
           if (await studio.host(req, res, p, m, w, headers)) return;
         }
@@ -21777,7 +22574,7 @@ var require_server = __commonJS({
         }
         if (p === "/api/state") return json(res, Object.assign({ state: w.state, version: await ws.version(w.id) }, hostLinks(w)));
         if (p === "/api/stream") return await stream(res, u, w.id);
-        if ((p.startsWith("/api/studio/") || p.startsWith("/api/funnels/")) && await studio.host(req, res, p, m, w)) return;
+        if ((p.startsWith("/api/studio/") || p.startsWith("/api/funnels/") || p.startsWith("/api/eventads/")) && await studio.host(req, res, p, m, w)) return;
         if ((p.startsWith("/app/studio/") || p.startsWith("/app/funnel/")) && studio.preview(res, w, p, u.searchParams)) return;
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);

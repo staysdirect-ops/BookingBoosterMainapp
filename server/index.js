@@ -679,7 +679,7 @@ async function route(req, res) {
     if (p === '/api/demo/stream') return await stream(res, u, wid, headers);
     if (p === '/api/demo/act' && m === 'POST') { const j = await jsonBody(req, 2e6); const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []); return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers); }
     if (p.startsWith('/api/demo/seo/')) { const w = await ws.open(wid); if (await seoApi(req, res, p.replace('/api/demo/', '/api/'), m, w, false, headers)) return; }
-    if (p.startsWith('/api/demo/studio/') || p.startsWith('/api/demo/funnels/')) { const w = await ws.open(wid); if (await studio.host(req, res, p, m, w, headers)) return; }
+    if (p.startsWith('/api/demo/studio/') || p.startsWith('/api/demo/funnels/') || p.startsWith('/api/demo/eventads/')) { const w = await ws.open(wid); if (await studio.host(req, res, p, m, w, headers)) return; }
     if (p.startsWith('/demo/studio/') || p.startsWith('/demo/funnel/')) { const w = await ws.open(wid); if (studio.preview(res, w, p, u.searchParams, true)) return; }
     if (p === '/api/demo/reset' && m === 'POST') { await ws.resetDemo(wid); return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers); }
     return notFound(res);
@@ -764,7 +764,7 @@ async function route(req, res) {
     if (p === '/app/stripe/return') { const r = await ws.row(w.id); if (r.stripe_account) { const a = await stripe.account(r.stripe_account); await markStripe(w.id, a.charges, a.bank); } return redirect(res, '/app#connections'); }
     if (p === '/api/state') return json(res, Object.assign({ state: w.state, version: await ws.version(w.id) }, hostLinks(w)));
     if (p === '/api/stream') return await stream(res, u, w.id);
-    if ((p.startsWith('/api/studio/') || p.startsWith('/api/funnels/')) && await studio.host(req, res, p, m, w)) return;
+    if ((p.startsWith('/api/studio/') || p.startsWith('/api/funnels/') || p.startsWith('/api/eventads/')) && await studio.host(req, res, p, m, w)) return;
     if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');

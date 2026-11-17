@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const D = require('./design');
 const render = require('./render');
 const FN = require('./funnels');
+const EV = require('./events');
 const Gen = require('./generate');
 
 module.exports = function (o) {
@@ -52,7 +53,7 @@ module.exports = function (o) {
     const api = p.replace(/^\/api\/demo\//, '/api/');
     const s = w.state;
     if (api === '/api/studio/meta' && m === 'GET') return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + ' & ' + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark, font: d.font, palette: d.palette }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES,
-      fonts: Object.fromEntries(Object.entries(D.FONTS).map(([k, x]) => [k, { name: x.name, display: x.display, text: x.text, feel: x.feel, href: x.href }])), palettes: D.PALETTES, style: D.STYLE, pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])), variantNames: D.VARIANT_NAMES }, 200, headers), true;
+      fonts: Object.fromEntries(Object.entries(D.FONTS).map(([k, x]) => [k, { name: x.name, display: x.display, text: x.text, feel: x.feel, href: x.href }])), palettes: D.PALETTES, style: D.STYLE, pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])), variantNames: D.VARIANT_NAMES, events: eventsMeta(w) }, 200, headers), true;
 
     if (api === '/api/studio/generate' && m === 'POST') {
       limited(w, 'gen', w.kind === 'demo' ? 12 : 40);
@@ -161,6 +162,115 @@ module.exports = function (o) {
     if (api === '/api/funnels/delete' && m === 'POST') {
       const j = await jsonBody(req, 2e3);
       await save(w.id, S => { const sx = st(S); sx.funnels = sx.funnels.filter(q => q.id !== j.id); });
+      return reply(res, w.id, {}, headers), true;
+    }
+
+    /* event ads (server/studio/events.js) */
+    if (api.startsWith('/api/eventads/')) return eventAds(req, res, api, m, w, headers);
+    return false;
+  }
+
+  /* ---------- Event ads ---------- */
+  // state.studio.events: { found: [event], ads: [adset], scans: { [homeId]: { at, sources, place } }, prefs: { radius, minDays, months } }
+  const evs = s => { const x = st(s); x.events = x.events || { found: [], ads: [], scans: {}, prefs: {} }; return x.events; };
+  function eventsMeta(w) {
+    const E = cfg.events || {}, demo = w.kind === 'demo';
+    const on = { web: !!(cfg.ai.anthropic && E.webSearch), predicthq: !!E.predicthq, ticketmaster: !!E.ticketmaster, manual: true };
+    return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: demo ? id === 'manual' : on[id] }, x)) };
+  }
+  // what the host sees for each event: how it sits against the calendar today
+  function withFit(s, list) {
+    return list.map(e => { const p = s.properties.find(x => x.id === e.propertyId); if (!p) return null; return Object.assign({}, e, { fit: EV.fit(e, new Set(blockedNights(s, p.id)), p, s.today) }); }).filter(Boolean);
+  }
+  async function eventAds(req, res, api, m, w, headers) {
+    const s = w.state, E = s.studio && s.studio.events;
+    const home = id => { const p = s.properties.find(x => x.id === id) || s.properties[0]; if (!p) throw err(400, 'Add a home first.'); return p; };
+    if (api === '/api/eventads/list' && m === 'GET') {
+      const x = E || { found: [], ads: [], scans: {}, prefs: {} };
+      return json(res, { events: withFit(s, x.found.filter(e => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w) }, 200, headers), true;
+    }
+    if (api === '/api/eventads/find' && m === 'POST') {
+      limited(w, 'events', w.kind === 'demo' ? 12 : 20);
+      const j = await jsonBody(req, 2e3), p = home(j.propertyId), demo = w.kind === 'demo';
+      const o = { today: s.today, radius: [10, 25, 50].includes(+j.radius) ? +j.radius : 25, minDays: [2, 3, 5].includes(+j.minDays) ? +j.minDays : 2, months: [3, 6, 12].includes(+j.months) ? +j.months : 6 };
+      o.from = EV.add(s.today, 1); o.to = EV.add(s.today, Math.round(o.months * 30.5));
+      const meta = eventsMeta(w);
+      if (!demo && !meta.sources.some(x => x.on && x.id !== 'manual')) throw err(400, 'No event sources are switched on yet. Add an event yourself below, or ask us to turn on web search.');
+      if (!demo && meta.sources.find(x => x.id === 'web').on) await credits.check(w.id);
+      const r = await EV.find(cfg, render.facts(s, p), p, o, { demo, onUsage: credits.meter(w.id, 'eventads') });
+      let added = 0;
+      await save(w.id, (S, BB) => { const x = evs(S);
+        r.events.forEach(e => { const old = x.found.find(q => q.id === e.id); if (old) { if (!old.url && e.url) old.url = e.url; return; } x.found.push(e); added++; });
+        // keep the list tidy: drop events that are over, and keep at most 80 a home
+        x.found = x.found.filter(e => e.end >= S.today || x.ads.some(a => a.eventId === e.id)).sort((a, b) => a.start.localeCompare(b.start));
+        S.properties.forEach(q => { const mine = x.found.filter(e => e.propertyId === q.id); if (mine.length > 80) { const drop = new Set(mine.slice(80).map(e => e.id)); x.found = x.found.filter(e => !drop.has(e.id)); } });
+        x.prefs = { radius: o.radius, minDays: o.minDays, months: o.months };
+        x.scans[p.id] = { at: new Date().toISOString(), place: (r.loc && r.loc.place) || '', sources: r.sources };
+        BB.log('campaign', 'Event ads', 'Looked for events near ' + p.name + ': ' + r.events.length + ' found, ' + added + ' new.', p.id);
+        BB.store.commit({ type: 'campaign', quiet: true }); });
+      const w2 = await ws.open(w.id), x2 = w2.state.studio.events;
+      return json(res, { events: withFit(w2.state, x2.found.filter(e => !e.hidden)), ads: x2.ads, scans: x2.scans, prefs: x2.prefs, added, sources: r.sources, state: w2.state, version: await ws.version(w.id) }, 200, headers), true;
+    }
+    if (api === '/api/eventads/add' && m === 'POST') {
+      const j = await jsonBody(req, 4e3), p = home(j.propertyId);
+      const e = EV.norm(Object.assign({}, j, { kind: j.kind }), 'manual', p.id);
+      if (!e) throw err(400, 'Add the event’s name and its first day.');
+      if (e.end <= s.today) throw err(400, 'That event is already over.');
+      await save(w.id, S => { const x = evs(S); x.found = x.found.filter(q => q.id !== e.id); x.found.push(e); x.found.sort((a, b) => a.start.localeCompare(b.start)); });
+      return reply(res, w.id, { event: e }, headers), true;
+    }
+    if (api === '/api/eventads/hide' && m === 'POST') {
+      const j = await jsonBody(req, 2e3);
+      await save(w.id, S => { const e = evs(S).found.find(q => q.id === j.id); if (e) e.hidden = !j.show; });
+      return reply(res, w.id, {}, headers), true;
+    }
+    if (api === '/api/eventads/create' && m === 'POST') {
+      limited(w, 'evad', w.kind === 'demo' ? 12 : 40);
+      const j = await jsonBody(req, 2e3), ev = E && E.found.find(q => q.id === j.eventId); if (!ev) throw err(404, 'Event not found');
+      const p = home(ev.propertyId), ft = EV.fit(ev, new Set(blockedNights(s, p.id)), p, s.today);
+      if (!ft.stay) throw err(400, 'Those nights are already booked, so there is nothing to advertise.');
+      const pct = Math.max(0, Math.min(30, parseInt(j.pct, 10) >= 0 ? parseInt(j.pct, 10) : 10));
+      const code = pct ? ((String(j.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 14)) || (ev.name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6) || 'EVENT') + pct) : '';
+      const f = render.facts(s, p), o = { code, pct };
+      let copy = EV.rulesAds(f, ev, ft, o), by = 'rules';
+      if (gen.enabled) {
+        await credits.check(w.id);
+        try { copy = EV.mergeAds(await gen.ask('You write honest, high-performing paid social and search ads for UK holiday lets.', [{ type: 'text', text: EV.adPrompt(f, ev, ft, o) }], EV.adSchema(), credits.meter(w.id, 'eventads')), copy); by = 'ai'; }
+        catch (e) { log('event ads', e.message); }
+      }
+      const scan = (E.scans || {})[p.id] || {};
+      const plan = EV.plan(f, ev, ft, s.today, null);
+      const site = ((s.studio || {}).sites || {})[p.id] || {}, look = site.published || site.draft || {};
+      const stay = Object.assign({}, ft.stay, { n: EV.diff(ft.stay.from, ft.stay.to) });
+      let fnl = null;
+      if (j.landing !== false) {
+        fnl = { id: 'fn' + crypto.randomBytes(4).toString('hex'), name: ('Event · ' + ev.name).slice(0, 60), template: 'event', propertyId: p.id, status: 'draft', code, pct, season: '', steps: ['offer'],
+          copy: { offer: Object.assign({ fine: '', text: '' }, copy.landing) }, by, stay, event: { id: ev.id, name: ev.name, start: ev.start, end: ev.end },
+          direction: look.direction || gen.guessDirection(f, null), accent: look.accent || null, style: look.style || null, createdAt: s.today, stats: { views: {}, leads: 0 } };
+      }
+      const ad = { id: 'ea' + crypto.randomBytes(4).toString('hex'), eventId: ev.id, propertyId: p.id, event: { name: ev.name, kind: ev.kind, start: ev.start, end: ev.end, venue: ev.venue, town: ev.town, url: ev.url },
+        stay, code, pct, by, meta: copy.meta, google: copy.google, audience: copy.audience, plan, funnelId: fnl && fnl.id, place: scan.place || '', status: 'draft', createdAt: s.today };
+      delete ad.landing;
+      await save(w.id, (S, BB) => { const x = evs(S); x.ads = x.ads.filter(a => a.eventId !== ev.id || a.status === 'running'); x.ads.unshift(ad);
+        if (fnl) st(S).funnels.unshift(fnl); if (code) S.promos[code] = S.promos[code] || pct;
+        BB.log('campaign', 'Event ads', 'Wrote ads for ' + ev.name + ' (' + EV.range(stay.from, stay.to) + ', ' + stay.n + ' nights at ' + p.name + ')' + (code ? ' with code ' + code : '') + '.', ad.id);
+        BB.store.commit({ type: 'campaign', quiet: true }); });
+      return reply(res, w.id, { ad }, headers), true;
+    }
+    if (api === '/api/eventads/edit' && m === 'POST') {
+      const j = await jsonBody(req, 2e4);
+      await save(w.id, (S, BB) => { const a = evs(S).ads.find(q => q.id === j.id); if (!a) throw err(404, 'Ads not found'); const pt = j.patch || {};
+        const t = (x, n) => String(x || '').replace(/[<>]/g, '').trim().slice(0, n);
+        if (pt.meta) { if (typeof pt.meta.primary === 'string') a.meta.primary = t(pt.meta.primary, 600); if (typeof pt.meta.headline === 'string') a.meta.headline = t(pt.meta.headline, 40); if (typeof pt.meta.description === 'string') a.meta.description = t(pt.meta.description, 30); }
+        if (pt.google) { const L = (v, n, max) => (Array.isArray(v) ? v : String(v || '').split('\n')).map(x => t(x, n)).filter(Boolean).slice(0, max);
+          if (pt.google.headlines != null) a.google.headlines = L(pt.google.headlines, 30, 15); if (pt.google.descriptions != null) a.google.descriptions = L(pt.google.descriptions, 90, 4); if (pt.google.keywords != null) a.google.keywords = L(pt.google.keywords, 80, 30); }
+        if (pt.status === 'running' || pt.status === 'draft' || pt.status === 'done') { a.status = pt.status; if (pt.status === 'running') BB.log('campaign', 'Event ads', 'Ads for ' + a.event.name + ' are marked as running.', a.id); }
+        BB.store.commit({ type: 'campaign', quiet: true }); });
+      return reply(res, w.id, {}, headers), true;
+    }
+    if (api === '/api/eventads/delete' && m === 'POST') {
+      const j = await jsonBody(req, 2e3);
+      await save(w.id, S => { const x = evs(S); const a = x.ads.find(q => q.id === j.id); x.ads = x.ads.filter(q => q.id !== j.id); if (a && a.funnelId && j.landing) st(S).funnels = st(S).funnels.filter(q => q.id !== a.funnelId); });
       return reply(res, w.id, {}, headers), true;
     }
     return false;
