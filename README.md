@@ -147,6 +147,18 @@ Hosts' own domains need a certificate each:
 - **On Fly.io**, set `FLY_API_TOKEN` and `FLY_APP_NAME`. The app adds a certificate for the domain and its www address as soon as it is proved.
 - Set `CUSTOM_DOMAIN_TARGET` to the name hosts should point `www` at (it defaults to the `BASE_URL` host), and `CUSTOM_DOMAIN_IPS` to the server's IPv4 addresses for the bare-domain A record.
 
+### Buying a new domain for a host (20i)
+
+The "Get a new domain" tab at sign-up buys the domain for the host through our 20i reseller account (`server/registrar.js`). It is off until `TWENTYI_API_KEY` is set; until then the tab only shows a pretend search.
+
+1. The sign-up page checks availability with 20i's domain search. We offer `DOMAIN_TLDS` (default `.co.uk`, `.uk`, `.com`), and an account gets `DOMAINS_PER_ACCOUNT` new domains (default 1).
+2. The host gives a postal address and phone number. The domain is registered in their name (Nominet needs both for `.uk`), so it is theirs to keep or move.
+3. Nothing is bought until the first plan payment goes through. Then the app registers it for one year, paid from the 20i balance.
+4. With `TWENTYI_PACKAGE_ID` set (booking-booster.co.uk on 20i hosting), the name is added to that package. 20i's DNS points it there and its free Let's Encrypt certificate is switched on. Without it (Fly.io, a VPS), the app writes the A and CNAME records to `CUSTOM_DOMAIN_IPS` and `CUSTOM_DOMAIN_TARGET` and asks Fly (or Caddy) for the certificate. Either way the domain is live without a TXT check, because we bought it.
+5. Every day, domains that run out within 30 days are renewed for a year while the plan is paid. With `DOMAIN_RENEWAL=charge` the renewal price (`DOMAIN_RENEWAL_PRICE`) goes on the host's next invoice; the default is that the plan covers it. If the plan has ended, the domain is left to lapse.
+
+Keep the 20i balance topped up (my.20i.com, Reseller, Balance): registrations and renewals fail when it runs out, and the app retries a few times and logs `registrar` errors.
+
 ChatGPT, Gemini, Perplexity, Google, Claude and Copilot are trademarks of their owners. Bookingbooster is not affiliated with or endorsed by them.
 
 ## Deploying
