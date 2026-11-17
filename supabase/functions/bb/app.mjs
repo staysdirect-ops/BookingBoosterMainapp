@@ -1384,7 +1384,8 @@ var require_bb_embedded_files = __commonJS({
           '<section class="a-card ag-card ag-score"><div class="a-card-h"><h3>Visibility score</h3><span class="ag-meta">' + (s.ai.checkedAt ? 'Checked ' + D.fmt(s.ai.checkedAt) : 'Not checked yet') + '</span></div><div class="ag-score-in">' + gauge(sc.score) +
             '<div><b class="disp">Mentioned in ' + sc.mentioned + ' of ' + sc.total + '</b><p class="muted">questions on ChatGPT or Gemini.' + (st.ai_delta ? ' <span class="ag-up">\u25B2 ' + st.ai_delta + ' points just now</span>' : S().live ? '' : ' Was 41 in August.') + '</p></div></div>' +
             '<div class="ag-engbars">' + perEngine.map(([k, l, v]) => '<div><span>' + BB.aiName(k, l) + '</span><i><b style="width:' + Math.round(100 * v / qs.length) + '%"></b></i><em class="num">' + v + '/' + qs.length + '</em></div>').join('') + '</div></section>' +
-          '<section class="a-card ag-card"><div class="a-card-h"><h3>Recommended fixes</h3><span class="ag-meta">' + (open.length ? open.length + ' to do' : s.ai.tasks.length ? 'All done' : 'None yet') + '</span></div><ul class="ag-tasks">' +
+          '<section class="a-card ag-card"><div class="a-card-h"><h3>Recommended fixes</h3><span class="ag-meta">' + (open.length ? open.length + ' to do' : s.ai.tasks.length ? 'All done' : 'From Search health') + '</span></div><ul class="ag-tasks">' +
+            (!s.ai.tasks.length && BB.seo ? s.properties.flatMap(h => BB.seo.audit(h).fixes.filter(c => ['aeo', 'geo', 'aio', 'llmo'].includes(c.cat)).slice(0, 2).map(c => '<li><span class="ag-tk">' + I('spark') + '</span><div><b>' + esc(c.label) + (s.properties.length > 1 ? ' \xB7 ' + esc(h.short) : '') + '</b><small>' + esc(c.fix) + '</small></div><button class="btn sm primary" data-ag-nav="seo">Fix it</button></li>')).slice(0, 4).join('') : '') +
             s.ai.tasks.map(t => '<li class="' + (t.done ? 'done' : '') + '"><span class="ag-tk">' + I(t.done ? 'check' : 'spark') + '</span><div><b>' + esc(t.text) + '</b><small>' + (t.done ? 'Live on your site. Answers updated.' : 'Wins ' + t.fixes.length + (t.fixes.length === 1 ? ' question' : ' questions') + ': ' + t.fixes.map(i => '\u201C' + esc(qs[i].q) + '\u201D').join(', ')) + '</small></div>' + (t.done ? BB.pill('good', 'Done') : '<button class="btn sm primary" data-ag="ai-do" data-v="' + t.id + '">Do it for me</button>') + '</li>').join('') + '</ul></section>' +
         '</div>' +
         '<div class="ag-cols ag-cols-ai2">' +
@@ -1473,6 +1474,203 @@ var require_bb_embedded_files = __commonJS({
         (addons.length ? '<section class="ag-group ag-addons"><div class="ag-addon-h"><div><span class="eyebrow">Optional add-on</span><h3 class="disp">Calendar sync add-on, \xA315/month</h3><p>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Paste a calendar link (iCal) and dates booked there are blocked on your sites, so you never double book. We read dates only and never change anything on those platforms. You do not need it to take direct bookings.</p></div>' + (syncing.length ? BB.pill('good', 'On for ' + syncing.length + (syncing.length === 1 ? ' calendar' : ' calendars')) : BB.pill('muted', 'Not added')) + '</div><div class="ag-icards">' + addons.map(icard).join('') + '</div></section>' : '') + BB.aiTm('ag-tm'));
     },
   }, hooks);
+})();
+` }, "/app/web/src/app-seo.css": { "t": "/* Search health view (web/src/app-seo.js) */\n.ag.sh { display: grid; gap: 18px; }\n.sh .t-good { color: var(--good); } .sh .t-warn { color: var(--warn); } .sh .t-bad { color: var(--bad); }\n.sh .sh-card { min-width: 0; }\n.sh .sh-card > .sh-help, .sh .sh-card > .sh-ta, .sh .sh-card > .sh-row, .sh .sh-card > ul, .sh .sh-card > form, .sh .sh-card > .tblwrap, .sh .sh-card > p, .sh .sh-card > .field, .sh .sh-card > .sh-serp, .sh .sh-card > details, .sh .sh-card > .btn, .sh .sh-card > .sh-ping, .sh .sh-card > .sh-types, .sh .sh-card > pre, .sh .sh-card > .eyebrow { margin-top: 12px; }\n.sh .sh-help { color: var(--muted); font-size: 13.5px; line-height: 1.5; margin: 0; }\n.sh .sh-ta { width: 100%; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical; min-width: 0; }\n.sh .sh-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }\n.sh .sh-sp { flex: 1; }\n.sh .sh-by { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }\n.sh .sh-by.ai { color: var(--info); }\n.sh .sh-by .ic { width: 14px; height: 14px; }\n.sh .sh-link { background: none; border: 0; padding: 0; color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; margin-left: 6px; }\n.sh .ag-ptabs .sh-pscore { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 700 17px var(--mono); background: var(--surface-2); }\n.sh .sh-pscore.t-good { background: var(--good-soft); } .sh .sh-pscore.t-warn { background: var(--warn-soft); } .sh .sh-pscore.t-bad { background: var(--bad-soft); }\n\n/* score and category tiles */\n.sh .sh-top { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 18px; align-items: stretch; }\n.sh .sh-score-in { display: flex; align-items: center; gap: 18px; height: 100%; }\n.sh .sh-score-in .disp { display: block; font-size: 28px; margin: 6px 0 4px; }\n.sh .sh-score-in p { margin: 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-g-good .fg { stroke: var(--good); } .sh .sh-g-warn .fg { stroke: var(--warn); } .sh .sh-g-bad .fg { stroke: var(--bad); }\n.sh .sh-cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }\n.sh .sh-cat { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-content: start; text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; min-width: 0; }\n.sh .sh-cat:hover { border-color: var(--line-2); }\n.sh .sh-cat.on { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent); }\n.sh .sh-cat span { font-size: 12.5px; font-weight: 600; line-height: 1.3; }\n.sh .sh-cat b { font-size: 18px; }\n.sh .sh-cat i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-cat i em { display: block; height: 100%; border-radius: 3px; background: currentColor; }\n.sh .sh-cat small { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px; }\n\n/* checks */\n.sh .sh-checks { list-style: none; padding: 0; margin: 12px 0 0; display: grid; }\n.sh .sh-ck { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 10px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }\n.sh .sh-ck:first-child { border-top: 0; }\n.sh .sh-ck b { display: block; font-size: 14.5px; }\n.sh .sh-ck small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }\n.sh .sh-ck p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-st { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; align-self: start; }\n.sh .sh-st .ic { width: 16px; height: 16px; }\n.sh .s-ok .sh-st { background: var(--good-soft); color: var(--good); }\n.sh .s-auto .sh-st { background: var(--info-soft); color: var(--info); }\n.sh .s-warn .sh-st { background: var(--warn-soft); color: var(--warn); }\n.sh .s-fail .sh-st { background: var(--bad-soft); color: var(--bad); }\n.sh .sh-gain { font: 600 12.5px var(--mono); color: var(--good); white-space: nowrap; }\n\n.sh .sh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }\n.sh .field > span em { font-style: normal; font-size: 12px; margin-left: 6px; }\n.sh .sh-serp { margin-top: 12px; }\n\n/* faq ideas, keywords */\n.sh .sh-ideas { list-style: none; padding: 0; display: grid; gap: 14px; }\n.sh .sh-ideas li { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }\n.sh .sh-ideas li:first-child { border-top: 0; padding-top: 0; }\n.sh .sh-ideas b { font-size: 14px; }\n.sh .sh-kw td { padding: 9px 8px; }\n.sh .sh-kw td small { display: block; font-size: 12px; margin-top: 2px; }\n.sh .sh-kw .ic { width: 16px; height: 16px; }\n.sh .sh-kwa { white-space: nowrap; text-align: right; }\n.sh .sh-kwa .btn + .btn { margin-left: 6px; }\n\n/* listings, gbp, sources, files */\n.sh .sh-links { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-links li { display: flex; align-items: center; gap: 8px; min-width: 0; }\n.sh .sh-links a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--fg); }\n.sh .sh-inl { display: flex; gap: 8px; }\n.sh .sh-inl input { flex: 1; min-width: 0; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; }\n.sh .sh-card > form + form { margin-top: 8px; }\n.sh .sh-tip { display: flex; gap: 8px; font-size: 12.5px; color: var(--muted); align-items: flex-start; }\n.sh .sh-tip .ic { width: 15px; height: 15px; flex: none; margin-top: 1px; }\n.sh .sh-gbp { list-style: none; padding: 0; display: grid; gap: 10px; }\n.sh .sh-gbp li { display: flex; gap: 12px; align-items: flex-start; }\n.sh .sh-gbp b { display: block; font-size: 14px; }\n.sh .sh-gbp small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-tick { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--line-2); background: var(--surface); display: grid; place-items: center; color: transparent; padding: 0; cursor: pointer; }\n.sh .sh-tick .ic { width: 15px; height: 15px; }\n.sh .sh-tick.on { background: var(--good); border-color: var(--good); color: #fff; }\n.sh .sh-src { list-style: none; padding: 0; display: grid; gap: 8px; }\n.sh .sh-src li { display: grid; grid-template-columns: minmax(0, 1.4fr) auto minmax(40px, 1fr) 24px auto; gap: 10px; align-items: center; font-size: 13px; }\n.sh .sh-src li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.sh .sh-src i { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-src i em { display: block; height: 100%; background: var(--info); border-radius: 3px; }\n.sh .sh-src li.own i em { background: var(--good); }\n.sh .sh-src .pill { font-size: 11px; }\n.sh .sh-logos .ai-logo, .sh .sh-logos svg, .sh .sh-logos img { width: 16px; height: 16px; }\n.sh .sh-files { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-files li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; min-width: 0; }\n.sh .sh-files a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--primary); font-size: 12px; }\n.sh .sh-ping { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--surface-2); }\n.sh .sh-ping b { display: block; font-size: 14px; }\n.sh .sh-ping small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-steps summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }\n.sh .sh-steps ol { margin: 8px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.55; color: var(--muted); }\n.sh .sh-steps a { color: var(--primary); }\n.sh .sh-types { display: flex; flex-wrap: wrap; gap: 6px; }\n.sh .sh-pre { max-height: 300px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 11.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; margin: 6px 0 0; }\n.sh .sh-cover td { padding: 10px 8px; font-size: 13.5px; vertical-align: top; }\n.sh .sh-cover td:first-child { white-space: nowrap; }\n.sh .sh-cover td:nth-child(2) { white-space: nowrap; }\n\n@media (max-width: 1180px) { .sh .sh-cats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }\n@media (max-width: 980px) { .sh .sh-top, .sh .sh-grid { grid-template-columns: 1fr; } }\n@media (max-width: 640px) {\n  .sh .sh-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  .sh .sh-ck { grid-template-columns: 28px 1fr; }\n  .sh .sh-ck .sh-gain { grid-column: 2; justify-self: start; }\n  .sh .sh-ck .btn, .sh .sh-ck .pill { grid-column: 2; justify-self: start; }\n  .sh .sh-score-in { flex-direction: column; align-items: flex-start; }\n  .sh .sh-cover td:first-child { white-space: normal; }\n  .sh .sh-cover tr { display: grid; grid-template-columns: 1fr auto; } .sh .sh-cover td:nth-child(3) { grid-column: 1 / -1; padding-top: 0; }\n  .sh .sh-kw thead { display: none; } .sh .sh-kw tr { display: grid; grid-template-columns: 1fr auto auto; } .sh .sh-kw td.sh-kwa { grid-column: 1 / -1; text-align: left; padding-top: 0; }\n  .sh .sh-src li { grid-template-columns: minmax(0, 1fr) auto 24px; } .sh .sh-src i, .sh .sh-src .sh-eng { display: none; }\n  .sh .sh-ping { flex-direction: column; align-items: flex-start; }\n}\n" }, "/app/web/src/app-seo.js": { "t": `/* Bookingbooster: the Search health view in the host console (Get found). One home at a time: a score across every
+   kind of search work that applies to a holiday let, the fixes worth doing first, and the tools to do them.
+   Rules live in seo-rules.js (shared with the server). Drafts come from Claude when the server has a key, otherwise
+   from the home's own facts. Registers into BB.appViews; app.js owns the frame and routing. */
+(function () {
+  const BB = window.BB; BB.appViews = BB.appViews || {};
+  const V = BB.appViews, esc = BB.esc, I = BB.icon;
+  const S = () => BB.store.get();
+  const uid = inst => inst.uid || (inst.uid = Math.random().toString(36).slice(2, 7));
+  const ID = (inst, k) => 'sh-' + k + '-' + uid(inst);
+  const nav = (inst, view, id) => (inst && inst.nav ? inst.nav(view, id == null ? null : id) : BB.go('app', { view, id: id == null ? null : id }));
+  const api = () => !!(BB.api && BB.BOOT && (BB.BOOT.mode === 'host' || BB.BOOT.mode === 'demo'));
+  const API = () => (BB.BOOT && BB.BOOT.mode === 'demo' ? '/api/demo/' : '/api/');
+  const words = t => String(t || '').trim().split(/\\s+/).filter(Boolean).length;
+  const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
+  const card = (id, title, meta, body, cls) => '<section class="a-card ag-card sh-card ' + (cls || '') + '"' + (id ? ' id="sh-' + id + '"' : '') + '><div class="a-card-h"><h3>' + title + '</h3>' + (meta ? '<span class="ag-meta">' + meta + '</span>' : '') + '</div>' + body + '</section>';
+  const tone = n => n >= 85 ? 'good' : n >= 60 ? 'warn' : 'bad';
+  function gauge(n) {
+    const r = 46, c = 2 * Math.PI * r, off = c * (1 - n / 100);
+    return '<svg class="ag-gauge sh-g-' + tone(n) + '" viewBox="0 0 120 120" role="img" aria-label="Search health ' + n + ' of 100"><circle cx="60" cy="60" r="' + r + '" class="tr"/><circle cx="60" cy="60" r="' + r + '" class="fg" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 60 60)"/><text x="60" y="68" text-anchor="middle">' + n + '</text></svg>';
+  }
+  const STI = { ok: 'check', auto: 'bolt', warn: 'clock', fail: 'x' };
+  const STL = { ok: 'Done', auto: 'Handled for you', warn: 'Could be better', fail: 'To fix' };
+
+  // Every kind of search work, and how Bookingbooster covers it for a holiday let.
+  const COVER = [
+    ['On-page SEO', 'auto', 'Titles, descriptions, headings and internal links are written for every page. You can set your own title and description here.'],
+    ['Technical SEO', 'auto', 'Server-rendered pages, HTTPS, mobile-first, canonical tags, robots.txt, an image sitemap and IndexNow pings.'],
+    ['Content SEO', 'tool', 'Area guide, about text and FAQs, with drafts written from your facts and keyword ideas for what to write about.'],
+    ['Local SEO', 'tool', 'Map pin, address, reviews and LodgingBusiness schema are automatic. Google Business Profile is a guided checklist.'],
+    ['Off-page SEO', 'guide', 'We list where to get links and mentions and add each one to your schema. Getting them is up to you.'],
+    ['Image and video SEO', 'tool', 'Photo captions become alt text and image sitemap entries. A YouTube walkthrough adds video schema.'],
+    ['SXO (search experience)', 'auto', 'Price up front, instant booking, reviews and a host note on the page that search visitors land on.'],
+    ['AEO (answer engines)', 'tool', 'An answer-first summary, FAQ ideas with drafted answers, FAQPage and speakable schema.'],
+    ['GEO (generative engines)', 'auto', 'llms.txt, AI crawler access and real weekly checks in ChatGPT, Gemini, Perplexity and Google, with the sites they cite.'],
+    ['LLMO (brand recognition)', 'guide', 'sameAs links tie your listings and profiles to one home, and we track whether answers link to your site.'],
+    ['AIO (Google AI Overviews)', 'tool', 'Google answers are checked with each AI run, and the summary sits where AI Overviews read first.'],
+    ['Ecommerce SEO', 'part', 'Partly applies: each home is a bookable product with Offer schema, a live price and checkout. There are no category pages to manage.'],
+    ['International SEO', 'part', 'Partly applies: pages are en-GB with prices in pounds. Separate language versions are not needed for UK stays.'],
+    ['ASO (app stores)', 'none', 'Does not apply: the guest app installs from your site, so there is no App Store listing to optimise.'],
+  ];
+  const COVL = { auto: ['good', 'Automatic'], tool: ['info', 'Tool, you approve'], guide: ['warn', 'Guidance'], part: ['muted', 'Partly applies'], none: ['muted', 'Not applicable'] };
+
+  function home(inst) { const s = S(); const p = BB.q.property(inst.st.sh_pid) || s.properties[0]; if (p) inst.st.sh_pid = p.id; return p; }
+  async function loadFiles(inst, pid) {
+    const st = inst.st; st.sh_files = st.sh_files || {}; if (!api() || st.sh_files[pid]) return;
+    st.sh_files[pid] = { loading: true };
+    try { st.sh_files[pid] = await BB.api.call(API() + 'seo/files?propertyId=' + encodeURIComponent(pid), null, 'GET'); }
+    catch (e) { st.sh_files[pid] = { error: e.message }; }
+    if (st.view === 'seo') inst.render();
+  }
+  async function write(inst, what) {
+    const p = home(inst), st = inst.st; st.sh_busy = what; inst.render();
+    let d = null, by = 'rules', note = null;
+    const questions = what === 'faqs' ? BB.seo.faqIdeas(p).map(f => f.q) : undefined;
+    if (api()) { try { const j = await BB.api.call(API() + 'seo/write', { propertyId: p.id, what, questions }); d = j.draft; by = j.by || 'rules'; note = j.error || (j.credit && j.credit.message) || null; } catch (e) { note = e.message; } }
+    if (!d) { by = 'rules'; d = what === 'faqs' ? null : BB.seo.draft(p, what); }
+    st.sh_busy = null;
+    if (what === 'summary') { st.sh_sum = d; st.sh_sum_by = by; }
+    if (what === 'area' && !d) { inst.render(); BB.toast('Add a few nearby places in Website & SEO first, then draft again.'); return; }
+    if (what === 'area') { st.sh_area = d; st.sh_area_by = by; }
+    if (what === 'meta') { st.sh_mt = d.title; st.sh_md = d.description; st.sh_meta_by = by; }
+    if (what === 'faqs' && d) { st.sh_faq = {}; d.forEach(f => { if (f.a) st.sh_faq[f.q] = f.a; }); st.sh_faq_by = by; }
+    if (note) BB.toast(note);
+    inst.render();
+  }
+  function scrollTo(inst, id) { const el = inst.root && inst.root.querySelector('#sh-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  function doFix(inst, c) {
+    const a = c.act; if (!a) return;
+    if (a.kind === 'nav') nav(inst, a.view);
+    else if (a.kind === 'scroll') scrollTo(inst, a.to);
+    else if (a.kind === 'write') { scrollTo(inst, a.what === 'area' ? 'area' : 'summary'); write(inst, a.what); }
+    else if (a.kind === 'meta') { scrollTo(inst, 'meta'); write(inst, 'meta'); }
+    else if (a.kind === 'aicheck') { BB.act.runAiCheck(); BB.toast(S().live ? 'Asking AI assistants now. Results arrive in a few minutes.' : 'AI check done', 'good'); }
+  }
+  const fixLabel = a => !a ? '' : a.kind === 'nav' ? ({ website: 'Open Website & SEO', connections: 'Open Connections', automations: 'Open Automations', reviews: 'Open Reviews', ai: 'Open AI visibility' }[a.view] || 'Open') : a.kind === 'write' ? 'Draft it' : a.kind === 'meta' ? 'Draft it' : a.kind === 'aicheck' ? 'Run AI check' : 'Show me';
+
+  const HANDLERS = {
+    'sh-pid': (inst, v) => { const st = inst.st; ['sh_sum', 'sh_area', 'sh_mt', 'sh_md', 'sh_faq', 'sh_cat', 'sh_link', 'sh_video', 'sh_pin'].forEach(k => { st[k] = undefined; }); inst.set({ sh_pid: v }); },
+    'sh-cat': (inst, v) => inst.set({ sh_cat: inst.st.sh_cat === v ? null : v }),
+    'sh-fix': (inst, v) => { const c = BB.seo.audit(home(inst)).checks.find(x => x.id === v); if (c) doFix(inst, c); },
+    'sh-write': (inst, v) => write(inst, v),
+    'sh-save-sum': inst => { const p = home(inst); BB.act.updateSeo(p.id, { summary: inst.st.sh_sum }); inst.st.sh_sum = undefined; inst.render(); BB.toast('Summary published', 'good'); },
+    'sh-save-area': inst => { const p = home(inst); BB.act.updateSeo(p.id, { areaIntro: inst.st.sh_area }); inst.st.sh_area = undefined; inst.render(); BB.toast('Area guide published', 'good'); },
+    'sh-save-meta': inst => { const p = home(inst), st = inst.st; BB.act.updateSeo(p.id, { metaTitle: st.sh_mt == null ? BB.seo.seoOf(p).metaTitle : st.sh_mt, metaDescription: st.sh_md == null ? BB.seo.seoOf(p).metaDescription : st.sh_md }); st.sh_mt = st.sh_md = undefined; inst.render(); BB.toast('Google title and description published', 'good'); },
+    'sh-reset-meta': inst => { const p = home(inst); BB.act.updateSeo(p.id, { metaTitle: '', metaDescription: '' }); inst.st.sh_mt = inst.st.sh_md = undefined; inst.render(); BB.toast('Back to the automatic title and description'); },
+    'sh-faq-add': (inst, v) => { const p = home(inst), idea = BB.seo.faqIdeas(p)[+v]; if (!idea) return; const a = ((inst.st.sh_faq || {})[idea.q] != null ? inst.st.sh_faq[idea.q] : idea.a).trim(); if (!a) { inst.st.sh_faq_err = idea.q; inst.render(); return; } BB.act.addFaqs(p.id, [{ q: idea.q, a }]); inst.st.sh_faq_err = null; BB.toast('FAQ published', 'good'); },
+    'sh-kw': (inst, v) => { const p = home(inst), o = BB.seo.seoOf(p); const kws = (o.keywords || []).slice(); const i = kws.indexOf(v); if (i >= 0) kws.splice(i, 1); else kws.push(v); BB.act.updateSeo(p.id, { keywords: kws }); },
+    'sh-track': (inst, v) => { const p = home(inst); const n = BB.act.trackAiQuestions(p.id, [v]); BB.toast(n ? 'Tracking in AI visibility' : 'Already tracked', n ? 'good' : undefined); },
+    'sh-track-top': inst => { const p = home(inst); const list = BB.seo.keywords(p).filter(k => k.intent !== 'Plan').slice(0, 5).map(k => k.q); const n = BB.act.trackAiQuestions(p.id, list); BB.toast(n ? 'Tracking ' + n + ' new questions' : 'All already tracked', n ? 'good' : undefined); },
+    'sh-link-del': (inst, v) => { const p = home(inst); const l = (BB.seo.seoOf(p).sameAs || []).filter((x, i) => i !== +v); BB.act.updateSeo(p.id, { sameAs: l }); },
+    'sh-gbp': (inst, v) => { const p = home(inst); const g = Object.assign({}, BB.seo.seoOf(p).gbp); g[v] = !g[v]; BB.act.updateSeo(p.id, { gbp: g }); },
+    'sh-ping': async (inst, v, el) => { const p = home(inst); el.disabled = true; try { const j = await BB.api.call(API() + 'seo/ping', { propertyId: p.id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } el.disabled = false; },
+    'sh-files': inst => inst.set({ sh_show: inst.st.sh_show === 'files' ? null : 'files' }),
+    'sh-copy': (inst, v) => { try { navigator.clipboard.writeText(v); BB.toast('Copied'); } catch (_) {} },
+  };
+  function onClick(ev, inst) {
+    const n = ev.target.closest('[data-sh-nav]'); if (n) { ev.preventDefault(); nav(inst, n.dataset.shNav); return; }
+    const a = ev.target.closest('[data-sh]'); if (!a) return; const H = HANDLERS[a.dataset.sh]; if (H) { ev.preventDefault(); H(inst, a.dataset.v, a); }
+  }
+  function onInput(ev, inst) {
+    const el = ev.target, f = el.dataset && el.dataset.shf; if (!f) return; const st = inst.st;
+    if (f.startsWith('faq:')) { st.sh_faq = st.sh_faq || {}; st.sh_faq[f.slice(4)] = el.value; return; }
+    st[f] = el.value;
+    if (['sh_sum', 'sh_area', 'sh_mt', 'sh_md'].includes(f)) { clearTimeout(inst._shT); inst._shT = setTimeout(() => { inst._focus = '[data-shf="' + f + '"]'; inst.render(); }, 500); }
+  }
+  function onSubmit(ev, inst) {
+    const f = ev.target.closest('form[data-shform]'); if (!f) return; ev.preventDefault();
+    const p = home(inst), st = inst.st, k = f.dataset.shform;
+    if (k === 'link') { const u = String(st.sh_link || '').trim(); if (!/^https:\\/\\/\\S+\\.\\S+/.test(u)) { BB.toast('Paste a full link that starts with https://'); return; } BB.act.updateSeo(p.id, { sameAs: (BB.seo.seoOf(p).sameAs || []).concat(u) }); st.sh_link = ''; BB.toast(BB.seo.LINK_LABEL[BB.seo.linkKind(u)] + ' added', 'good'); }
+    if (k === 'video') { const u = String(st.sh_video || '').trim(); const o = BB.act.updateSeo(p.id, { videoUrl: u }); if (u && !(o && o.videoUrl)) { BB.toast('Paste a YouTube or Vimeo link'); return; } st.sh_video = undefined; BB.toast(u ? 'Video linked' : 'Video removed', 'good'); }
+    if (k === 'pin') { const m = String(st.sh_pin || '').match(/(-?\\d+\\.\\d+)\\s*,\\s*(-?\\d+\\.\\d+)/); if (!m || !BB.act.setMapPin(p.id, m[1], m[2])) { BB.toast('Paste the pin as two numbers, like 54.4281, -2.9037'); return; } st.sh_pin = undefined; BB.toast('Map pin saved', 'good'); }
+    inst.render();
+  }
+  function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
+  const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';
+
+  V.seo = {
+    label: 'Search health', group: 'Get found', icon: 'search', order: 15,
+    click: onClick, input: onInput, submit: onSubmit,
+    after(inst) { const p = home(inst); if (p) loadFiles(inst, p.id); },
+    render(inst) {
+      const s = S(), st = inst.st;
+      if (!s.properties.length) return '<div class="ag sh">' + vh('Search health', 'Add a home first, then come back to see how it shows up in Google and AI answers.') + '</div>';
+      const p = home(inst), A = BB.seo.audit(p), o = BB.seo.seoOf(p), files = (st.sh_files || {})[p.id] || {};
+      const live = !!s.live, writer = files.writer;
+      const cat = st.sh_cat ? A.cats.find(c => c.id === st.sh_cat) : null;
+      const list = cat ? cat.checks : A.fixes.slice(0, 8);
+      const row = c => '<li class="sh-ck s-' + c.status + '"><span class="sh-st" title="' + STL[c.status] + '">' + I(STI[c.status]) + '</span><div><b>' + esc(c.label) + '</b><small>' + esc(c.detail) + '</small>' + (c.fix ? '<p>' + esc(c.fix) + '</p>' : '') + '</div>' +
+        (c.fix ? '<span class="sh-gain">+' + (c.gain || '') + (c.gain ? ' pts' : '') + '</span>' + (c.act ? '<button class="btn sm' + (c.status === 'fail' ? ' primary' : '') + '" data-sh="sh-fix" data-v="' + c.id + '">' + fixLabel(c.act) + '</button>' : '') : BB.pill(c.status === 'auto' ? 'muted' : 'good', STL[c.status])) + '</li>';
+      if (cat) list.forEach(c => { if (c.fix) c.gain = (A.fixes.find(f => f.id === c.id) || {}).gain; });
+
+      const sumV = st.sh_sum != null ? st.sh_sum : o.summary, areaV = st.sh_area != null ? st.sh_area : o.areaIntro;
+      const mt = st.sh_mt != null ? st.sh_mt : (o.metaTitle || BB.seo.titleOf(p)), md = st.sh_md != null ? st.sh_md : (o.metaDescription || BB.seo.descOf(p));
+      const drafting = what => st.sh_busy === what;
+      const wbtn = (what, label) => '<button class="btn sm" data-sh="sh-write" data-v="' + what + '"' + (st.sh_busy ? ' disabled' : '') + '>' + I(writer ? 'spark' : 'edit') + (drafting(what) ? 'Writing\u2026' : label || (writer ? 'Write with AI' : 'Draft from my facts')) + '</button>';
+      const ideas = BB.seo.faqIdeas(p), kws = BB.seo.keywords(p), tracked = new Set(s.ai.questions.filter(q => q.propertyId === p.id).map(q => q.q.toLowerCase()));
+      const links = o.sameAs || [], srcs = BB.seo.sources(p.id), ownDom = String(p.domain || '').replace(/^www\\./, '');
+      const maxSrc = srcs.reduce((a, x) => Math.max(a, x.n), 1);
+
+      return '<div class="ag sh' + (inst.compact ? ' ag-compact' : '') + '">' +
+        vh('Search health', 'How well ' + esc(p.name) + ' is set up to be found on Google, in maps and in AI answers, and what to do next.', '<button class="btn" data-sh-nav="ai">' + I('spark') + 'AI visibility</button><button class="btn" data-sh-nav="website">' + I('web') + 'Website & SEO</button>') +
+        (s.properties.length > 1 ? '<div class="ag-ptabs" role="tablist" aria-label="Homes">' + s.properties.map(x => { const sc = BB.seo.audit(x).score; return '<button type="button" role="tab" aria-selected="' + (x.id === p.id) + '" data-sh="sh-pid" data-v="' + x.id + '"><span class="sh-pscore t-' + tone(sc) + '">' + sc + '</span><span><b>' + esc(x.name) + '</b><small class="mono">' + esc(x.domain || '') + '</small></span></button>'; }).join('') + '</div>' : '') +
+
+        '<div class="sh-top">' +
+          '<section class="a-card ag-card sh-score"><div class="sh-score-in">' + gauge(A.score) + '<div><span class="eyebrow">Search health</span><b class="disp">' + A.grade + '</b><p class="muted">' + A.auto + ' checks handled for you. ' + A.fixes.length + (A.fixes.length === 1 ? ' thing' : ' things') + ' to improve, best first below.</p></div></div></section>' +
+          '<div class="sh-cats" role="list">' + A.cats.map(c => '<button type="button" role="listitem" class="sh-cat' + (st.sh_cat === c.id ? ' on' : '') + '" data-sh="sh-cat" data-v="' + c.id + '" title="' + esc(c.about) + '"><span>' + esc(c.label) + '</span><b class="num t-' + tone(c.score) + '">' + c.score + '</b><i><em class="t-' + tone(c.score) + '" style="width:' + c.score + '%"></em></i><small>' + (c.todo ? c.todo + ' to improve' : 'All good') + '</small></button>').join('') + '</div>' +
+        '</div>' +
+
+        card('fixes', cat ? esc(cat.label) : 'Fix these first', cat ? esc(cat.about) + ' <button class="sh-link" data-sh="sh-cat" data-v="' + cat.id + '">Show top fixes</button>' : 'Ordered by how much each one adds', '<ul class="sh-checks">' + (list.length ? list.map(row).join('') : '<li class="sh-ck s-ok"><span class="sh-st">' + I('check') + '</span><div><b>Nothing left to fix</b><small>Every check passes. We keep checking as your site and AI answers change.</small></div></li>') + '</ul>') +
+
+        '<div class="sh-grid">' +
+          card('summary', 'Answer-first summary', 'AEO \xB7 AIO \xB7 GEO', '<p class="sh-help">40 to 60 words that answer "what is it, where, who for, how much". It sits under the main heading, in the schema and in llms.txt, where answer engines read first.</p>' +
+            edBox(inst, 'sh_sum', sumV, 4, 'e.g. ' + BB.seo.draft(p, 'summary')) + '<div class="sh-row"><small class="muted num">' + words(sumV) + ' words</small>' + byLine(st.sh_sum != null ? st.sh_sum_by : null) + '<span class="sh-sp"></span>' + wbtn('summary') + '<button class="btn sm primary" data-sh="sh-save-sum"' + (st.sh_sum != null && st.sh_sum !== o.summary ? '' : ' disabled') + '>Publish</button></div>') +
+          card('meta', 'Google title and description', 'On-page', '<div class="ag-serp-r sh-serp"><div class="ag-serp-u"><span class="ag-fav" style="background:' + esc(p.color || '#3355FF') + '"></span><div><b>' + esc(p.name) + '</b><small>https://' + esc(p.domain || '') + '</small></div></div><p class="ag-serp-t">' + esc(mt.slice(0, 62)) + (mt.length > 62 ? '\u2026' : '') + '</p><p class="ag-serp-d">' + esc(md.slice(0, 160)) + (md.length > 160 ? '\u2026' : '') + '</p></div>' +
+            '<label class="field"><span>Title <em class="num ' + (mt.length > 62 ? 't-bad' : 'muted') + '">' + mt.length + '/62</em></span><input data-shf="sh_mt" value="' + esc(mt) + '"></label><label class="field"><span>Description <em class="num ' + (md.length > 160 ? 't-bad' : 'muted') + '">' + md.length + '/160</em></span><textarea class="sh-ta" data-shf="sh_md" rows="3">' + esc(md) + '</textarea></label>' +
+            '<div class="sh-row">' + byLine(st.sh_mt != null ? st.sh_meta_by : null) + '<span class="sh-sp"></span>' + (o.metaTitle || o.metaDescription ? '<button class="btn sm" data-sh="sh-reset-meta">Use automatic</button>' : '') + wbtn('meta') + '<button class="btn sm primary" data-sh="sh-save-meta"' + (st.sh_mt != null || st.sh_md != null ? '' : ' disabled') + '>Publish</button></div>') +
+        '</div>' +
+
+        card('area', 'Local area guide', 'Content \xB7 Local \xB7 AIO', '<p class="sh-help">For searches like "things to do near ' + esc(BB.seo.town(p) || 'here') + '". It is published on your page with your nearby places, and marked up as tourist attractions.</p>' +
+          edBox(inst, 'sh_area', areaV, 7, 'Walks, pubs, beaches and days out near ' + p.name + '\u2026') + '<div class="sh-row"><small class="muted num">' + words(areaV) + ' words \xB7 ' + (p.guide || []).length + ' nearby places</small>' + byLine(st.sh_area != null ? st.sh_area_by : null) + '<span class="sh-sp"></span>' + wbtn('area') + '<button class="btn sm primary" data-sh="sh-save-area"' + (st.sh_area != null && st.sh_area !== o.areaIntro ? '' : ' disabled') + '>Publish</button></div>') +
+
+        '<div class="sh-grid">' +
+          card('faqs', 'Questions to answer', 'AEO \xB7 GEO', '<p class="sh-help">Questions guests ask that your site does not answer yet. Answers are drafted from your facts; anything we cannot know is left for you.</p>' +
+            (ideas.length ? '<ul class="sh-ideas">' + ideas.map((f, i) => { const v = (st.sh_faq || {})[f.q] != null ? st.sh_faq[f.q] : f.a; return '<li><b>' + esc(f.q) + '</b><textarea class="sh-ta" rows="2" data-shf="faq:' + esc(f.q) + '" placeholder="' + (f.needs ? 'Only you know this. Write a one-line answer.' : '') + '">' + esc(v) + '</textarea>' + (st.sh_faq_err === f.q ? '<small class="t-bad">Write an answer first.</small>' : '') + '<div class="sh-row">' + (f.needs && !v ? BB.pill('warn', 'Needs your answer') : '') + '<span class="sh-sp"></span><button class="btn sm" data-sh="sh-faq-add" data-v="' + i + '">' + I('plus') + 'Add to site</button></div></li>'; }).join('') + '</ul>' + (writer ? '<div class="sh-row"><span class="sh-sp"></span>' + byLine(st.sh_faq_by) + wbtn('faqs', 'Answer all with AI') + '</div>' : '') : '<p class="muted">Every common question is answered. Add your own in Website & SEO.</p>')) +
+          card('keywords', 'Searches to target', 'Content \xB7 On-page \xB7 GEO', '<p class="sh-help">What travellers type into Google and ask AI assistants, built from your home\\'s facts. Target the ones that fit, and track them in AI visibility.</p>' +
+            '<div class="tblwrap"><table class="tbl sh-kw"><thead><tr><th>Search</th><th>Intent</th><th>On site</th><th></th></tr></thead><tbody>' + kws.map(k => { const on = (o.keywords || []).includes(k.q); return '<tr><td><b>' + esc(k.q) + '</b><small class="muted">' + esc(k.use) + '</small></td><td>' + BB.pill(k.intent === 'Book' ? 'good' : k.intent === 'Compare' ? 'info' : 'muted', k.intent) + '</td><td>' + (k.onSite ? '<span class="t-good">' + I('check') + '</span>' : '<span class="muted">\u2013</span>') + '</td><td class="sh-kwa"><button class="btn sm' + (on ? ' primary' : '') + '" data-sh="sh-kw" data-v="' + esc(k.q) + '" aria-pressed="' + on + '">' + (on ? 'Targeted' : 'Target') + '</button>' + (k.intent !== 'Plan' ? '<button class="btn sm" data-sh="sh-track" data-v="' + esc(k.q) + '"' + (tracked.has(k.q) ? ' disabled' : '') + '>' + (tracked.has(k.q) ? 'Tracked' : 'Track in AI') + '</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>' +
+            '<div class="sh-row"><span class="sh-sp"></span><button class="btn sm" data-sh="sh-track-top">' + I('spark') + 'Track the top 5 in AI visibility</button></div>') +
+        '</div>' +
+
+        '<div class="sh-grid">' +
+          card('listed', 'Where this home is listed', 'Local \xB7 Off-page \xB7 LLMO', '<p class="sh-help">Your other listings, Google Maps, social profiles and any local or press mentions. Each becomes a sameAs link, so Google and AI models know they are all the same home.</p>' +
+            (links.length ? '<ul class="sh-links">' + links.map((u, i) => '<li>' + BB.pill(BB.seo.linkKind(u) === 'local' ? 'info' : 'muted', BB.seo.LINK_LABEL[BB.seo.linkKind(u)]) + '<a href="' + esc(u) + '" target="_blank" rel="noopener" class="mono">' + esc(u.replace(/^https:\\/\\/(www\\.)?/, '').slice(0, 48)) + '</a><button class="btn sm ghost" data-sh="sh-link-del" data-v="' + i + '" aria-label="Remove">' + I('x') + '</button></li>').join('') + '</ul>' : '') +
+            '<form data-shform="link" class="sh-inl"><input data-shf="sh_link" placeholder="https://www.airbnb.co.uk/rooms/\u2026" value="' + esc(st.sh_link || '') + '" aria-label="Link"><button class="btn sm" type="submit">' + I('plus') + 'Add</button></form>' +
+            '<form data-shform="video" class="sh-inl"><input data-shf="sh_video" placeholder="YouTube walkthrough link" value="' + esc(st.sh_video != null ? st.sh_video : o.videoUrl) + '" aria-label="Video link"><button class="btn sm" type="submit">' + I('play') + 'Save video</button></form>' +
+            '<form data-shform="pin" class="sh-inl"><input data-shf="sh_pin" placeholder="Map pin, like 54.4281, -2.9037" value="' + esc(st.sh_pin != null ? st.sh_pin : (p.lat && p.lng ? p.lat + ', ' + p.lng : '')) + '" aria-label="Map pin"><button class="btn sm" type="submit">' + I('pin') + 'Save pin</button></form>' +
+            '<p class="sh-tip">' + I('bolt') + '<span>In Google Maps, right-click the home and click the numbers at the top to copy its pin.</span></p>') +
+          card('gbp', 'Google Business Profile', 'Local \xB7 Guidance', '<p class="sh-help">The profile decides whether you show in the map pack and "near me" searches. Tick each step as you do it.</p><ul class="sh-gbp">' +
+            BB.seo.GBP.map(([id, t, d]) => { const on = !!(o.gbp || {})[id]; return '<li><button type="button" class="sh-tick' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-sh="sh-gbp" data-v="' + id + '">' + I('check') + '</button><div><b>' + esc(t) + '</b><small>' + esc(d) + '</small></div></li>'; }).join('') + '</ul>' +
+            '<a class="btn sm" href="https://business.google.com/" target="_blank" rel="noopener">' + I('out') + 'Open Google Business Profile</a>') +
+        '</div>' +
+
+        '<div class="sh-grid">' +
+          card('cites', 'Sites AI assistants cite', 'GEO \xB7 LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
+            : '<p class="muted">' + (live ? 'Shown after the next AI check. We record every site each answer cites.' : 'Run an AI check to see the sites answers cite.') + '</p>') +
+          card('index', 'Indexing', 'Technical', (files.sitemap ? '<ul class="sh-files"><li><span>Sitemap with images</span><a class="mono" href="' + esc(files.sitemap) + '" target="_blank" rel="noopener">' + esc(files.sitemap.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>robots.txt</span><a class="mono" href="' + esc(files.robots) + '" target="_blank" rel="noopener">' + esc(files.robots.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>llms.txt</span><a class="mono" href="' + esc(files.llmsUrl) + '" target="_blank" rel="noopener">' + esc(files.llmsUrl.replace(/^https?:\\/\\//, '')) + '</a></li></ul>' : '<p class="muted">' + (files.loading ? 'Loading\u2026' : 'Sitemap, robots.txt and llms.txt are published with your site.') + '</p>') +
+            '<div class="sh-ping"><div><b>Ask Bing to recrawl now</b><small>IndexNow tells Bing, Yandex, Seznam and Naver your page changed. Bing results feed ChatGPT search and Copilot. Google does not use IndexNow; it reads your sitemap.</small></div><button class="btn sm primary" data-sh="sh-ping"' + (api() ? '' : ' disabled') + '>' + I('send') + 'Send</button></div>' +
+            '<details class="sh-steps"><summary>Add the site to Google Search Console and Bing Webmaster Tools</summary><ol><li>Open <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a> and add a URL-prefix property for your site address.</li><li>Verify with the HTML tag method, or with a DNS record if you use your own domain.</li><li>Under Sitemaps, submit the sitemap address above.</li><li>In <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">Bing Webmaster Tools</a>, choose "Import from Google Search Console". It copies everything in one step.</li></ol></details>' +
+            '<button class="btn sm" data-sh="sh-files">' + I('search') + (st.sh_show === 'files' ? 'Hide what crawlers see' : 'See what crawlers and AI read') + '</button>' +
+            (st.sh_show === 'files' ? (files.jsonld ? '<div class="sh-types">' + files.jsonld['@graph'].map(n => BB.pill('info', n['@type'])).join('') + '</div><span class="eyebrow">llms.txt</span><pre class="sh-pre">' + esc(files.llms) + '</pre><span class="eyebrow">Structured data</span><pre class="sh-pre">' + esc(JSON.stringify(files.jsonld, null, 2)) + '</pre>' : '<p class="muted">' + esc(files.error || 'Loading\u2026') + '</p>') : '')) +
+        '</div>' +
+
+        card('cover', 'Every kind of search, covered', 'What is automatic and what is guidance', '<div class="tblwrap"><table class="tbl sh-cover"><tbody>' + COVER.map(([n, k, d]) => '<tr><td><b>' + esc(n) + '</b></td><td>' + BB.pill(COVL[k][0], COVL[k][1]) + '</td><td class="muted">' + esc(d) + '</td></tr>').join('') + '</tbody></table></div>') +
+      '</div>';
+    },
+  };
 })();
 ` }, "/app/web/src/app-studio.css": { "t": "/* Host console: Site builder and Funnels (app-studio.js). Lives inside .ag, so it reflows with the container. */\n.sb .sb-cols { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }\n@container ag (max-width: 860px) { .sb .sb-cols { grid-template-columns: minmax(0, 1fr); } .sb .sb-stage { order: -1; } }\n.sb .eyebrow { display: block; font: 600 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }\n.sb .eyebrow em { font: 500 11px var(--font, inherit); text-transform: none; letter-spacing: 0; font-style: normal; }\n.sb .sb-q { display: grid; gap: 2px; margin: 0 0 18px; }\n.sb .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }\n.sb .field { display: grid; gap: 6px; margin-bottom: 14px; }\n.sb .field > span { font-size: 13px; font-weight: 600; }\n.sb .field em { font-style: normal; font-weight: 500; font-size: 12px; }\n.sb .field input, .sb .field textarea, .sb .field select { width: 100%; }\n\n/* brief */\n.sb .sb-brief { padding: 18px 20px 20px; }\n.sb .sb-brief .a-card-h { padding: 0 0 14px; }\n.sb .sb-ph { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 0 0 16px; }\n.sb .sb-ph .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; }\n.sb .sb-gobtn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 15px; }\n\n/* art direction cards */\n.sb .sb-dirs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }\n.sb .sb-dir { display: grid; gap: 2px; text-align: left; padding: 8px 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }\n.sb .sb-dir:hover { border-color: var(--line-2); transform: translateY(-1px); }\n.sb .sb-dir.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-dir b { font-size: 13px; line-height: 1.2; margin-top: 6px; }\n.sb .sb-dir small { font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dir-sw { display: flex; align-items: flex-end; justify-content: space-between; height: 58px; padding: 8px 10px; border-radius: 8px; background: var(--b); color: var(--i); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }\n.sb .sb-aa { font-size: 30px; line-height: 1; }\n.sb .sb-dots { display: flex; gap: 3px; }\n.sb .sb-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }\n.sb .sb-dirs.sm { grid-template-columns: repeat(4, minmax(0, 1fr)); }\n.sb .sb-dirs.sm .sb-dir-sw { height: 40px; padding: 6px; }\n.sb .sb-dirs.sm .sb-aa { font-size: 20px; }\n.sb .sb-dirs.sm .sb-dots, .sb .sb-dirs.sm small { display: none; }\n.sb .sb-dirs.sm b { font-size: 11.5px; }\n\n/* busy */\n.sb .sb-busy { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 24px; display: grid; gap: 6px; justify-items: start; }\n.sb .sb-busy p { margin: 0 0 10px; font-size: 13.5px; }\n.sb .sb-orb { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 30%, white), var(--primary)); color: #fff; animation: sbPulse 1.8s ease-in-out infinite; margin-bottom: 8px; }\n.sb .sb-orb .ic { width: 22px; height: 22px; }\n@keyframes sbPulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 12%, transparent); } }\n.sb .sb-busy ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; width: 100%; }\n.sb .sb-busy li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }\n.sb .sb-busy li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }\n.sb .sb-busy li .ic { width: 16px; height: 16px; color: var(--good); flex: none; }\n.sb .sb-busy li.done { color: var(--fg); }\n.sb .sb-busy li.now { color: var(--fg); font-weight: 600; }\n.sb .sb-busy li.now i { border-color: var(--primary); border-top-color: transparent; animation: sbSpin .8s linear infinite; }\n@keyframes sbSpin { to { transform: rotate(360deg); } }\n@media (prefers-reduced-motion: reduce) { .sb .sb-orb, .sb .sb-busy li.now i { animation: none; } }\n\n/* edit panel */\n.sb .sb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 14px; min-width: 0; }\n.sb .sb-ask { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--primary-soft); }\n.sb .sb-ask > div { display: flex; gap: 8px; align-items: flex-end; }\n.sb .sb-ask textarea { flex: 1; min-width: 0; resize: vertical; background: var(--surface); }\n.sb .sb-tabs { display: flex; width: 100%; }\n.sb .sb-tabs button { flex: 1; white-space: nowrap; }\n.sb .sb-tabbody { min-width: 0; }\n.sb .sb-why { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 13.5px; line-height: 1.5; }\n.sb .sb-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }\n.sb .sb-hero { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-hero.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-hero b { font-size: 12.5px; } .sb .sb-hero small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-hi { display: block; height: 44px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); position: relative; overflow: hidden; }\n.sb .sb-hi::before, .sb .sb-hi::after { content: ''; position: absolute; background: var(--line-2); border-radius: 2px; }\n.sb .h-cinematic { background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-cinematic::before { left: 8px; bottom: 9px; width: 50%; height: 5px; background: #fff; } .sb .h-cinematic::after { left: 8px; bottom: 18px; width: 30%; height: 3px; background: rgba(255,255,255,.7); }\n.sb .h-split::before { right: 6px; top: 6px; bottom: 6px; width: 42%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-split::after { left: 6px; top: 16px; width: 36%; height: 5px; background: var(--fg); }\n.sb .h-editorial::before { left: 6px; top: 6px; width: 70%; height: 9px; background: var(--fg); } .sb .h-editorial::after { left: 6px; right: 6px; bottom: 5px; height: 18px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-mosaic::before { left: 6px; top: 6px; bottom: 6px; width: 46%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-mosaic::after { right: 6px; top: 6px; bottom: 6px; width: 40%; background: repeating-linear-gradient(180deg, #b9c6d3 0 15px, transparent 15px 18px); }\n.sb .h-type::before { left: 8px; top: 9px; width: 66%; height: 9px; background: var(--fg); } .sb .h-type::after { left: 8px; top: 23px; width: 40%; height: 9px; background: var(--primary); }\n.sb .sb-accrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }\n.sb .sb-accrow input[type=color] { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); cursor: pointer; }\n.sb .sb-acc > small { font-size: 12px; }\n.sb .sb-hl { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }\n.sb .sb-hl .eyebrow { margin: 0; }\n.sb .sb-sticky { position: sticky; bottom: 0; display: grid; gap: 6px; padding: 12px 0 2px; background: linear-gradient(transparent, var(--surface) 30%); margin-bottom: 14px; }\n.sb .sb-sticky small { font-size: 12px; }\n.sb .sb-secs { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 6px; }\n.sb .sb-secs li { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.sb .sb-secs li > div { flex: 1; min-width: 0; display: grid; }\n.sb .sb-secs b { font-size: 13.5px; } .sb .sb-secs small { font-size: 11.5px; color: var(--muted); }\n.sb .sb-sn { font: 600 11px var(--mono); color: var(--muted); }\n.sb .sb-sa { display: flex; gap: 2px; }\n.sb .sb-sa .iconbtn { width: 30px; height: 30px; font-size: 14px; }\n.sb .sb-qa { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }\n.sb .sb-qa li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }\n.sb .sb-qa li > .ic { width: 18px; height: 18px; flex: none; padding: 2px; border-radius: 50%; }\n.sb .sb-qa li.ok > .ic { color: var(--good); background: var(--good-soft); }\n.sb .sb-qa li.no > .ic { color: var(--bad); background: var(--bad-soft); }\n.sb .sb-qa small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }\n.sb .sb-rules { font-size: 13px; } .sb .sb-rules summary { cursor: pointer; font-weight: 600; }\n.sb .sb-rules ol { padding-left: 20px; display: grid; gap: 6px; color: var(--muted); }\n\n/* stage */\n.sb .sb-stage { position: sticky; top: calc(var(--a-top, 0px) + 12px); display: grid; gap: 10px; min-width: 0; }\n.sb .sb-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }\n.sb .sb-meta { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; min-width: 0; }\n.sb .sb-meta small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-tools { display: flex; gap: 4px; }\n.sb .sb-dev { border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); margin-inline: auto; width: 100%; }\n.sb .sb-dev.phone { width: min(100%, 390px); border-radius: 34px; border: 10px solid #0d0f17; box-shadow: var(--shadow), 0 0 0 1px var(--line-2); }\n.sb .sb-chrome { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }\n.sb .sb-chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }\n.sb .sb-chrome span { margin-left: 10px; font-size: 11.5px; color: var(--muted); padding: 3px 12px; border-radius: 999px; background: var(--surface); flex: 1; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dev.phone .sb-chrome { justify-content: center; } .sb .sb-dev.phone .sb-chrome i { display: none; } .sb .sb-dev.phone .sb-chrome span { margin: 0; text-align: center; }\n.sb .sb-slot { height: min(74vh, 860px); min-height: 420px; background: var(--surface-2); }\n.sb .sb-dev.phone .sb-slot { height: min(72vh, 760px); }\n.sb-float { position: fixed; z-index: 40; overflow: hidden; pointer-events: auto; }\n.sb-float[hidden] { display: none; }\n.sb-float iframe { border: 0; display: block; transform-origin: 0 0; background: #fff; }\n.sb-float.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) var(--surface-2); background-size: 200% 100%; animation: sbShimmer 1.2s linear infinite; }\n@keyframes sbShimmer { to { background-position: -200% 0; } }\n\n/* empty state */\n.sb .sb-empty { min-height: 520px; display: grid; place-items: center; border-radius: var(--r-lg); background: radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%), var(--surface); border: 1px solid var(--line); padding: 40px; position: static; }\n.sb .sb-hero-ill { max-width: 520px; }\n.sb .sb-hero-ill .disp { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; display: block; margin-bottom: 14px; }\n.sb .sb-hero-ill em, .sb .sb-fempty em { font-style: italic; color: var(--primary); }\n.sb .sb-hero-ill p { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }\n.sb .sb-hero-ill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 13.5px; }\n.sb .sb-hero-ill li { display: flex; gap: 8px; align-items: flex-start; } .sb .sb-hero-ill li .ic { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 2px; }\n.sb .sb-load { min-height: 300px; }\n\n/* funnels */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 0 20px 20px; }\n.sb .sb-tpl { display: grid; gap: 4px; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .15s, transform .15s; }\n.sb .sb-tpl:hover { border-color: var(--primary); transform: translateY(-1px); }\n.sb .sb-tpl b { font-size: 15px; margin-top: 6px; } .sb .sb-tpl small { color: var(--muted); font-size: 13px; line-height: 1.45; }\n.sb .sb-tpl em { font-style: normal; font: 500 11px var(--mono); color: var(--muted); margin-top: 6px; }\n.sb .sb-tpl-i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; }\n.sb .sb-tpl-i .ic { width: 18px; height: 18px; }\n.sb .sb-fform { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 14px; padding: 0 20px; }\n.sb .sb-fform .sb-wide { grid-column: 1 / -1; }\n.sb section > .ag-acts-row, .sb section > p.muted { padding: 0 20px 20px; }\n.sb section > p.muted { padding-bottom: 0; }\n.sb .sb-flist { display: grid; gap: 8px; }\n.sb .sb-frow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--line); }\n.sb .sb-frow:hover { border-color: var(--line-2); }\n.sb .sb-fn { flex: 1; min-width: 0; display: grid; } .sb .sb-fn small { color: var(--muted); font-size: 12.5px; }\n.sb .sb-fs { display: flex; gap: 18px; } .sb .sb-fs > span { display: grid; text-align: right; } .sb .sb-fs small { font-size: 11px; color: var(--muted); }\n@container ag (max-width: 620px) { .sb .sb-fs { display: none; } }\n.sb .sb-fempty { padding: 36px; display: grid; gap: 10px; justify-items: start; }\n.sb .sb-fempty .disp { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; } .sb .sb-fempty p { max-width: 560px; margin: 0 0 6px; line-height: 1.6; }\n.sb .sb-fdetail { display: grid; gap: 16px; min-width: 0; }\n.sb .sb-fh { margin: 0; }\n.sb .sb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }\n.sb .sb-kpis > div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }\n.sb .sb-kpis small { font-size: 12px; color: var(--muted); } .sb .sb-kpis b { font-size: 22px; }\n\n/* page templates, fonts, palettes and style switches */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }\n.sb .sb-tpl { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-tpl.on, .sb .sb-font.on, .sb .sb-pal.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-tpl b { font-size: 12.5px; } .sb .sb-tpl small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-ti { display: block; height: 52px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); --p: linear-gradient(160deg, #9fb3c8, #4a6176); --t: var(--fg); --l: var(--line-2); }\n.sb .t-classic { background: linear-gradient(var(--t), var(--t)) 6px 10px / 34% 4px no-repeat, var(--p) right 6px top 6px / 40% 24px no-repeat, linear-gradient(var(--l), var(--l)) 6px 36px / 88% 3px no-repeat, linear-gradient(var(--l), var(--l)) 6px 43px / 60% 3px no-repeat, var(--surface-2); }\n.sb .t-magazine { background: linear-gradient(var(--t), var(--t)) 6px 6px / 80% 9px no-repeat, var(--p) right 6px top 20px / 56% 18px no-repeat, linear-gradient(var(--l), var(--l)) 6px 44px / 88% 3px no-repeat, var(--surface-2); }\n.sb .t-showcase { background: var(--p) 6px 6px / 46% 40px no-repeat, var(--p) right 6px top 6px / 40% 18px no-repeat, var(--p) right 6px top 28px / 40% 18px no-repeat, var(--surface-2); }\n.sb .t-minimal { background: linear-gradient(var(--t), var(--t)) center 9px / 50% 5px no-repeat, linear-gradient(var(--l), var(--l)) center 19px / 30% 3px no-repeat, var(--p) center 28px / 80% 16px no-repeat, var(--surface-2); }\n.sb .t-bold { background: linear-gradient(#fff, #fff) 8px 32px / 44% 5px no-repeat, linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)) 8px 41px / 28% 3px no-repeat, var(--p); }\n.sb .t-boutique { background: linear-gradient(var(--t), var(--t)) 6px 14px / 40% 5px no-repeat, linear-gradient(var(--l), var(--l)) 6px 24px / 30% 3px no-repeat, radial-gradient(circle at 50% 30%, #6f879c 60%, transparent 61%) right 8px top 4px / 36% 30px no-repeat, var(--p) right 8px top 18px / 36% 30px no-repeat, var(--surface-2); }\n.sb .t-cosy { background: linear-gradient(var(--surface-2), var(--surface-2)) 6px 28px / 56% 20px no-repeat, var(--p) 4px 4px / calc(100% - 8px) 34px no-repeat, linear-gradient(var(--t), var(--t)) 10px 33px / 40% 4px no-repeat, var(--surface-2); }\n.sb .h-centered::before { left: 30%; top: 6px; width: 40%; height: 5px; background: var(--fg); } .sb .h-centered::after { left: 8px; right: 8px; bottom: 5px; height: 20px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-framed::before { left: 4px; right: 4px; top: 4px; height: 26px; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-framed::after { left: 4px; top: 24px; width: 48%; height: 16px; background: var(--surface-2); box-shadow: inset 6px 6px 0 -1px var(--surface-2), inset 0 -8px 0 -4px var(--fg); }\n.sb .h-arch::before { right: 10px; top: 4px; bottom: 4px; width: 30%; border-radius: 99px 99px 3px 3px; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-arch::after { left: 6px; top: 16px; width: 40%; height: 5px; background: var(--fg); }\n.sb .sb-fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }\n.sb .sb-font { display: grid; grid-template-columns: 44px 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; text-align: left; padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; min-width: 0; }\n.sb .sb-font .sb-aa { grid-row: 1 / 3; font-size: 26px; line-height: 1; text-align: center; }\n.sb .sb-font b { font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sb .sb-font small { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-pals { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 6px; }\n.sb .sb-pal { display: grid; gap: 4px; padding: 5px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; text-align: left; min-width: 0; }\n.sb .sb-pal .sw { display: flex; gap: 3px; align-items: flex-end; height: 34px; padding: 5px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }\n.sb .sb-pal .sw i { width: 12px; height: 12px; border-radius: 50%; }\n.sb .sb-pal small { font-size: 10.5px; line-height: 1.2; color: var(--muted); }\n.sb .sb-srow { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }\n.sb .sb-srow > span { font-size: 12.5px; font-weight: 600; }\n.sb .sb-srow .seg { flex-wrap: wrap; justify-self: start; }\n.sb .sb-srow .seg button { font-size: 12px; padding: 4px 9px; }\n.sb .sb-shuf { display: grid; gap: 6px; margin-bottom: 12px; } .sb .sb-shuf small { font-size: 12px; }\n.sb .sb-sname { all: unset; cursor: pointer; font-weight: 600; font-size: 13.5px; } .sb .sb-sname:hover { text-decoration: underline; }\n.sb .sb-var { font-size: 12px; padding: 2px 6px; margin-top: 3px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); max-width: 170px; }\n.sb .sb-wg { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; margin-bottom: 8px; }\n.sb .sb-wg > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; padding: 11px 0; }\n.sb .sb-wg[open] { padding-bottom: 6px; }\n.sb .sb-cnt { font-style: normal; font-size: 11px; color: var(--muted); float: right; font-variant-numeric: tabular-nums; } .sb .sb-cnt.over { color: var(--bad); font-weight: 600; }\n.sb .sb-serp { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 4px 0 12px; display: grid; gap: 2px; font-family: Arial, sans-serif; }\n.sb .sb-serp small { font-size: 12px; color: #4d5156; } .sb .sb-serp b { color: #1a0dab; font-weight: 400; font-size: 17px; line-height: 1.3; } .sb .sb-serp p { margin: 0; font-size: 13px; color: #4d5156; line-height: 1.45; }\n.sb .sb-dev.tablet { width: min(100%, 640px); border-radius: 22px; border: 8px solid #0d0f17; }\n.sb .sb-dev.tablet .sb-chrome i { display: none; }\n.sb .sb-tabs button { padding-inline: 9px; font-size: 13px; }\n" }, "/app/web/src/app-studio.js": { "t": `/* Bookingbooster: the Site builder and Funnels views in the host console.
    Site builder: Claude designs a premium booking site for each home from the Studio design system; the host
@@ -6894,6 +7092,300 @@ body.p-lock { overflow: hidden; }
     },
   });
 })();
+` }, "/app/web/src/seo-rules.js": { "t": `/* Bookingbooster: search health rules for host sites, shared by the browser and the server engine.
+   BB.seo.audit(p) scores one home across every kind of search work that applies to a holiday let:
+   on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO (brand and off-page) and Google AI Overviews.
+   Everything here is rule-based: it reads the home's own facts and the results of real AI checks, and makes no calls.
+   BB.seo.faqIdeas, BB.seo.keywords and BB.seo.draft give rule-based drafts the host edits; the server can replace a
+   draft with one written by Claude (see server/seo-tools.js). */
+(function () {
+  const BB = window.BB; if (!BB) return;
+  const S = () => BB.store.get();
+  const money = n => '\xA3' + Number(n || 0).toLocaleString('en-GB');
+  const words = t => String(t || '').trim().split(/\\s+/).filter(Boolean).length;
+  const town = p => String(p.area || '').split(',')[0].trim();
+  const county = p => String(p.area || '').split(',').slice(1).join(',').trim() || town(p);
+  const kind = p => ({ cabin: 'cabin', lake: 'cottage', city: 'apartment' }[p.theme] || 'holiday let');
+  const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  const POSTCODE = /\\b[A-Z]{1,2}\\d[A-Z\\d]?\\s*\\d[A-Z]{2}\\b/i;
+  const clip = (t, n) => String(t || '').trim().slice(0, n);
+
+  // The SEO fields a host can edit, kept together on the home so they never collide with booking fields.
+  const SEO_KEYS = { summary: 600, areaIntro: 4000, videoUrl: 300, sameAs: 12, keywords: 20, gbp: 20, metaTitle: 70, metaDescription: 170 };
+  const seoOf = p => Object.assign({ summary: '', areaIntro: '', videoUrl: '', sameAs: [], keywords: [], gbp: {}, metaTitle: '', metaDescription: '' }, p.seo || {});
+
+  // Where a link points, so we can tell listings, social profiles, maps and local press apart.
+  function linkKind(u) {
+    const h = String(u || '').toLowerCase();
+    if (/airbnb\\.|vrbo\\.|booking\\.com|tripadvisor\\.|sykescottages|cottages\\.com|holidaycottages|canopyandstars|hipcamp\\.|expedia\\.|holidaylettings|independentcottages|coolstays|uniquehomestays|plumguide/.test(h)) return 'listing';
+    if (/instagram\\.com|facebook\\.com|tiktok\\.com|youtube\\.com|youtu\\.be|pinterest\\.|x\\.com|twitter\\.com|threads\\.net/.test(h)) return 'social';
+    if (/google\\.[a-z.]+\\/maps|maps\\.app\\.goo\\.gl|g\\.page|business\\.google|goo\\.gl\\/maps/.test(h)) return 'maps';
+    return 'local';
+  }
+  const LINK_LABEL = { listing: 'Listing', social: 'Social profile', maps: 'Google Maps', local: 'Local site or press' };
+
+  function faqList(pid) { return ((S().website.faqs || {})[pid] || []).map(x => { const i = x.indexOf('|'); return i < 0 ? [x, ''] : [x.slice(0, i), x.slice(i + 1)]; }); }
+  function siteText(p) {
+    const o = seoOf(p);
+    return [p.name, p.area, p.headline, p.sub, p.about, p.parking, p.entry, o.summary, o.areaIntro].concat(p.amenities || [], p.rules || [], p.guide || [], faqList(p.id).map(f => f[0] + ' ' + f[1])).join(' \\n').toLowerCase();
+  }
+  function reviewsShown(p) {
+    const s = S();
+    return s.bookings.filter(b => b.propertyId === p.id && b.review && b.review.text && (s.live ? b.review.public : b.review.stars >= 4)).length;
+  }
+  // The same title and description the server writes into the page (server/seo.js titleOf / descOf), unless the host set their own.
+  function titleOf(p) { const o = seoOf(p); if (o.metaTitle) return o.metaTitle; const k = kind(p); return p.name + ' \xB7 ' + k[0].toUpperCase() + k.slice(1) + ' in ' + town(p) + ' \xB7 Book direct'; }
+  function descOf(p) { const o = seoOf(p); if (o.metaDescription) return o.metaDescription; return (p.headline ? p.headline + ' ' : '') + (p.sub ? String(p.sub).replace(/ \xB7 /g, ', ') + '. ' : '') + 'Book direct from ' + money(p.nightly) + ' a night with no platform fees.'; }
+
+  // Topics travellers ask about, and the words on a page that answer them.
+  const TOPICS = [
+    ['dogs', /\\bdog|\\bpet/, /\\bdog|\\bpet/], ['hot tub', /hot tub|jacuzzi|\\bspa\\b/, /hot tub|jacuzzi|\\bspa\\b/], ['families', /family|kids|child|children/, /family|child|cot|high chair|kids/],
+    ['parking', /parking|car park/, /parking|park\\b|driveway|space/], ['Wi-Fi and remote work', /wi-?fi|remote work|work from/, /wi-?fi|broadband|mbps|desk/],
+    ['the beach', /beach|seaside|coast|\\bsea\\b/, /beach|coast|\\bsea\\b|harbour/], ['walks', /walk|hike|hiking|trail|fell/, /walk|footpath|trail|fell|hike/],
+    ['couples', /romantic|couple|honeymoon|anniversary/, /couple|romantic|for two|sleeps 2/], ['EV charging', /\\bev\\b|electric car|charg/, /\\bev\\b|charg/],
+    ['accessibility', /accessible|wheelchair|step-free|mobility/, /accessible|wheelchair|step-free|ground floor/], ['a wood burner', /log burner|wood burner|fireplace|open fire/, /log burner|wood burner|fireplace|open fire/],
+  ];
+
+  /* ---------- the audit ---------- */
+  const CATS = [
+    ['onpage', 'On-page SEO', 'Titles, descriptions, headings and the words on each page.'],
+    ['content', 'Content SEO', 'Enough useful, original writing about the home and the area.'],
+    ['technical', 'Technical SEO', 'Crawling, indexing, sitemaps, schema and speed.'],
+    ['local', 'Local SEO', 'Maps, Google Business Profile, address and reviews.'],
+    ['media', 'Image and video SEO', 'Photos with descriptions, and a walkthrough video.'],
+    ['sxo', 'Search experience (SXO)', 'Visitors who land can see the price, trust you and book.'],
+    ['aeo', 'Answer engines (AEO)', 'Clear questions and answers that search and voice can quote.'],
+    ['geo', 'Generative engines (GEO)', 'Being named and linked in ChatGPT, Gemini, Perplexity and Claude.'],
+    ['llmo', 'Brand and off-page (LLMO)', 'The same home, named the same way, across the web.'],
+    ['aio', 'Google AI Overviews (AIO)', 'Showing in the AI summary at the top of Google.'],
+  ];
+  function audit(p) {
+    const s = S(); if (!p) return null;
+    const o = seoOf(p), faqs = faqList(p.id), text = siteText(p);
+    const others = s.properties.filter(x => x.id !== p.id);
+    const qs = (s.ai.questions || []).filter(q => q.propertyId === p.id);
+    const conn = id => BB.q.connected(id);
+    const photos = p.photos || [], links = (o.sameAs || []).filter(Boolean);
+    const kinds = links.map(linkKind); const has = k => kinds.includes(k);
+    const checks = [];
+    // status: 'ok' | 'warn' | 'fail' | 'auto' (handled by Bookingbooster). act: what the fix button does.
+    const add = (cat, id, label, status, weight, detail, fix, act) => checks.push({ cat, id, label, status, weight, detail, fix: status === 'ok' || status === 'auto' ? '' : fix, act: status === 'ok' || status === 'auto' ? null : act });
+    const T = titleOf(p), Dn = descOf(p);
+
+    // On-page
+    add('onpage', 'area', 'Town and county are set', town(p) && county(p) !== town(p) ? 'ok' : town(p) ? 'warn' : 'fail', 3, p.area ? 'Area: ' + p.area : 'No area set', 'Add the town and county, like "Troutbeck, Cumbria". Every title, heading and schema uses it.', { kind: 'nav', view: 'website' });
+    add('onpage', 'title', 'Google title is a good length', T.length >= 30 && T.length <= 62 ? 'ok' : 'warn', 2, T.length + ' characters: "' + T + '"', T.length > 62 ? 'Google cuts titles after about 62 characters. Write a shorter one.' : 'Make the title say what and where, like "Hot tub cabin in Troutbeck".', { kind: 'meta' });
+    add('onpage', 'desc', 'Description is a good length', Dn.length >= 70 && Dn.length <= 160 ? 'ok' : 'warn', 2, Dn.length + ' characters', Dn.length > 160 ? 'Google shows about 160 characters. Shorten it so the price and "book direct" are not cut off.' : 'Write a description of 70 to 160 characters with the price and what makes the home special.', { kind: 'meta' });
+    add('onpage', 'headline', 'Headline is short and specific', p.headline && words(p.headline) <= 12 ? 'ok' : p.headline ? 'warn' : 'fail', 2, p.headline ? words(p.headline) + ' words' : 'No headline', 'Use one line of up to 12 words that names the best thing about the home.', { kind: 'nav', view: 'website' });
+    const kw = (o.keywords || []).length ? o.keywords : [kind(p) + ' ' + town(p).toLowerCase()];
+    const kwHit = kw.filter(k => String(k).toLowerCase().split(/\\s+/).every(w => w.length < 3 || text.includes(w.toLowerCase())));
+    add('onpage', 'keywords', 'Target searches appear on the page', kwHit.length === kw.length ? 'ok' : kwHit.length ? 'warn' : 'fail', 3, kwHit.length + ' of ' + kw.length + ' target searches are covered', 'Pick target searches below, then use their words in your headline, about text or FAQs.', { kind: 'scroll', to: 'keywords' });
+    add('onpage', 'links', 'Every page links to booking', 'auto', 1, 'Each page has a "Check dates and book direct" link.', '', null);
+
+    // Content
+    const aw = words(p.about);
+    add('content', 'about', 'About text is long enough', aw >= 80 ? 'ok' : aw >= 40 ? 'warn' : 'fail', 4, aw + ' words', 'Write 80 to 200 words: who it suits, what is inside, what is nearby, and one thing guests love.', { kind: 'nav', view: 'website' });
+    const ai = words(o.areaIntro);
+    add('content', 'areaIntro', 'Local area guide is written', ai >= 120 ? 'ok' : ai >= 40 ? 'warn' : 'fail', 4, ai ? ai + ' words' : 'Not written yet', 'Write a short guide to the area: walks, pubs, beaches and days out. Searches like "things to do near ' + (town(p) || 'here') + '" find it.', { kind: 'write', what: 'area' });
+    const gl = (p.guide || []).length;
+    add('content', 'guide', 'Nearby places are listed', gl >= 4 ? 'ok' : gl ? 'warn' : 'fail', 3, plural(gl, 'place'), 'List at least 4 places nearby, one per line: place | how far | your tip.', { kind: 'nav', view: 'website' });
+    const am = (p.amenities || []).length;
+    add('content', 'amenities', 'Amenities are complete', am >= 8 ? 'ok' : am >= 5 ? 'warn' : 'fail', 2, plural(am, 'amenity'), 'List at least 8 things the home offers. Searches and AI answers match on them, like "hot tub" or "EV charger".', { kind: 'nav', view: 'website' });
+    const sim = (a, b) => { const A = new Set(String(a || '').toLowerCase().match(/[a-z]{4,}/g) || []), B = new Set(String(b || '').toLowerCase().match(/[a-z]{4,}/g) || []); if (!A.size || !B.size) return 0; let n = 0; A.forEach(w => { if (B.has(w)) n++; }); return n / Math.min(A.size, B.size); };
+    const dup = others.find(x => sim(x.about, p.about) > 0.7);
+    add('content', 'unique', 'Writing is original to this home', !p.about ? 'fail' : dup ? 'warn' : 'ok', 2, dup ? 'Very close to the text for ' + dup.name : 'No copies found across your homes', 'Rewrite the about text so it does not repeat another home. Search engines show only one of two similar pages.', { kind: 'nav', view: 'website' });
+
+    // Technical
+    add('technical', 'crawl', 'Pages readable without JavaScript', 'auto', 2, 'Every page is sent as plain HTML with the full text, so any crawler can read it.', '', null);
+    add('technical', 'sitemap', 'Sitemap with images', 'auto', 2, 'sitemap.xml lists the page, its photos and llms.txt, and robots.txt points to it.', '', null);
+    add('technical', 'schema', 'Structured data (schema.org)', 'auto', 3, 'VacationRental, LodgingBusiness, FAQPage, BreadcrumbList, reviews, nearby places and offers are added for you.', '', null);
+    add('technical', 'canonical', 'Canonical address, HTTPS and mobile', 'auto', 1, 'One canonical address per home, served over HTTPS, built for phones first.', '', null);
+    add('technical', 'published', 'Site is published', p.published === false ? 'fail' : 'ok', 3, p.published === false ? 'Hidden from search' : 'Live', 'Publish the site so search engines can see it.', { kind: 'nav', view: 'website' });
+    add('technical', 'geo', 'Map pin (latitude and longitude)', p.lat && p.lng ? 'ok' : 'warn', 2, p.lat && p.lng ? p.lat + ', ' + p.lng : 'Not set', 'Add the map pin so maps and AI assistants place the home exactly. Paste it from Google Maps.', { kind: 'scroll', to: 'listed' });
+    add('technical', 'gsc', 'Search Console connected', conn('gsc') ? 'ok' : 'warn', 1, conn('gsc') ? 'Rankings tracked' : 'Not connected', 'Verify the site in Google Search Console and Bing Webmaster Tools, then submit the sitemap. The steps are below.', { kind: 'scroll', to: 'index' });
+
+    // Local
+    add('local', 'address', 'Full address with postcode', POSTCODE.test(p.address || '') ? 'ok' : p.address ? 'warn' : 'fail', 3, p.address ? (POSTCODE.test(p.address) ? 'Postcode found' : 'No postcode') : 'No address', 'Add the full address with the postcode. Guests get it after booking; it also lets us place your map pin and keep your details the same everywhere.', { kind: 'nav', view: 'website' });
+    const gbpDone = Object.values(o.gbp || {}).filter(Boolean).length;
+    add('local', 'gbp', 'Google Business Profile set up', conn('google') || gbpDone >= GBP.length - 1 ? 'ok' : gbpDone >= 3 ? 'warn' : 'fail', 4, conn('google') ? 'Connected' : gbpDone + ' of ' + GBP.length + ' steps done', 'Follow the Google Business Profile checklist below. It decides whether you show in the map pack.', { kind: 'scroll', to: 'gbp' });
+    add('local', 'rating', 'Strong guest rating', p.rating >= 4.7 && p.reviews >= 10 ? 'ok' : p.rating >= 4.3 ? 'warn' : 'fail', 2, p.reviews ? p.rating + ' from ' + plural(p.reviews, 'review') : 'No reviews yet', 'Ask every guest for a review. The post-stay email does it for you.', { kind: 'nav', view: 'automations' });
+    add('local', 'maps', 'Google Maps link added', has('maps') ? 'ok' : 'warn', 2, has('maps') ? 'Linked' : 'Not linked', 'Paste the Google Maps link for your Business Profile under "Where this home is listed".', { kind: 'scroll', to: 'listed' });
+    add('local', 'citations', 'Listed on local and travel sites', links.filter(u => ['listing', 'local'].includes(linkKind(u))).length >= 2 ? 'ok' : links.length ? 'warn' : 'fail', 2, plural(links.filter(u => ['listing', 'local'].includes(linkKind(u))).length, 'listing'), 'Add your other listings and the local tourism site. The same name, town and phone everywhere is a strong local signal.', { kind: 'scroll', to: 'listed' });
+
+    // Image and video
+    add('media', 'photos', 'Enough photos', photos.length >= 8 ? 'ok' : photos.length >= 4 ? 'warn' : 'fail', 3, plural(photos.length, 'photo'), 'Add at least 8 photos: outside, every room, the view and one nearby.', { kind: 'nav', view: 'website' });
+    const capped = photos.filter(x => String(x.cap || '').trim().length >= 5).length;
+    add('media', 'alt', 'Every photo has a description', photos.length && capped === photos.length ? 'ok' : capped ? 'warn' : 'fail', 2, capped + ' of ' + photos.length + ' described', 'Write a short caption on each photo, like "Hot tub on the deck at dusk". It becomes the alt text Google Images reads.', { kind: 'nav', view: 'website' });
+    add('media', 'video', 'Walkthrough video linked', o.videoUrl ? 'ok' : 'warn', 1, o.videoUrl ? 'Linked' : 'No video', 'Film a 60-second walkthrough on your phone, upload it to YouTube and paste the link. It adds video schema and a video result.', { kind: 'scroll', to: 'listed' });
+
+    // SXO
+    add('sxo', 'instant', 'Guests can book and pay instantly', conn('stripe') ? 'ok' : 'warn', 3, conn('stripe') ? 'Card, Apple Pay and Google Pay' : 'Booking requests only', 'Connect Stripe so visitors who land can book on the spot instead of waiting for you.', { kind: 'nav', view: 'connections' });
+    add('sxo', 'price', 'Price shown up front', p.nightly > 0 ? 'ok' : 'fail', 2, p.nightly ? 'From ' + money(p.nightly) + ' a night' : 'No nightly rate', 'Set a nightly rate so search visitors see the price before they leave.', { kind: 'nav', view: 'website' });
+    add('sxo', 'proof', 'Reviews shown on the page', reviewsShown(p) >= 3 ? 'ok' : reviewsShown(p) ? 'warn' : 'fail', 2, plural(reviewsShown(p), 'review') + ' on the site', 'Reviews from direct guests appear on the page by themselves once they share them. Ask past guests for one.', { kind: 'nav', view: 'reviews' });
+    add('sxo', 'host', 'A personal line from you', p.hostNote ? 'ok' : 'warn', 1, p.hostNote ? 'Shown next to your name' : 'Not written', 'Add one friendly line from you. Visitors trust a real host more than a listing.', { kind: 'nav', view: 'website' });
+    add('sxo', 'minstay', 'Short stays allowed', p.minNights <= 3 ? 'ok' : 'warn', 1, 'Minimum ' + plural(p.minNights || 1, 'night'), 'A minimum of 4 or more nights turns away most weekend searches. Consider 2 or 3.', { kind: 'nav', view: 'website' });
+
+    // AEO
+    add('aeo', 'faqs', 'Questions answered in your words', faqs.length >= 6 ? 'ok' : faqs.length >= 3 ? 'warn' : 'fail', 4, plural(faqs.length, 'FAQ') + ' of your own (plus 6 we add)', 'Add the questions guests really ask. Pick from the suggestions below; each answer is drafted from your facts.', { kind: 'scroll', to: 'faqs' });
+    const crisp = faqs.filter(f => f[1].length >= 30 && f[1].length <= 320).length;
+    add('aeo', 'crisp', 'Answers are short and direct', !faqs.length ? 'warn' : crisp === faqs.length ? 'ok' : 'warn', 2, crisp + ' of ' + faqs.length + ' answers are 1 to 3 sentences', 'Start each answer with the answer ("Yes, dogs are welcome."), then one detail. Answer boxes quote the first sentence.', { kind: 'nav', view: 'website' });
+    const sw = words(o.summary);
+    add('aeo', 'summary', 'Answer-first summary', sw >= 25 && sw <= 80 ? 'ok' : sw ? 'warn' : 'fail', 4, sw ? sw + ' words' : 'Not written yet', 'Write 40 to 60 words that say what the home is, where, who it sleeps, the price and the best feature. It goes at the top of the page and in llms.txt.', { kind: 'write', what: 'summary' });
+    const asked = new Set(); qs.forEach(q => TOPICS.forEach(t => { if (t[1].test(String(q.q).toLowerCase())) asked.add(t[0]); }));
+    const gaps = TOPICS.filter(t => asked.has(t[0]) && !t[2].test(text)).map(t => t[0]);
+    add('aeo', 'coverage', 'Tracked questions are answered on the site', !qs.length ? 'warn' : gaps.length ? 'fail' : 'ok', 3, !qs.length ? 'No questions tracked yet' : gaps.length ? 'Nothing on the site about ' + gaps.join(', ') : 'Every topic travellers ask about is covered', gaps.length ? 'Add an FAQ or amenity about ' + gaps.join(', ') + '. AI assistants cannot recommend you for what your site does not say.' : 'Track the questions travellers ask in AI visibility.', gaps.length ? { kind: 'scroll', to: 'faqs' } : { kind: 'scroll', to: 'keywords' });
+    add('aeo', 'faqschema', 'FAQ schema and speakable summary', 'auto', 2, 'FAQPage schema and a speakable summary are added for every question.', '', null);
+
+    // GEO
+    add('geo', 'llms', 'llms.txt for AI assistants', 'auto', 2, 'A plain-text fact sheet at /llms.txt with prices, rules, FAQs and nearby places.', '', null);
+    add('geo', 'bots', 'AI crawlers are welcome', 'auto', 2, 'robots.txt lets GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended and others read the site.', '', null);
+    const factsOk = [p.maxGuests, p.bedrooms, p.baths, p.nightly, p.checkinTime, p.checkoutTime, p.area].every(Boolean);
+    add('geo', 'facts', 'Key facts are complete', factsOk ? 'ok' : 'fail', 3, factsOk ? 'Sleeps, rooms, price, times and area are set' : 'Some facts are missing', 'Fill in sleeps, bedrooms, bathrooms, price, check-in and checkout times and the area. AI answers quote facts, not adjectives.', { kind: 'nav', view: 'website' });
+    add('geo', 'tracked', 'Traveller questions tracked', qs.length >= 5 ? 'ok' : qs.length >= 3 ? 'warn' : 'fail', 2, plural(qs.length, 'question'), 'Track at least 5 questions travellers ask. Pick from the ideas below.', { kind: 'scroll', to: 'keywords' });
+    const named = qs.filter(q => Object.values(q.engines || {}).some(Boolean)).length;
+    add('geo', 'named', 'Named in AI answers', !s.ai.checkedAt ? 'warn' : named >= Math.ceil(qs.length / 2) ? 'ok' : named ? 'warn' : 'fail', 4, s.ai.checkedAt ? 'Named in ' + named + ' of ' + qs.length + ' questions' : 'Not checked yet', s.ai.checkedAt ? 'Close the gaps above, add your listings and press links, then re-check. Answers usually move within 2 to 6 weeks.' : 'Run an AI check to see where you stand.', s.ai.checkedAt ? { kind: 'nav', view: 'ai' } : { kind: 'aicheck' });
+    const cited = qs.filter(q => Object.values(q.cited || {}).some(Boolean)).length;
+    add('geo', 'cited', 'Your site is linked, not just named', !s.ai.live ? 'warn' : cited ? 'ok' : 'fail', 2, s.ai.live ? 'Linked in ' + cited + ' of ' + qs.length + ' questions' : 'Shown after a live AI check', 'AI assistants link to pages that state facts plainly. Write the summary and FAQs, and add your listings so they can confirm the home is real.', { kind: 'nav', view: 'ai' });
+
+    // LLMO and off-page
+    add('llmo', 'profiles', 'Profiles that confirm the home is real', links.length >= 3 ? 'ok' : links.length ? 'warn' : 'fail', 3, plural(links.length, 'link'), 'Add your listings, Instagram or Facebook and Google Maps. They become sameAs links that tie every mention to this home.', { kind: 'scroll', to: 'listed' });
+    add('llmo', 'social', 'A social profile', has('social') ? 'ok' : 'warn', 1, has('social') ? 'Linked' : 'None linked', 'Link one social profile where the home is named exactly as on your site.', { kind: 'scroll', to: 'listed' });
+    add('llmo', 'press', 'Mentions on local sites or press', has('local') ? 'ok' : 'warn', 2, has('local') ? 'Linked' : 'None linked', 'Get listed on your local tourism site, a local blog or a "best stays" round-up, then add the link. Models learn brands from mentions like these.', { kind: 'scroll', to: 'listed' });
+    add('llmo', 'name', 'One name used everywhere', p.name && p.short && p.name.toLowerCase().includes(String(p.short).toLowerCase()) ? 'ok' : 'warn', 1, '"' + p.name + '"', 'Use exactly "' + p.name + '" on every listing and profile.', null);
+    add('llmo', 'volume', 'Plenty of reviews across the web', (p.reviews || 0) >= 25 ? 'ok' : (p.reviews || 0) >= 10 ? 'warn' : 'fail', 2, plural(p.reviews || 0, 'review'), 'More reviews mean more text about you for models to learn from. Ask every guest.', { kind: 'nav', view: 'automations' });
+
+    // AIO
+    const gq = qs.filter(q => q.engines && q.engines.google).length;
+    add('aio', 'overview', 'Shown in Google AI answers', !s.ai.checkedAt ? 'warn' : gq ? 'ok' : 'fail', 3, s.ai.checkedAt ? 'Shown for ' + gq + ' of ' + qs.length + ' questions' : 'Not checked yet', 'AI Overviews pull from pages that already rank and answer the question in the first lines. Write the summary and area guide, and connect Search Console.', s.ai.checkedAt ? { kind: 'write', what: 'summary' } : { kind: 'aicheck' });
+    add('aio', 'lead', 'Answer in the first lines', sw >= 25 ? 'ok' : 'fail', 2, sw >= 25 ? 'The summary leads the page' : 'The page opens with a headline only', 'Write the answer-first summary. It is placed straight under the main heading, where AI Overviews look.', { kind: 'write', what: 'summary' });
+    add('aio', 'nearby', 'Distances to nearby places', (p.guide || []).filter(g => /\\d/.test(g)).length >= 3 ? 'ok' : 'warn', 1, (p.guide || []).filter(g => /\\d/.test(g)).length + ' places with a distance', 'Give how far each place is, like "Windermere | 10 minutes drive". Questions like "near Windermere" match on it.', { kind: 'nav', view: 'website' });
+
+    const val = c => c.status === 'ok' || c.status === 'auto' ? 1 : c.status === 'warn' ? 0.5 : 0;
+    const cats = CATS.map(([id, label, about]) => { const list = checks.filter(c => c.cat === id); const tot = list.reduce((a, c) => a + c.weight, 0); const got = list.reduce((a, c) => a + c.weight * val(c), 0); return { id, label, about, score: tot ? Math.round(100 * got / tot) : 100, checks: list, todo: list.filter(c => c.fix).length }; });
+    const tot = checks.reduce((a, c) => a + c.weight, 0), got = checks.reduce((a, c) => a + c.weight * val(c), 0);
+    const score = Math.round(100 * got / tot);
+    const fixes = checks.filter(c => c.fix).map(c => Object.assign({ gain: Math.max(1, Math.round(100 * c.weight * (1 - val(c)) / tot)) }, c)).sort((a, b) => b.gain - a.gain || (a.status === 'fail' ? -1 : 1));
+    return { score, grade: score >= 85 ? 'Excellent' : score >= 70 ? 'Good' : score >= 50 ? 'Needs work' : 'Weak', cats, checks, fixes, auto: checks.filter(c => c.status === 'auto').length };
+  }
+
+  /* ---------- Google Business Profile checklist (guidance; the host ticks each step) ---------- */
+  const GBP = [
+    ['claim', 'Claim and verify the profile', 'At business.google.com, add the home as a business. Google verifies by video, post or phone.'],
+    ['category', 'Pick the right category', 'Use "Holiday home", "Cottage", "Chalet" or "Holiday apartment rental", whichever fits. The category matters more than anything else.'],
+    ['website', 'Link your booking site', 'Set the website to your own booking site, not a platform listing, so the Book button goes direct.'],
+    ['photos', 'Add 10 or more photos', 'Outside, every room, the view. Add new ones each season.'],
+    ['attributes', 'Fill in amenities and attributes', 'Hot tub, Wi-Fi, pets, parking, accessibility. Google matches searches on them.'],
+    ['reviews', 'Ask guests for Google reviews', 'Paste your review link into the post-stay automation. Reply to every review within a week.'],
+    ['posts', 'Post an update each month', 'A seasonal photo, an offer or local news keeps the profile active.'],
+    ['nap', 'Same name, address and phone as your site', 'Copy them from your site exactly. Small differences split your local ranking.'],
+  ];
+
+  /* ---------- rule-based drafts ---------- */
+  function faqIdeas(p) {
+    const have = faqList(p.id).map(f => f[0].toLowerCase()); const am = (p.amenities || []).join(' ').toLowerCase(); const out = [];
+    const add = (q, a, needs) => { if (!have.some(h => h.includes(q.toLowerCase().slice(0, 18)))) out.push({ q, a, needs: !!needs }); };
+    const g = (p.guide || []).map(x => x.split('|').map(y => y.trim()));
+    if (p.parking) add('Is there parking?', 'Yes. ' + String(p.parking).replace(/\\.?$/, '.') + ' Parking is free for guests.');
+    if (/wi-?fi|broadband|mbps/.test(am)) add('Is the Wi-Fi good enough to work?', 'Yes. ' + ((p.amenities || []).find(a => /wi-?fi|mbps/i.test(a)) || 'Fast Wi-Fi') + ' is included, so video calls and streaming work well.');
+    add(p.petsAllowed ? 'Can I bring my dog?' : 'Are dogs allowed?', p.petsAllowed ? 'Yes. Dogs are welcome' + (p.petFee ? ' for a ' + money(p.petFee) + ' fee per stay' : '') + '. Let us know when you book.' : 'Sorry, no. ' + p.name + ' is pet-free, which suits guests with allergies.');
+    if (/hot tub/.test(am)) add('Is the hot tub private?', 'Yes. The hot tub is private to your stay and is cleaned and refilled between guests.');
+    if (/wood burner|log burner|fire/.test(am)) add('Are logs provided for the wood burner?', 'Yes. A starter basket of logs and kindling is waiting for you.', true);
+    add('Is it suitable for families with a baby?', p.maxGuests >= 3 ? 'Yes. ' + p.name + ' sleeps ' + p.maxGuests + '. Ask us for a travel cot and high chair when you book.' : '', p.maxGuests >= 3);
+    if (g[0]) add('How far is ' + g[0][0] + '?', g[0][0] + ' is ' + (g[0][1] || 'nearby') + ' from ' + p.name + '.' + (g[0][2] ? ' ' + g[0][2].replace(/\\.?$/, '.') : ''));
+    if (g[1]) add('What is there to do nearby?', 'Within a short drive: ' + g.slice(0, 4).map(x => x[0] + (x[1] ? ' (' + x[1] + ')' : '')).join(', ') + '. Our full area guide is on this page.');
+    add('What is the nearest pub?', '', true);
+    add('What is your cancellation policy?', '', true);
+    add('Is there an EV charger?', /\\bev\\b|charg/.test(am) ? 'Yes. There is an EV charger on site.' : '', !/\\bev\\b|charg/.test(am));
+    add('Is ' + p.name + ' accessible?', '', true);
+    return out.slice(0, 10);
+  }
+  // Searches worth targeting: what travellers type into Google and ask AI assistants, built from the home's facts.
+  function keywords(p) {
+    const t = town(p), c = county(p), k = kind(p), am = (p.amenities || []).join(' ').toLowerCase(), txt = siteText(p); if (!t) return [];
+    const g = (p.guide || []).map(x => x.split('|')[0].trim()).filter(Boolean);
+    const L = [];
+    const add = (q, intent, use) => { const low = q.toLowerCase(); if (!L.some(x => x.q === low)) L.push({ q: low, intent, use, onSite: low.split(/\\s+/).filter(w => w.length > 3).every(w => txt.includes(w.replace(/s$/, ''))) }); };
+    add(k + ' in ' + t, 'Book', 'Title and headline');
+    add(k + 's in ' + c, 'Book', 'About text');
+    add('self catering ' + t, 'Book', 'About text');
+    if (/hot tub/.test(am)) add(k + ' with hot tub ' + c, 'Book', 'Headline or summary');
+    if (p.petsAllowed) add('dog friendly ' + k + ' ' + t, 'Book', 'FAQ and summary');
+    if (p.maxGuests <= 2) add('romantic ' + k + ' ' + c, 'Book', 'Summary');
+    if (p.maxGuests >= 5) add('large ' + k + ' ' + c + ' sleeps ' + p.maxGuests, 'Book', 'About text');
+    else if (p.maxGuests >= 3) add('family ' + k + ' ' + c, 'Book', 'FAQ');
+    if (/wi-?fi|mbps/.test(am)) add(k + ' with fast wifi ' + c, 'Book', 'Amenities and FAQ');
+    if (/wood burner|log burner/.test(am)) add('cosy ' + k + ' with log burner ' + c, 'Book', 'Summary');
+    g.slice(0, 2).forEach(x => add(k + ' near ' + x, 'Book', 'Area guide'));
+    add('last minute ' + k + ' ' + c, 'Book', 'Campaigns and gap nights');
+    add('things to do in ' + t, 'Plan', 'Area guide');
+    add('best walks near ' + t, 'Plan', 'Area guide');
+    add('where to stay in ' + t, 'Compare', 'Summary and FAQs');
+    add('best place to stay in ' + c + ' for a weekend', 'Compare', 'Summary');
+    add(t + ' holiday let book direct', 'Compare', 'Title');
+    return L.slice(0, 16);
+  }
+  // Rule-based first drafts. The server can write better ones with Claude when an API key is set.
+  function draft(p, what) {
+    const t = town(p), k = kind(p), am = (p.amenities || []).slice(0, 3).map(a => { a = String(a).split(',')[0].trim(); return /^[A-Z][a-z]/.test(a) ? a[0].toLowerCase() + a.slice(1) : a; });
+    if (what === 'summary') return p.name + ' is a ' + p.bedrooms + '-bedroom ' + k + ' in ' + (p.area || t) + ' that sleeps ' + p.maxGuests + '. ' + (am.length ? 'Highlights: ' + (am.length > 1 ? am.slice(0, -1).join(', ') + ' and ' + am[am.length - 1] : am[0]) + '. ' : '') + (p.petsAllowed ? 'Dogs are welcome. ' : '') + 'Book direct from ' + money(p.nightly) + ' a night, with check-in from ' + p.checkinTime + ' and no platform fees.';
+    if (what === 'area') { const g = (p.guide || []).map(x => x.split('|').map(y => y.trim())); if (!g.length) return ''; return 'Staying at ' + p.name + ' puts you in ' + (p.area || t) + '. ' + (g.length ? 'Here is what is close by.\\n\\n' + g.map(x => x[0] + (x[1] ? ' (' + x[1] + ')' : '') + (x[2] ? ': ' + x[2] : '.')).join('\\n') : ''); }
+    if (what === 'meta') return { title: clip(titleOf(Object.assign({}, p, { seo: {} })), 62), description: clip((p.petsAllowed ? 'Dog friendly ' : '') + k + ' in ' + t + ', sleeps ' + p.maxGuests + (am[0] ? ', ' + am[0] : '') + '. Book direct from ' + money(p.nightly) + ' a night and skip the platform fees.', 160) };
+    return '';
+  }
+
+  /* ---------- actions (run in the browser and on the server) ---------- */
+  function cleanSeo(patch) {
+    const o = {};
+    Object.keys(patch || {}).forEach(k => {
+      if (!(k in SEO_KEYS)) return; const v = patch[k], n = SEO_KEYS[k];
+      if (k === 'sameAs') o[k] = (Array.isArray(v) ? v : []).map(u => String(u).trim()).filter(u => /^https:\\/\\/[^\\s<>"]+$/i.test(u)).slice(0, n);
+      else if (k === 'keywords') o[k] = (Array.isArray(v) ? v : []).map(x => clip(String(x).toLowerCase().replace(/\\s+/g, ' '), 80)).filter(Boolean).slice(0, n);
+      else if (k === 'gbp') { o[k] = {}; GBP.forEach(([id]) => { if (v && v[id]) o[k][id] = true; }); }
+      else if (k === 'videoUrl') o[k] = /^https:\\/\\/(www\\.)?(youtube\\.com|youtu\\.be|vimeo\\.com)\\/[^\\s<>"]+$/i.test(String(v || '').trim()) ? String(v).trim().slice(0, n) : '';
+      else o[k] = clip(v, n);
+    });
+    return o;
+  }
+  BB.act.updateSeo = function (pid, patch) {
+    const p = BB.q.property(pid); if (!p) return null;
+    const o = cleanSeo(patch); if (!Object.keys(o).length) return null;
+    const keys = Object.keys(o);
+    if (patch && (patch.lat !== undefined || patch.lng !== undefined)) { const la = Number(patch.lat), ln = Number(patch.lng); if (la >= 49 && la <= 61 && ln >= -9 && ln <= 2.5) { p.lat = Math.round(la * 1e5) / 1e5; p.lng = Math.round(ln * 1e5) / 1e5; } }
+    if ('videoUrl' in o && o.videoUrl && o.videoUrl !== seoOf(p).videoUrl) o.videoAt = S().today;
+    p.seo = Object.assign(seoOf(p), o);
+    const what = { summary: 'the answer-first summary', areaIntro: 'the local area guide', videoUrl: 'the walkthrough video', sameAs: 'where the home is listed', keywords: 'target searches', gbp: 'the Google Business Profile checklist', metaTitle: 'the Google title', metaDescription: 'the Google description' };
+    if (!keys.every(k => k === 'gbp' || k === 'keywords')) BB.log('site', 'Search health', 'Updated ' + keys.map(k => what[k]).join(' and ') + ' for ' + p.domain + '.', pid, ['Search health', p.domain, 'AI answers']);
+    BB.store.commit({ type: 'property', id: pid });
+    return p.seo;
+  };
+  BB.act.setMapPin = function (pid, lat, lng) {
+    const p = BB.q.property(pid); const la = Number(lat), ln = Number(lng); if (!p || !(la >= 49 && la <= 61 && ln >= -9 && ln <= 2.5)) return false;
+    p.lat = Math.round(la * 1e5) / 1e5; p.lng = Math.round(ln * 1e5) / 1e5;
+    BB.log('site', 'Search health', 'Set the map pin for ' + p.name + '.', pid); BB.store.commit({ type: 'property', id: pid }); return true;
+  };
+  BB.act.addFaqs = function (pid, list) {
+    const p = BB.q.property(pid); if (!p) return 0; const s = S(); s.website.faqs = s.website.faqs || {};
+    const cur = (s.website.faqs[pid] = s.website.faqs[pid] || []); let n = 0;
+    (Array.isArray(list) ? list : []).slice(0, 12).forEach(f => { const q = clip(f && f.q, 200).replace(/\\|/g, '/'), a = clip(f && f.a, 600); if (q && a && !cur.some(x => x.split('|')[0].toLowerCase() === q.toLowerCase())) { cur.push(q + '|' + a); n++; } });
+    if (n) { BB.log('site', 'Search health', 'Added ' + plural(n, 'FAQ') + ' to ' + p.domain + '.', pid, ['Search health', p.domain, 'AI answers']); BB.store.commit({ type: 'property', id: pid }); }
+    return n;
+  };
+  BB.act.trackAiQuestions = function (pid, list) {
+    const s = S(); if (!BB.q.property(pid)) return 0; let n = 0;
+    (Array.isArray(list) ? list : []).slice(0, 10).forEach(q => { q = clip(q, 140); if (q && !s.ai.questions.some(x => x.q.toLowerCase() === q.toLowerCase() && x.propertyId === pid) && s.ai.questions.length < 40) { s.ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true }); n++; } });
+    if (n) { BB.log('ai', 'AI visibility', 'Tracking ' + plural(n, 'new traveller question') + ' for ' + BB.q.property(pid).short + '.', pid); BB.store.commit({ type: 'ai' }); }
+    return n;
+  };
+
+  // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
+  function sources(pid) {
+    const tally = {};
+    (S().ai.questions || []).filter(q => !pid || q.propertyId === pid).forEach(q => Object.entries(q.sources || {}).forEach(([eng, list]) => (list || []).forEach(d => { const t = (tally[d] = tally[d] || { domain: d, n: 0, engines: {} }); t.n++; t.engines[eng] = 1; })));
+    return Object.values(tally).sort((a, b) => b.n - a.n).slice(0, 10);
+  }
+
+  BB.seo = { audit, CATS, GBP, faqIdeas, keywords, draft, linkKind, LINK_LABEL, seoOf, titleOf, descOf, sources, town, kind };
+})();
 ` }, "/app/web/src/shell-prod.css": { "t": '/* real app shell */\n.hbar { position: relative; }\n.pbar-tabs a { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-muted); padding: 8px 12px; border-radius: 999px; font-weight: 600; font-size: 13.5px; white-space: nowrap; text-decoration: none; }\n.pbar-tabs a:hover { color: #fff; background: rgba(255,255,255,.06); }\n.pbar-tabs a[aria-current="page"] { background: #fff; color: #0A0F2C; }\n.pbar-tabs a .ic { width: 16px; height: 16px; }\n.pbtn .avatar.sm { width: 20px; height: 20px; font-size: 10px; margin: -3px 0 -3px -5px; }\n.hmenu { position: absolute; z-index: 70; top: calc(100% + 6px); min-width: 260px; max-width: calc(100vw - 32px); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px -18px rgba(10,15,44,.45); padding: 6px; display: grid; gap: 2px; }\n.hm-sites { left: 180px; } .hm-me { right: 16px; }\n@media (max-width: 760px) { .hm-sites { left: 16px; } }\n.hmenu a, .hmenu button { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; color: inherit; text-decoration: none; background: none; border: 0; width: 100%; text-align: left; font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; }\n.hmenu a:hover, .hmenu button:hover { background: var(--surface-2); }\n.hmenu .ic { width: 18px; height: 18px; color: var(--muted); flex: none; }\n.hmenu span { display: grid; min-width: 0; } .hmenu em { font-style: normal; font-weight: 500; font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }\n.hmenu p { margin: 0; padding: 8px 10px 10px; display: grid; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }\n.hmenu p em { font-style: normal; color: var(--muted); font-size: 13px; }\n.hmenu form { margin: 0; }\n/* guest-facing pages: no prototype controls */\n.prod .p-strip { display: none !important; }\n.prod-site .x-property { --p-top: 0px !important; }\n.prod-trip { background: #EEF0F5; }\n.prod-trip .surface-root { min-height: 100vh; display: grid; place-items: start center; padding: 24px 16px 40px; }\n.prod-trip .x-guest.emb { width: 100%; max-width: 420px; }\n@media (max-width: 520px) { .prod-trip .surface-root { padding: 0; } .prod-trip .x-guest.emb { max-width: none; } }\n.test-banner { position: fixed; z-index: 90; left: 50%; bottom: 14px; transform: translateX(-50%); background: #0A0F2C; color: #fff; font: 600 12.5px/1.3 var(--font-body); padding: 8px 14px; border-radius: 999px; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); max-width: calc(100vw - 32px); text-align: center; }\n.test-banner b { color: var(--accent); }\n' }, "/app/web/src/shell-prod.js": { "t": `/* Bookingbooster: shell for the real app (replaces the prototype bar outside /demo).
    Host console and host phone app at /app, a home's booking site at /s/\u2026, a guest's trip app at /trip/\u2026,
    and the marketing site at /. */
@@ -9505,7 +9997,7 @@ body.p-lock { overflow: hidden; }
   // Results from real AI checks, run by the server against the answer engines the platform has keys for.
   BB.act.applyAiResults = function (results) {
     const s = S(); let changed = 0;
-    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; });
+    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; if (r.cited) q.cited = r.cited; if (r.sources) q.sources = r.sources; });
     s.ai.checkedAt = s.today; s.ai.live = true;
     const sc = BB.aiScore();
     BB.log('ai', 'AI visibility', 'Checked ' + s.ai.questions.length + ' traveller questions in ChatGPT, Gemini, Perplexity and Google. Your homes came up in ' + sc.score + '% of answers' + (changed ? ', ' + changed + ' changed since last time.' : '.'), null, ['AI visibility', 'Answer engines']);
@@ -9784,6 +10276,10 @@ body.p-lock { overflow: hidden; }
         { id: 'gbp-lake', text: 'Post harbour-view photos to the Google Business Profile', done: false, fixes: [3] },
       ],
     };
+
+    // Sites the answer engines cited for each question (what a live check records), and whether they linked to the home's own site.
+    const SRC = { laurel: ['airbnb.co.uk', 'visitlakedistrict.com', 'sykescottages.co.uk', 'tripadvisor.co.uk', 'larchfellcabin.co.uk'], lakeside: ['visitcornwall.com', 'classic.co.uk', 'airbnb.co.uk', 'tidewatercottage.co.uk'], loft: ['visitbath.co.uk', 'booking.com', 'airbnb.co.uk', 'theguardian.com'] };
+    ai.questions.forEach((q, i) => { q.sources = {}; q.cited = {}; Object.keys(q.engines).forEach((k, j) => { q.sources[k] = SRC[q.propertyId].filter((d, n) => (n + i + j) % 3 !== 0 && (q.engines[k] || !/cabin|cottage|pulteney/.test(d))); q.cited[k] = q.sources[k].some(d => /larchfell|tidewater|pulteney/.test(d)); }); });
 
     const website = { visitors: { laurel: 1840, lakeside: 1036, loft: 328 }, fromSearch: 0.64, conversion: 0.029, faqs: { laurel: ['Is the cabin dog friendly?|Yes. One well-behaved dog is welcome for a \xA335 fee. The garden is fully fenced.', 'How does check-in work?|Complete the 3-minute online check-in and your door code arrives on arrival day.', 'Why book direct?|You skip the platform service fee and talk to us directly.'] } };
 
@@ -13156,7 +13652,7 @@ var require_engine = __commonJS({
     var fs = require_vfs();
     var path = __require("path");
     var SRC = path.join(__dirname, "..", "web", "src");
-    var code = ["store.js", "store-ext.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
+    var code = ["store.js", "store-ext.js", "seo-rules.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
     var SHADOW = ["localStorage", "sessionStorage", "BroadcastChannel", "document", "navigator", "location", "fetch", "XMLHttpRequest", "WebSocket", "process", "require", "Deno", "globalThis", "self", "global"];
     var PARAMS = ["window", "__BB_BOOT__", "console", "Date", "Math", "JSON", "Intl", "setTimeout", "clearTimeout"].concat(SHADOW);
     var rules = new Function(...PARAMS, code + "\n//# sourceURL=bb-rules.js");
@@ -13624,10 +14120,10 @@ var require_build = __commonJS({
     var crypto = __require("crypto");
     var S = path.join(__dirname, "src");
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
-    var MODS = ["site", "app", "app-grow", "app-studio", "mobile", "property", "guest"];
+    var MODS = ["site", "app", "app-grow", "app-seo", "app-studio", "mobile", "property", "guest"];
     function build() {
       const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css"), rd("site-social.css")]).join("\n");
-      const core = [rd("store.js"), rd("store-ext.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
+      const core = [rd("store.js"), rd("store-ext.js"), rd("seo-rules.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
       const prodJs = core.concat([rd("sync.js"), rd("shell-prod.js")]).join("\n;\n");
       const demoJs = core.concat([rd("sync.js"), rd("shell.js")]).join("\n;\n");
       const h = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 10);
@@ -13706,11 +14202,19 @@ var require_seo = __commonJS({
         return { name: n[0] + (n[1] ? " " + n[1][0] + "." : ""), stars: b.review.stars, text: b.review.text, at: b.review.at };
       });
     }
+    var seoOf = (p) => p.seo || {};
+    var guideOf = (p) => (p.guide || []).map((x) => String(x).split("|").map((y) => y.trim())).filter((x) => x[0]);
+    var ytId = (u) => {
+      const m = String(u || "").match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+      return m ? m[1] : null;
+    };
     function titleOf(p) {
+      if (seoOf(p).metaTitle) return seoOf(p).metaTitle;
       const t = p.name + " \xB7 " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + town(p) + " \xB7 Book direct";
       return t;
     }
     function descOf(p) {
+      if (seoOf(p).metaDescription) return seoOf(p).metaDescription;
       return (p.headline ? p.headline + " " : "") + (p.sub ? p.sub.replace(/ · /g, ", ") + ". " : "") + "Book direct from " + money(p.nightly) + " a night with no platform fees.";
     }
     function jsonLd(s, p, url) {
@@ -13721,7 +14225,7 @@ var require_seo = __commonJS({
         "@id": url + "#rental",
         name: p.name,
         url,
-        description: p.about || p.headline,
+        description: seoOf(p).summary || p.about || p.headline,
         identifier: p.id,
         brand: { "@type": "Brand", name: s.account.business },
         address: { "@type": "PostalAddress", addressLocality: town(p), addressRegion: String(p.area || "").split(",").slice(1).join(",").trim() || void 0, addressCountry: "GB" },
@@ -13743,10 +14247,42 @@ var require_seo = __commonJS({
       if (p.photos && p.photos.length) rental.image = p.photos.map((x) => x.url);
       if (p.reviews && p.rating) rental.aggregateRating = { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews, bestRating: 5 };
       if (revs.length) rental.review = revs.map((r) => ({ "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: r.stars, bestRating: 5 }, author: { "@type": "Person", name: r.name }, datePublished: r.at, reviewBody: r.text }));
+      const o = seoOf(p), same = (o.sameAs || []).filter((u) => /^https:\/\//.test(u));
+      if (same.length) rental.sameAs = same;
+      if (p.photos && p.photos.length) rental.image = p.photos.map((x) => x.cap ? { "@type": "ImageObject", url: x.url, contentUrl: x.url, caption: x.cap } : x.url);
+      const yt = ytId(o.videoUrl);
+      if (o.videoUrl) rental.subjectOf = { "@type": "VideoObject", name: p.name + " walkthrough", description: "A video tour of " + p.name + ", " + (p.area || town(p)) + ".", embedUrl: yt ? "https://www.youtube.com/embed/" + yt : o.videoUrl, contentUrl: o.videoUrl, thumbnailUrl: yt ? "https://i.ytimg.com/vi/" + yt + "/hqdefault.jpg" : p.photos && p.photos[0] ? p.photos[0].url : void 0, uploadDate: o.videoAt || s.today };
+      const region = String(p.area || "").split(",").slice(1).join(",").trim() || void 0;
+      const lodging = {
+        "@type": "LodgingBusiness",
+        "@id": url + "#lodging",
+        name: p.name,
+        url,
+        description: o.summary || p.headline,
+        image: rental.image ? (p.photos[0] || {}).url : void 0,
+        address: { "@type": "PostalAddress", addressLocality: town(p), addressRegion: region, addressCountry: "GB" },
+        priceRange: rental.priceRange,
+        checkinTime: p.checkinTime,
+        checkoutTime: p.checkoutTime,
+        petsAllowed: !!p.petsAllowed,
+        amenityFeature: rental.containsPlace.amenityFeature,
+        parentOrganization: { "@id": url + "#host" },
+        sameAs: same.length ? same : void 0,
+        makesOffer: p.nightly ? { "@type": "Offer", url: url + "#book", priceCurrency: "GBP", price: p.nightly, priceSpecification: { "@type": "UnitPriceSpecification", price: p.nightly, priceCurrency: "GBP", unitText: "night" }, availability: "https://schema.org/InStock" } : void 0
+      };
+      if (rental.geo) lodging.geo = rental.geo;
+      const near = guideOf(p);
+      const extra = [
+        lodging,
+        { "@type": "WebPage", "@id": url + "#page", url, name: titleOf(p), inLanguage: "en-GB", about: { "@id": url + "#rental" }, isPartOf: { "@id": url + "#site" }, speakable: { "@type": "SpeakableSpecification", cssSelector: ["#summary", "#faq"] }, dateModified: s.today },
+        { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [{ "@type": "ListItem", position: 1, name: s.account.business, item: url }, { "@type": "ListItem", position: 2, name: p.name, item: url + "#book" }] }
+      ];
+      if (near.length) extra.push({ "@type": "ItemList", "@id": url + "#nearby", name: "Things to do near " + p.name, itemListElement: near.slice(0, 20).map((g, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "TouristAttraction", name: g[0], description: [g[1] ? g[1] + " from " + p.name : "", g[2] || ""].filter(Boolean).join(". ") || void 0, address: { "@type": "PostalAddress", addressRegion: region, addressCountry: "GB" } } })) });
       return { "@context": "https://schema.org", "@graph": [
         rental,
+        ...extra,
         { "@type": "FAQPage", "@id": url + "#faq", mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
-        { "@type": "Organization", "@id": url + "#host", name: s.account.business, url },
+        Object.assign({ "@type": "Organization", "@id": url + "#host", name: s.account.business, url }, same.filter((u) => /instagram|facebook|tiktok|youtube|x\.com|twitter/.test(u)).length ? { sameAs: same.filter((u) => /instagram|facebook|tiktok|youtube|x\.com|twitter/.test(u)) } : {}),
         { "@type": "WebSite", "@id": url + "#site", name: p.name, url, inLanguage: "en-GB" }
       ] };
     }
@@ -13756,11 +14292,11 @@ var require_seo = __commonJS({
     }
     function content(s, p, url) {
       const revs = reviewsOf(s, p), faqs = faqsOf(s, p);
-      return '<article class="seo" id="seo"><p>' + esc(s.account.business) + " \xB7 " + esc(p.area) + "</p><h1>" + esc(p.name) + "</h1><p><strong>" + esc(p.headline) + "</strong></p><p>" + esc(p.sub) + "</p><p>" + esc(p.about) + "</p><p>From " + money(p.nightly) + " a night. Cleaning " + money(p.cleaning) + ". Minimum stay " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + '. <a href="#book">Check dates and book direct</a>.</p><h2>What you get</h2><ul>' + (p.amenities || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "</ul><h2>House rules</h2><ul>" + (p.rules || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "<li>Check-in from " + esc(p.checkinTime) + ", checkout by " + esc(p.checkoutTime) + ".</li></ul>" + (revs.length ? "<h2>What guests say</h2>" + revs.map((r) => "<blockquote><p>" + esc(r.text) + "</p><footer>" + esc(r.name) + ", " + "\u2605".repeat(r.stars) + "</footer></blockquote>").join("") + (s.live ? "<p>Every review is from a guest who stayed and chose to share it, whatever their rating.</p>" : "") : "") + "<h2>Questions</h2>" + faqs.map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + "</article>";
+      return '<article class="seo" id="seo"><p>' + esc(s.account.business) + " \xB7 " + esc(p.area) + "</p><h1>" + esc(p.name) + "</h1>" + (seoOf(p).summary ? '<p id="summary">' + esc(seoOf(p).summary) + "</p>" : "") + "<p><strong>" + esc(p.headline) + "</strong></p><p>" + esc(p.sub) + "</p><p>" + esc(p.about) + "</p><p>From " + money(p.nightly) + " a night. Cleaning " + money(p.cleaning) + ". Minimum stay " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + '. <a href="#book">Check dates and book direct</a>.</p><h2>What you get</h2><ul>' + (p.amenities || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "</ul><h2>House rules</h2><ul>" + (p.rules || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "<li>Check-in from " + esc(p.checkinTime) + ", checkout by " + esc(p.checkoutTime) + ".</li></ul>" + (revs.length ? "<h2>What guests say</h2>" + revs.map((r) => "<blockquote><p>" + esc(r.text) + "</p><footer>" + esc(r.name) + ", " + "\u2605".repeat(r.stars) + "</footer></blockquote>").join("") + (s.live ? "<p>Every review is from a guest who stayed and chose to share it, whatever their rating.</p>" : "") : "") + (seoOf(p).areaIntro || guideOf(p).length ? '<h2 id="area">Things to do near ' + esc(p.name) + ", " + esc(town(p)) + "</h2>" + String(seoOf(p).areaIntro || "").split(/\n+/).filter(Boolean).map((x) => "<p>" + esc(x) + "</p>").join("") + (guideOf(p).length ? "<ul>" + guideOf(p).map((g) => "<li><strong>" + esc(g[0]) + "</strong>" + (g[1] ? ", " + esc(g[1]) : "") + (g[2] ? ". " + esc(g[2]) : "") + "</li>").join("") + "</ul>" : "") : "") + (p.photos && p.photos.length ? "<h2>Photos</h2>" + p.photos.slice(0, 12).map((x) => '<figure><img src="' + esc(x.url) + '" alt="' + esc(x.cap || p.name + ", " + town(p)) + '" loading="lazy" width="1200" height="800">' + (x.cap ? "<figcaption>" + esc(x.cap) + "</figcaption>" : "") + "</figure>").join("") : "") + (seoOf(p).videoUrl ? '<p><a href="' + esc(seoOf(p).videoUrl) + '">Watch a video tour of ' + esc(p.name) + "</a></p>" : "") + '<h2 id="faq">Questions</h2>' + faqs.map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + ((seoOf(p).sameAs || []).length ? "<h2>Find " + esc(p.name) + " elsewhere</h2><ul>" + seoOf(p).sameAs.map((u) => '<li><a href="' + esc(u) + '" rel="noopener">' + esc(u.replace(/^https:\/\/(www\.)?/, "").split("/")[0]) + "</a></li>").join("") + "</ul>" : "") + "</article>";
     }
     function llms(s, p, url) {
       const faqs = faqsOf(s, p);
-      return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
+      return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + (seoOf(p).summary ? "\n## In short\n\n" + seoOf(p).summary + "\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + (guideOf(p).length || seoOf(p).areaIntro ? "\n\n## Nearby\n\n" + (seoOf(p).areaIntro ? seoOf(p).areaIntro.trim() + "\n\n" : "") + guideOf(p).map((g) => "- " + g[0] + (g[1] ? ": " + g[1] : "") + (g[2] ? ". " + g[2] : "")).join("\n") : "") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + (reviewsOf(s, p).length ? "\n\n## What guests say\n\n" + reviewsOf(s, p).slice(0, 3).map((r) => "> " + r.text.replace(/\s+/g, " ") + " (" + r.name + ", " + r.stars + " stars)").join("\n\n") : "") + ((seoOf(p).sameAs || []).length || seoOf(p).videoUrl ? "\n\n## Elsewhere\n\n" + (seoOf(p).sameAs || []).map((u) => "- " + u).join("\n") + (seoOf(p).videoUrl ? "\n- Video tour: " + seoOf(p).videoUrl : "") : "") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
     }
     function robots(sitemapUrl) {
       return [
@@ -13780,7 +14316,14 @@ var require_seo = __commonJS({
     function sitemap(urls) {
       return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => "  <url><loc>" + esc(u.loc) + "</loc>" + (u.lastmod ? "<lastmod>" + u.lastmod + "</lastmod>" : "") + "</url>").join("\n") + "\n</urlset>\n";
     }
-    module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf, reviewsOf };
+    function sitemapFor(s, homes, extra) {
+      const x = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
+      return x + homes.map(([p, loc]) => "  <url><loc>" + esc(loc) + "</loc><lastmod>" + s.today + "</lastmod>" + (p.photos || []).slice(0, 20).map((ph) => "<image:image><image:loc>" + esc(ph.url) + "</image:loc></image:image>").join("") + "</url>").join("\n") + (extra || []).map((loc) => "\n  <url><loc>" + esc(loc) + "</loc></url>").join("") + "\n</urlset>\n";
+    }
+    function indexNowKey(secret, wid) {
+      return __require("crypto").createHmac("sha256", String(secret || "bb")).update("indexnow:" + wid).digest("hex").slice(0, 32);
+    }
+    module.exports = { head, content, llms, robots, sitemap, sitemapFor, indexNowKey, jsonLd, titleOf, descOf, faqsOf, reviewsOf };
   }
 });
 
@@ -14522,17 +15065,38 @@ var require_ai = __commonJS({
         const hay = (res.text + " " + (res.urls || []).join(" ")).toLowerCase();
         return props.some((p) => [p.name, p.domain, p.short && p.short.length > 6 ? p.short : null].filter(Boolean).some((n) => hay.includes(String(n).toLowerCase())));
       }
+      function domains(urls) {
+        const out = [];
+        (urls || []).forEach((u) => {
+          const parts = String(u).split(" ");
+          let d = "";
+          try {
+            d = new URL(parts[0]).hostname;
+          } catch (_) {
+          }
+          if ((!d || /vertexaisearch|googleusercontent|google\.com$/.test(d)) && /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(parts[1] || "")) d = parts[1];
+          d = d.toLowerCase().replace(/^www\./, "");
+          if (d && !out.includes(d)) out.push(d);
+        });
+        return out.slice(0, 8);
+      }
+      const linked = (res, props) => {
+        const ds = domains(res.urls);
+        return props.some((p) => p.domain && ds.some((d) => String(p.domain).toLowerCase().replace(/^www\./, "").startsWith(d)));
+      };
       async function check(questions, props) {
         const keys = available();
         if (!keys.length) return { results: [], keys };
         const results = [];
         for (let i = 0; i < questions.length; i++) {
           const qn = questions[i], focus = props.filter((p) => p.id === qn.propertyId);
-          const out = { i, engines: {}, answers: {} };
+          const out = { i, engines: {}, answers: {}, cited: {}, sources: {} };
           await Promise.all(keys.map(async (k) => {
             try {
               const r = await engines[k](qn.q);
               out.engines[k] = mentions(r, focus.length ? focus : props);
+              out.cited[k] = linked(r, focus.length ? focus : props);
+              out.sources[k] = domains(r.urls);
               out.answers[k] = String(r.text || "").slice(0, 600);
             } catch (e) {
               out.answers[k] = "Check failed: " + String(e.message).slice(0, 120);
@@ -14542,7 +15106,7 @@ var require_ai = __commonJS({
         }
         return { results, keys };
       }
-      return { check, available };
+      return { check, available, domains };
     };
   }
 });
@@ -14715,6 +15279,88 @@ var require_assist = __commonJS({
   }
 });
 
+// server/seo-tools.js
+var require_seo_tools = __commonJS({
+  "server/seo-tools.js"(exports, module) {
+    module.exports = function(cfg) {
+      const enabled = !!cfg.ai.anthropic;
+      const money = (n) => "\xA3" + Number(n || 0).toLocaleString("en-GB");
+      function facts(s, p) {
+        const faqs = ((s.website.faqs || {})[p.id] || []).map((x) => "FAQ: " + x.replace("|", " \u2014 "));
+        return [
+          "Home: " + p.name,
+          "Area: " + (p.area || ""),
+          "Type: " + ({ cabin: "cabin", lake: "cottage", city: "apartment" }[p.theme] || "holiday let"),
+          "Sleeps " + p.maxGuests + ", " + p.bedrooms + " bedrooms, " + p.baths + " bathrooms",
+          "From " + money(p.nightly) + " a night" + (p.weekend ? " (+" + money(p.weekend) + " Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning),
+          "Minimum stay: " + p.minNights + " nights",
+          "Check-in from " + p.checkinTime + ", checkout by " + p.checkoutTime,
+          "Dogs: " + (p.petsAllowed ? "welcome" + (p.petFee ? " (" + money(p.petFee) + " per stay)" : "") : "not allowed"),
+          p.headline ? "Headline: " + p.headline : null,
+          p.about ? "About: " + p.about : null,
+          (p.amenities || []).length ? "Amenities: " + p.amenities.join(", ") : null,
+          (p.rules || []).length ? "House rules: " + p.rules.join(" ") : null,
+          p.parking ? "Parking: " + p.parking : null,
+          (p.guide || []).length ? "Nearby (place | distance | host tip): " + p.guide.join("; ") : null,
+          p.rating && p.reviews ? "Guest rating: " + p.rating + " from " + p.reviews + " reviews" : null,
+          ...faqs
+        ].filter(Boolean).join("\n");
+      }
+      const ASK = {
+        summary: ['Write an answer-first summary of this holiday let for the top of its booking page and for AI assistants to quote. 40 to 60 words, one paragraph. Say what it is, where, who it sleeps, the price from, and the one or two best features. Plain, factual, no superlatives like "stunning" or "nestled".', 300],
+        area: [`Write a local area guide for this holiday let's booking page, for searches like "things to do near <town>". 150 to 250 words in 3 short paragraphs: walks and outdoors, food and pubs, days out. Use only places from the facts; where the facts list none for a paragraph, write generally about the area without naming businesses. UK English.`, 900],
+        meta: [`Write a Google title (at most 60 characters) and meta description (120 to 155 characters) for this holiday let's booking page. Include the type of home and the town, and in the description the price from and "book direct". Reply as two lines: "Title: ..." then "Description: ...".`, 200],
+        faqs: [`Answer each question below for this holiday let's FAQ, one or two sentences each, starting with the direct answer (Yes, No, or the fact). If the facts do not answer a question, reply with exactly "ASK HOST" for it. Reply as lines "Q: ..." then "A: ...".`, 900]
+      };
+      async function write(s, p, what, onUsage, questions) {
+        if (!enabled || !ASK[what]) return null;
+        const system = "You write website copy for a UK holiday let host (" + s.account.business + "). Use UK English. Only state facts from the list provided. Never invent prices, amenities, distances, awards or business names. No emoji. Reply with the text only.";
+        const user = "Facts:\n" + facts(s, p) + "\n\n" + ASK[what][0] + (what === "faqs" ? "\n\nQuestions:\n" + (questions || []).slice(0, 10).map((q) => "- " + String(q).slice(0, 200)).join("\n") : "");
+        const r = await fetch((cfg.ai.anthropicBase || "https://api.anthropic.com") + "/v1/messages", {
+          method: "POST",
+          signal: AbortSignal.timeout(45e3),
+          headers: { "x-api-key": cfg.ai.anthropic, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+          body: JSON.stringify({ model: cfg.ai.anthropicModel, max_tokens: ASK[what][1] + 200, system, messages: [{ role: "user", content: user }] })
+        });
+        if (!r.ok) throw new Error("Claude answered " + r.status);
+        const j = await r.json();
+        if (onUsage) await onUsage(j.model || cfg.ai.anthropicModel, j.usage);
+        const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
+        if (what === "meta") {
+          const t = (text.match(/Title:\s*(.+)/i) || [])[1], d = (text.match(/Description:\s*(.+)/i) || [])[1];
+          return t && d ? { title: t.trim().slice(0, 70), description: d.trim().slice(0, 170) } : null;
+        }
+        if (what === "faqs") {
+          const out = [];
+          let q = null;
+          text.split("\n").forEach((l) => {
+            const mq = l.match(/^\s*Q:\s*(.+)/i), ma = l.match(/^\s*A:\s*(.+)/i);
+            if (mq) q = mq[1].trim();
+            else if (ma && q) {
+              const a = ma[1].trim();
+              out.push({ q, a: /^ASK HOST/i.test(a) ? "" : a.slice(0, 600), needs: /^ASK HOST/i.test(a) });
+              q = null;
+            }
+          });
+          return out;
+        }
+        return text.slice(0, what === "area" ? 4e3 : 600) || null;
+      }
+      async function ping(host, key, keyLocation, urls) {
+        if (!/^[a-z0-9.-]+(:\d+)?$/i.test(host) || /^(localhost|127\.|10\.|192\.168\.)/.test(host)) return { ok: false, status: 0, message: "Search engines cannot reach a local test address." };
+        try {
+          const r = await fetch("https://api.indexnow.org/indexnow", { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/json; charset=utf-8" }, body: JSON.stringify({ host, key, keyLocation, urlList: urls.slice(0, 100) }) });
+          const msg = { 200: "Accepted. Bing and the other IndexNow engines will recrawl soon.", 202: "Received. Bing is checking the key file, then recrawls.", 400: "IndexNow said the request was invalid.", 403: "IndexNow could not find the key file on the site yet.", 422: "IndexNow says these pages do not belong to the key.", 429: "Too many requests. Try again tomorrow." }[r.status] || "IndexNow answered " + r.status + ".";
+          return { ok: r.status === 200 || r.status === 202, status: r.status, message: msg };
+        } catch (e) {
+          return { ok: false, status: 0, message: "Could not reach IndexNow: " + e.message };
+        }
+      }
+      return { enabled, write, ping, facts };
+    };
+  }
+});
+
 // server/credits.js
 var require_credits = __commonJS({
   "server/credits.js"(exports, module) {
@@ -14739,7 +15385,7 @@ var require_credits = __commonJS({
     };
     var DEAREST = [10, 50, 1];
     var priceOf = (model) => PRICES[String(model || "").replace(/-\d{8}$/, "")] || DEAREST;
-    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", other: "AI" };
+    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", seo: "Search writer", other: "AI" };
     module.exports = function({ cfg, db, log }) {
       const C = cfg.credits;
       const q = {
@@ -19854,6 +20500,7 @@ var require_server = __commonJS({
     var secrets = require_secrets()(db, cfg);
     var visits = require_visits()(cfg.secret);
     var assist = require_assist()(cfg);
+    var seoTools = require_seo_tools()(cfg);
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
@@ -20011,6 +20658,63 @@ var require_server = __commonJS({
     }
     function comingSoon(res, w) {
       return send(res, 503, pages.plain({ title: "Coming soon", body: "<h1>" + E(w.state.account.business) + " is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>" }), "text/html; charset=utf-8", { "retry-after": "86400", "x-robots-tag": "noindex", "cache-control": "no-store" });
+    }
+    async function seoApi(req, res, p, m, w, live, headers) {
+      const s = w.state;
+      const j = m === "POST" ? await jsonBody(req, 2e4) : {};
+      const u = new URL(req.url, "http://x");
+      const pid = j.propertyId || u.searchParams.get("propertyId");
+      const prop = s.properties.find((x) => x.id === pid) || s.properties[0];
+      if (!prop) throw err(404, "Add a home first.");
+      const site = live ? urls.site(w, prop) : "https://" + prop.domain + "/";
+      const root = site.replace(/^(https?:\/\/[^/]+).*$/, "$1") + "/", onPath = site.includes("/s/" + w.slug + "/");
+      const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + "/s/" + w.slug + "/" + key + ".txt" : root + key + ".txt";
+      if (p === "/api/seo/files" && m === "GET") {
+        return json(res, {
+          site,
+          sitemap: onPath ? cfg.baseUrl + "/s/" + w.slug + "/sitemap.xml" : root + "sitemap.xml",
+          robots: root + "robots.txt",
+          llmsUrl: onPath ? site + "/llms.txt" : root + "llms.txt",
+          keyUrl,
+          jsonld: seo.jsonLd(s, prop, site),
+          llms: seo.llms(s, prop, site),
+          title: seo.titleOf(prop),
+          description: seo.descOf(prop),
+          writer: live && seoTools.enabled,
+          indexNow: live
+        }, 200, headers);
+      }
+      if (p === "/api/seo/write" && m === "POST") {
+        const what = String(j.what || "");
+        if (!["summary", "area", "meta", "faqs"].includes(what)) throw err(400, "Unknown draft");
+        if (!live || !seoTools.enabled) return json(res, { draft: null, by: "rules" }, 200, headers);
+        if (!auth.limit("seo-write:" + w.id, 60, 36e5)) throw err(429, "Too many drafts this hour. Try again later.");
+        try {
+          await credits.check(w.id);
+        } catch (e) {
+          if (e.code === "ai_credit") return json(res, { draft: null, by: "rules", credit: { empty: true, message: e.message, url: e.topupUrl } });
+          throw e;
+        }
+        try {
+          return json(res, { draft: await seoTools.write(s, prop, what, credits.meter(w.id, "seo"), Array.isArray(j.questions) ? j.questions : []), by: "claude" });
+        } catch (e) {
+          log("seo write", e.message);
+          return json(res, { draft: null, by: "rules", error: "Claude could not write this just now, so here is a draft from your facts." });
+        }
+      }
+      if (p === "/api/seo/ping" && m === "POST") {
+        if (!live) return json(res, { ok: true, message: "In the demo nothing is sent. In your account this asks Bing and the other IndexNow engines to recrawl now." }, 200, headers);
+        if (!auth.limit("seo-ping:" + w.id, 10, 864e5)) throw err(429, "You have asked 10 times today. Search engines will pick up changes from your sitemap too.");
+        const host = new URL(site).host;
+        const list = onPath ? s.properties.map((x) => cfg.baseUrl + "/s/" + w.slug + "/" + x.id) : [site, root + "llms.txt"];
+        const r = await seoTools.ping(host, key, keyUrl, list);
+        await ws.withWs(w.id, (BB) => {
+          BB.log("site", "Search health", (r.ok ? "Asked Bing and other IndexNow engines to recrawl " : "Could not ask IndexNow to recrawl ") + prop.domain + ". " + r.message, prop.id, ["Search health", "IndexNow"]);
+          BB.store.commit({});
+        });
+        return json(res, Object.assign(r, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+      }
+      return false;
     }
     function sitePage(res, w, p, canonical, host, req) {
       const s = w.state;
@@ -20555,8 +21259,9 @@ var require_server = __commonJS({
         if (await hiddenFrom(req, w)) return comingSoon(res, w);
         const canonical = "https://" + host.replace(/:\d+$/, "") + "/";
         if (p === "/robots.txt") return send(res, 200, seo.robots(canonical + "sitemap.xml"), "text/plain; charset=utf-8");
-        if (p === "/sitemap.xml") return send(res, 200, seo.sitemap([{ loc: canonical, lastmod: w.state.today }, { loc: canonical + "llms.txt" }]), "application/xml");
+        if (p === "/sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, [[prop, canonical]], [canonical + "llms.txt"]), "application/xml");
         if (p === "/llms.txt") return send(res, 200, seo.llms(w.state, prop, canonical), "text/plain; charset=utf-8");
+        if (p === "/" + seo.indexNowKey(cfg.secret, w.id) + ".txt") return send(res, 200, seo.indexNowKey(cfg.secret, w.id), "text/plain; charset=utf-8");
         if (p === "/" || p === "/book") return await sitePage(res, w, prop, canonical, host.replace(/:\d+$/, ""), req);
         return notFound(res);
       }
@@ -20565,12 +21270,13 @@ var require_server = __commonJS({
         if (!r) return notFound(res);
         const w = await ws.open(r.id);
         w.catchUp();
+        if (mm[2] === seo.indexNowKey(cfg.secret, w.id) + ".txt" && !mm[3]) return send(res, 200, seo.indexNowKey(cfg.secret, w.id), "text/plain; charset=utf-8");
         const prop = mm[2] && mm[2] !== "sitemap.xml" && mm[2] !== "llms.txt" ? w.state.properties.find((x) => x.id === decodeURIComponent(mm[2])) : w.state.properties[0];
         if (!prop) return notFound(res);
         if (await hiddenFrom(req, w)) return comingSoon(res, w);
         const canonical = cfg.baseUrl + "/s/" + w.slug + "/" + prop.id;
         if (mm[3] === "/llms.txt" || mm[2] === "llms.txt") return send(res, 200, seo.llms(w.state, prop, canonical), "text/plain; charset=utf-8");
-        if (mm[3] === "/sitemap.xml" || mm[2] === "sitemap.xml") return send(res, 200, seo.sitemap(w.state.properties.map((x) => ({ loc: cfg.baseUrl + "/s/" + w.slug + "/" + x.id, lastmod: w.state.today }))), "application/xml");
+        if (mm[3] === "/sitemap.xml" || mm[2] === "sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, w.state.properties.map((x) => [x, cfg.baseUrl + "/s/" + w.slug + "/" + x.id])), "application/xml");
         if (!mm[2]) return redirect(res, canonical);
         return await sitePage(res, w, prop, canonical, null, req);
       }
@@ -20680,6 +21386,10 @@ var require_server = __commonJS({
           const j = await jsonBody(req, 2e6);
           const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []);
           return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers);
+        }
+        if (p.startsWith("/api/demo/seo/")) {
+          const w = await ws.open(wid);
+          if (await seoApi(req, res, p.replace("/api/demo/", "/api/"), m, w, false, headers)) return;
         }
         if (p.startsWith("/api/demo/studio/") || p.startsWith("/api/demo/funnels/")) {
           const w = await ws.open(wid);
@@ -20935,6 +21645,7 @@ var require_server = __commonJS({
             return json(res, { text: null });
           }
         }
+        if (p.startsWith("/api/seo/") && await seoApi(req, res, p, m, w, true)) return;
         if (p === "/api/credits") return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
         if (p === "/api/trip-link" && m === "POST") {
           const j = await jsonBody(req);

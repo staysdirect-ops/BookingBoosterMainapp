@@ -240,7 +240,7 @@
   // Results from real AI checks, run by the server against the answer engines the platform has keys for.
   BB.act.applyAiResults = function (results) {
     const s = S(); let changed = 0;
-    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; });
+    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; if (r.cited) q.cited = r.cited; if (r.sources) q.sources = r.sources; });
     s.ai.checkedAt = s.today; s.ai.live = true;
     const sc = BB.aiScore();
     BB.log('ai', 'AI visibility', 'Checked ' + s.ai.questions.length + ' traveller questions in ChatGPT, Gemini, Perplexity and Google. Your homes came up in ' + sc.score + '% of answers' + (changed ? ', ' + changed + ' changed since last time.' : '.'), null, ['AI visibility', 'Answer engines']);
