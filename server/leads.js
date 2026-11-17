@@ -177,5 +177,16 @@ module.exports = function ({ db, cfg, msg, auth, log }) {
     return { seq: row.seq, name: SEQ[row.seq] ? SEQ[row.seq].name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || '{}')), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
   }
 
-  return { series: SEQ, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async s => { await loadSettings(); await setKv('lead-settings', Object.assign({}, current, s)); await loadSettings(); }, ukAt, pick };
+  // The team admin's template gallery: one step of a series, rendered exactly as it goes out, for a made-up lead.
+  async function sample(seq, key) {
+    const S = SEQ[seq], step = S && S.steps.find(x => x.key === key); if (!step) return null;
+    await loadSettings();
+    const now = Date.now(), d = { rate: 210, nights: 16, homes: 1, fee: 15.5, town: 'Keswick', listing: 'https://www.airbnb.co.uk/rooms/1', page: 'sample' };
+    const v = Object.assign({ score: 42, competitor_count: 3, top_question: 'dog friendly cottage near Keswick with a hot tub', audit_url: cfg.baseUrl + '/admin/emails', proposal_url: cfg.baseUrl + '/admin/emails',
+      session_at: settings().webinar_at > now ? settings().webinar_at : now + 3 * 864e5, call_at: now + 2 * 864e5 }, S.vars(d) || {});
+    const row = { lead_id: 0, seq, name: 'Hannah Lees', vars: JSON.stringify(v), sent: '{}', start: now };
+    return render(row, step, context(row, now, false));
+  }
+
+  return { series: SEQ, sample, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async s => { await loadSettings(); await setKv('lead-settings', Object.assign({}, current, s)); await loadSettings(); }, ukAt, pick };
 };
