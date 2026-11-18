@@ -209,6 +209,8 @@
         fwd('input', ev);
       });
       root.addEventListener('change', ev => { if (ev.target.closest('[data-nb]')) { nbChange(ev.target, inst); return; } fwd('change', ev); });
+      root.addEventListener('dragover', ev => fwd('dragover', ev));
+      root.addEventListener('drop', ev => fwd('drop', ev));
       root.addEventListener('submit', ev => { ev.preventDefault(); if (ev.target.closest('[data-nb]')) { nbSubmit(inst); return; } fwd('submit', ev); });
       root.addEventListener('focusin', ev => { if (ev.target.dataset && ev.target.dataset.a === 'q' && !inst.st.qOpen && inst.st.q) inst.set({ qOpen: true }); });
       root.addEventListener('keydown', ev => {
