@@ -676,6 +676,7 @@ async function route(req, res) {
   if (p.startsWith('/admin/') && m === 'POST') {
     if (p === '/admin/hostmail/run' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await hostMail.run(+b.at || Date.now()) }); } // test servers only
     if (p === '/admin/leads/run' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await leads.run(+b.at || Date.now()) }); } // test servers only: run the clock forward
+    if (p === '/admin/leads/import') return await leadImportPost(req, res);
     return await adminPost(req, res, p);
   }
   if (p === '/api/leads' && (m === 'POST' || m === 'OPTIONS')) return lead(req, res);
@@ -860,7 +861,27 @@ async function route(req, res) {
 }
 
 /* ---------------- leads from the marketing sites ---------------- */
-const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)');
+const leadIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at, source, has_email) VALUES (?, ?, ?, ?, ?, 'website', 1)");
+const leadImport = require('./lead-import')({ db });
+// The team's CSV import (admin only). A plain form upload (multipart) from /admin/leads, or JSON { csv, source, dry_run } for scripts.
+// Imported leads are stored only: they are not started on any follow-up series and team campaigns do not reach them.
+async function leadImportPost(req, res) {
+  if (!await isAdmin(req)) return notFound(res);
+  const ct = String(req.headers['content-type'] || ''); let f;
+  try {
+    if (ct.includes('multipart/form-data')) f = require('./lead-import').multipart(Buffer.from(await body(req, 8e6), 'utf8'), ct) || {};
+    else if (ct.includes('json')) f = await jsonBody(req, 8e6);
+    else f = Object.fromEntries(new URLSearchParams(await body(req, 8e6)));
+  } catch (e) { return ct.includes('json') ? json(res, { error: e.message }, e.status || 400) : await adminPage(req, res, '', 'leads', e.status === 413 ? 'That file is over 8 MB. Split it and import each part.' : 'Could not read the upload.'); }
+  const dryRun = ['1', 'true', 'on', 'yes'].includes(String(f.dry_run || '').toLowerCase()) || f.dry_run === true;
+  const r = await leadImport.importCsv(f.csv || f.file || '', { source: f.source, dryRun });
+  if (!r.error) log('leads', 'import', r.batch, r.source, (dryRun ? 'dry run ' : '') + r.loaded + ' loaded, ' + r.rejected + ' rejected');
+  if (ct.includes('json')) return json(res, r, r.error ? 400 : 200);
+  if (r.error) return await adminPage(req, res, '', 'leads', r.error);
+  const why = Object.entries(r.reasons).map(([k, n]) => n + ' ' + leadImport.REASONS[k].toLowerCase()).join(', ');
+  return await adminPage(req, res, (r.dryRun ? 'Check only, nothing saved: ' + r.loaded + ' of ' + r.total + ' rows would load' : 'Imported ' + r.loaded + ' of ' + r.total + ' rows as ' + r.source) +
+    ' (' + r.has_email + ' with email, ' + r.no_email + ' phone only).' + (r.rejected ? ' Rejected ' + r.rejected + ': ' + why + '.' : '') + (r.dryRun ? '' : ' None of them get emails.'), 'leads');
+}
 // Team view of leads and accounts, for the emails listed in ADMIN_EMAILS.
 // Also config:admins in the kv table (comma separated), so team members can be added without changing the server's settings.
 const isAdminEmail = async email => { email = String(email || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
@@ -896,7 +917,7 @@ async function adminPage(req, res, note, section, err) {
     let x = {}; try { x = JSON.parse(l.data || '{}'); } catch (_) {}
     const f = info.get(l.id);
     const prog = f ? '<b>' + E(f.name) + '</b><div style="margin:4px 0">' + A.pill(statusPill[f.status] || 'muted', status[f.status] || f.status) + '</div><small>' + f.sent.length + ' of ' + f.total + ' sent' + (f.status === 'active' && f.next_at ? ' · next ' + d(f.next_at) : '') + (f.status === 'waiting' && f.next ? ' · next: ' + E(f.next) : '') + '</small>' : '<small>No emails</small>';
-    return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + '</td><td>' + A.pill('muted', l.kind) + '</td><td><b>' + E(l.email) + '</b><small>' + E(l.name || '') + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !['referrer'].includes(k)).map(([k, v]) => k + ': ' + v).join(' · ')) + '</td><td>' + prog + '</td><td style="min-width:240px">' + leadActions(l) + '</td></tr>';
+    return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + '</td><td>' + A.pill('muted', l.kind) + (l.source && l.source !== 'website' ? '<small>' + E(l.source) + '</small>' : '') + '</td><td><b>' + E(l.email || l.phone || '') + '</b><small>' + E(l.name || '') + (l.email && l.phone ? ' · ' + E(l.phone) : '') + (l.consent_at ? ' · consent ' + E(l.consent_at) : '') + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !['referrer'].includes(k)).map(([k, v]) => k + ': ' + v).join(' · ')) + '</td><td>' + prog + '</td><td style="min-width:240px">' + leadActions(l) + '</td></tr>';
   };
   const LEAD_HEADS = ['When', 'Form', 'Who', 'Answers', 'Emails', ''];
   const hostRow = a => {
@@ -915,8 +936,13 @@ async function adminPage(req, res, note, section, err) {
       A.field('key', '', 'Stripe secret key', { type: 'password', ph: 'sk_live_...', req: true, extra: ' autocomplete="off" spellcheck="false"' }) + '<div class="row"><button class="btn primary sm">Save and connect</button></div></form></details>' : ''));
   const shell = o => send(res, 200, A.shell(Object.assign({ email: who, waiting: waiting.length, note, err }, o)), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
 
-  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms. Their follow-up emails go out by themselves; anything marked “Waiting for you” needs a person.',
-    body: '<section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), 'No leads yet. They arrive here from the forms on the website.') + '</section>' });
+  const importCard = A.card('Import leads from a CSV', 'Stored only, no emails', '<form class="adm-form" method="post" action="/admin/leads/import" enctype="multipart/form-data">' +
+    '<small class="adm-help">One row per lead with an email or phone column (an optional consent date column too, e.g. 14/03/2026). Duplicates are skipped by email, then by phone. Imported leads are not started on any email series and campaigns do not reach them.</small>' +
+    '<label>CSV file<input type="file" name="file" accept=".csv,text/csv" required></label>' +
+    '<label>Source<select name="source" required><option value="">Choose…</option>' + leadImport.SOURCES.map(x => '<option value="' + x + '">' + x + '</option>').join('') + '</select></label>' +
+    '<label class="row"><input type="checkbox" name="dry_run" value="1" checked> Check only, do not save</label><div class="row"><button class="btn primary sm">Import</button></div></form>');
+  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms and imports. Website leads get their follow-up emails by themselves; imported leads get none; anything marked “Waiting for you” needs a person.',
+    body: '<details class="adm-x" style="margin-bottom:16px"><summary>' + A.icon('plus') + 'Import leads from a CSV</summary>' + importCard + '</details><section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), 'No leads yet. They arrive here from the forms on the website.') + '</section>' });
   if (section === 'hosts') return shell({ title: 'Host accounts', active: 'hosts', sub: accts.length + ' host accounts · AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + ' a month' + (cfg.credits.markup !== 1 ? ', usage charged at ' + cfg.credits.markup + '× cost' : ', usage charged at cost') + '.',
     body: '<div class="adm-kpis">' + A.kpi('Host accounts', accts.length) + A.kpi('Paying', accts.filter(a => a.billing_status === 'active').length) + A.kpi('Not paid yet', accts.filter(a => !a.billing_status || a.billing_status === 'trial').length) + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' +
       '<section class="a-card a-flush">' + A.table(HOST_HEADS, accts.map(hostRow), 'No host accounts yet.') + '</section>' });
@@ -943,7 +969,7 @@ async function adminPage(req, res, note, section, err) {
     body: '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
       A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' + await marketingRow(A) +
       '<div class="a-grid adm-top"><div class="a-s8">' + A.card('Waiting for you', waiting.length + ' lead' + (waiting.length === 1 ? '' : 's'), needs, waiting.length ? 'a-flush' : '').replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div>' +
-      '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email) + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
+      '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email || l.phone || '') + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
 }
 // the overview's marketing row: write an email, what is going out on social, and the email library
 async function marketingRow(A) {
