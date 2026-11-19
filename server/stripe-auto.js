@@ -11,7 +11,7 @@ const PLANS = [
   ['GROWTH', 'Bookingbooster Growth', 200],
   ['CALENDAR_SYNC', 'Bookingbooster calendar sync add-on', 15],
 ];
-const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.updated', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid'];
+const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.updated', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid', 'charge.refunded', 'charge.dispute.closed'];
 const CONNECT_EVENTS = ['account.updated'];
 
 // Creates (or finds) everything. Returns { prices: { STRIPE_PRICE_...: id }, webhookSecret, connectWebhookSecret, endpoints }.
@@ -110,6 +110,10 @@ function auto({ cfg, stripe, db, log }) {
         try { await stripe.api('POST', '/prices/' + s.prices.STRIPE_PRICE_SETUP, { active: false }); log('stripe', 'Archived the old setup fee price'); delete s.prices.STRIPE_PRICE_SETUP; await set.run(KEY, JSON.stringify(s)); }
         catch (e) { log('stripe archive', e.message); }
       }
+      // New events added since the endpoint was made (refunds, for the partner programme): add them to it once.
+      if (s.events !== PLATFORM_EVENTS.join(',') && s.endpoints && s.endpoints[0]) {
+        try { await stripe.api('POST', '/webhook_endpoints/' + s.endpoints[0], { enabled_events: PLATFORM_EVENTS }); s.events = PLATFORM_EVENTS.join(','); await set.run(KEY, JSON.stringify(s)); } catch (e) { log('stripe events', e.message); }
+      }
       apply(s); return s;
     }
     if (s && s.fp === fp() && s.error && t - (s.at || 0) < 30 * 60e3) return s;
@@ -117,7 +121,7 @@ function auto({ cfg, stripe, db, log }) {
     if (envDone) return null; // set by hand in the environment: nothing to do
     try {
       const r = await setup(stripe, cfg.baseUrl, { recreate: true });
-      const saved = { fp: fp(), mode: mode(), at: t, prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
+      const saved = { fp: fp(), mode: mode(), at: t, events: PLATFORM_EVENTS.join(','), prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
       await set.run(KEY, JSON.stringify(saved)); apply(saved); log('stripe', 'Prices and webhooks set up in ' + mode() + ' mode' + (cfg.stripe.keyName ? ', key from ' + cfg.stripe.keyName : ''));
       return saved;
     } catch (e) {

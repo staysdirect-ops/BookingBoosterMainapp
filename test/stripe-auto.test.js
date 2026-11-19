@@ -5,7 +5,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const http = require('node:http');
 
-const prices = [], products = [], hooks = [], deleted = [], sessions = [], archived = [];
+const prices = [], products = [], hooks = [], deleted = [], sessions = [], archived = [], updated = [];
 let mock;
 test.before(() => new Promise(r => { mock = http.createServer((q, s) => { let raw = ''; q.on('data', c => raw += c); q.on('end', () => {
   const u = new URL(q.url, 'http://x'), f = new URLSearchParams(raw), send = o => { s.writeHead(200, { 'content-type': 'application/json' }); s.end(JSON.stringify(o)); };
@@ -15,6 +15,7 @@ test.before(() => new Promise(r => { mock = http.createServer((q, s) => { let ra
   if (u.pathname === '/v1/products') { const p = { id: 'prod_' + products.length, metadata: { bb_plan: f.get('metadata[bb_plan]') } }; products.push(p); return send(p); }
   if (u.pathname === '/v1/webhook_endpoints' && q.method === 'GET') return send({ data: hooks });
   if (u.pathname.startsWith('/v1/webhook_endpoints/') && q.method === 'DELETE') { const id = u.pathname.split('/').pop(); deleted.push(id); hooks.splice(hooks.findIndex(h => h.id === id), 1); return send({ id, deleted: true }); }
+  if (u.pathname.startsWith('/v1/webhook_endpoints/') && q.method === 'POST') { updated.push([u.pathname.split('/').pop(), [...f.keys()].filter(k => k.startsWith('enabled_events')).map(k => f.get(k))]); return send({ id: u.pathname.split('/').pop() }); }
   if (u.pathname === '/v1/webhook_endpoints') { const h = { id: 'we_' + (hooks.length + deleted.length), url: f.get('url'), description: f.get('description'), secret: 'whsec_' + (hooks.length + deleted.length) }; hooks.push(h); return send(h); }
   if (/^\/v1\/prices\/price_/.test(u.pathname) && q.method === 'POST') { archived.push(u.pathname.split('/').pop() + ' ' + raw); return send({}); }
   if (u.pathname === '/v1/balance') { if (/bad/.test(q.headers.authorization)) { s.writeHead(401, { 'content-type': 'application/json' }); return s.end(JSON.stringify({ error: { message: 'Invalid API Key provided' } })); } return send({ object: 'balance' }); }
@@ -80,4 +81,13 @@ test('the old £997 setup fee price is archived once, not deleted', async () => 
   await a.ensure(); assert.deepEqual(archived, ['price_old997 active=false']);
   assert.equal(JSON.parse(db.kv.get('config:stripe')).prices.STRIPE_PRICE_SETUP, undefined); assert.equal(cfg.stripe.prices.setup, undefined);
   await a.ensure(); assert.equal(archived.length, 1);
+});
+
+test('an endpoint made before refunds were needed gets the new events added once', async () => {
+  const db = fakeDb(); const { a } = mk('sk_live_three', db); await a.ensure();
+  const saved = JSON.parse(db.kv.get('config:stripe')); assert.match(saved.events, /charge\.refunded/);
+  delete saved.events; db.kv.set('config:stripe', JSON.stringify(saved)); // as saved by an older version
+  const before = updated.length; await a.ensure();
+  assert.equal(updated.length, before + 1); assert.equal(updated[updated.length - 1][0], saved.endpoints[0]); assert.ok(updated[updated.length - 1][1].includes('charge.refunded'));
+  await a.ensure(); assert.equal(updated.length, before + 1, 'only once');
 });

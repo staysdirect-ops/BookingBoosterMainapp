@@ -111,6 +111,8 @@ const err = (status, message) => Object.assign(new Error(message), { status });
 // The AI site builder and funnel creator (server/studio)
 // Our own event finder for Event ads (server/studio/crawler.js): reads public what's-on and course pages, no event APIs
 const eventFinder = require('./studio/crawler')({ cfg, kv: { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, log: (...a) => log(...a) });
+// The partner (affiliate) programme: /partners, /r/<code> and /admin/affiliates (server/affiliates.js)
+const aff = require('./affiliates')({ db, cfg, auth, msg, stripe, log, h: { ui: adminUi, esc: s => pages.esc(s), send: (...a) => send(...a), redirect: (...a) => redirect(...a), notFound: r => notFound(r), cookies: r => cookies(r), cookie: (...a) => cookie(...a), formBody: r => formBody(r), ip: r => ip(r), authPage: (...a) => authPage(...a) } });
 const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, credits, finder: eventFinder, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
 
 /* ---------------- static assets ---------------- */
@@ -317,6 +319,7 @@ async function stripeWebhook(req, res) {
       }
     }
     if (ev.type === 'customer.subscription.updated') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await flows.cancelling(r.id, o); } // cancel requested: offer a pause
+    if (['invoice.paid', 'charge.refunded', 'charge.dispute.closed'].includes(ev.type)) await aff.stripeEvent(ev, async c => { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(c); return r && r.id; });
     if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
   } catch (e) { log('webhook', ev.type, e.message); }
   json(res, { received: true });
@@ -336,6 +339,7 @@ async function signup(req, res) {
   if (name.length < 2) throw err(400, 'Enter your name.');
   if (pw.length < 10) throw err(400, 'Use a password of at least 10 characters.');
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
+  const ref = await aff.forSignup(req, b.ref, email); // the partner who referred them, if any
   const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
@@ -349,6 +353,7 @@ async function signup(req, res) {
     if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
   }
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
+  await aff.attach(wid, ref);
   const token = await auth.startSession(uid), set = { 'set-cookie': cookie('bb_s', token, 30 * 86400) };
   // Pay first: with card billing on, the new host goes straight to Stripe Checkout and gets into setup once it is paid.
   if (stripe.enabled) {
@@ -630,6 +635,9 @@ async function route(req, res) {
     return await sitePage(res, w, prop, canonical, null, req);
   }
 
+  /* partner programme: referral links, /partners pages */
+  if (await aff.route(req, res, u, p, m)) return;
+
   /* marketing site */
   if (p === '/signup' || p === '/register' || p === '/join') return redirect(res, '/start' + u.search);
   if (p === '/' || p === '/pricing' || p === '/start') {
@@ -637,7 +645,7 @@ async function route(req, res) {
     // Funnel checkouts hand off to /start?plan=Growth&annual=1&addon=1&email=…&name=…&business=… to prefill the sign-up.
     const q = k => String(u.searchParams.get(k) || '').trim().slice(0, 120);
     const pre = p === '/start' ? { plan: ['starter', 'growth', 'portfolio'].includes(q('plan').toLowerCase()) ? q('plan').toLowerCase() : undefined,
-      annual: q('annual') === '1', addon: q('addon') === '1', email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
+      annual: q('annual') === '1', addon: q('addon') === '1', ref: aff.cookieCode(req), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
       head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
@@ -656,6 +664,7 @@ async function route(req, res) {
   if (p === '/' + ownIndexKey() + '.txt') return send(res, 200, ownIndexKey(), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
+  if (p === '/admin/affiliates' || p.startsWith('/admin/affiliates/')) { if (!await isAdmin(req)) return notFound(res); if (await aff.admin(req, res, p, m, ((await me(req)) || {}).email)) return; return notFound(res); }
   if (m === 'GET' && (p === '/admin/leads' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
   if (p === '/admin/hosts' || p.startsWith('/admin/hosts/')) {
     if (!await isAdmin(req)) return notFound(res);
@@ -1025,6 +1034,7 @@ async function accountPage(w, sess, note, err) {
     '<div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div>' +
     '<form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' +
     inp('Type DELETE to confirm', 'confirm', '', 'text', ' required autocomplete="off"') + inp('Your password', 'password', '', 'password', ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form>' +
+    '<div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn ' + cfg.affiliate.rate + '% of everything hosts you refer pay us, for as long as they stay. <a href="/partners">Get your partner link</a></p></div>' +
     '<div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
 }
 async function accountPost(req, res, p, w, sess) {
