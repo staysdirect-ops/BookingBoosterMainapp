@@ -36,6 +36,20 @@ create table if not exists ai_credit (workspace_id text primary key, anchor bigi
 create table if not exists ai_ledger (id bigserial primary key, workspace_id text not null, kind text not null, amount bigint not null,
   feature text, model text, tokens_in integer, tokens_out integer, ref text unique, created_at bigint not null);
 create index if not exists ai_ledger_ws on ai_ledger(workspace_id, created_at);
+create table if not exists affiliates (
+  id text primary key, code text not null unique, email text not null, name text not null, pass text not null,
+  payout text not null default '', status text not null default 'active', created_at bigint not null);
+create unique index if not exists affiliates_email_lower on affiliates (lower(email));
+create table if not exists aff_sessions (token text primary key, affiliate_id text not null references affiliates(id) on delete cascade, expires_at bigint not null);
+create table if not exists aff_clicks (affiliate_id text not null, day text not null, n integer not null default 0, primary key (affiliate_id, day));
+create table if not exists referrals (workspace_id text primary key, affiliate_id text not null references affiliates(id), how text not null, created_at bigint not null);
+create table if not exists commissions (
+  id text primary key, affiliate_id text not null references affiliates(id), workspace_id text not null, kind text not null, source text not null,
+  gross integer not null, amount integer not null, reversed integer not null default 0, refs text not null default '', note text,
+  clears_at bigint not null, created_at bigint not null, updated_at bigint not null);
+create table if not exists aff_payouts (id bigserial primary key, affiliate_id text not null references affiliates(id), amount integer not null, reference text, created_at bigint not null);
+create index if not exists comm_aff on commissions(affiliate_id, created_at);
+create index if not exists ref_aff on referrals(affiliate_id);
 create index if not exists lead_seq_due on lead_seq(status, next_at);
 create index if not exists outbox_ws on outbox(workspace_id, created_at);
 create index if not exists pay_ws on payments(workspace_id, booking_id);

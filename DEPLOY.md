@@ -7,3 +7,4 @@
   `supabase/20i/index.php` (with the proxy key filled in) and `supabase/20i/.htaccess`. They forward every request to the bb function.
 - **Background jobs:** pg_cron job `bookingbooster-tick` posts to `/jobs/tick` every 5 minutes.
 - **Keys:** the proxy key and jobs key live in the `kv` table (`config:proxy_key`, `config:jobs_key`), never in git.
+- **New tables:** the function does not create tables. Before deploying the partner programme, run `supabase/affiliates.sql` once in the Supabase SQL editor.
