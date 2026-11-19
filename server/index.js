@@ -675,6 +675,7 @@ async function route(req, res) {
   }
   if (p.startsWith('/admin/') && m === 'POST') {
     if (p === '/admin/hostmail/run' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await hostMail.run(+b.at || Date.now()) }); } // test servers only
+    if (p === '/admin/leads/outreach/enroll' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, await leads.outreach.enroll(+b.id, +b.at || undefined)); } // test servers only, until the outreach series are switched on
     if (p === '/admin/leads/run' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await leads.run(+b.at || Date.now()) }); } // test servers only: run the clock forward
     if (p === '/admin/leads/import') return await leadImportPost(req, res);
     return await adminPost(req, res, p);

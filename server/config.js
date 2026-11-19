@@ -51,6 +51,7 @@ module.exports = {
   jobsKey: E.JOBS_KEY || '',
   secret: secret(),
   secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? 'https:' : '')),
+  outreachTestOn: E.ALLOW_TEST_CLOCK === '1' ? String(E.OUTREACH_TEST_ON || '').split(',').map(x => x.trim()).filter(Boolean) : [], // tests only: switch outreach drafts on
   testClock: E.ALLOW_TEST_CLOCK === '1', // tests only: lets /admin/leads/run move the lead-email clock forward
   // A host's own domain: what their DNS should point at (defaults to the BASE_URL host), plus Fly.io certificates
   domains: { target: E.CUSTOM_DOMAIN_TARGET || '', ips: (E.CUSTOM_DOMAIN_IPS || '').split(',').map(x => x.trim()).filter(Boolean), flyToken: E.FLY_API_TOKEN || '', flyApp: E.FLY_APP_NAME || '',
