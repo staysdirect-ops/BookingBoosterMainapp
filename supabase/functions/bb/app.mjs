@@ -18,7 +18,255 @@ var __commonJS = (cb, mod) => function __require2() {
 // bb:bb-embedded-files
 var require_bb_embedded_files = __commonJS({
   "bb:bb-embedded-files"(exports, module) {
-    module.exports = { "/app/web/src/app-grow.css": { "t": `/* Host console: Grow, Get found and Settings views (app-grow.js). Everything is scoped under .ag and reflows by
+    module.exports = { "/app/web/src/app-events.css": { "t": "/* Host console: Event ads (app-events.js). Lives inside .ag, so it reflows with the container. */\n.ea .ea-find { padding: 18px 20px; }\n.ea .ea-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 12px; align-items: end; }\n.ea .ea-form .btn { margin-bottom: 14px; justify-content: center; }\n.ea .ea-form .ea-wide { grid-column: span 2; }\n.ea .ea-pagelist { display: grid; gap: 8px; }\n.ea .ea-page { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.ea .ea-page > div:first-child { display: grid; gap: 2px; min-width: 0; }\n.ea .ea-page b, .ea .ea-page small { overflow-wrap: anywhere; }\n.ea .ea-page-s { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }\n@media (max-width: 640px) { .ea .ea-page { flex-direction: column; align-items: stretch; } .ea .ea-page-s { justify-content: flex-start; } }\n.ea .ea-last { font-size: 12.5px; margin: 10px 0 0; padding: 0; }\n.ea .ea-kpis { margin: 16px 0; }\n.ea .ea-list { display: grid; gap: 10px; margin-bottom: 16px; }\n.ea .ea-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 16px; }\n.ea .ea-date { display: grid; place-items: center; text-align: center; width: 58px; height: 62px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-date b { font: 600 22px/1 var(--font-display, inherit); }\n.ea .ea-date small { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-main { display: grid; gap: 3px; min-width: 0; }\n.ea .ea-main > b { font-size: 15px; }\n.ea .ea-main small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12.5px; }\n.ea .ea-main small .ic { width: 13px; height: 13px; }\n.ea .ea-src { color: var(--muted); }\n.ea .ea-src a { color: inherit; text-decoration: underline; }\n.ea .ea-act { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; max-width: 320px; }\n.ea .ea-act small { font-size: 12px; }\n@container ag (max-width: 720px) { .ea .ea-row { grid-template-columns: 58px minmax(0, 1fr); } .ea .ea-act { grid-column: 1 / -1; justify-content: flex-start; max-width: none; } .ea .ea-form .ea-wide { grid-column: auto; } }\n.ea .ea-full { margin: 0 0 16px; }\n.ea .ea-full summary { cursor: pointer; font-size: 13px; color: var(--muted); margin-bottom: 10px; }\n/* ad pack */\n.ea .ea-tabs { margin: 4px 0 12px; flex-wrap: wrap; }\n.ea .ea-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 24px; align-items: start; }\n@container ag (max-width: 900px) { .ea .ea-two { grid-template-columns: minmax(0, 1fr); } }\n.ea .ea-cnt { font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); margin-left: 6px; }\n.ea .ea-cnt.bad, .ea .err { color: var(--bad); }\n.ea .ea-note { font-size: 12.5px; margin: 10px 0 0; overflow-wrap: anywhere; }\n.ea .ea-warn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); font-size: 13.5px; margin: 0 0 12px; }\n.ea .ea-warn .ic { width: 16px; height: 16px; flex: none; }\n.ea .lnk { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; color: inherit; }\n.ea .ea-fb { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }\n.ea .ea-fb-h { display: flex; gap: 10px; align-items: center; padding: 12px 14px 0; }\n.ea .ea-fb-h b { display: block; font-size: 14px; } .ea .ea-fb-h small { font-size: 12px; color: var(--muted); }\n.ea .ea-av { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: var(--primary-ink, #fff); font-weight: 700; flex: none; }\n.ea .ea-av.sm { width: 22px; height: 22px; font-size: 11px; }\n.ea .ea-fb > p { font-size: 14px; line-height: 1.45; margin: 10px 14px 12px; }\n.ea .ea-fb canvas { display: block; width: 100%; height: auto; }\n.ea .ea-fb-f { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-2); }\n.ea .ea-fb-f div { display: grid; gap: 2px; min-width: 0; } .ea .ea-fb-f small { font-size: 11.5px; color: var(--muted); } .ea .ea-fb-f b { font-size: 15px; }\n.ea .ea-imgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 260px)); gap: 18px; margin-top: 24px; align-items: start; }\n.ea .ea-imgs figure { margin: 0; display: grid; gap: 8px; }\n.ea .ea-imgs canvas { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }\n.ea .ea-imgs figcaption { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }\n.ea .ea-imgs .ea-note { grid-column: 1 / -1; }\n.ea .ea-g { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; font-family: Arial, system-ui, sans-serif; background: var(--surface); }\n.ea .ea-g small { font-weight: 700; font-size: 12px; }\n.ea .ea-g-u { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 6px 0; }\n.ea .ea-g b { display: block; color: #1a0dab; font-weight: 400; font-size: 19px; line-height: 1.3; }\n.ea .ea-g p { font-size: 14px; color: var(--ink-2, #4d5156); margin: 4px 0 0; }\n.ea .ea-plan { display: grid; gap: 18px; }\n.ea .ea-when { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }\n.ea .ea-when > div { display: grid; gap: 2px; padding: 14px 16px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }\n.ea .ea-when small { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }\n.ea .ea-when b { font-size: 20px; } .ea .ea-when span { font-size: 12.5px; }\n.ea .ea-tc { padding: 16px 18px; }\n.ea .ea-tc h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 15px; } .ea .ea-tc h4 .ic { width: 16px; height: 16px; }\n.ea .ea-tc dl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px 12px; margin: 0; font-size: 13.5px; }\n.ea .ea-tc dt { color: var(--muted); } .ea .ea-tc dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }\n.ea .ea-pv { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; height: 520px; }\n.ea .ea-pv iframe { width: 166%; height: 166%; border: 0; transform: scale(.6); transform-origin: 0 0; }\n.ea .ea-save { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }\n.ea .ea-status { display: flex; align-items: center; gap: 8px; margin: 14px 0; }\n" }, "/app/web/src/app-events.js": { "t": `/* Bookingbooster: Event ads in the host console (Grow \u2192 Event ads).
+   Finds events, training courses and conferences near each home that run for two or more days, shows which nights
+   are still free for each one, and writes a ready-to-run ad pack: Facebook and Instagram ads with images drawn from the
+   home's photo, a Google search ad with keywords, who to target and when, and a landing page with the dates and a code. */
+(function () {
+  const BB = window.BB; BB.appViews = BB.appViews || {};
+  const V = BB.appViews, esc = BB.esc, I = BB.icon;
+  const S = () => BB.store.get();
+  const demo = () => !!(BB.BOOT && BB.BOOT.mode === 'demo');
+  const API = () => (demo() ? '/api/demo/' : '/api/');
+  const live = () => !!(BB.api && BB.BOOT && (BB.BOOT.mode === 'host' || BB.BOOT.mode === 'demo'));
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const P = s => new Date(s + 'T00:00:00Z'), add = (s, n) => { const x = P(s); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+  const dm = s => P(s).getUTCDate() + ' ' + MON[P(s).getUTCMonth()];
+  const range = (a, b) => a === b ? dm(a) : P(a).getUTCMonth() === P(b).getUTCMonth() ? P(a).getUTCDate() + '\u2013' + dm(b) : dm(a) + ' \u2013 ' + dm(b);
+  const KIND_ICON = { course: 'pen', conference: 'users', expo: 'tag', show: 'star', festival: 'play', sport: 'bolt', exam: 'check', other: 'cal' };
+  const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
+
+  /* ---------- data from the server (events come back with how they sit against the calendar today) ---------- */
+  const D = { list: null, busy: false, loading: null, open: null };
+  async function load(inst, force) {
+    if (D.loading || (D.list && !force)) return;
+    D.loading = BB.api.call(API() + 'eventads/list', null, 'GET').then(j => { D.list = j; }).catch(e => BB.toast(e.message, 'bad')).finally(() => { D.loading = null; inst.render(); });
+  }
+  async function call(inst, path, body, okMsg) {
+    try { const j = await BB.api.call(API() + 'eventads/' + path, body); if (j.state) BB.api.accept(j); if (okMsg) BB.toast(okMsg, 'good'); await load(inst, true); return j; }
+    catch (e) { BB.toast(e.message, 'bad'); return null; }
+    finally { inst.render(); }
+  }
+  const ads = () => (((S().studio || {}).events || {}).ads) || [];
+  const fnOf = a => (((S().studio || {}).funnels) || []).find(f => f.id === a.funnelId);
+
+  /* ---------- the ad images, drawn on a canvas so the host can download them as PNGs ---------- */
+  const IMG = {};
+  function photo(p, inst) {
+    const u = ((p.photos || [])[0] || {}).url; if (!u) return null;
+    if (IMG[u]) return IMG[u].ok ? IMG[u].img : null;
+    const img = new Image(); IMG[u] = { img, ok: false }; img.crossOrigin = 'anonymous';
+    img.onload = () => { IMG[u].ok = true; inst.render(); }; img.src = u; return null;
+  }
+  function wrap(c, text, x, y, max, lh, lines) {
+    const words = String(text).split(' '); let line = '', n = 0;
+    for (let i = 0; i < words.length; i++) {
+      const t = line ? line + ' ' + words[i] : words[i];
+      if (c.measureText(t).width > max && line) { if (n === lines - 1) { c.fillText(line + '\u2026', x, y); return y + lh; } c.fillText(line, x, y); y += lh; n++; line = words[i]; } else line = t;
+    }
+    if (line) { c.fillText(line, x, y); y += lh; } return y;
+  }
+  function draw(cv, a, p, img) {
+    const c = cv.getContext('2d'), W = cv.width, H = cv.height, tall = H > W, pad = 84, col = p.color || '#2F5D46';
+    c.clearRect(0, 0, W, H);
+    if (img) { const r = Math.max(W / img.width, H / img.height), w = img.width * r, h = img.height * r; c.drawImage(img, (W - w) / 2, (H - h) / 2, w, h); }
+    else { const g = c.createLinearGradient(0, 0, W, H); g.addColorStop(0, col); g.addColorStop(1, '#14130F'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+      c.globalAlpha = 0.08; c.fillStyle = '#fff'; for (let i = 0; i < 9; i++) { c.beginPath(); c.arc(W * 0.85, H * 0.18, 120 + i * 90, 0, 7); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke(); } c.globalAlpha = 1; }
+    const sh = c.createLinearGradient(0, H * (tall ? 0.35 : 0.25), 0, H); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.82)'); c.fillStyle = sh; c.fillRect(0, 0, W, H);
+    // the event, as a label at the top
+    c.font = '700 30px system-ui, -apple-system, Segoe UI, sans-serif'; const tag = ('For ' + a.event.name).toUpperCase().slice(0, 44); const tw = c.measureText(tag).width;
+    c.fillStyle = 'rgba(255,255,255,.94)'; roundRect(c, pad, pad, tw + 44, 62, 31); c.fill(); c.fillStyle = '#111'; c.fillText(tag, pad + 22, pad + 42);
+    // headline, dates and the home
+    let y = H - (tall ? 760 : 470);
+    c.fillStyle = '#fff'; c.font = '500 ' + (tall ? 92 : 80) + 'px Georgia, "Times New Roman", serif';
+    y = wrap(c, 'Stay near ' + (a.event.venue || a.event.town || p.area) , pad, y, W - pad * 2, tall ? 102 : 88, 2);
+    c.font = '700 44px system-ui, -apple-system, Segoe UI, sans-serif'; c.fillStyle = '#FFE8A8';
+    y = wrap(c, 'Free ' + range(a.stay.from, a.stay.to) + ' \xB7 ' + a.stay.n + ' night' + (a.stay.n === 1 ? '' : 's'), pad, y + 18, W - pad * 2, 54, 1);
+    c.font = '400 36px system-ui, -apple-system, Segoe UI, sans-serif'; c.fillStyle = 'rgba(255,255,255,.9)';
+    y = wrap(c, p.name + ' \xB7 ' + p.bedrooms + ' bedrooms \xB7 sleeps ' + p.maxGuests, pad, y + 8, W - pad * 2, 46, 2);
+    // the offer, as a button
+    const btn = a.code ? 'Book direct \xB7 ' + a.pct + '% off with ' + a.code : 'Book direct, no booking fees';
+    c.font = '700 38px system-ui, -apple-system, Segoe UI, sans-serif'; const bw = Math.min(W - pad * 2, c.measureText(btn).width + 70);
+    c.fillStyle = '#fff'; roundRect(c, pad, y + 26, bw, 88, 44); c.fill(); c.fillStyle = '#111'; c.fillText(btn, pad + 35, y + 84);
+    c.font = '500 28px system-ui, -apple-system, Segoe UI, sans-serif'; c.fillStyle = 'rgba(255,255,255,.75)'; if (tall) c.fillText(String(S().account.business || '').slice(0, 50), pad, H - 200);
+  }
+  function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function paint(inst) {
+    inst.root.querySelectorAll('canvas[data-ea]').forEach(cv => { const a = ads().find(x => x.id === cv.dataset.ea), p = a && S().properties.find(x => x.id === a.propertyId); if (a && p) draw(cv, a, p, photo(p, inst)); });
+  }
+
+  /* ---------- actions ---------- */
+  const H = {};
+  const pid = inst => inst.st.ea_home || (S().properties[0] || {}).id;
+  H['ea-find'] = async inst => { if (D.busy) return; D.busy = true; inst.render(); const pr = Object.assign({ radius: 25, minDays: 2, months: 6 }, (D.list || {}).prefs, inst.st.ea_prefs || {});
+    const j = await call(inst, 'find', Object.assign({ propertyId: pid(inst) }, pr)); D.busy = false;
+    if (j) BB.toast(j.events.filter(e => e.propertyId === pid(inst)).length ? (j.added ? j.added + ' new event' + (j.added === 1 ? '' : 's') + ' found' : 'No new events this time') : 'Nothing found yet. Try a wider area or add one yourself.', 'good');
+    inst.render(); };
+  H['ea-home'] = (inst, v) => inst.set({ ea_home: v });
+  H['ea-make'] = async (inst, v) => { if (inst.st.ea_making) return; inst.st.ea_making = v; inst.render(); const f = inst.st.ea_offer || {};
+    const j = await call(inst, 'create', { eventId: v, pct: f.pct != null ? +f.pct : 10, code: f.code || '', landing: true }); inst.st.ea_making = null;
+    if (j && j.ad) { inst.st.ea_open = j.ad.id; inst.st.ea_tab = 'meta'; BB.toast('Your ads are ready', 'good'); } inst.render(); };
+  H['ea-open'] = (inst, v) => inst.set({ ea_open: v, ea_tab: 'meta', ea_wd: null });
+  H['ea-close'] = inst => inst.set({ ea_open: null });
+  H['ea-tab'] = (inst, v) => inst.set({ ea_tab: v, ea_wd: null });
+  H['ea-hide'] = (inst, v) => call(inst, 'hide', { id: v }, 'Hidden');
+  H['ea-pageform'] = inst => inst.set({ ea_pageform: !inst.st.ea_pageform });
+  H['ea-watch'] = async inst => { if (D.watching) return; const v = inst.st.ea_page || {}; if (!v.url) { BB.toast('Paste the link to a page with events on it.', 'bad'); return; }
+    D.watching = true; inst.render(); const j = await call(inst, 'watch', Object.assign({ propertyId: pid(inst) }, v)); D.watching = false;
+    if (j && j.page) { BB.toast(j.page.error ? j.page.error : 'Read it: ' + j.page.n + ' event' + (j.page.n === 1 ? '' : 's') + ' so far. Press Find events to see the ones that fit.', j.page.error ? 'bad' : 'good'); inst.set({ ea_pageform: false, ea_page: {} }); } else inst.render(); };
+  H['ea-unwatch'] = (inst, v) => call(inst, 'unwatch', { id: v }, 'We\u2019ll stop reading that page for you');
+  H['ea-addform'] = inst => inst.set({ ea_add: !inst.st.ea_add, ea_new: inst.st.ea_new || { kind: 'course' } });
+  H['ea-add'] = async inst => { const n = inst.st.ea_new || {}; const j = await call(inst, 'add', Object.assign({ propertyId: pid(inst) }, n), 'Event added'); if (j) inst.set({ ea_add: false, ea_new: { kind: 'course' } }); };
+  H['ea-dl'] = (inst, v) => { const cv = inst.root.querySelector('canvas[data-ea][data-f="' + v + '"]'); if (!cv) return;
+    try { cv.toBlob(b => { const u = URL.createObjectURL(b), l = document.createElement('a'); l.href = u; l.download = 'event-ad-' + v + '.png'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }, 'image/png'); }
+    catch (_) { BB.toast('This photo cannot be downloaded from here. Right-click the image and save it instead.', 'bad'); } };
+  H['ea-copy'] = (inst, v, el) => { const a = ads().find(x => x.id === inst.st.ea_open); if (!a) return; const t = { primary: a.meta.primary, headline: a.meta.headline, description: a.meta.description, heads: a.google.headlines.join('\\n'), descs: a.google.descriptions.join('\\n'), kw: a.google.keywords.map(k => '"' + k + '"').join('\\n'), neg: a.google.negatives.join('\\n'), url: linkOf(a) }[v]; BB.copy(t || '', el); };
+  H['ea-save'] = inst => { const d = inst.st.ea_wd || {}, pt = {}; ['primary', 'headline', 'description'].forEach(k => { if (d[k] != null) (pt.meta = pt.meta || {})[k] = d[k]; }); ['headlines', 'descriptions', 'keywords'].forEach(k => { if (d[k] != null) (pt.google = pt.google || {})[k] = d[k]; });
+    inst.st.ea_wd = null; call(inst, 'edit', { id: inst.st.ea_open, patch: pt }, 'Saved'); };
+  H['ea-status'] = (inst, v, el) => call(inst, 'edit', { id: v, patch: { status: el.dataset.s } }, el.dataset.s === 'running' ? 'Marked as running' : 'Saved');
+  H['ea-live'] = async (inst, v) => { try { const j = await BB.api.call(API() + 'funnels/edit', { id: v, patch: { status: 'live' } }); BB.api.accept(j); BB.toast('Landing page is live', 'good'); } catch (e) { BB.toast(e.message, 'bad'); } inst.render(); };
+  H['ea-del'] = (inst, v) => { if (inst.st.ea_del !== v) { inst.set({ ea_del: v }); return; } inst.st.ea_del = null; inst.st.ea_open = null; call(inst, 'delete', { id: v, landing: true }, 'Ads deleted'); };
+
+  function linkOf(a) {
+    const f = fnOf(a), slug = (BB.BOOT && BB.BOOT.slug) || ((Object.values((BB.BOOT && BB.BOOT.siteUrls) || {})[0] || '').match(/\\/s\\/([^/]+)/) || [])[1] || 'host';
+    const base = f ? location.origin + (demo() ? '/demo/funnel/' + f.id + '/offer' : '/f/' + slug + '/' + f.id) : (((BB.BOOT && BB.BOOT.siteUrls) || {})[a.propertyId] || location.origin);
+    return base + (base.includes('?') ? '&' : '?') + 'utm_medium=paid&utm_campaign=' + encodeURIComponent((a.code || a.id).toLowerCase());
+  }
+
+  /* ---------- views ---------- */
+  function fitPill(ft) {
+    return ft.status === 'free' ? BB.pill('good', ft.free + ' night' + (ft.free === 1 ? '' : 's') + ' free') : ft.status === 'part' ? BB.pill('warn', ft.free + ' of ' + ft.nights + ' nights free') : BB.pill('muted', 'Booked');
+  }
+  function eventRow(e, st) {
+    const a = ads().find(x => x.eventId === e.id), ft = e.fit, making = st.ea_making === e.id;
+    return '<div class="a-card ea-row"><div class="ea-date"><b>' + P(e.start).getUTCDate() + '</b><small>' + MON[P(e.start).getUTCMonth()] + '</small></div>' +
+      '<div class="ea-main"><b>' + esc(e.name) + '</b><small>' + I(KIND_ICON[e.kind] || 'cal') + esc((D.list.meta.kinds || {})[e.kind] || 'Event') + ' \xB7 ' + range(e.start, e.end) + ' \xB7 ' + e.days + ' days' + (e.venue || e.town ? ' \xB7 ' + esc([e.venue, e.town].filter((x, i, l) => x && l.indexOf(x) === i && !(i && l[0].includes(x))).join(', ')) : '') + (e.attendance ? ' \xB7 about ' + Number(e.attendance).toLocaleString('en-GB') + ' people' : '') + '</small>' +
+      (e.audience || e.why ? '<small class="muted">' + esc(e.audience || e.why) + '</small>' : '') +
+      '<small class="ea-src">' + esc(e.source === 'sample' ? 'Sample event for the demo' : e.source === 'manual' ? 'Added by you' : 'Found by our event finder' + (e.site ? ' on ' + e.site : '')) + (e.url ? ' \xB7 <a href="' + esc(e.url) + '" target="_blank" rel="noopener">Check the dates</a>' : '') + '</small></div>' +
+      '<div class="ea-act">' + fitPill(ft) + (ft.stay ? '<small class="muted">' + range(ft.stay.from, ft.stay.to) + ' \xB7 ' + BB.money(ft.value) + '</small>' : '') +
+      (a ? '<button class="btn sm" data-ea="ea-open" data-v="' + a.id + '">' + I('chart') + 'Open ads</button>' : ft.stay ? '<button class="btn sm primary" data-ea="ea-make" data-v="' + e.id + '"' + (making ? ' disabled' : '') + '>' + I('spark') + (making ? 'Writing your ads\u2026' : 'Create ads') + '</button>' : '') +
+      '<button class="btn sm ghost" data-ea="ea-hide" data-v="' + e.id + '" aria-label="Hide ' + esc(e.name) + '">' + I('x') + '</button></div></div>';
+  }
+  function listView(inst) {
+    const st = inst.st, s = S(), L = D.list, home = pid(inst), pr = Object.assign({ radius: 25, minDays: 2, months: 6 }, L.prefs, st.ea_prefs || {});
+    const scan = (L.scans || {})[home], evs = (L.events || []).filter(e => e.propertyId === home), open = evs.filter(e => e.fit.status !== 'booked'), full = evs.filter(e => e.fit.status === 'booked');
+    const sel = (k, opts, lab) => '<label class="field"><span>' + lab + '</span><select data-eaf="pr.' + k + '">' + opts.map(([v, t]) => '<option value="' + v + '"' + (+pr[k] === v ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>';
+    const n = new Set(ads().filter(a => a.propertyId === home).map(a => a.eventId)).size;
+    return '<section class="a-card ag-card ea-find"><div class="ea-form">' +
+      (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-eaf="home">' + s.properties.map(p => '<option value="' + p.id + '"' + (p.id === home ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
+      sel('radius', [[10, 'Within 10 miles'], [25, 'Within 25 miles'], [50, 'Within 50 miles']], 'Area') + sel('minDays', [[2, '2 days or more'], [3, '3 days or more'], [5, '5 days or more']], 'How long') + sel('months', [[3, 'Next 3 months'], [6, 'Next 6 months'], [12, 'Next 12 months']], 'When') +
+      '<button class="btn primary" data-ea="ea-find"' + (D.busy ? ' disabled' : '') + '>' + I('search') + (D.busy ? 'Searching\u2026' : 'Find events') + '</button></div>' +
+      (L.located && L.located[home] === false && !L.meta.demo ? '<p class="ea-warn">' + I('bell') + 'Add your home\u2019s postcode to its address so we know where to look. Until then we only read the pages you add below.</p>' : '') +
+      (scan ? '<p class="muted ea-last">Last search ' + new Date(scan.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + (scan.place ? ' around ' + esc(scan.place) : '') + ': ' + (scan.sources.length ? scan.sources.map(x => esc(x.name || 'Samples') + ' ' + (x.error ? '(' + esc(x.error) + ')' : x.n)).join(', ') : 'no pages near you yet, add one below') + '.</p>' : '') + '</section>' +
+      '<div class="sb-kpis ea-kpis"><div><small>Events found</small><b class="num">' + evs.length + '</b></div><div><small>With free nights</small><b class="num">' + open.length + '</b></div><div><small>Free nights to sell</small><b class="num">' + open.reduce((t, e) => t + (e.fit.stay ? (P(e.fit.stay.to) - P(e.fit.stay.from)) / 864e5 : 0), 0) + '</b></div><div><small>Worth</small><b class="num">' + BB.money(open.reduce((t, e) => t + e.fit.value, 0)) + '</b></div><div><small>Ad packs</small><b class="num">' + n + '</b></div></div>' +
+      (open.length ? '<div class="ea-list">' + open.map(e => eventRow(e, st)).join('') + '</div>'
+        : '<div class="a-card ag-card sb-fempty"><span class="disp">Fill the nights other people\u2019s <em>events</em> create</span><p class="muted">Courses, conferences, county shows and tournaments bring people who need a bed for a few nights. Find the ones near you, see which of your nights are still free, and get ready-made ads that say \u201Cwe\u2019re free that week\u201D.</p><button class="btn primary" data-ea="ea-find">' + I('search') + 'Find events</button></div>') +
+      (full.length ? '<details class="ea-full"><summary>' + full.length + ' event' + (full.length === 1 ? '' : 's') + ' you are already booked for</summary><div class="ea-list">' + full.map(e => eventRow(e, st)).join('') + '</div></details>' : '') +
+      pagesView(st, L, home) +
+      '<section class="a-card ag-card"><div class="a-card-h"><h3>Know about one we missed?</h3><button class="btn sm ghost" data-ea="ea-addform">' + I(st.ea_add ? 'x' : 'plus') + (st.ea_add ? 'Cancel' : 'Add an event') + '</button></div>' +
+      (st.ea_add ? (() => { const v = st.ea_new || {}; return '<p class="muted" style="margin:0 0 12px">A course at the local college, a contract at the hospital, a wedding fair: anything that brings people for two nights or more.</p><div class="ea-form">' +
+        '<label class="field ea-wide"><span>Name</span><input data-eaf="new.name" id="ea-n-name" maxlength="120" placeholder="SMSTS site manager course" value="' + esc(v.name || '') + '"></label>' +
+        '<label class="field"><span>Type</span><select data-eaf="new.kind">' + Object.entries(L.meta.kinds).map(([k, t]) => '<option value="' + k + '"' + (v.kind === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
+        '<label class="field"><span>First day</span><input type="date" data-eaf="new.start" id="ea-n-start" value="' + esc(v.start || '') + '"></label><label class="field"><span>Last day</span><input type="date" data-eaf="new.end" id="ea-n-end" value="' + esc(v.end || '') + '"></label>' +
+        '<label class="field"><span>Venue</span><input data-eaf="new.venue" id="ea-n-venue" maxlength="100" value="' + esc(v.venue || '') + '"></label><label class="field ea-wide"><span>Link <em class="muted">optional</em></span><input data-eaf="new.url" id="ea-n-url" type="url" placeholder="https://" value="' + esc(v.url || '') + '"></label></div>' +
+        '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-add">' + I('plus') + 'Add event</button></div>'; })() : '') + '</section>';
+  }
+
+  // The pages our own event finder reads near this home. Hosts add the what's-on pages they know.
+  function pagesView(st, L, home) {
+    if (L.meta.demo) return '';
+    const pages = L.pages || [], v = st.ea_page || {}, when = x => x.at ? new Date(x.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const row = x => '<div class="ea-page"><div><b>' + esc(x.name) + '</b><small class="muted">' + esc(x.site) + (x.place ? ' \xB7 ' + esc(x.place) : '') + (x.mine ? ' \xB7 added by you' : x.seed ? ' \xB7 starter page' : ' \xB7 added by another host') + '</small></div>' +
+      '<div class="ea-page-s">' + (!x.at ? BB.pill('muted', 'Not read yet') : x.error && !x.n ? BB.pill('warn', 'Could not read') : BB.pill('good', x.n + ' event' + (x.n === 1 ? '' : 's'))) + (x.at ? '<small class="muted">' + (x.error ? esc(x.error) + ' ' : '') + 'Read ' + when(x) + '</small>' : '') +
+      '<a class="btn sm ghost" href="' + esc(x.url) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(x.name) + '">' + I('out') + '</a>' + (x.mine ? '<button class="btn sm ghost" data-ea="ea-unwatch" data-v="' + esc(x.id) + '" aria-label="Stop reading ' + esc(x.name) + '">' + I('x') + '</button>' : '') + '</div></div>';
+    return '<section class="a-card ag-card ea-pages"><div class="a-card-h"><h3>Pages we read for you</h3><button class="btn sm ghost" data-ea="ea-pageform">' + I(st.ea_pageform ? 'x' : 'plus') + (st.ea_pageform ? 'Cancel' : 'Add a page') + '</button></div>' +
+      '<p class="muted" style="margin:0 0 12px;padding:0">We find events ourselves: we read public what\u2019s-on, venue and course pages near your home about once a day and pull out the events, courses and shows. We follow each site\u2019s rules for crawlers.</p>' +
+      (st.ea_pageform ? '<div class="ea-form"><label class="field ea-wide"><span>Page with events or course dates</span><input data-eaf="page.url" id="ea-p-url" type="url" placeholder="https://www.yourvenue.co.uk/whats-on" value="' + esc(v.url || '') + '"></label>' +
+        '<label class="field"><span>Name <em class="muted">optional</em></span><input data-eaf="page.name" id="ea-p-name" maxlength="80" placeholder="Kent Showground events" value="' + esc(v.name || '') + '"></label>' +
+        '<label class="field"><span>Postcode area <em class="muted">optional</em></span><input data-eaf="page.postcode" id="ea-p-pc" maxlength="8" placeholder="ME14" value="' + esc(v.postcode || '') + '"></label></div>' +
+        '<p class="muted" style="margin:6px 0 10px;padding:0">Good pages: a showground, conference centre or council \u201Cwhat\u2019s on\u201D page, a training provider\u2019s course dates, a sports club\u2019s fixtures, or a calendar (.ics) link.</p>' +
+        '<div class="ag-acts-row"><button class="btn primary" data-ea="ea-watch"' + (D.watching ? ' disabled' : '') + '>' + I('search') + (D.watching ? 'Reading the page\u2026' : 'Read this page') + '</button></div>' : '') +
+      (pages.length ? '<div class="ea-pagelist">' + pages.map(row).join('') + '</div>' : '<p class="muted">No pages near this home yet. Add the what\u2019s-on pages you know, and we\u2019ll read them every day.</p>') + '</section>';
+  }
+
+  function adView(inst, a) {
+    const st = inst.st, p = S().properties.find(x => x.id === a.propertyId) || {}, f = fnOf(a), tab = st.ea_tab || 'meta', d = st.ea_wd = st.ea_wd || {}, pl = a.plan || {};
+    const val = (k, v) => d[k] != null ? d[k] : v;
+    const cnt = (v, n) => '<em class="ea-cnt' + (String(v).length > n ? ' bad' : '') + '">' + String(v).length + '/' + n + '</em>';
+    const fld = (k, lab, v, n, rows) => '<label class="field"><span>' + lab + ' ' + cnt(val(k, v), n) + '</span>' + (rows ? '<textarea rows="' + rows + '" data-eaf="wd.' + k + '" id="ea-w-' + k + '">' + esc(val(k, v)) + '</textarea>' : '<input data-eaf="wd.' + k + '" id="ea-w-' + k + '" value="' + esc(val(k, v)) + '">') + '</label>';
+    const copyBtn = (k, t) => '<button type="button" class="btn sm ghost" data-ea="ea-copy" data-v="' + k + '">' + I('out') + (t || 'Copy') + '</button>';
+    const dirty = Object.keys(d).length;
+    const url = linkOf(a), host = url.replace(/^https?:\\/\\//, '').split(/[/?]/)[0];
+    let body = '';
+    if (tab === 'meta') {
+      body = '<div class="ea-two"><div>' + fld('primary', 'Primary text', a.meta.primary, 600, 5) + fld('headline', 'Headline', a.meta.headline, 40) + fld('description', 'Description', a.meta.description, 30) +
+        '<div class="ag-acts-row">' + copyBtn('primary', 'Copy text') + copyBtn('headline', 'Copy headline') + copyBtn('url', 'Copy link') + '</div>' +
+        '<p class="muted ea-note">Button: <b>Book now</b>. Link: <span class="mono">' + esc(url) + '</span></p></div>' +
+        '<div class="ea-fb"><div class="ea-fb-h"><span class="ea-av">' + esc(String(S().account.business || 'B')[0]) + '</span><div><b>' + esc(S().account.business || '') + '</b><small>Sponsored</small></div></div><p>' + esc(val('primary', a.meta.primary)) + '</p>' +
+        '<canvas data-ea="' + a.id + '" data-f="square" width="1080" height="1080"></canvas><div class="ea-fb-f"><div><small>' + esc(host.toUpperCase()) + '</small><b>' + esc(val('headline', a.meta.headline)) + '</b><small>' + esc(val('description', a.meta.description)) + '</small></div><span class="btn sm">Book now</span></div></div></div>' +
+        '<div class="ea-imgs"><figure><canvas data-ea="' + a.id + '" data-f="feed" width="1080" height="1080"></canvas><figcaption>Feed \xB7 1080 \xD7 1080 <button class="btn sm" data-ea="ea-dl" data-v="feed">Download</button></figcaption></figure>' +
+        '<figure><canvas data-ea="' + a.id + '" data-f="story" width="1080" height="1920"></canvas><figcaption>Stories and Reels \xB7 1080 \xD7 1920 <button class="btn sm" data-ea="ea-dl" data-v="story">Download</button></figcaption></figure>' +
+        '<p class="muted ea-note">' + ((p.photos || []).length ? 'Drawn from your first photo.' : 'Add photos in Website &amp; SEO and your first one goes behind the words.') + ' Never use the event\u2019s own logo or photos unless the organiser says you can.</p></div>';
+    } else if (tab === 'google') {
+      const hs = val('headlines', a.google.headlines.join('\\n')).split('\\n').filter(Boolean), ds = val('descriptions', a.google.descriptions.join('\\n')).split('\\n').filter(Boolean);
+      body = '<div class="ea-two"><div>' +
+        '<label class="field"><span>Headlines, one per line <em class="ea-cnt">' + hs.length + '/15, 30 characters each</em></span><textarea rows="9" data-eaf="wd.headlines" id="ea-w-headlines">' + esc(hs.join('\\n')) + '</textarea></label>' +
+        (hs.some(x => x.length > 30) ? '<p class="err">' + hs.filter(x => x.length > 30).length + ' headline(s) are over 30 characters. Google will not accept them.</p>' : '') +
+        '<label class="field"><span>Descriptions, one per line <em class="ea-cnt">' + ds.length + '/4, 90 characters each</em></span><textarea rows="4" data-eaf="wd.descriptions" id="ea-w-descriptions">' + esc(ds.join('\\n')) + '</textarea></label>' +
+        '<label class="field"><span>Keywords, one per line <em class="ea-cnt">phrase match</em></span><textarea rows="6" data-eaf="wd.keywords" id="ea-w-keywords">' + esc(val('keywords', a.google.keywords.join('\\n'))) + '</textarea></label>' +
+        '<div class="ag-acts-row">' + copyBtn('heads', 'Copy headlines') + copyBtn('descs', 'Copy descriptions') + copyBtn('kw', 'Copy keywords') + copyBtn('neg', 'Copy negatives') + '</div>' +
+        '<p class="muted ea-note">Negative keywords: ' + a.google.negatives.map(esc).join(', ') + '.</p></div>' +
+        '<div><div class="ea-g"><small>Sponsored</small><div class="ea-g-u"><span class="ea-av sm">' + esc(String(S().account.business || 'B')[0]) + '</span><span>' + esc(host) + '</span></div><b>' + hs.slice(0, 3).map(esc).join(' | ') + '</b><p>' + esc(ds[0] || '') + ' ' + esc(ds[1] || '') + '</p></div>' +
+        '<div class="ea-g"><small>Sponsored</small><div class="ea-g-u"><span class="ea-av sm">' + esc(String(S().account.business || 'B')[0]) + '</span><span>' + esc(host) + '</span></div><b>' + [hs[3], hs[0], hs[8]].filter(Boolean).map(esc).join(' | ') + '</b><p>' + esc(ds[2] || ds[0] || '') + '</p></div>' +
+        '<p class="muted ea-note">Google mixes your headlines and descriptions to find the best ones. These are two of the ways it might show.</p></div></div>';
+    } else if (tab === 'target') {
+      const m = pl.meta || {}, g = pl.google || {};
+      body = '<div class="ea-plan"><div class="ea-when"><div><small>Run the ads</small><b>' + dm(pl.runFrom) + ' \u2013 ' + dm(pl.runTo) + '</b><span class="muted">' + pl.days + ' days, ending 2 days before arrival</span></div><div><small>Suggested spend</small><b>' + BB.money(pl.total) + '</b><span class="muted">about 12% of what the stay is worth (' + BB.money(pl.value) + ')</span></div><div><small>Break even</small><b>1 booking</b><span class="muted">One stay pays for the whole campaign</span></div></div>' +
+        '<div class="ea-two"><div class="a-card ea-tc"><h4>' + I('users') + 'Facebook and Instagram</h4><dl>' +
+        '<dt>Budget</dt><dd>' + BB.money(m.budget) + ' in total, about ' + BB.money(m.daily) + ' a day</dd><dt>Objective</dt><dd>' + esc(m.objective) + '</dd><dt>Where</dt><dd>' + esc(m.location) + '</dd><dt>Age</dt><dd>' + esc(m.age) + '</dd>' +
+        '<dt>Interests</dt><dd>' + (a.audience.interests || []).map(x => '<span class="ea-chip on">' + esc(x) + '</span>').join(' ') + '</dd>' + ((a.audience.jobs || []).length ? '<dt>Job titles</dt><dd>' + a.audience.jobs.map(x => '<span class="ea-chip on">' + esc(x) + '</span>').join(' ') + '</dd>' : '') +
+        '<dt>Placements</dt><dd>' + esc(m.placements) + '</dd><dt>Also</dt><dd>Add a second ad set for people who visited your site in the last 60 days, if your Meta pixel is on.</dd></dl>' + (a.audience.notes ? '<p class="muted ea-note">' + esc(a.audience.notes) + '</p>' : '') + '</div>' +
+        '<div class="a-card ea-tc"><h4>' + I('search') + 'Google search</h4><dl><dt>Budget</dt><dd>' + BB.money(g.budget) + ' in total, about ' + BB.money(g.daily) + ' a day</dd><dt>Bidding</dt><dd>' + esc(g.bidding) + '</dd><dt>Networks</dt><dd>' + esc(g.network) + '</dd><dt>Where</dt><dd>' + esc(g.location) + '</dd>' +
+        '<dt>Keywords</dt><dd>' + a.google.keywords.length + ' phrase-match keywords (see Google search)</dd><dt>Schedule</dt><dd>' + dm(pl.runFrom) + ' to ' + dm(pl.runTo) + ', all day</dd></dl></div></div>' +
+        '<p class="muted ea-note">Bookings made with code <b class="mono">' + esc(a.code || '\u2014') + '</b> are counted against this campaign in Funnels. Turn the ads off as soon as the dates are booked.</p></div>';
+    } else {
+      body = f ? '<div class="ea-two"><div><p>The ads send people to a page made for ' + esc(a.event.name) + ', in your site\u2019s style. It shows the free dates and the code, and the button opens your booking calendar with those dates already picked.</p>' +
+        '<p class="ea-status">Status: ' + BB.pill(f.status === 'live' ? 'good' : 'warn', f.status === 'live' ? 'Live' : 'Draft, not live yet') + '</p><div class="ag-acts-row">' + (f.status === 'live' ? copyBtn('url', 'Copy link') : '<button class="btn primary" data-ea="ea-live" data-v="' + f.id + '">' + I('send') + 'Make it live</button>') + '<a class="btn ghost" href="#funnels">Edit the words in Funnels</a></div></div>' +
+        '<div class="ea-pv"><iframe title="Landing page preview" loading="lazy" src="' + (demo() ? '/demo/' : '/app/') + 'funnel/' + f.id + '/offer?bare=1"></iframe></div></div>' : '<p class="muted">These ads link straight to your booking site.</p>';
+    }
+    return '<div class="sb-fdetail"><button type="button" class="ag-back" data-ea="ea-close">' + I('back') + 'All events</button>' +
+      '<div class="a-vh sb-fh"><div><h2 class="disp">' + esc(a.event.name) + '</h2><p>' + range(a.event.start, a.event.end) + (a.event.venue ? ' \xB7 ' + esc(a.event.venue) : '') + ' \xB7 ' + esc(p.name || '') + ' free ' + range(a.stay.from, a.stay.to) + ' (' + a.stay.n + ' nights)' + (a.code ? ' \xB7 code <b class="mono">' + esc(a.code) + '</b>, ' + a.pct + '% off' : '') + (a.by === 'ai' ? ' \xB7 written by Claude' : '') + '</p></div><div class="a-acts">' +
+      (a.status === 'running' ? BB.pill('good', 'Running') + '<button class="btn" data-ea="ea-status" data-v="' + a.id + '" data-s="done">Mark as finished</button>' : '<button class="btn" data-ea="ea-status" data-v="' + a.id + '" data-s="running">' + I('check') + 'I have started these ads</button>') + '</div></div>' +
+      (f && f.status !== 'live' && tab !== 'landing' ? '<p class="ea-warn">' + I('bell') + 'The landing page is still a draft. <button class="lnk" data-ea="ea-tab" data-v="landing">Make it live</button> before you start the ads.</p>' : '') +
+      '<div class="seg sb-tabs ea-tabs" role="group" aria-label="Ad pack">' + [['meta', 'Facebook & Instagram'], ['google', 'Google search'], ['target', 'Who, when and budget'], ['landing', 'Landing page']].map(([k, t]) => '<button type="button" aria-pressed="' + (k === tab) + '" data-ea="ea-tab" data-v="' + k + '">' + t + '</button>').join('') + '</div>' +
+      '<div class="a-card ag-card">' + body + (tab === 'meta' || tab === 'google' ? '<div class="ag-acts-row ea-save"><button class="btn primary" data-ea="ea-save"' + (dirty ? '' : ' disabled') + '>' + I('check') + 'Save changes</button></div>' : '') + '</div>' +
+      '<button class="btn ghost danger" data-ea="ea-del" data-v="' + a.id + '">' + (st.ea_del === a.id ? 'Tap again to delete these ads and their landing page' : 'Delete these ads') + '</button></div>';
+  }
+
+  V.eventads = {
+    label: 'Event ads', group: 'Grow', icon: 'cal', order: 27,
+    render(inst) {
+      const sub = 'Find courses, conferences, shows and festivals near your home that last two days or more, see which nights are still free, and get ready-to-run ads for them.';
+      if (!live()) return '<div class="ag sb ea">' + vh('Event ads', sub) + '</div>';
+      if (!D.list) { load(inst); return '<div class="ag sb ea">' + vh('Event ads', 'Loading\u2026') + '</div>'; }
+      const a = inst.st.ea_open && ads().find(x => x.id === inst.st.ea_open);
+      return '<div class="ag sb ea">' + (a ? adView(inst, a) : vh('Event ads', sub) + listView(inst)) + '</div>';
+    },
+    after(inst) { paint(inst); },
+    click(ev, inst) { const a = ev.target.closest('[data-ea]'); if (a && a.tagName !== 'CANVAS' && H[a.dataset.ea]) { ev.preventDefault(); H[a.dataset.ea](inst, a.dataset.v, a); } },
+    input(ev, inst) {
+      const el = ev.target, k = el.dataset && el.dataset.eaf; if (!k) return; const st = inst.st;
+      if (k === 'home') { st.ea_home = el.value; inst.render(); return; }
+      const [sc, f] = k.split('.');
+      if (sc === 'pr') { st.ea_prefs = Object.assign({}, st.ea_prefs, { [f]: +el.value }); return; }
+      if (sc === 'page') { (st.ea_page = st.ea_page || {})[f] = el.value; return; }
+      if (sc === 'new') { (st.ea_new = st.ea_new || {})[f] = el.value; if (f === 'start' && !st.ea_new.end) { st.ea_new.end = el.value; inst.render(); } return; }
+      if (sc === 'wd') { const was = Object.keys(st.ea_wd || {}).length; (st.ea_wd = st.ea_wd || {})[f] = el.value; if (!was) inst.render(); }
+    },
+    change(ev, inst) { if (ev.target.tagName === 'SELECT') V.eventads.input(ev, inst); },
+  };
+})();
+` }, "/app/web/src/app-grow.css": { "t": `/* Host console: Grow, Get found and Settings views (app-grow.js). Everything is scoped under .ag and reflows by
    container width, so the same views work in the full console, the ~800px live demo and on phones. */
 .ag { container: ag / inline-size; display: grid; gap: 18px; min-width: 0; }
 .ag > * { min-width: 0; }
@@ -648,6 +896,23 @@ var require_bb_embedded_files = __commonJS({
 .ag .ag-calf-s svg { width: 14px; height: 14px; flex: none; }
 .ag .ag-addon-sub { margin-top: 20px; }
 .ag .ag-calf select.input { width: 100%; }
+
+/* Own domain: progress, notes and registrar steps */
+.ag .ag-dsteps { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.ag .ag-dsteps li { display: flex; gap: 10px; align-items: flex-start; }
+.ag .ag-dsteps b { display: block; font-size: 14px; }
+.ag .ag-dsteps small { display: block; font-size: 12.5px; color: var(--muted); }
+.ag .ag-dst-i { width: 22px; height: 22px; flex: none; border-radius: 50%; border: 2px solid var(--line-2); display: grid; place-items: center; margin-top: 1px; }
+.ag .ag-dsteps li.ok .ag-dst-i { background: var(--good, #178a4c); border-color: var(--good, #178a4c); color: #fff; }
+.ag .ag-dsteps li.ok .ag-dst-i .ic { width: 13px; height: 13px; }
+.ag .ag-dsteps li.wait .ag-dst-i { border-color: var(--primary); }
+.ag .ag-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--primary); border-right-color: transparent; animation: agSpin .8s linear infinite; }
+@keyframes agSpin { to { transform: rotate(360deg); } }
+.ag .ag-dom > .ag-note.warn { background: var(--warn-soft); }
+.ag .ag-dom > .ag-note.warn .ic { color: var(--warn); }
+.ag .ag-dom > .ag-note { margin: 0 0 12px; }
+.ag .ag-dg { margin: 0 0 14px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+.ag .ag-dom .ag-fine { margin: 12px 0 0; font-size: 13px; }
 ` }, "/app/web/src/app-grow.js": { "t": `/* Bookingbooster prototype: host console views for Grow (guests, campaigns, automations), Get found (website, AI visibility)
    and Settings (connections). Registers into BB.appViews; app.js owns the frame, routing and event forwarding. */
 (function () {
@@ -723,6 +988,7 @@ var require_bb_embedded_files = __commonJS({
     const t = ev.target;
     const n = t.closest('[data-ag-nav]');
     if (n) { ev.preventDefault(); const v = n.dataset.agNav, id = n.dataset.agId || null; if (v === 'property') BB.go('property', { propertyId: id }); else nav(inst, v, id); return; }
+    const rg = t.closest('[data-dns-reg]'); if (rg) { ev.preventDefault(); inst.set({ dom_reg: inst.st.dom_reg === rg.dataset.dnsReg ? '' : rg.dataset.dnsReg }); return; }
     const a = t.closest('[data-ag]'); if (!a) return;
     const k = a.dataset.ag, v = a.dataset.v, st = inst.st;
     const H = HANDLERS[k]; if (H) { ev.preventDefault(); H(inst, v, a, st); }
@@ -1235,23 +1501,39 @@ var require_bb_embedded_files = __commonJS({
         : '<p class="muted ag-p">Until you add photos, your site shows a drawing of your home. Photos make the biggest difference to bookings.</p>') +
       '<label class="btn ag-upl' + (up ? ' busy' : '') + '">' + I('image') + (up ? 'Uploading ' + up + '\u2026' : 'Add photos') + '<input type="file" accept="image/jpeg,image/png,image/webp" multiple data-agphotos="' + esc(p.id) + '" hidden></label></section>';
   }
-  // A host's own domain: they type it, we show the DNS records to add, and it goes live once those are in place.
+  // A host's own domain: they type it, we show the DNS records to add (with steps for their registrar), it goes live
+  // once those are in place, and then the padlock (HTTPS certificate) is set up for them.
   function domainCard(inst, p) {
     const st = inst.st, custom = p._autoDomain ? '' : (p.domain || ''), c = (st.dom || {})[p.id], busy = st.dom_busy === p.id;
-    const live = !!custom && (BB.BOOT.siteUrls || {})[p.id] === 'https://' + custom + '/';
-    if (custom && !live && !c && !busy && !(st.dom_tried || {})[p.id]) { st.dom_tried = Object.assign({}, st.dom_tried, { [p.id]: 1 }); setTimeout(() => domainCall(inst, p.id, '/app/domain/check', {}), 0); }
+    const live = !!custom && ((BB.BOOT.siteUrls || {})[p.id] === 'https://' + custom + '/' || !!(c && c.live));
+    if (custom && !c && !busy && !(st.dom_tried || {})[p.id]) { st.dom_tried = Object.assign({}, st.dom_tried, { [p.id]: 1 }); setTimeout(() => domainCall(inst, p.id, '/app/domain/check', {}), 0); }
     const err = st.dom_err && st.dom_err.pid === p.id ? '<p class="ag-err" role="alert">' + esc(st.dom_err.m) + '</p>' : '';
-    const head = '<section class="a-card ag-card ag-dom"><div class="a-card-h"><h3>Your web address</h3><span class="ag-meta">' + (live ? 'Connected' : custom ? 'Waiting for your DNS records' : 'Optional') + '</span></div>';
+    const secure = live && c && c.https === true;
+    const head = '<section class="a-card ag-card ag-dom"><div class="a-card-h"><h3>Your web address</h3><span class="ag-meta">' + (secure ? 'Connected and secure' : live ? 'Connected' : custom ? 'Waiting for your DNS records' : 'Optional') + '</span></div>';
     if (!custom || st.dom_edit === p.id) return head + '<form data-agform="dom" data-pid="' + esc(p.id) + '" class="ag-form">' +
-      '<p class="muted ag-p">' + (custom ? 'Type the new address.' : 'Your site is live at <b class="mono">' + esc(p.domain) + '</b>. To use a domain you own, type it here. It stays registered wherever you bought it.') + '</p>' +
-      '<label class="field"><span>Domain</span><input name="domain" placeholder="larchcabin.co.uk" value="' + esc(custom) + '" autocomplete="off" spellcheck="false" inputmode="url"></label>' + err +
-      '<div class="ag-row"><button class="btn primary"' + (busy ? ' disabled' : '') + '>' + I('globe') + (busy ? 'Saving\u2026' : 'Connect') + '</button>' + (custom ? '<button type="button" class="btn ghost" data-ag="dom-cancel">Cancel</button>' : '') + '</div></form></section>';
-    const tools = '<div class="ag-row"><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>';
-    if (live) return head + '<div class="ag-banner good">' + I('check') + '<p>Guests book at <b class="mono">https://' + esc(custom) + '</b>. The www address goes to the same site.</p></div>' + tools + '</section>';
-    const recs = c ? '<div class="ag-dns" role="table" aria-label="DNS records">' + c.records.map(r => '<div class="ag-dns-r" role="row"><span class="mono ag-dns-t">' + r.type + '</span><span><small>Name</small><b class="mono">' + esc(r.name) + '</b></span><span class="ag-dns-v"><small>Value</small><b class="mono" data-dnsv>' + esc(r.value) + '</b><button type="button" class="btn sm ghost" data-ag="dom-copy" data-v="' + esc(r.value) + '">Copy</button></span><span class="ag-dns-s ' + (r.ok ? 'ok' : '') + '">' + (r.ok ? I('check') + 'Found' : 'Not seen yet') + '</span><small class="ag-dns-w">' + esc(r.why) + '</small></div>').join('') + '</div>' : '<p class="muted ag-p">' + (busy ? 'Looking up your DNS records\u2026' : '') + '</p>';
-    return head + '<p class="muted ag-p">Add these records where you bought <b class="mono">' + esc(custom) + '</b> (for example 123 Reg, GoDaddy, IONOS or Cloudflare). Your site switches over by itself once we can see them. That is often within an hour, and can take up to a day.</p>' +
-      (c && c.elsewhere ? '<p class="ag-note">' + I('bolt') + '<span>Another Bookingbooster account has this address. The TXT record proves it is yours and moves it to you.</span></p>' : '') + recs + err +
-      '<div class="ag-row"><button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking\u2026' : 'Check now') + '</button><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div></section>';
+      '<p class="muted ag-p">' + (custom ? 'Type the new address.' : 'Your site is live at <b class="mono">' + esc(p.domain) + '</b>. Already own a domain, at GoDaddy, 123-reg, IONOS, Namecheap, Cloudflare or anywhere else? Type it here. It stays registered where you bought it, and any email on it keeps working.') + '</p>' +
+      '<label class="field"><span>Domain you own</span><input name="domain" placeholder="larchcabin.co.uk" value="' + esc(custom) + '" autocomplete="off" spellcheck="false" inputmode="url"></label>' + err +
+      '<div class="ag-row"><button class="btn primary"' + (busy ? ' disabled' : '') + '>' + I('globe') + (busy ? 'Saving\u2026' : 'Connect my domain') + '</button>' + (custom ? '<button type="button" class="btn ghost" data-ag="dom-cancel">Cancel</button>' : '') + '</div></form></section>';
+    const tools = '<div class="ag-row">' + (live && !secure ? '<button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking\u2026' : 'Check again') + '</button>' : '') + '<button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>';
+    // Three steps the host can see: pointing, proved, padlock.
+    const pointed = !!c && c.records.some(r => r.type !== 'TXT' && r.ok), proved = !!c && c.proved;
+    const step = (ok, wait, t, d) => '<li class="' + (ok ? 'ok' : wait ? 'wait' : '') + '"><span class="ag-dst-i">' + (ok ? I('check') : wait ? '<i class="ag-spin"></i>' : '') + '</span><span><b>' + t + '</b><small>' + d + '</small></span></li>';
+    const steps = c || live ? '<ol class="ag-dsteps" aria-label="Progress">' +
+      step(live || pointed, false, 'Points at your booking site', live || pointed ? 'Found your www or main address record' : 'Waiting for the CNAME' + (c && c.records.some(r => r.type === 'A') ? ' or A record' : '') + ' below') +
+      step(live || proved, false, 'Proved it is yours', live || proved ? 'Found your TXT record' : 'Waiting for the TXT record below') +
+      step(secure, live && !secure, 'Secure padlock (HTTPS)', secure ? 'Guests see https://' + esc(custom) : live ? 'Setting up your free certificate. This usually takes a few minutes.' : 'Added for you, free, once the first two are done') +
+      '</ol>' : '';
+    if (live) return head + (secure ? '<div class="ag-banner good">' + I('check') + '<p>Guests book at <b class="mono">https://' + esc(custom) + '</b>. The www address goes to the same site.</p></div>' : '') + steps + err + tools + '</section>';
+    const recs = c ? '<div class="ag-dns" role="table" aria-label="DNS records">' + c.records.map(r => '<div class="ag-dns-r" role="row"><span class="mono ag-dns-t">' + r.type + '</span><span><small>Name</small><b class="mono">' + esc(r.name) + '</b></span><span class="ag-dns-v"><small>Value</small><b class="mono" data-dnsv>' + esc(r.value) + '</b><button type="button" class="btn sm ghost" data-ag="dom-copy" data-v="' + esc(r.value) + '">Copy</button></span><span class="ag-dns-s ' + (r.ok ? 'ok' : '') + '">' + (r.ok ? I('check') + 'Found' : 'Not seen yet') + '</span><small class="ag-dns-w">' + esc(r.why) + (!r.ok && r.seen ? '. Right now we see ' + esc(r.seen) + ', so change that one rather than adding a second.' : '') + '</small></div>').join('') + '</div>' : '<p class="muted ag-p">' + (busy ? 'Looking up your DNS records\u2026' : '') + '</p>';
+    const noApex = c && !c.records.some(r => r.type === 'A');
+    return head + '<p class="muted ag-p">Add these records where you bought <b class="mono">' + esc(custom) + '</b>. Your site switches over by itself once we can see them, and we add the padlock for you. That is often within an hour, and can take up to a day.</p>' +
+      steps +
+      (c && c.proxied ? '<p class="ag-note warn">' + I('bolt') + '<span>Your domain is behind Cloudflare\u2019s proxy (the orange cloud). In Cloudflare, set <b>Proxy status</b> to <b>DNS only</b> on the <b>@</b> and <b>www</b> records so we can see them and set up your padlock.</span></p>' : '') +
+      (c && c.elsewhere ? '<p class="ag-note">' + I('bolt') + '<span>Another Bookingbooster account has this address. The TXT record proves it is yours and moves it to you.</span></p>' : '') + recs +
+      (noApex ? '<p class="ag-note">' + I('globe') + '<span>For the main address (<b class="mono">' + esc(custom) + '</b> without www), turn on <b>domain forwarding</b> to <b class="mono">https://www.' + esc(custom) + '</b> where you bought it.</span></p>' : '') +
+      '<div class="ag-dg">' + BB.dnsGuide(st.dom_reg || '', custom) + '</div>' + err +
+      '<div class="ag-row"><button type="button" class="btn sm primary" data-ag="dom-check" data-v="' + esc(p.id) + '"' + (busy ? ' disabled' : '') + '>' + I('sync') + (busy ? 'Checking\u2026' : 'Check now') + '</button><button type="button" class="btn sm" data-ag="dom-edit" data-v="' + esc(p.id) + '">Change</button><button type="button" class="btn sm ghost" data-ag="dom-remove" data-v="' + esc(p.id) + '">Stop using it</button></div>' +
+      '<p class="muted ag-p ag-fine">Stuck? <a href="mailto:' + esc(BB.BOOT.support || 'help@booking-booster.co.uk') + '?subject=' + encodeURIComponent('Help connecting ' + custom) + '">Email us</a> and we will add the records with you.</p></section>';
   }
   async function domainCall(inst, pid, url, body) {
     inst.set({ dom_busy: pid, dom_err: null });
@@ -1326,7 +1608,7 @@ var require_bb_embedded_files = __commonJS({
             '<div class="ag-site t-' + p.theme + '" style="--hc:' + esc(p.color) + '"><div class="ag-site-bar"><i></i><i></i><i></i><span class="mono">' + esc(p.domain) + '</span></div>' + hero(p) +
               '<div class="ag-site-in"><b class="ag-site-h">' + esc(p.headline) + '</b><small>' + esc(p.sub) + '</small><div class="ag-site-book"><span><b class="num">' + money(p.nightly) + '</b> night \xB7 book direct</span><span class="ag-site-btn">Check dates</span></div></div></div>' +
             '<section class="a-card ag-card"><div class="a-card-h"><h3>Traffic</h3><span class="ag-meta">Last 30 days</span></div><div class="ag-stats3"><div><small>Visitors</small><b class="num">' + vis.toLocaleString() + '</b></div><div><small>From search</small><b class="num">' + pct(s.website.fromSearch) + '</b></div><div><small>Visit to booking</small><b class="num">' + pct(s.website.conversion, 1) + '</b></div></div>' +
-              '<div class="ag-gsc ' + (gsc ? 'ok' : 'off') + '">' + I(gsc ? 'check' : 'plug') + '<div><b>Google Search Console</b><small>' + (gsc ? 'Verified \xB7 ' + pages.length + ' pages indexed \xB7 sitemap sent ' + esc(BB.ago(BB.q.integration('gsc').lastSync)) : S().live ? 'Coming soon. Search engines already find your pages through your sitemap.' : 'Disconnected. We cannot see rankings or ask Google to recrawl.') + '</small></div>' + (gsc ? BB.pill('good', 'Healthy') : S().live ? BB.pill('muted', 'Soon') : '<button class="btn sm" data-ag-nav="connections">Connect</button>') + '</div></section>' +
+              '<div class="ag-gsc ' + (gsc ? 'ok' : 'off') + '">' + I(gsc ? 'check' : 'plug') + '<div><b>Google Search Console</b><small>' + (gsc ? 'Verified \xB7 ' + pages.length + ' pages indexed \xB7 sitemap sent ' + esc(BB.ago(BB.q.integration('gsc').lastSync)) : S().live ? (((p0.indexing || {}).google || {}).state === 'submitted' ? 'Submitted for you, no Google login needed. See Search health for clicks and searches.' : 'Submitted for you automatically. See Search health.') : 'Disconnected. We cannot see rankings or ask Google to recrawl.') + '</small></div>' + (gsc ? BB.pill('good', 'Healthy') : S().live ? (((p0.indexing || {}).google || {}).state === 'submitted' ? BB.pill('good', 'Submitted') : '<button class="btn sm" data-ag-nav="seo">Open</button>') : '<button class="btn sm" data-ag-nav="connections">Connect</button>') + '</div></section>' +
             '<section class="a-card ag-card ag-pad0"><div class="a-card-h ag-pad"><h3>Pages we generate</h3><span class="ag-meta">' + pages.length + ' pages</span></div>' +
               '<div class="ag-pages" role="tablist" aria-label="Pages">' + pages.map(x => '<button type="button" role="tab" aria-selected="' + (x[0] === pg[0]) + '" data-ag="ws-page" data-v="' + x[0] + '"><b>' + x[1] + '</b><small class="mono">' + x[2] + '</small>' + (gsc ? '<span class="ag-ix">Indexed</span>' : '') + '</button>').join('') + '</div>' +
               '<div class="ag-serp"><span class="eyebrow">Google result preview</span><div class="ag-serp-r"><div class="ag-serp-u"><span class="ag-fav" style="background:' + esc(p.color) + '"></span><div><b>' + esc(p.name) + '</b><small>https://' + esc(p0.domain) + (pg[2] === '/' ? '' : ' \u203A ' + esc(pg[2].slice(1))) + '</small></div></div><p class="ag-serp-t">' + esc(pg[3].slice(0, 62)) + (pg[3].length > 62 ? '\u2026' : '') + '</p><p class="ag-serp-d">' + (pg[0] === 'reviews' ? '<span class="ag-serp-s">\u2605\u2605\u2605\u2605\u2605 Rating: ' + p.rating + ' \xB7 ' + p.reviews + ' reviews \xB7 </span>' : '') + esc(pg[4].trim().slice(0, 156)) + (pg[4].length > 156 ? '\u2026' : '') + '</p></div>' +
@@ -1367,7 +1649,8 @@ var require_bb_embedded_files = __commonJS({
           '<section class="a-card ag-card ag-score"><div class="a-card-h"><h3>Visibility score</h3><span class="ag-meta">' + (s.ai.checkedAt ? 'Checked ' + D.fmt(s.ai.checkedAt) : 'Not checked yet') + '</span></div><div class="ag-score-in">' + gauge(sc.score) +
             '<div><b class="disp">Mentioned in ' + sc.mentioned + ' of ' + sc.total + '</b><p class="muted">questions on ChatGPT or Gemini.' + (st.ai_delta ? ' <span class="ag-up">\u25B2 ' + st.ai_delta + ' points just now</span>' : S().live ? '' : ' Was 41 in August.') + '</p></div></div>' +
             '<div class="ag-engbars">' + perEngine.map(([k, l, v]) => '<div><span>' + BB.aiName(k, l) + '</span><i><b style="width:' + Math.round(100 * v / qs.length) + '%"></b></i><em class="num">' + v + '/' + qs.length + '</em></div>').join('') + '</div></section>' +
-          '<section class="a-card ag-card"><div class="a-card-h"><h3>Recommended fixes</h3><span class="ag-meta">' + (open.length ? open.length + ' to do' : s.ai.tasks.length ? 'All done' : 'None yet') + '</span></div><ul class="ag-tasks">' +
+          '<section class="a-card ag-card"><div class="a-card-h"><h3>Recommended fixes</h3><span class="ag-meta">' + (open.length ? open.length + ' to do' : s.ai.tasks.length ? 'All done' : 'From Search health') + '</span></div><ul class="ag-tasks">' +
+            (!s.ai.tasks.length && BB.seo ? s.properties.flatMap(h => BB.seo.audit(h).fixes.filter(c => ['aeo', 'geo', 'aio', 'llmo'].includes(c.cat)).slice(0, 2).map(c => '<li><span class="ag-tk">' + I('spark') + '</span><div><b>' + esc(c.label) + (s.properties.length > 1 ? ' \xB7 ' + esc(h.short) : '') + '</b><small>' + esc(c.fix) + '</small></div><button class="btn sm primary" data-ag-nav="seo">Fix it</button></li>')).slice(0, 4).join('') : '') +
             s.ai.tasks.map(t => '<li class="' + (t.done ? 'done' : '') + '"><span class="ag-tk">' + I(t.done ? 'check' : 'spark') + '</span><div><b>' + esc(t.text) + '</b><small>' + (t.done ? 'Live on your site. Answers updated.' : 'Wins ' + t.fixes.length + (t.fixes.length === 1 ? ' question' : ' questions') + ': ' + t.fixes.map(i => '\u201C' + esc(qs[i].q) + '\u201D').join(', ')) + '</small></div>' + (t.done ? BB.pill('good', 'Done') : '<button class="btn sm primary" data-ag="ai-do" data-v="' + t.id + '">Do it for me</button>') + '</li>').join('') + '</ul></section>' +
         '</div>' +
         '<div class="ag-cols ag-cols-ai2">' +
@@ -1482,7 +1765,224 @@ var require_bb_embedded_files = __commonJS({
     },
   }, hooks);
 })();
-` }, "/app/web/src/app-studio.css": { "t": "/* Host console: Site builder and Funnels (app-studio.js). Lives inside .ag, so it reflows with the container. */\n.sb .sb-cols { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }\n@container ag (max-width: 860px) { .sb .sb-cols { grid-template-columns: minmax(0, 1fr); } .sb .sb-stage { order: -1; } }\n.sb .eyebrow { display: block; font: 600 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }\n.sb .eyebrow em { font: 500 11px var(--font, inherit); text-transform: none; letter-spacing: 0; font-style: normal; }\n.sb .sb-q { display: grid; gap: 2px; margin: 0 0 18px; }\n.sb .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }\n.sb .field { display: grid; gap: 6px; margin-bottom: 14px; }\n.sb .field > span { font-size: 13px; font-weight: 600; }\n.sb .field em { font-style: normal; font-weight: 500; font-size: 12px; }\n.sb .field input, .sb .field textarea, .sb .field select { width: 100%; }\n\n/* brief */\n.sb .sb-brief { padding: 18px 20px 20px; }\n.sb .sb-brief .a-card-h { padding: 0 0 14px; }\n.sb .sb-ph { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 0 0 16px; }\n.sb .sb-ph .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; }\n.sb .sb-gobtn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 15px; }\n\n/* art direction cards */\n.sb .sb-dirs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }\n.sb .sb-dir { display: grid; gap: 2px; text-align: left; padding: 8px 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }\n.sb .sb-dir:hover { border-color: var(--line-2); transform: translateY(-1px); }\n.sb .sb-dir.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-dir b { font-size: 13px; line-height: 1.2; margin-top: 6px; }\n.sb .sb-dir small { font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dir-sw { display: flex; align-items: flex-end; justify-content: space-between; height: 58px; padding: 8px 10px; border-radius: 8px; background: var(--b); color: var(--i); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }\n.sb .sb-aa { font-size: 30px; line-height: 1; }\n.sb .sb-dots { display: flex; gap: 3px; }\n.sb .sb-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }\n.sb .sb-dirs.sm { grid-template-columns: repeat(4, minmax(0, 1fr)); }\n.sb .sb-dirs.sm .sb-dir-sw { height: 40px; padding: 6px; }\n.sb .sb-dirs.sm .sb-aa { font-size: 20px; }\n.sb .sb-dirs.sm .sb-dots, .sb .sb-dirs.sm small { display: none; }\n.sb .sb-dirs.sm b { font-size: 11.5px; }\n\n/* busy */\n.sb .sb-busy { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 24px; display: grid; gap: 6px; justify-items: start; }\n.sb .sb-busy p { margin: 0 0 10px; font-size: 13.5px; }\n.sb .sb-orb { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 30%, white), var(--primary)); color: #fff; animation: sbPulse 1.8s ease-in-out infinite; margin-bottom: 8px; }\n.sb .sb-orb .ic { width: 22px; height: 22px; }\n@keyframes sbPulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 12%, transparent); } }\n.sb .sb-busy ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; width: 100%; }\n.sb .sb-busy li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }\n.sb .sb-busy li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }\n.sb .sb-busy li .ic { width: 16px; height: 16px; color: var(--good); flex: none; }\n.sb .sb-busy li.done { color: var(--fg); }\n.sb .sb-busy li.now { color: var(--fg); font-weight: 600; }\n.sb .sb-busy li.now i { border-color: var(--primary); border-top-color: transparent; animation: sbSpin .8s linear infinite; }\n@keyframes sbSpin { to { transform: rotate(360deg); } }\n@media (prefers-reduced-motion: reduce) { .sb .sb-orb, .sb .sb-busy li.now i { animation: none; } }\n\n/* edit panel */\n.sb .sb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 14px; min-width: 0; }\n.sb .sb-ask { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--primary-soft); }\n.sb .sb-ask > div { display: flex; gap: 8px; align-items: flex-end; }\n.sb .sb-ask textarea { flex: 1; min-width: 0; resize: vertical; background: var(--surface); }\n.sb .sb-tabs { display: flex; width: 100%; }\n.sb .sb-tabs button { flex: 1; white-space: nowrap; }\n.sb .sb-tabbody { min-width: 0; }\n.sb .sb-why { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 13.5px; line-height: 1.5; }\n.sb .sb-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }\n.sb .sb-hero { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-hero.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-hero b { font-size: 12.5px; } .sb .sb-hero small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-hi { display: block; height: 44px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); position: relative; overflow: hidden; }\n.sb .sb-hi::before, .sb .sb-hi::after { content: ''; position: absolute; background: var(--line-2); border-radius: 2px; }\n.sb .h-cinematic { background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-cinematic::before { left: 8px; bottom: 9px; width: 50%; height: 5px; background: #fff; } .sb .h-cinematic::after { left: 8px; bottom: 18px; width: 30%; height: 3px; background: rgba(255,255,255,.7); }\n.sb .h-split::before { right: 6px; top: 6px; bottom: 6px; width: 42%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-split::after { left: 6px; top: 16px; width: 36%; height: 5px; background: var(--fg); }\n.sb .h-editorial::before { left: 6px; top: 6px; width: 70%; height: 9px; background: var(--fg); } .sb .h-editorial::after { left: 6px; right: 6px; bottom: 5px; height: 18px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-mosaic::before { left: 6px; top: 6px; bottom: 6px; width: 46%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-mosaic::after { right: 6px; top: 6px; bottom: 6px; width: 40%; background: repeating-linear-gradient(180deg, #b9c6d3 0 15px, transparent 15px 18px); }\n.sb .h-type::before { left: 8px; top: 9px; width: 66%; height: 9px; background: var(--fg); } .sb .h-type::after { left: 8px; top: 23px; width: 40%; height: 9px; background: var(--primary); }\n.sb .sb-accrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }\n.sb .sb-accrow input[type=color] { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); cursor: pointer; }\n.sb .sb-acc > small { font-size: 12px; }\n.sb .sb-hl { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }\n.sb .sb-hl .eyebrow { margin: 0; }\n.sb .sb-sticky { position: sticky; bottom: 0; display: grid; gap: 6px; padding: 12px 0 2px; background: linear-gradient(transparent, var(--surface) 30%); margin-bottom: 14px; }\n.sb .sb-sticky small { font-size: 12px; }\n.sb .sb-secs { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 6px; }\n.sb .sb-secs li { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.sb .sb-secs li > div { flex: 1; min-width: 0; display: grid; }\n.sb .sb-secs b { font-size: 13.5px; } .sb .sb-secs small { font-size: 11.5px; color: var(--muted); }\n.sb .sb-sn { font: 600 11px var(--mono); color: var(--muted); }\n.sb .sb-sa { display: flex; gap: 2px; }\n.sb .sb-sa .iconbtn { width: 30px; height: 30px; font-size: 14px; }\n.sb .sb-qa { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }\n.sb .sb-qa li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }\n.sb .sb-qa li > .ic { width: 18px; height: 18px; flex: none; padding: 2px; border-radius: 50%; }\n.sb .sb-qa li.ok > .ic { color: var(--good); background: var(--good-soft); }\n.sb .sb-qa li.no > .ic { color: var(--bad); background: var(--bad-soft); }\n.sb .sb-qa small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }\n.sb .sb-rules { font-size: 13px; } .sb .sb-rules summary { cursor: pointer; font-weight: 600; }\n.sb .sb-rules ol { padding-left: 20px; display: grid; gap: 6px; color: var(--muted); }\n\n/* stage */\n.sb .sb-stage { position: sticky; top: calc(var(--a-top, 0px) + 12px); display: grid; gap: 10px; min-width: 0; }\n.sb .sb-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }\n.sb .sb-meta { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; min-width: 0; }\n.sb .sb-meta small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-tools { display: flex; gap: 4px; }\n.sb .sb-dev { border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); margin-inline: auto; width: 100%; }\n.sb .sb-dev.phone { width: min(100%, 390px); border-radius: 34px; border: 10px solid #0d0f17; box-shadow: var(--shadow), 0 0 0 1px var(--line-2); }\n.sb .sb-chrome { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }\n.sb .sb-chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }\n.sb .sb-chrome span { margin-left: 10px; font-size: 11.5px; color: var(--muted); padding: 3px 12px; border-radius: 999px; background: var(--surface); flex: 1; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dev.phone .sb-chrome { justify-content: center; } .sb .sb-dev.phone .sb-chrome i { display: none; } .sb .sb-dev.phone .sb-chrome span { margin: 0; text-align: center; }\n.sb .sb-slot { height: min(74vh, 860px); min-height: 420px; background: var(--surface-2); }\n.sb .sb-dev.phone .sb-slot { height: min(72vh, 760px); }\n.sb-float { position: fixed; z-index: 40; overflow: hidden; pointer-events: auto; }\n.sb-float[hidden] { display: none; }\n.sb-float iframe { border: 0; display: block; transform-origin: 0 0; background: #fff; }\n.sb-float.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) var(--surface-2); background-size: 200% 100%; animation: sbShimmer 1.2s linear infinite; }\n@keyframes sbShimmer { to { background-position: -200% 0; } }\n\n/* empty state */\n.sb .sb-empty { min-height: 520px; display: grid; place-items: center; border-radius: var(--r-lg); background: radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%), var(--surface); border: 1px solid var(--line); padding: 40px; position: static; }\n.sb .sb-hero-ill { max-width: 520px; }\n.sb .sb-hero-ill .disp { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; display: block; margin-bottom: 14px; }\n.sb .sb-hero-ill em, .sb .sb-fempty em { font-style: italic; color: var(--primary); }\n.sb .sb-hero-ill p { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }\n.sb .sb-hero-ill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 13.5px; }\n.sb .sb-hero-ill li { display: flex; gap: 8px; align-items: flex-start; } .sb .sb-hero-ill li .ic { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 2px; }\n.sb .sb-load { min-height: 300px; }\n\n/* funnels */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 0 20px 20px; }\n.sb .sb-tpl { display: grid; gap: 4px; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .15s, transform .15s; }\n.sb .sb-tpl:hover { border-color: var(--primary); transform: translateY(-1px); }\n.sb .sb-tpl b { font-size: 15px; margin-top: 6px; } .sb .sb-tpl small { color: var(--muted); font-size: 13px; line-height: 1.45; }\n.sb .sb-tpl em { font-style: normal; font: 500 11px var(--mono); color: var(--muted); margin-top: 6px; }\n.sb .sb-tpl-i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; }\n.sb .sb-tpl-i .ic { width: 18px; height: 18px; }\n.sb .sb-fform { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 14px; padding: 0 20px; }\n.sb .sb-fform .sb-wide { grid-column: 1 / -1; }\n.sb section > .ag-acts-row, .sb section > p.muted { padding: 0 20px 20px; }\n.sb section > p.muted { padding-bottom: 0; }\n.sb .sb-flist { display: grid; gap: 8px; }\n.sb .sb-frow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--line); }\n.sb .sb-frow:hover { border-color: var(--line-2); }\n.sb .sb-fn { flex: 1; min-width: 0; display: grid; } .sb .sb-fn small { color: var(--muted); font-size: 12.5px; }\n.sb .sb-fs { display: flex; gap: 18px; } .sb .sb-fs > span { display: grid; text-align: right; } .sb .sb-fs small { font-size: 11px; color: var(--muted); }\n@container ag (max-width: 620px) { .sb .sb-fs { display: none; } }\n.sb .sb-fempty { padding: 36px; display: grid; gap: 10px; justify-items: start; }\n.sb .sb-fempty .disp { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; } .sb .sb-fempty p { max-width: 560px; margin: 0 0 6px; line-height: 1.6; }\n.sb .sb-fdetail { display: grid; gap: 16px; min-width: 0; }\n.sb .sb-fh { margin: 0; }\n.sb .sb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }\n.sb .sb-kpis > div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }\n.sb .sb-kpis small { font-size: 12px; color: var(--muted); } .sb .sb-kpis b { font-size: 22px; }\n" }, "/app/web/src/app-studio.js": { "t": `/* Bookingbooster: the Site builder and Funnels views in the host console.
+` }, "/app/web/src/app-seo.css": { "t": "/* Search health view (web/src/app-seo.js) */\n.ag.sh { display: grid; gap: 18px; }\n.sh .t-good { color: var(--good); } .sh .t-warn { color: var(--warn); } .sh .t-bad { color: var(--bad); }\n.sh .sh-card { min-width: 0; }\n.sh .sh-card > .sh-help, .sh .sh-card > .sh-ta, .sh .sh-card > .sh-row, .sh .sh-card > ul, .sh .sh-card > form, .sh .sh-card > .tblwrap, .sh .sh-card > p, .sh .sh-card > .field, .sh .sh-card > .sh-serp, .sh .sh-card > details, .sh .sh-card > .btn, .sh .sh-card > .sh-ping, .sh .sh-card > .sh-types, .sh .sh-card > pre, .sh .sh-card > .eyebrow { margin-top: 12px; }\n.sh .sh-help { color: var(--muted); font-size: 13.5px; line-height: 1.5; margin: 0; }\n.sh .sh-ta { width: 100%; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical; min-width: 0; }\n.sh .sh-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }\n.sh .sh-sp { flex: 1; }\n.sh .sh-by { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }\n.sh .sh-by.ai { color: var(--info); }\n.sh .sh-by .ic { width: 14px; height: 14px; }\n.sh .sh-link { background: none; border: 0; padding: 0; color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; margin-left: 6px; }\n.sh .ag-ptabs .sh-pscore { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 700 17px var(--mono); background: var(--surface-2); }\n.sh .sh-pscore.t-good { background: var(--good-soft); } .sh .sh-pscore.t-warn { background: var(--warn-soft); } .sh .sh-pscore.t-bad { background: var(--bad-soft); }\n\n/* score and category tiles */\n.sh .sh-top { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 18px; align-items: stretch; }\n.sh .sh-score-in { display: flex; align-items: center; gap: 18px; height: 100%; }\n.sh .sh-score-in .disp { display: block; font-size: 28px; margin: 6px 0 4px; }\n.sh .sh-score-in p { margin: 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-g-good .fg { stroke: var(--good); } .sh .sh-g-warn .fg { stroke: var(--warn); } .sh .sh-g-bad .fg { stroke: var(--bad); }\n.sh .sh-cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }\n.sh .sh-cat { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-content: start; text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; min-width: 0; }\n.sh .sh-cat:hover { border-color: var(--line-2); }\n.sh .sh-cat.on { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent); }\n.sh .sh-cat span { font-size: 12.5px; font-weight: 600; line-height: 1.3; }\n.sh .sh-cat b { font-size: 18px; }\n.sh .sh-cat i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-cat i em { display: block; height: 100%; border-radius: 3px; background: currentColor; }\n.sh .sh-cat small { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px; }\n\n/* checks */\n.sh .sh-checks { list-style: none; padding: 0; margin: 12px 0 0; display: grid; }\n.sh .sh-ck { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 10px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }\n.sh .sh-ck:first-child { border-top: 0; }\n.sh .sh-ck b { display: block; font-size: 14.5px; }\n.sh .sh-ck small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }\n.sh .sh-ck p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }\n.sh .sh-st { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; align-self: start; }\n.sh .sh-st .ic { width: 16px; height: 16px; }\n.sh .s-ok .sh-st { background: var(--good-soft); color: var(--good); }\n.sh .s-auto .sh-st { background: var(--info-soft); color: var(--info); }\n.sh .s-warn .sh-st { background: var(--warn-soft); color: var(--warn); }\n.sh .s-fail .sh-st { background: var(--bad-soft); color: var(--bad); }\n.sh .sh-gain { font: 600 12.5px var(--mono); color: var(--good); white-space: nowrap; }\n\n.sh .sh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }\n.sh .field > span em { font-style: normal; font-size: 12px; margin-left: 6px; }\n.sh .sh-serp { margin-top: 12px; }\n\n/* faq ideas, keywords */\n.sh .sh-ideas { list-style: none; padding: 0; display: grid; gap: 14px; }\n.sh .sh-ideas li { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }\n.sh .sh-ideas li:first-child { border-top: 0; padding-top: 0; }\n.sh .sh-ideas b { font-size: 14px; }\n.sh .sh-kw td { padding: 9px 8px; }\n.sh .sh-kw td small { display: block; font-size: 12px; margin-top: 2px; }\n.sh .sh-kw .ic { width: 16px; height: 16px; }\n.sh .sh-kwa { white-space: nowrap; text-align: right; }\n.sh .sh-kwa .btn + .btn { margin-left: 6px; }\n\n/* listings, gbp, sources, files */\n.sh .sh-links { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-links li { display: flex; align-items: center; gap: 8px; min-width: 0; }\n.sh .sh-links a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--fg); }\n.sh .sh-inl { display: flex; gap: 8px; }\n.sh .sh-inl input { flex: 1; min-width: 0; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; }\n.sh .sh-card > form + form { margin-top: 8px; }\n.sh .sh-tip { display: flex; gap: 8px; font-size: 12.5px; color: var(--muted); align-items: flex-start; }\n.sh .sh-tip .ic { width: 15px; height: 15px; flex: none; margin-top: 1px; }\n.sh .sh-gbp { list-style: none; padding: 0; display: grid; gap: 10px; }\n.sh .sh-gbp li { display: flex; gap: 12px; align-items: flex-start; }\n.sh .sh-gbp b { display: block; font-size: 14px; }\n.sh .sh-gbp small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-tick { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--line-2); background: var(--surface); display: grid; place-items: center; color: transparent; padding: 0; cursor: pointer; }\n.sh .sh-tick .ic { width: 15px; height: 15px; }\n.sh .sh-tick.on { background: var(--good); border-color: var(--good); color: #fff; }\n.sh .sh-src { list-style: none; padding: 0; display: grid; gap: 8px; }\n.sh .sh-src li { display: grid; grid-template-columns: minmax(0, 1.4fr) auto minmax(40px, 1fr) 24px auto; gap: 10px; align-items: center; font-size: 13px; }\n.sh .sh-src li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n.sh .sh-src i { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }\n.sh .sh-src i em { display: block; height: 100%; background: var(--info); border-radius: 3px; }\n.sh .sh-src li.own i em { background: var(--good); }\n.sh .sh-src .pill { font-size: 11px; }\n.sh .sh-logos .ai-logo, .sh .sh-logos svg, .sh .sh-logos img { width: 16px; height: 16px; }\n.sh .sh-files { list-style: none; padding: 0; display: grid; gap: 6px; }\n.sh .sh-files li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; min-width: 0; }\n.sh .sh-files a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--primary); font-size: 12px; }\n.sh .sh-ping { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--surface-2); }\n.sh .sh-ping b { display: block; font-size: 14px; }\n.sh .sh-ping small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }\n.sh .sh-steps summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }\n.sh .sh-steps ol { margin: 8px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.55; color: var(--muted); }\n.sh .sh-steps a { color: var(--primary); }\n.sh .sh-types { display: flex; flex-wrap: wrap; gap: 6px; }\n.sh .sh-pre { max-height: 300px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 11.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; margin: 6px 0 0; }\n.sh .sh-cover td { padding: 10px 8px; font-size: 13.5px; vertical-align: top; }\n.sh .sh-cover td:first-child { white-space: nowrap; }\n.sh .sh-cover td:nth-child(2) { white-space: nowrap; }\n\n.sh .sh-ixl .sh-ix { grid-template-columns: 28px 1fr; padding: 8px 0; }\n.sh .sh-perf { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); display: grid; gap: 10px; }\n.sh .sh-perf-k { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }\n.sh .sh-perf-k small { display: block; color: var(--muted); font-size: 11.5px; }\n.sh .sh-perf-k b { font-size: 18px; }\n.sh .sh-q td, .sh .sh-q th { padding: 6px 8px; font-size: 13px; }\n@media (max-width: 1180px) { .sh .sh-cats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }\n@media (max-width: 980px) { .sh .sh-top, .sh .sh-grid { grid-template-columns: 1fr; } }\n@media (max-width: 640px) {\n  .sh .sh-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  .sh .sh-ck { grid-template-columns: 28px 1fr; }\n  .sh .sh-ck .sh-gain { grid-column: 2; justify-self: start; }\n  .sh .sh-ck .btn, .sh .sh-ck .pill { grid-column: 2; justify-self: start; }\n  .sh .sh-score-in { flex-direction: column; align-items: flex-start; }\n  .sh .sh-cover td:first-child { white-space: normal; }\n  .sh .sh-cover tr { display: grid; grid-template-columns: 1fr auto; } .sh .sh-cover td:nth-child(3) { grid-column: 1 / -1; padding-top: 0; }\n  .sh .sh-kw thead { display: none; } .sh .sh-kw tr { display: grid; grid-template-columns: 1fr auto auto; } .sh .sh-kw td.sh-kwa { grid-column: 1 / -1; text-align: left; padding-top: 0; }\n  .sh .sh-src li { grid-template-columns: minmax(0, 1fr) auto 24px; } .sh .sh-src i, .sh .sh-src .sh-eng { display: none; }\n  .sh .sh-ping { flex-direction: column; align-items: flex-start; }\n}\n" }, "/app/web/src/app-seo.js": { "t": `/* Bookingbooster: the Search health view in the host console (Get found). One home at a time: a score across every
+   kind of search work that applies to a holiday let, the fixes worth doing first, and the tools to do them.
+   Rules live in seo-rules.js (shared with the server). Drafts come from Claude when the server has a key, otherwise
+   from the home's own facts. Registers into BB.appViews; app.js owns the frame and routing. */
+(function () {
+  const BB = window.BB; BB.appViews = BB.appViews || {};
+  const V = BB.appViews, esc = BB.esc, I = BB.icon;
+  const S = () => BB.store.get();
+  const uid = inst => inst.uid || (inst.uid = Math.random().toString(36).slice(2, 7));
+  const ID = (inst, k) => 'sh-' + k + '-' + uid(inst);
+  const nav = (inst, view, id) => (inst && inst.nav ? inst.nav(view, id == null ? null : id) : BB.go('app', { view, id: id == null ? null : id }));
+  const api = () => !!(BB.api && BB.BOOT && (BB.BOOT.mode === 'host' || BB.BOOT.mode === 'demo'));
+  const API = () => (BB.BOOT && BB.BOOT.mode === 'demo' ? '/api/demo/' : '/api/');
+  const words = t => String(t || '').trim().split(/\\s+/).filter(Boolean).length;
+  const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
+  const card = (id, title, meta, body, cls) => '<section class="a-card ag-card sh-card ' + (cls || '') + '"' + (id ? ' id="sh-' + id + '"' : '') + '><div class="a-card-h"><h3>' + title + '</h3>' + (meta ? '<span class="ag-meta">' + meta + '</span>' : '') + '</div>' + body + '</section>';
+  const tone = n => n >= 85 ? 'good' : n >= 60 ? 'warn' : 'bad';
+  function gauge(n) {
+    const r = 46, c = 2 * Math.PI * r, off = c * (1 - n / 100);
+    return '<svg class="ag-gauge sh-g-' + tone(n) + '" viewBox="0 0 120 120" role="img" aria-label="Search health ' + n + ' of 100"><circle cx="60" cy="60" r="' + r + '" class="tr"/><circle cx="60" cy="60" r="' + r + '" class="fg" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 60 60)"/><text x="60" y="68" text-anchor="middle">' + n + '</text></svg>';
+  }
+  const STI = { ok: 'check', auto: 'bolt', warn: 'clock', fail: 'x' };
+  const STL = { ok: 'Done', auto: 'Handled for you', warn: 'Could be better', fail: 'To fix' };
+
+  // Every kind of search work, and how Bookingbooster covers it for a holiday let.
+  const COVER = [
+    ['On-page SEO', 'auto', 'Titles, descriptions, headings and internal links are written for every page. You can set your own title and description here.'],
+    ['Technical SEO', 'auto', 'Server-rendered pages, HTTPS, mobile-first, canonical tags, robots.txt, an image sitemap and IndexNow pings.'],
+    ['Content SEO', 'tool', 'Area guide, about text and FAQs, with drafts written from your facts and keyword ideas for what to write about.'],
+    ['Local SEO', 'tool', 'Map pin, address, reviews and LodgingBusiness schema are automatic. Google Business Profile is a guided checklist.'],
+    ['Off-page SEO', 'guide', 'We list where to get links and mentions and add each one to your schema. Getting them is up to you.'],
+    ['Image and video SEO', 'tool', 'Photo captions become alt text and image sitemap entries. A YouTube walkthrough adds video schema.'],
+    ['SXO (search experience)', 'auto', 'Price up front, instant booking, reviews and a host note on the page that search visitors land on.'],
+    ['AEO (answer engines)', 'tool', 'An answer-first summary, FAQ ideas with drafted answers, FAQPage and speakable schema.'],
+    ['GEO (generative engines)', 'auto', 'llms.txt, AI crawler access and real weekly checks in ChatGPT, Gemini, Perplexity and Google, with the sites they cite.'],
+    ['LLMO (brand recognition)', 'guide', 'sameAs links tie your listings and profiles to one home, and we track whether answers link to your site.'],
+    ['AIO (Google AI Overviews)', 'tool', 'Google answers are checked with each AI run, and the summary sits where AI Overviews read first.'],
+    ['Ecommerce SEO', 'part', 'Partly applies: each home is a bookable product with Offer schema, a live price and checkout. There are no category pages to manage.'],
+    ['International SEO', 'part', 'Partly applies: pages are en-GB with prices in pounds. Separate language versions are not needed for UK stays.'],
+    ['ASO (app stores)', 'none', 'Does not apply: the guest app installs from your site, so there is no App Store listing to optimise.'],
+  ];
+  const COVL = { auto: ['good', 'Automatic'], tool: ['info', 'Tool, you approve'], guide: ['warn', 'Guidance'], part: ['muted', 'Partly applies'], none: ['muted', 'Not applicable'] };
+
+  function home(inst) { const s = S(); const p = BB.q.property(inst.st.sh_pid) || s.properties[0]; if (p) inst.st.sh_pid = p.id; return p; }
+  async function loadFiles(inst, pid) {
+    const st = inst.st; st.sh_files = st.sh_files || {}; if (!api() || st.sh_files[pid]) return;
+    st.sh_files[pid] = { loading: true };
+    try { st.sh_files[pid] = await BB.api.call(API() + 'seo/files?propertyId=' + encodeURIComponent(pid), null, 'GET'); }
+    catch (e) { st.sh_files[pid] = { error: e.message }; }
+    if (st.view === 'seo') inst.render();
+  }
+  async function write(inst, what) {
+    const p = home(inst), st = inst.st; st.sh_busy = what; inst.render();
+    let d = null, by = 'rules', note = null;
+    const questions = what === 'faqs' ? BB.seo.faqIdeas(p).map(f => f.q) : undefined;
+    if (api()) { try { const j = await BB.api.call(API() + 'seo/write', { propertyId: p.id, what, questions }); d = j.draft; by = j.by || 'rules'; note = j.error || (j.credit && j.credit.message) || null; } catch (e) { note = e.message; } }
+    if (!d) { by = 'rules'; d = what === 'faqs' ? null : BB.seo.draft(p, what); }
+    st.sh_busy = null;
+    if (what === 'summary') { st.sh_sum = d; st.sh_sum_by = by; }
+    if (what === 'area' && !d) { inst.render(); BB.toast('Add a few nearby places in Website & SEO first, then draft again.'); return; }
+    if (what === 'area') { st.sh_area = d; st.sh_area_by = by; }
+    if (what === 'meta') { st.sh_mt = d.title; st.sh_md = d.description; st.sh_meta_by = by; }
+    if (what === 'faqs' && d) { st.sh_faq = {}; d.forEach(f => { if (f.a) st.sh_faq[f.q] = f.a; }); st.sh_faq_by = by; }
+    if (note) BB.toast(note);
+    inst.render();
+  }
+  function scrollTo(inst, id) { const el = inst.root && inst.root.querySelector('#sh-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  function doFix(inst, c) {
+    const a = c.act; if (!a) return;
+    if (a.kind === 'nav') nav(inst, a.view);
+    else if (a.kind === 'scroll') scrollTo(inst, a.to);
+    else if (a.kind === 'write') { scrollTo(inst, a.what === 'area' ? 'area' : 'summary'); write(inst, a.what); }
+    else if (a.kind === 'meta') { scrollTo(inst, 'meta'); write(inst, 'meta'); }
+    else if (a.kind === 'aicheck') { BB.act.runAiCheck(); BB.toast(S().live ? 'Asking AI assistants now. Results arrive in a few minutes.' : 'AI check done', 'good'); }
+  }
+  const fixLabel = a => !a ? '' : a.kind === 'nav' ? ({ website: 'Open Website & SEO', connections: 'Open Connections', automations: 'Open Automations', reviews: 'Open Reviews', ai: 'Open AI visibility' }[a.view] || 'Open') : a.kind === 'write' ? 'Draft it' : a.kind === 'meta' ? 'Draft it' : a.kind === 'aicheck' ? 'Run AI check' : 'Show me';
+
+  const HANDLERS = {
+    'sh-pid': (inst, v) => { const st = inst.st; ['sh_sum', 'sh_area', 'sh_mt', 'sh_md', 'sh_faq', 'sh_cat', 'sh_link', 'sh_video', 'sh_pin'].forEach(k => { st[k] = undefined; }); inst.set({ sh_pid: v }); },
+    'sh-cat': (inst, v) => inst.set({ sh_cat: inst.st.sh_cat === v ? null : v }),
+    'sh-fix': (inst, v) => { const c = BB.seo.audit(home(inst)).checks.find(x => x.id === v); if (c) doFix(inst, c); },
+    'sh-write': (inst, v) => write(inst, v),
+    'sh-save-sum': inst => { const p = home(inst); BB.act.updateSeo(p.id, { summary: inst.st.sh_sum }); inst.st.sh_sum = undefined; inst.render(); BB.toast('Summary published', 'good'); },
+    'sh-save-area': inst => { const p = home(inst); BB.act.updateSeo(p.id, { areaIntro: inst.st.sh_area }); inst.st.sh_area = undefined; inst.render(); BB.toast('Area guide published', 'good'); },
+    'sh-save-meta': inst => { const p = home(inst), st = inst.st; BB.act.updateSeo(p.id, { metaTitle: st.sh_mt == null ? BB.seo.seoOf(p).metaTitle : st.sh_mt, metaDescription: st.sh_md == null ? BB.seo.seoOf(p).metaDescription : st.sh_md }); st.sh_mt = st.sh_md = undefined; inst.render(); BB.toast('Google title and description published', 'good'); },
+    'sh-reset-meta': inst => { const p = home(inst); BB.act.updateSeo(p.id, { metaTitle: '', metaDescription: '' }); inst.st.sh_mt = inst.st.sh_md = undefined; inst.render(); BB.toast('Back to the automatic title and description'); },
+    'sh-faq-add': (inst, v) => { const p = home(inst), idea = BB.seo.faqIdeas(p)[+v]; if (!idea) return; const a = ((inst.st.sh_faq || {})[idea.q] != null ? inst.st.sh_faq[idea.q] : idea.a).trim(); if (!a) { inst.st.sh_faq_err = idea.q; inst.render(); return; } BB.act.addFaqs(p.id, [{ q: idea.q, a }]); inst.st.sh_faq_err = null; BB.toast('FAQ published', 'good'); },
+    'sh-kw': (inst, v) => { const p = home(inst), o = BB.seo.seoOf(p); const kws = (o.keywords || []).slice(); const i = kws.indexOf(v); if (i >= 0) kws.splice(i, 1); else kws.push(v); BB.act.updateSeo(p.id, { keywords: kws }); },
+    'sh-track': (inst, v) => { const p = home(inst); const n = BB.act.trackAiQuestions(p.id, [v]); BB.toast(n ? 'Tracking in AI visibility' : 'Already tracked', n ? 'good' : undefined); },
+    'sh-track-top': inst => { const p = home(inst); const list = BB.seo.keywords(p).filter(k => k.intent !== 'Plan').slice(0, 5).map(k => k.q); const n = BB.act.trackAiQuestions(p.id, list); BB.toast(n ? 'Tracking ' + n + ' new questions' : 'All already tracked', n ? 'good' : undefined); },
+    'sh-link-del': (inst, v) => { const p = home(inst); const l = (BB.seo.seoOf(p).sameAs || []).filter((x, i) => i !== +v); BB.act.updateSeo(p.id, { sameAs: l }); },
+    'sh-gbp': (inst, v) => { const p = home(inst); const g = Object.assign({}, BB.seo.seoOf(p).gbp); g[v] = !g[v]; BB.act.updateSeo(p.id, { gbp: g }); },
+    'sh-submit': async (inst, v, el) => { el.disabled = true; el.textContent = 'Submitting\u2026'; try { const j = await BB.api.call(API() + 'seo/submit', { propertyId: home(inst).id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } inst.render(); },
+    'sh-ping': async (inst, v, el) => { const p = home(inst); el.disabled = true; try { const j = await BB.api.call(API() + 'seo/ping', { propertyId: p.id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } el.disabled = false; },
+    'sh-files': inst => inst.set({ sh_show: inst.st.sh_show === 'files' ? null : 'files' }),
+    'sh-copy': (inst, v) => { try { navigator.clipboard.writeText(v); BB.toast('Copied'); } catch (_) {} },
+  };
+  function onClick(ev, inst) {
+    const n = ev.target.closest('[data-sh-nav]'); if (n) { ev.preventDefault(); nav(inst, n.dataset.shNav); return; }
+    const a = ev.target.closest('[data-sh]'); if (!a) return; const H = HANDLERS[a.dataset.sh]; if (H) { ev.preventDefault(); H(inst, a.dataset.v, a); }
+  }
+  function onInput(ev, inst) {
+    const el = ev.target, f = el.dataset && el.dataset.shf; if (!f) return; const st = inst.st;
+    if (f.startsWith('faq:')) { st.sh_faq = st.sh_faq || {}; st.sh_faq[f.slice(4)] = el.value; return; }
+    st[f] = el.value;
+    if (['sh_sum', 'sh_area', 'sh_mt', 'sh_md'].includes(f)) { clearTimeout(inst._shT); inst._shT = setTimeout(() => { inst._focus = '[data-shf="' + f + '"]'; inst.render(); }, 500); }
+  }
+  function onSubmit(ev, inst) {
+    const f = ev.target.closest('form[data-shform]'); if (!f) return; ev.preventDefault();
+    const p = home(inst), st = inst.st, k = f.dataset.shform;
+    if (k === 'link') { const u = String(st.sh_link || '').trim(); if (!/^https:\\/\\/\\S+\\.\\S+/.test(u)) { BB.toast('Paste a full link that starts with https://'); return; } BB.act.updateSeo(p.id, { sameAs: (BB.seo.seoOf(p).sameAs || []).concat(u) }); st.sh_link = ''; BB.toast(BB.seo.LINK_LABEL[BB.seo.linkKind(u)] + ' added', 'good'); }
+    if (k === 'video') { const u = String(st.sh_video || '').trim(); const o = BB.act.updateSeo(p.id, { videoUrl: u }); if (u && !(o && o.videoUrl)) { BB.toast('Paste a YouTube or Vimeo link'); return; } st.sh_video = undefined; BB.toast(u ? 'Video linked' : 'Video removed', 'good'); }
+    if (k === 'pin') { const m = String(st.sh_pin || '').match(/(-?\\d+\\.\\d+)\\s*,\\s*(-?\\d+\\.\\d+)/); if (!m || !BB.act.setMapPin(p.id, m[1], m[2])) { BB.toast('Paste the pin as two numbers, like 54.4281, -2.9037'); return; } st.sh_pin = undefined; BB.toast('Map pin saved', 'good'); }
+    inst.render();
+  }
+  // Where each search engine stands for this home, and Google's own numbers when Search Console has them.
+  function indexStatus(p, files, live) {
+    const ix = p.indexing || {}, g = ix.google || {}, n = ix.indexnow || {}, perf = ix.perf;
+    const when = t => t ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const row = (name, st, txt) => '<li class="sh-ck sh-ix s-' + st + '"><span class="sh-st">' + I(STI[st]) + '</span><div><b>' + name + '</b><small>' + txt + '</small></div></li>';
+    const gRow = !live ? row('Google Search Console', 'auto', 'Verified and submitted for you in a real account, with no Google login.')
+      : g.state === 'submitted' ? row('Google Search Console', 'ok', 'Verified and sitemap submitted ' + when(g.at) + '. We resubmit daily.')
+      : g.state === 'error' ? row('Google Search Console', 'warn', 'Google said: ' + esc(g.error || 'not yet') + '. We retry daily.')
+      : files.google ? row('Google Search Console', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
+      : row('Google Search Console', 'warn', 'Automatic submission is not switched on for this server yet. Google still finds your sitemap through robots.txt.');
+    const nRow = !live ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'auto', 'Pinged whenever your page changes.')
+      : n.state === 'sent' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'ok', 'Told about your latest changes ' + when(n.at) + '.')
+      : n.state === 'error' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', esc(n.message || 'Not accepted yet') + ' We retry when the page changes.')
+      : row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', 'Goes out tonight, or press Submit now.');
+    const pf = perf ? '<div class="sh-perf"><span class="eyebrow">Google search, ' + esc(perf.from) + ' to ' + esc(perf.to) + '</span><div class="sh-perf-k"><div><small>Clicks</small><b class="num">' + perf.clicks.toLocaleString('en-GB') + '</b></div><div><small>Impressions</small><b class="num">' + perf.impressions.toLocaleString('en-GB') + '</b></div><div><small>Click rate</small><b class="num">' + perf.ctr + '%</b></div><div><small>Avg position</small><b class="num">' + (perf.position || '\u2013') + '</b></div></div>' +
+      (perf.queries.length ? '<table class="tbl sh-q"><thead><tr><th>Top searches</th><th>Clicks</th><th>Shown</th><th>Pos.</th></tr></thead><tbody>' + perf.queries.map(q => '<tr><td>' + esc(q.q) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + q.position + '</td></tr>').join('') + '</tbody></table>' : '<p class="muted">No searches yet. New sites usually show up within 2 to 4 weeks.</p>') + '</div>' : '';
+    return '<ul class="sh-checks sh-ixl">' + gRow + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
+  }
+  function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
+  const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';
+
+  V.seo = {
+    label: 'Search health', group: 'Get found', icon: 'search', order: 15,
+    click: onClick, input: onInput, submit: onSubmit,
+    after(inst) { const p = home(inst); if (p) loadFiles(inst, p.id); },
+    render(inst) {
+      const s = S(), st = inst.st;
+      if (!s.properties.length) return '<div class="ag sh">' + vh('Search health', 'Add a home first, then come back to see how it shows up in Google and AI answers.') + '</div>';
+      const p = home(inst), A = BB.seo.audit(p), o = BB.seo.seoOf(p), files = (st.sh_files || {})[p.id] || {};
+      const live = !!s.live, writer = files.writer;
+      const cat = st.sh_cat ? A.cats.find(c => c.id === st.sh_cat) : null;
+      const list = cat ? cat.checks : A.fixes.slice(0, 8);
+      const row = c => '<li class="sh-ck s-' + c.status + '"><span class="sh-st" title="' + STL[c.status] + '">' + I(STI[c.status]) + '</span><div><b>' + esc(c.label) + '</b><small>' + esc(c.detail) + '</small>' + (c.fix ? '<p>' + esc(c.fix) + '</p>' : '') + '</div>' +
+        (c.fix ? '<span class="sh-gain">+' + (c.gain || '') + (c.gain ? ' pts' : '') + '</span>' + (c.act ? '<button class="btn sm' + (c.status === 'fail' ? ' primary' : '') + '" data-sh="sh-fix" data-v="' + c.id + '">' + fixLabel(c.act) + '</button>' : '') : BB.pill(c.status === 'auto' ? 'muted' : 'good', STL[c.status])) + '</li>';
+      if (cat) list.forEach(c => { if (c.fix) c.gain = (A.fixes.find(f => f.id === c.id) || {}).gain; });
+
+      const sumV = st.sh_sum != null ? st.sh_sum : o.summary, areaV = st.sh_area != null ? st.sh_area : o.areaIntro;
+      const mt = st.sh_mt != null ? st.sh_mt : (o.metaTitle || BB.seo.titleOf(p)), md = st.sh_md != null ? st.sh_md : (o.metaDescription || BB.seo.descOf(p));
+      const drafting = what => st.sh_busy === what;
+      const wbtn = (what, label) => '<button class="btn sm" data-sh="sh-write" data-v="' + what + '"' + (st.sh_busy ? ' disabled' : '') + '>' + I(writer ? 'spark' : 'edit') + (drafting(what) ? 'Writing\u2026' : label || (writer ? 'Write with AI' : 'Draft from my facts')) + '</button>';
+      const ideas = BB.seo.faqIdeas(p), kws = BB.seo.keywords(p), tracked = new Set(s.ai.questions.filter(q => q.propertyId === p.id).map(q => q.q.toLowerCase()));
+      const links = o.sameAs || [], srcs = BB.seo.sources(p.id), ownDom = String(p.domain || '').replace(/^www\\./, '');
+      const maxSrc = srcs.reduce((a, x) => Math.max(a, x.n), 1);
+
+      return '<div class="ag sh' + (inst.compact ? ' ag-compact' : '') + '">' +
+        vh('Search health', 'How well ' + esc(p.name) + ' is set up to be found on Google, in maps and in AI answers, and what to do next.', '<button class="btn" data-sh-nav="ai">' + I('spark') + 'AI visibility</button><button class="btn" data-sh-nav="website">' + I('web') + 'Website & SEO</button>') +
+        (s.properties.length > 1 ? '<div class="ag-ptabs" role="tablist" aria-label="Homes">' + s.properties.map(x => { const sc = BB.seo.audit(x).score; return '<button type="button" role="tab" aria-selected="' + (x.id === p.id) + '" data-sh="sh-pid" data-v="' + x.id + '"><span class="sh-pscore t-' + tone(sc) + '">' + sc + '</span><span><b>' + esc(x.name) + '</b><small class="mono">' + esc(x.domain || '') + '</small></span></button>'; }).join('') + '</div>' : '') +
+
+        '<div class="sh-top">' +
+          '<section class="a-card ag-card sh-score"><div class="sh-score-in">' + gauge(A.score) + '<div><span class="eyebrow">Search health</span><b class="disp">' + A.grade + '</b><p class="muted">' + A.auto + ' checks handled for you. ' + A.fixes.length + (A.fixes.length === 1 ? ' thing' : ' things') + ' to improve, best first below.</p></div></div></section>' +
+          '<div class="sh-cats" role="list">' + A.cats.map(c => '<button type="button" role="listitem" class="sh-cat' + (st.sh_cat === c.id ? ' on' : '') + '" data-sh="sh-cat" data-v="' + c.id + '" title="' + esc(c.about) + '"><span>' + esc(c.label) + '</span><b class="num t-' + tone(c.score) + '">' + c.score + '</b><i><em class="t-' + tone(c.score) + '" style="width:' + c.score + '%"></em></i><small>' + (c.todo ? c.todo + ' to improve' : 'All good') + '</small></button>').join('') + '</div>' +
+        '</div>' +
+
+        card('fixes', cat ? esc(cat.label) : 'Fix these first', cat ? esc(cat.about) + ' <button class="sh-link" data-sh="sh-cat" data-v="' + cat.id + '">Show top fixes</button>' : 'Ordered by how much each one adds', '<ul class="sh-checks">' + (list.length ? list.map(row).join('') : '<li class="sh-ck s-ok"><span class="sh-st">' + I('check') + '</span><div><b>Nothing left to fix</b><small>Every check passes. We keep checking as your site and AI answers change.</small></div></li>') + '</ul>') +
+
+        '<div class="sh-grid">' +
+          card('summary', 'Answer-first summary', 'AEO \xB7 AIO \xB7 GEO', '<p class="sh-help">40 to 60 words that answer "what is it, where, who for, how much". It sits under the main heading, in the schema and in llms.txt, where answer engines read first.</p>' +
+            edBox(inst, 'sh_sum', sumV, 4, 'e.g. ' + BB.seo.draft(p, 'summary')) + '<div class="sh-row"><small class="muted num">' + words(sumV) + ' words</small>' + byLine(st.sh_sum != null ? st.sh_sum_by : null) + '<span class="sh-sp"></span>' + wbtn('summary') + '<button class="btn sm primary" data-sh="sh-save-sum"' + (st.sh_sum != null && st.sh_sum !== o.summary ? '' : ' disabled') + '>Publish</button></div>') +
+          card('meta', 'Google title and description', 'On-page', '<div class="ag-serp-r sh-serp"><div class="ag-serp-u"><span class="ag-fav" style="background:' + esc(p.color || '#3355FF') + '"></span><div><b>' + esc(p.name) + '</b><small>https://' + esc(p.domain || '') + '</small></div></div><p class="ag-serp-t">' + esc(mt.slice(0, 62)) + (mt.length > 62 ? '\u2026' : '') + '</p><p class="ag-serp-d">' + esc(md.slice(0, 160)) + (md.length > 160 ? '\u2026' : '') + '</p></div>' +
+            '<label class="field"><span>Title <em class="num ' + (mt.length > 62 ? 't-bad' : 'muted') + '">' + mt.length + '/62</em></span><input data-shf="sh_mt" value="' + esc(mt) + '"></label><label class="field"><span>Description <em class="num ' + (md.length > 160 ? 't-bad' : 'muted') + '">' + md.length + '/160</em></span><textarea class="sh-ta" data-shf="sh_md" rows="3">' + esc(md) + '</textarea></label>' +
+            '<div class="sh-row">' + byLine(st.sh_mt != null ? st.sh_meta_by : null) + '<span class="sh-sp"></span>' + (o.metaTitle || o.metaDescription ? '<button class="btn sm" data-sh="sh-reset-meta">Use automatic</button>' : '') + wbtn('meta') + '<button class="btn sm primary" data-sh="sh-save-meta"' + (st.sh_mt != null || st.sh_md != null ? '' : ' disabled') + '>Publish</button></div>') +
+        '</div>' +
+
+        card('area', 'Local area guide', 'Content \xB7 Local \xB7 AIO', '<p class="sh-help">For searches like "things to do near ' + esc(BB.seo.town(p) || 'here') + '". It is published on your page with your nearby places, and marked up as tourist attractions.</p>' +
+          edBox(inst, 'sh_area', areaV, 7, 'Walks, pubs, beaches and days out near ' + p.name + '\u2026') + '<div class="sh-row"><small class="muted num">' + words(areaV) + ' words \xB7 ' + (p.guide || []).length + ' nearby places</small>' + byLine(st.sh_area != null ? st.sh_area_by : null) + '<span class="sh-sp"></span>' + wbtn('area') + '<button class="btn sm primary" data-sh="sh-save-area"' + (st.sh_area != null && st.sh_area !== o.areaIntro ? '' : ' disabled') + '>Publish</button></div>') +
+
+        '<div class="sh-grid">' +
+          card('faqs', 'Questions to answer', 'AEO \xB7 GEO', '<p class="sh-help">Questions guests ask that your site does not answer yet. Answers are drafted from your facts; anything we cannot know is left for you.</p>' +
+            (ideas.length ? '<ul class="sh-ideas">' + ideas.map((f, i) => { const v = (st.sh_faq || {})[f.q] != null ? st.sh_faq[f.q] : f.a; return '<li><b>' + esc(f.q) + '</b><textarea class="sh-ta" rows="2" data-shf="faq:' + esc(f.q) + '" placeholder="' + (f.needs ? 'Only you know this. Write a one-line answer.' : '') + '">' + esc(v) + '</textarea>' + (st.sh_faq_err === f.q ? '<small class="t-bad">Write an answer first.</small>' : '') + '<div class="sh-row">' + (f.needs && !v ? BB.pill('warn', 'Needs your answer') : '') + '<span class="sh-sp"></span><button class="btn sm" data-sh="sh-faq-add" data-v="' + i + '">' + I('plus') + 'Add to site</button></div></li>'; }).join('') + '</ul>' + (writer ? '<div class="sh-row"><span class="sh-sp"></span>' + byLine(st.sh_faq_by) + wbtn('faqs', 'Answer all with AI') + '</div>' : '') : '<p class="muted">Every common question is answered. Add your own in Website & SEO.</p>')) +
+          card('keywords', 'Searches to target', 'Content \xB7 On-page \xB7 GEO', '<p class="sh-help">What travellers type into Google and ask AI assistants, built from your home\\'s facts. Target the ones that fit, and track them in AI visibility.</p>' +
+            '<div class="tblwrap"><table class="tbl sh-kw"><thead><tr><th>Search</th><th>Intent</th><th>On site</th><th></th></tr></thead><tbody>' + kws.map(k => { const on = (o.keywords || []).includes(k.q); return '<tr><td><b>' + esc(k.q) + '</b><small class="muted">' + esc(k.use) + '</small></td><td>' + BB.pill(k.intent === 'Book' ? 'good' : k.intent === 'Compare' ? 'info' : 'muted', k.intent) + '</td><td>' + (k.onSite ? '<span class="t-good">' + I('check') + '</span>' : '<span class="muted">\u2013</span>') + '</td><td class="sh-kwa"><button class="btn sm' + (on ? ' primary' : '') + '" data-sh="sh-kw" data-v="' + esc(k.q) + '" aria-pressed="' + on + '">' + (on ? 'Targeted' : 'Target') + '</button>' + (k.intent !== 'Plan' ? '<button class="btn sm" data-sh="sh-track" data-v="' + esc(k.q) + '"' + (tracked.has(k.q) ? ' disabled' : '') + '>' + (tracked.has(k.q) ? 'Tracked' : 'Track in AI') + '</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>' +
+            '<div class="sh-row"><span class="sh-sp"></span><button class="btn sm" data-sh="sh-track-top">' + I('spark') + 'Track the top 5 in AI visibility</button></div>') +
+        '</div>' +
+
+        '<div class="sh-grid">' +
+          card('listed', 'Where this home is listed', 'Local \xB7 Off-page \xB7 LLMO', '<p class="sh-help">Your other listings, Google Maps, social profiles and any local or press mentions. Each becomes a sameAs link, so Google and AI models know they are all the same home.</p>' +
+            (links.length ? '<ul class="sh-links">' + links.map((u, i) => '<li>' + BB.pill(BB.seo.linkKind(u) === 'local' ? 'info' : 'muted', BB.seo.LINK_LABEL[BB.seo.linkKind(u)]) + '<a href="' + esc(u) + '" target="_blank" rel="noopener" class="mono">' + esc(u.replace(/^https:\\/\\/(www\\.)?/, '').slice(0, 48)) + '</a><button class="btn sm ghost" data-sh="sh-link-del" data-v="' + i + '" aria-label="Remove">' + I('x') + '</button></li>').join('') + '</ul>' : '') +
+            '<form data-shform="link" class="sh-inl"><input data-shf="sh_link" placeholder="https://www.airbnb.co.uk/rooms/\u2026" value="' + esc(st.sh_link || '') + '" aria-label="Link"><button class="btn sm" type="submit">' + I('plus') + 'Add</button></form>' +
+            '<form data-shform="video" class="sh-inl"><input data-shf="sh_video" placeholder="YouTube walkthrough link" value="' + esc(st.sh_video != null ? st.sh_video : o.videoUrl) + '" aria-label="Video link"><button class="btn sm" type="submit">' + I('play') + 'Save video</button></form>' +
+            '<form data-shform="pin" class="sh-inl"><input data-shf="sh_pin" placeholder="Map pin, like 54.4281, -2.9037" value="' + esc(st.sh_pin != null ? st.sh_pin : (p.lat && p.lng ? p.lat + ', ' + p.lng : '')) + '" aria-label="Map pin"><button class="btn sm" type="submit">' + I('pin') + 'Save pin</button></form>' +
+            '<p class="sh-tip">' + I('bolt') + '<span>In Google Maps, right-click the home and click the numbers at the top to copy its pin.</span></p>') +
+          card('gbp', 'Google Business Profile', 'Local \xB7 Guidance', '<p class="sh-help">The profile decides whether you show in the map pack and "near me" searches. Tick each step as you do it.</p><ul class="sh-gbp">' +
+            BB.seo.GBP.map(([id, t, d]) => { const on = !!(o.gbp || {})[id]; return '<li><button type="button" class="sh-tick' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-sh="sh-gbp" data-v="' + id + '">' + I('check') + '</button><div><b>' + esc(t) + '</b><small>' + esc(d) + '</small></div></li>'; }).join('') + '</ul>' +
+            '<a class="btn sm" href="https://business.google.com/" target="_blank" rel="noopener">' + I('out') + 'Open Google Business Profile</a>') +
+        '</div>' +
+
+        '<div class="sh-grid">' +
+          card('cites', 'Sites AI assistants cite', 'GEO \xB7 LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
+            : '<p class="muted">' + (live ? 'Shown after the next AI check. We record every site each answer cites.' : 'Run an AI check to see the sites answers cite.') + '</p>') +
+          card('index', 'Indexing', 'Technical', (files.sitemap ? '<ul class="sh-files"><li><span>Sitemap with images</span><a class="mono" href="' + esc(files.sitemap) + '" target="_blank" rel="noopener">' + esc(files.sitemap.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>robots.txt</span><a class="mono" href="' + esc(files.robots) + '" target="_blank" rel="noopener">' + esc(files.robots.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>llms.txt</span><a class="mono" href="' + esc(files.llmsUrl) + '" target="_blank" rel="noopener">' + esc(files.llmsUrl.replace(/^https?:\\/\\//, '')) + '</a></li></ul>' : '<p class="muted">' + (files.loading ? 'Loading\u2026' : 'Sitemap, robots.txt and llms.txt are published with your site.') + '</p>') +
+            indexStatus(p, files, live) +
+            '<div class="sh-ping"><div><b>Submit to search engines now</b><small>' + (live ? 'We do this every day by ourselves. Google gets the sitemap through our Search Console account, and Bing, Yandex, Seznam and Naver hear about changes through IndexNow. Your guests never see any of it, and you never sign in.' : 'In your account this runs every day by itself: Google Search Console through our account, and IndexNow for Bing and others. No logins.') + '</small></div><button class="btn sm primary" data-sh="sh-submit"' + (api() ? '' : ' disabled') + '>' + I('send') + 'Submit now</button></div>' +
+            '<details class="sh-steps"><summary>Also want it in your own Search Console? (optional)</summary><ol><li>Open <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a> and add a URL-prefix property for your site address.</li><li>Verify with the HTML tag method, or with a DNS record if you use your own domain.</li><li>Under Sitemaps, submit the sitemap address above.</li><li>In <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">Bing Webmaster Tools</a>, choose "Import from Google Search Console". It copies everything in one step.</li></ol></details>' +
+            '<button class="btn sm" data-sh="sh-files">' + I('search') + (st.sh_show === 'files' ? 'Hide what crawlers see' : 'See what crawlers and AI read') + '</button>' +
+            (st.sh_show === 'files' ? (files.jsonld ? '<div class="sh-types">' + files.jsonld['@graph'].map(n => BB.pill('info', n['@type'])).join('') + '</div><span class="eyebrow">llms.txt</span><pre class="sh-pre">' + esc(files.llms) + '</pre><span class="eyebrow">Structured data</span><pre class="sh-pre">' + esc(JSON.stringify(files.jsonld, null, 2)) + '</pre>' : '<p class="muted">' + esc(files.error || 'Loading\u2026') + '</p>') : '')) +
+        '</div>' +
+
+        card('cover', 'Every kind of search, covered', 'What is automatic and what is guidance', '<div class="tblwrap"><table class="tbl sh-cover"><tbody>' + COVER.map(([n, k, d]) => '<tr><td><b>' + esc(n) + '</b></td><td>' + BB.pill(COVL[k][0], COVL[k][1]) + '</td><td class="muted">' + esc(d) + '</td></tr>').join('') + '</tbody></table></div>') +
+      '</div>';
+    },
+  };
+})();
+` }, "/app/web/src/app-studio.css": { "t": "/* Host console: Site builder and Funnels (app-studio.js). Lives inside .ag, so it reflows with the container. */\n.sb .sb-cols { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }\n@container ag (max-width: 860px) { .sb .sb-cols { grid-template-columns: minmax(0, 1fr); } .sb .sb-stage { order: -1; } }\n.sb .eyebrow { display: block; font: 600 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }\n.sb .eyebrow em { font: 500 11px var(--font, inherit); text-transform: none; letter-spacing: 0; font-style: normal; }\n.sb .sb-q { display: grid; gap: 2px; margin: 0 0 18px; }\n.sb .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }\n.sb .field { display: grid; gap: 6px; margin-bottom: 14px; }\n.sb .field > span { font-size: 13px; font-weight: 600; }\n.sb .field em { font-style: normal; font-weight: 500; font-size: 12px; }\n.sb .field input, .sb .field textarea, .sb .field select { width: 100%; }\n\n/* brief */\n.sb .sb-brief { padding: 18px 20px 20px; }\n.sb .sb-brief .a-card-h { padding: 0 0 14px; }\n.sb .sb-ph { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 0 0 16px; }\n.sb .sb-ph .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; }\n.sb .sb-gobtn { width: 100%; justify-content: center; padding: 12px 16px; font-size: 15px; }\n\n/* art direction cards */\n.sb .sb-dirs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }\n.sb .sb-dir { display: grid; gap: 2px; text-align: left; padding: 8px 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }\n.sb .sb-dir:hover { border-color: var(--line-2); transform: translateY(-1px); }\n.sb .sb-dir.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-dir b { font-size: 13px; line-height: 1.2; margin-top: 6px; }\n.sb .sb-dir small { font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dir-sw { display: flex; align-items: flex-end; justify-content: space-between; height: 58px; padding: 8px 10px; border-radius: 8px; background: var(--b); color: var(--i); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }\n.sb .sb-aa { font-size: 30px; line-height: 1; }\n.sb .sb-dots { display: flex; gap: 3px; }\n.sb .sb-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }\n.sb .sb-dirs.sm { grid-template-columns: repeat(4, minmax(0, 1fr)); }\n.sb .sb-dirs.sm .sb-dir-sw { height: 40px; padding: 6px; }\n.sb .sb-dirs.sm .sb-aa { font-size: 20px; }\n.sb .sb-dirs.sm .sb-dots, .sb .sb-dirs.sm small { display: none; }\n.sb .sb-dirs.sm b { font-size: 11.5px; }\n\n/* busy */\n.sb .sb-busy { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px 24px; display: grid; gap: 6px; justify-items: start; }\n.sb .sb-busy p { margin: 0 0 10px; font-size: 13.5px; }\n.sb .sb-orb { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 30%, white), var(--primary)); color: #fff; animation: sbPulse 1.8s ease-in-out infinite; margin-bottom: 8px; }\n.sb .sb-orb .ic { width: 22px; height: 22px; }\n@keyframes sbPulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 12%, transparent); } }\n.sb .sb-busy ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; width: 100%; }\n.sb .sb-busy li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }\n.sb .sb-busy li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }\n.sb .sb-busy li .ic { width: 16px; height: 16px; color: var(--good); flex: none; }\n.sb .sb-busy li.done { color: var(--fg); }\n.sb .sb-busy li.now { color: var(--fg); font-weight: 600; }\n.sb .sb-busy li.now i { border-color: var(--primary); border-top-color: transparent; animation: sbSpin .8s linear infinite; }\n@keyframes sbSpin { to { transform: rotate(360deg); } }\n@media (prefers-reduced-motion: reduce) { .sb .sb-orb, .sb .sb-busy li.now i { animation: none; } }\n\n/* edit panel */\n.sb .sb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 14px; min-width: 0; }\n.sb .sb-ask { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--primary-soft); }\n.sb .sb-ask > div { display: flex; gap: 8px; align-items: flex-end; }\n.sb .sb-ask textarea { flex: 1; min-width: 0; resize: vertical; background: var(--surface); }\n.sb .sb-tabs { display: flex; width: 100%; }\n.sb .sb-tabs button { flex: 1; white-space: nowrap; }\n.sb .sb-tabbody { min-width: 0; }\n.sb .sb-why { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--primary); background: var(--surface-2); border-radius: 0 10px 10px 0; font-size: 13.5px; line-height: 1.5; }\n.sb .sb-heroes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }\n.sb .sb-hero { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-hero.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-hero b { font-size: 12.5px; } .sb .sb-hero small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-hi { display: block; height: 44px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); position: relative; overflow: hidden; }\n.sb .sb-hi::before, .sb .sb-hi::after { content: ''; position: absolute; background: var(--line-2); border-radius: 2px; }\n.sb .h-cinematic { background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-cinematic::before { left: 8px; bottom: 9px; width: 50%; height: 5px; background: #fff; } .sb .h-cinematic::after { left: 8px; bottom: 18px; width: 30%; height: 3px; background: rgba(255,255,255,.7); }\n.sb .h-split::before { right: 6px; top: 6px; bottom: 6px; width: 42%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-split::after { left: 6px; top: 16px; width: 36%; height: 5px; background: var(--fg); }\n.sb .h-editorial::before { left: 6px; top: 6px; width: 70%; height: 9px; background: var(--fg); } .sb .h-editorial::after { left: 6px; right: 6px; bottom: 5px; height: 18px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-mosaic::before { left: 6px; top: 6px; bottom: 6px; width: 46%; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-mosaic::after { right: 6px; top: 6px; bottom: 6px; width: 40%; background: repeating-linear-gradient(180deg, #b9c6d3 0 15px, transparent 15px 18px); }\n.sb .h-type::before { left: 8px; top: 9px; width: 66%; height: 9px; background: var(--fg); } .sb .h-type::after { left: 8px; top: 23px; width: 40%; height: 9px; background: var(--primary); }\n.sb .sb-accrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }\n.sb .sb-accrow input[type=color] { width: 40px; height: 32px; padding: 2px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); cursor: pointer; }\n.sb .sb-acc > small { font-size: 12px; }\n.sb .sb-hl { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }\n.sb .sb-hl .eyebrow { margin: 0; }\n.sb .sb-sticky { position: sticky; bottom: 0; display: grid; gap: 6px; padding: 12px 0 2px; background: linear-gradient(transparent, var(--surface) 30%); margin-bottom: 14px; }\n.sb .sb-sticky small { font-size: 12px; }\n.sb .sb-secs { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 6px; }\n.sb .sb-secs li { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; }\n.sb .sb-secs li > div { flex: 1; min-width: 0; display: grid; }\n.sb .sb-secs b { font-size: 13.5px; } .sb .sb-secs small { font-size: 11.5px; color: var(--muted); }\n.sb .sb-sn { font: 600 11px var(--mono); color: var(--muted); }\n.sb .sb-sa { display: flex; gap: 2px; }\n.sb .sb-sa .iconbtn { width: 30px; height: 30px; font-size: 14px; }\n.sb .sb-qa { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }\n.sb .sb-qa li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }\n.sb .sb-qa li > .ic { width: 18px; height: 18px; flex: none; padding: 2px; border-radius: 50%; }\n.sb .sb-qa li.ok > .ic { color: var(--good); background: var(--good-soft); }\n.sb .sb-qa li.no > .ic { color: var(--bad); background: var(--bad-soft); }\n.sb .sb-qa small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }\n.sb .sb-rules { font-size: 13px; } .sb .sb-rules summary { cursor: pointer; font-weight: 600; }\n.sb .sb-rules ol { padding-left: 20px; display: grid; gap: 6px; color: var(--muted); }\n\n/* stage */\n.sb .sb-stage { position: sticky; top: calc(var(--a-top, 0px) + 12px); display: grid; gap: 10px; min-width: 0; }\n.sb .sb-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }\n.sb .sb-meta { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; min-width: 0; }\n.sb .sb-meta small { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-tools { display: flex; gap: 4px; }\n.sb .sb-dev { border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); margin-inline: auto; width: 100%; }\n.sb .sb-dev.phone { width: min(100%, 390px); border-radius: 34px; border: 10px solid #0d0f17; box-shadow: var(--shadow), 0 0 0 1px var(--line-2); }\n.sb .sb-chrome { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }\n.sb .sb-chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }\n.sb .sb-chrome span { margin-left: 10px; font-size: 11.5px; color: var(--muted); padding: 3px 12px; border-radius: 999px; background: var(--surface); flex: 1; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-dev.phone .sb-chrome { justify-content: center; } .sb .sb-dev.phone .sb-chrome i { display: none; } .sb .sb-dev.phone .sb-chrome span { margin: 0; text-align: center; }\n.sb .sb-slot { height: min(74vh, 860px); min-height: 420px; background: var(--surface-2); }\n.sb .sb-dev.phone .sb-slot { height: min(72vh, 760px); }\n.sb-float { position: fixed; z-index: 40; overflow: hidden; pointer-events: auto; }\n.sb-float[hidden] { display: none; }\n.sb-float iframe { border: 0; display: block; transform-origin: 0 0; background: #fff; }\n.sb-float.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent) var(--surface-2); background-size: 200% 100%; animation: sbShimmer 1.2s linear infinite; }\n@keyframes sbShimmer { to { background-position: -200% 0; } }\n\n/* empty state */\n.sb .sb-empty { min-height: 520px; display: grid; place-items: center; border-radius: var(--r-lg); background: radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%), var(--surface); border: 1px solid var(--line); padding: 40px; position: static; }\n.sb .sb-hero-ill { max-width: 520px; }\n.sb .sb-hero-ill .disp { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; display: block; margin-bottom: 14px; }\n.sb .sb-hero-ill em, .sb .sb-fempty em { font-style: italic; color: var(--primary); }\n.sb .sb-hero-ill p { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }\n.sb .sb-hero-ill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 13.5px; }\n.sb .sb-hero-ill li { display: flex; gap: 8px; align-items: flex-start; } .sb .sb-hero-ill li .ic { width: 16px; height: 16px; color: var(--good); flex: none; margin-top: 2px; }\n.sb .sb-load { min-height: 300px; }\n\n/* funnels */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 0 20px 20px; }\n.sb .sb-tpl { display: grid; gap: 4px; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .15s, transform .15s; }\n.sb .sb-tpl:hover { border-color: var(--primary); transform: translateY(-1px); }\n.sb .sb-tpl b { font-size: 15px; margin-top: 6px; } .sb .sb-tpl small { color: var(--muted); font-size: 13px; line-height: 1.45; }\n.sb .sb-tpl em { font-style: normal; font: 500 11px var(--mono); color: var(--muted); margin-top: 6px; }\n.sb .sb-tpl-i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); flex: none; }\n.sb .sb-tpl-i .ic { width: 18px; height: 18px; }\n.sb .sb-fform { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0 14px; padding: 0 20px; }\n.sb .sb-fform .sb-wide { grid-column: 1 / -1; }\n.sb section > .ag-acts-row, .sb section > p.muted { padding: 0 20px 20px; }\n.sb section > p.muted { padding-bottom: 0; }\n.sb .sb-flist { display: grid; gap: 8px; }\n.sb .sb-frow { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--line); }\n.sb .sb-frow:hover { border-color: var(--line-2); }\n.sb .sb-fn { flex: 1; min-width: 0; display: grid; } .sb .sb-fn small { color: var(--muted); font-size: 12.5px; }\n.sb .sb-fs { display: flex; gap: 18px; } .sb .sb-fs > span { display: grid; text-align: right; } .sb .sb-fs small { font-size: 11px; color: var(--muted); }\n@container ag (max-width: 620px) { .sb .sb-fs { display: none; } }\n.sb .sb-fempty { padding: 36px; display: grid; gap: 10px; justify-items: start; }\n.sb .sb-fempty .disp { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; } .sb .sb-fempty p { max-width: 560px; margin: 0 0 6px; line-height: 1.6; }\n.sb .sb-fdetail { display: grid; gap: 16px; min-width: 0; }\n.sb .sb-fh { margin: 0; }\n.sb .sb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }\n.sb .sb-kpis > div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }\n.sb .sb-kpis small { font-size: 12px; color: var(--muted); } .sb .sb-kpis b { font-size: 22px; }\n\n/* page templates, fonts, palettes and style switches */\n.sb .sb-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }\n.sb .sb-tpl { display: grid; gap: 2px; text-align: left; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }\n.sb .sb-tpl.on, .sb .sb-font.on, .sb .sb-pal.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 35%, transparent); }\n.sb .sb-tpl b { font-size: 12.5px; } .sb .sb-tpl small { font-size: 11px; color: var(--muted); line-height: 1.25; }\n.sb .sb-ti { display: block; height: 52px; border-radius: 6px; margin-bottom: 4px; background: var(--surface-2); --p: linear-gradient(160deg, #9fb3c8, #4a6176); --t: var(--fg); --l: var(--line-2); }\n.sb .t-classic { background: linear-gradient(var(--t), var(--t)) 6px 10px / 34% 4px no-repeat, var(--p) right 6px top 6px / 40% 24px no-repeat, linear-gradient(var(--l), var(--l)) 6px 36px / 88% 3px no-repeat, linear-gradient(var(--l), var(--l)) 6px 43px / 60% 3px no-repeat, var(--surface-2); }\n.sb .t-magazine { background: linear-gradient(var(--t), var(--t)) 6px 6px / 80% 9px no-repeat, var(--p) right 6px top 20px / 56% 18px no-repeat, linear-gradient(var(--l), var(--l)) 6px 44px / 88% 3px no-repeat, var(--surface-2); }\n.sb .t-showcase { background: var(--p) 6px 6px / 46% 40px no-repeat, var(--p) right 6px top 6px / 40% 18px no-repeat, var(--p) right 6px top 28px / 40% 18px no-repeat, var(--surface-2); }\n.sb .t-minimal { background: linear-gradient(var(--t), var(--t)) center 9px / 50% 5px no-repeat, linear-gradient(var(--l), var(--l)) center 19px / 30% 3px no-repeat, var(--p) center 28px / 80% 16px no-repeat, var(--surface-2); }\n.sb .t-bold { background: linear-gradient(#fff, #fff) 8px 32px / 44% 5px no-repeat, linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)) 8px 41px / 28% 3px no-repeat, var(--p); }\n.sb .t-boutique { background: linear-gradient(var(--t), var(--t)) 6px 14px / 40% 5px no-repeat, linear-gradient(var(--l), var(--l)) 6px 24px / 30% 3px no-repeat, radial-gradient(circle at 50% 30%, #6f879c 60%, transparent 61%) right 8px top 4px / 36% 30px no-repeat, var(--p) right 8px top 18px / 36% 30px no-repeat, var(--surface-2); }\n.sb .t-cosy { background: linear-gradient(var(--surface-2), var(--surface-2)) 6px 28px / 56% 20px no-repeat, var(--p) 4px 4px / calc(100% - 8px) 34px no-repeat, linear-gradient(var(--t), var(--t)) 10px 33px / 40% 4px no-repeat, var(--surface-2); }\n.sb .h-centered::before { left: 30%; top: 6px; width: 40%; height: 5px; background: var(--fg); } .sb .h-centered::after { left: 8px; right: 8px; bottom: 5px; height: 20px; background: linear-gradient(160deg, #9fb3c8, #4a6176); }\n.sb .h-framed::before { left: 4px; right: 4px; top: 4px; height: 26px; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-framed::after { left: 4px; top: 24px; width: 48%; height: 16px; background: var(--surface-2); box-shadow: inset 6px 6px 0 -1px var(--surface-2), inset 0 -8px 0 -4px var(--fg); }\n.sb .h-arch::before { right: 10px; top: 4px; bottom: 4px; width: 30%; border-radius: 99px 99px 3px 3px; background: linear-gradient(160deg, #9fb3c8, #4a6176); } .sb .h-arch::after { left: 6px; top: 16px; width: 40%; height: 5px; background: var(--fg); }\n.sb .sb-fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }\n.sb .sb-font { display: grid; grid-template-columns: 44px 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; text-align: left; padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; min-width: 0; }\n.sb .sb-font .sb-aa { grid-row: 1 / 3; font-size: 26px; line-height: 1; text-align: center; }\n.sb .sb-font b { font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sb .sb-font small { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.sb .sb-pals { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 6px; }\n.sb .sb-pal { display: grid; gap: 4px; padding: 5px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; text-align: left; min-width: 0; }\n.sb .sb-pal .sw { display: flex; gap: 3px; align-items: flex-end; height: 34px; padding: 5px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }\n.sb .sb-pal .sw i { width: 12px; height: 12px; border-radius: 50%; }\n.sb .sb-pal small { font-size: 10.5px; line-height: 1.2; color: var(--muted); }\n.sb .sb-srow { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }\n.sb .sb-srow > span { font-size: 12.5px; font-weight: 600; }\n.sb .sb-srow .seg { flex-wrap: wrap; justify-self: start; }\n.sb .sb-srow .seg button { font-size: 12px; padding: 4px 9px; }\n.sb .sb-shuf { display: grid; gap: 6px; margin-bottom: 12px; } .sb .sb-shuf small { font-size: 12px; }\n.sb .sb-sname { all: unset; cursor: pointer; font-weight: 600; font-size: 13.5px; } .sb .sb-sname:hover { text-decoration: underline; }\n.sb .sb-var { font-size: 12px; padding: 2px 6px; margin-top: 3px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); max-width: 170px; }\n.sb .sb-wg { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; margin-bottom: 8px; }\n.sb .sb-wg > summary { cursor: pointer; font-weight: 600; font-size: 13.5px; padding: 11px 0; }\n.sb .sb-wg[open] { padding-bottom: 6px; }\n.sb .sb-cnt { font-style: normal; font-size: 11px; color: var(--muted); float: right; font-variant-numeric: tabular-nums; } .sb .sb-cnt.over { color: var(--bad); font-weight: 600; }\n.sb .sb-serp { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 4px 0 12px; display: grid; gap: 2px; font-family: Arial, sans-serif; }\n.sb .sb-serp small { font-size: 12px; color: #4d5156; } .sb .sb-serp b { color: #1a0dab; font-weight: 400; font-size: 17px; line-height: 1.3; } .sb .sb-serp p { margin: 0; font-size: 13px; color: #4d5156; line-height: 1.45; }\n.sb .sb-dev.tablet { width: min(100%, 640px); border-radius: 22px; border: 8px solid #0d0f17; }\n.sb .sb-dev.tablet .sb-chrome i { display: none; }\n.sb .sb-tabs button { padding-inline: 9px; font-size: 13px; }\n" }, "/app/web/src/app-studio.js": { "t": `/* Bookingbooster: the Site builder and Funnels views in the host console.
    Site builder: Claude designs a premium booking site for each home from the Studio design system; the host
    tweaks direction, words and sections, checks the design, previews on desktop and phone, then publishes.
    Funnels: focused opt-in and offer pages in the same style, with sign-ups going into the guest list. */
@@ -1505,7 +2005,9 @@ var require_bb_embedded_files = __commonJS({
     if (!metaP) metaP = BB.api.call(API() + 'studio/meta', null, 'GET').then(j => {
       META = j;
       const l = document.createElement('link'); l.rel = 'stylesheet';
-      l.href = 'https://fonts.googleapis.com/css2?' + Object.values(j.directions).map(d => d.href).join('&') + '&display=swap'; document.head.appendChild(l);
+      // only the display faces, so the font picker can show each pairing without loading every weight of every family
+      const fams = [...new Set(Object.values(j.fonts || {}).map(f => f.display).concat(Object.values(j.directions).map(d => d.fonts.split(' & ')[0])))];
+      l.href = 'https://fonts.googleapis.com/css2?' + fams.map(f => 'family=' + f.replace(/ /g, '+')).join('&') + '&display=swap&text=' + encodeURIComponent('AaBbGg Ccdefghiklmnoprstuvwy'); document.head.appendChild(l);
       inst.render();
     }).catch(() => { metaP = null; });
     return null;
@@ -1536,9 +2038,24 @@ var require_bb_embedded_files = __commonJS({
      SITE BUILDER
      ===================================================================== */
   const STEPS = ['Reading your home\u2019s details', 'Looking at your photos', 'Choosing an art direction', 'Pairing the typefaces', 'Laying out the sections', 'Writing the words', 'Running the design checks'];
-  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['type', 'Type-led', 'No photo needed']];
+  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['centered', 'Centred', 'Centred words, wide photo'], ['framed', 'Framed', 'Inset photo, overlapping words'], ['arch', 'Arch', 'Arched photo and a round inset'], ['type', 'Type-led', 'No photo needed']];
+  const STYLE_LABEL = { corners: 'Corners', buttons: 'Buttons', spacing: 'Spacing', scale: 'Headline size', headings: 'Headlines', texture: 'Texture', nav: 'Top bar', images: 'Photos', bands: 'Section colours' };
   const SEC_NAME = { hero: 'Hero', facts: 'At a glance', story: 'The stay', highlights: 'Highlights', gallery: 'Gallery', amenities: 'Details and rules', reviews: 'Reviews', area: 'Area guide', host: 'Your host', book: 'Booking', faq: 'Questions', closing: 'Closing banner' };
-  const WORDS = [['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.'], ['subhead', 'Subheading', '', 1], ['tagline', 'Small line above the headline'], ['storyTitle', 'Story title'], ['pull', 'Pull quote', '', 1], ['bookTitle', 'Booking title'], ['bookText', 'Booking text', '', 1], ['closing', 'Closing line'], ['seoTitle', 'Google title', 'Up to 62 characters'], ['seoDescription', 'Google description', 'Up to 160 characters', 1]];
+  // Words, grouped by the section they belong to. [key, label, hint, textarea, max length]
+  const WORD_GROUPS = [
+    ['Top of the page', null, [['wordmark', 'Name in the top bar', '', 0, 40], ['tagline', 'Small line above the headline', '', 0, 60], ['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.', 0, 90], ['subhead', 'Subheading', '', 1, 240], ['cta', 'Button text', '', 0, 28]]],
+    ['The stay', 'story', [['storyEyebrow', 'Small heading', '', 0, 40], ['storyTitle', 'Story title', '', 0, 90], ['pull', 'Pull quote', '', 1, 220]]],
+    ['Highlights', 'highlights', [['highlightsEyebrow', 'Small heading', '', 0, 40], ['highlightsTitle', 'Title', '', 0, 80]]],
+    ['Gallery', 'gallery', [['galleryEyebrow', 'Small heading', '', 0, 40], ['galleryTitle', 'Title', '', 0, 80]]],
+    ['Details', 'amenities', [['amenitiesEyebrow', 'Small heading', '', 0, 40], ['amenitiesTitle', 'Title', '', 0, 80]]],
+    ['Reviews', 'reviews', [['reviewsEyebrow', 'Small heading', '', 0, 40], ['reviewsTitle', 'Title', '', 0, 80]]],
+    ['Area guide', 'area', [['areaEyebrow', 'Small heading', '', 0, 50], ['areaTitle', 'Title', '', 0, 80], ['areaIntro', 'Introduction', '', 1, 300]]],
+    ['Your host', 'host', [['hostEyebrow', 'Small heading', '', 0, 40], ['hostNote', 'Your note to guests', '', 1, 260]]],
+    ['Booking', 'book', [['bookEyebrow', 'Small heading', '', 0, 40], ['bookTitle', 'Title', '', 0, 80], ['bookText', 'Text', '', 1, 300]]],
+    ['Questions', 'faq', [['faqEyebrow', 'Small heading', '', 0, 40], ['faqTitle', 'Title', '', 0, 80]]],
+    ['Closing and footer', null, [['closing', 'Closing line', '', 0, 90], ['footerLine', 'Footer line', '', 0, 120]]],
+    ['Google and AI search', null, [['seoTitle', 'Google title', 'Up to 62 characters', 0, 62], ['seoDescription', 'Google description', 'Up to 160 characters', 1, 160]]],
+  ];
 
   function siteOf(pid) { return (((S().studio || {}).sites) || {})[pid] || null; }
   function busy(inst) {
@@ -1576,6 +2093,13 @@ var require_bb_embedded_files = __commonJS({
   H['sb-dev'] = (inst, v) => inst.set({ sb_dev: v });
   H['sb-dir'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { direction: v, accent: '' } });
   H['sb-hero'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { heroVariant: v } });
+  H['sb-tpl'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { template: v } }, 'Page re-laid in the ' + META.pageTemplates[v].name + ' template');
+  H['sb-font'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { font: v === META.directions[siteOf(pidOf(inst)).draft.direction].font ? '' : v } } });
+  H['sb-pal'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { palette: v === META.directions[siteOf(pidOf(inst)).draft.direction].palette ? '' : v }, accent: '' } });
+  H['sb-style'] = (inst, v, a) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { [a.dataset.k]: v } } });
+  H['sb-style-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: null, accent: '' } }, 'Back to the direction\u2019s own style');
+  H['sb-shuffle'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { shuffle: true } }, 'New mix of fonts, colours and layouts. Undo if you preferred the last one.');
+  H['sb-sec'] = (inst, v) => { const fr = PV.frame && PV.frame.contentDocument; const el = fr && fr.querySelector('[data-sec="' + v + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   H['sb-accent-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: '' } });
   H['sb-undo'] = inst => call(inst, 'studio/undo', { propertyId: pidOf(inst) }, 'Went back one step');
   H['sb-publish'] = inst => call(inst, 'studio/publish', { propertyId: pidOf(inst) }, 'Published. Guests see the new site now.');
@@ -1595,7 +2119,7 @@ var require_bb_embedded_files = __commonJS({
     const n = (p.photos || []).length;
     return '<section class="a-card ag-card sb-brief"><div class="a-card-h"><h3>' + (again ? 'Start a new design' : 'Brief your designer') + '</h3>' + (again ? '<button class="btn sm ghost" data-ag="sb-cancel-brief">' + I('x') + 'Cancel</button>' : '<span class="ag-meta">' + (M.ai ? 'Claude art-directs it' : 'Design rules') + '</span>') + '</div>' +
       '<div class="sb-q"><span class="eyebrow">How should it feel?</span><div class="sb-chips">' + Object.entries(M.vibes).map(([k, v]) => '<button type="button" class="chip" aria-pressed="' + (b.vibe === k) + '" data-ag="sb-vibe" data-v="' + k + '">' + esc(v.split(',')[0].replace(/^./, c => c.toUpperCase())) + '</button>').join('') + '</div></div>' +
-      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
+      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
       '<label class="field"><span>Who are your guests?</span><input data-agf="sb.audience" id="sb-aud" placeholder="Couples from London, walkers with dogs, families at half-term" value="' + esc(b.audience || '') + '"></label>' +
       '<label class="field"><span>Anything Claude should know?</span><textarea data-agf="sb.notes" id="sb-notes" rows="3" placeholder="The view from the bath is the thing everyone talks about. Avoid anything too twee.">' + esc(b.notes || '') + '</textarea></label>' +
       '<p class="ag-note sb-ph">' + I('camera') + '<span>' + (n ? n + ' photo' + (n === 1 ? '' : 's') + ' on this home.' + (n < 6 ? ' Add ' + (6 - n) + ' more for a gallery.' : '') : 'No photos yet, so Claude will design a type-led site. Add photos for image-led layouts.') + (S().live ? ' <a href="#" data-ag-nav="website">Add photos</a>' : '') + '</span></p>' +
@@ -1605,23 +2129,38 @@ var require_bb_embedded_files = __commonJS({
   function panel(inst, p, site) {
     const st = inst.st, M = META, sp = site.draft, tab = st.sb_tab || 'design';
     const qaBad = (sp.qa || []).filter(x => !x.ok).length;
-    const tabs = [['design', 'Design'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' \xB7 ' + qaBad : ' \u2713')]];
+    const tabs = [['design', 'Layout'], ['style', 'Style'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' \xB7 ' + qaBad : ' \u2713')]];
+    const sty = sp.style || {}, dirM = M.directions[sp.direction] || {};
     let body = '';
     if (tab === 'design') {
       body = (sp.rationale ? '<blockquote class="sb-why"><span class="eyebrow">Why this design</span>' + esc(sp.rationale) + '</blockquote>' : '') +
-        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Page template <em class="muted">re-lays every section in one click</em></span><div class="sb-tpls">' + Object.entries(M.pageTemplates).map(([k, t]) => '<button type="button" class="sb-tpl' + (sp.template === k ? ' on' : '') + '" data-ag="sb-tpl" data-v="' + k + '"><i class="sb-ti t-' + k + '"></i><b>' + esc(t.name) + '</b><small>' + esc(t.note) + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
         '<div class="sb-q"><span class="eyebrow">Hero layout</span><div class="sb-heroes">' + HERO.map(([k, t, d]) => '<button type="button" class="sb-hero' + ((sp.sections[0] || {}).variant === k ? ' on' : '') + '" data-ag="sb-hero" data-v="' + k + '"><i class="sb-hi h-' + k + '"></i><b>' + t + '</b><small>' + d + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-shuf"><button class="btn" data-ag="sb-shuffle">' + I('sync') + 'Shuffle the style</button><small class="muted">A fresh mix of fonts, colours, shapes and layouts in the same direction. Works without AI.</small></div>' +
+        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('spark') + 'Ask Claude for a different direction</button>' : '');
+    } else if (tab === 'style') {
+      const seg = (k, opts) => '<div class="sb-srow"><span>' + STYLE_LABEL[k] + '</span><div class="seg sm" role="group" aria-label="' + STYLE_LABEL[k] + '">' + [['', 'Auto']].concat(Object.entries(opts).map(([v, x]) => [v, typeof x === 'string' ? x : x.name])).map(([v, l]) => '<button type="button" aria-pressed="' + ((sty[k] || '') === v) + '" data-ag="sb-style" data-k="' + k + '" data-v="' + v + '">' + esc(l) + '</button>').join('') + '</div></div>';
+      const fontNow = sty.font || dirM.font, palNow = sty.palette || dirM.palette;
+      body = '<div class="sb-q"><span class="eyebrow">Fonts <em class="muted">headline face shown</em></span><div class="sb-fonts">' + Object.entries(M.fonts).map(([k, f]) => '<button type="button" class="sb-font' + (fontNow === k ? ' on' : '') + '" data-ag="sb-font" data-v="' + k + '"><span class="sb-aa" style="font-family:\\'' + esc(f.display) + '\\',serif">Ag</span><b>' + esc(f.name) + '</b><small>' + esc(f.feel) + (k === dirM.font ? ' \xB7 direction' : '') + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Colour palette</span><div class="sb-pals">' + Object.entries(M.palettes).map(([k, x]) => { const q = x.pal; return '<button type="button" class="sb-pal' + (palNow === k ? ' on' : '') + '" data-ag="sb-pal" data-v="' + k + '" title="' + esc(x.name) + '"><span class="sw" style="background:' + q.bg + '"><i style="background:' + q.ink + '"></i><i style="background:' + q.accent + '"></i><i style="background:' + q.deep + ';outline:1px solid ' + q.line + '"></i></span><small>' + esc(x.name) + '</small></button>'; }).join('') + '</div></div>' +
         '<div class="sb-q sb-acc"><span class="eyebrow">Accent colour</span><div class="sb-accrow"><input type="color" data-sbacc value="' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '" aria-label="Accent colour"><span class="mono">' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '</span>' + (sp.accent ? '<button class="btn sm ghost" data-ag="sb-accent-reset">Reset</button>' : '<small class="muted">Direction default</small>') + '</div><small class="muted">Colours that fail contrast checks are refused, so buttons always stay readable.</small></div>' +
-        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('sync') + 'Try a different direction</button>' : '');
+        '<div class="sb-q"><span class="eyebrow">Shape and detail</span>' + Object.entries(M.style).map(([k, o]) => seg(k, o)).join('') + '</div>' +
+        '<button class="btn sm ghost" data-ag="sb-style-reset">' + I('back') + 'Reset to the direction\u2019s style</button>';
     } else if (tab === 'words') {
       const d = st.sb_wd = st.sb_wd || {}; const val = k => d[k] != null ? d[k] : (sp.copy[k] || '');
-      body = WORDS.map(([k, l, hint, area]) => '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>').join('') +
-        '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\\n\\n')) + '</textarea></label>' +
-        (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') +
+      const have = sp.sections.map(x => x.type);
+      const fld = ([k, l, hint, area, max]) => { const n = String(val(k)).length; return '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + (max ? ' <em class="sb-cnt' + (n > max ? ' over' : '') + '" data-cnt="' + k + '">' + n + '/' + max + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" maxlength="' + max + '" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input maxlength="' + max + '" data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>'; };
+      const open = st.sb_wopen || 'Top of the page';
+      body = WORD_GROUPS.filter(g => !g[1] || have.includes(g[1])).map(([name, , fields], gi) => '<details class="sb-wg" data-wg="' + esc(name) + '"' + (name === open ? ' open' : '') + '><summary>' + esc(name) + '</summary>' + fields.map(fld).join('') +
+        (name === 'The stay' ? '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\\n\\n')) + '</textarea></label>' : '') +
+        (name === 'Highlights' ? (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') : '') +
+        (name === 'Google and AI search' ? '<div class="sb-serp" aria-label="How it looks on Google"><small class="mono">' + esc(p.domain || 'your-site') + '</small><b>' + esc(val('seoTitle')) + '</b><p>' + esc(val('seoDescription')) + '</p></div>' : '') + '</details>').join('') +
         '<div class="sb-sticky"><button class="btn primary" data-ag="sb-words"' + (Object.keys(d).length ? '' : ' disabled') + '>' + I('check') + 'Save words</button><small class="muted">Facts like prices, photos, amenities and reviews come from Website & SEO and stay up to date by themselves.</small></div>';
     } else if (tab === 'sections') {
       const have = sp.sections.map(x => x.type);
-      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><b>' + SEC_NAME[x.type] + '</b><small>' + esc(x.variant) + '</small></div>' +
+      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><button type="button" class="sb-sname" data-ag="sb-sec" data-v="' + x.type + '" title="Show in the preview">' + SEC_NAME[x.type] + '</button>' +
+        '<select class="sb-var" data-sbvar="' + i + '" aria-label="' + SEC_NAME[x.type] + ' layout">' + (M.sections[x.type] || []).map(v => '<option value="' + v + '"' + (x.variant === v ? ' selected' : '') + '>' + esc((M.variantNames || {})[v] || v) + '</option>').join('') + '</select></div>' +
         (i ? '<span class="sb-sa"><button class="iconbtn" data-ag="sb-up" data-v="' + i + '" aria-label="Move up"' + (i < 2 ? ' disabled' : '') + '>\u2191</button><button class="iconbtn" data-ag="sb-down" data-v="' + i + '" aria-label="Move down"' + (i === sp.sections.length - 1 ? ' disabled' : '') + '>\u2193</button>' + (['book', 'faq'].includes(x.type) ? '' : '<button class="iconbtn" data-ag="sb-del" data-v="' + i + '" aria-label="Remove">' + I('x') + '</button>') + '</span>' : '<span class="sb-sa muted"><small>Always first</small></span>') + '</li>').join('') + '</ol>' +
         (Object.keys(SEC_NAME).filter(k => !have.includes(k)).length ? '<div class="sb-q"><span class="eyebrow">Add a section</span><div class="sb-chips">' + Object.keys(SEC_NAME).filter(k => !have.includes(k)).map(k => '<button type="button" class="chip" data-ag="sb-add" data-v="' + k + '">+ ' + SEC_NAME[k] + '</button>').join('') + '</div><small class="muted">Sections with nothing to show (a gallery without photos, an area guide you have not written) stay hidden.</small></div>' : '');
     } else {
@@ -1643,7 +2182,7 @@ var require_bb_embedded_files = __commonJS({
       if (!live()) return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium booking site for each home.') + '<p class="muted">Available in the live console and the demo.</p></div>';
       if (!M) return '<div class="ag sb">' + vh('Site builder', 'Loading the design system\u2026') + '<div class="a-card ag-card sb-load"></div></div>';
       const site = siteOf(p.id), sp = site && site.draft, pubd = site && site.published;
-      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.sections, pubd.copy]);
+      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.style || {}, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.style || {}, pubd.sections, pubd.copy]);
       const dev = st.sb_dev || 'desk';
       const status = !sp ? '' : pubd ? (dirty ? BB.pill('warn', 'Unpublished changes') : BB.pill('good', 'Live')) : BB.pill('muted', 'Draft');
       const acts = sp ? (pubd ? '<button class="btn" data-ag="sb-unpublish">Use standard site</button>' : '') + '<a class="btn" href="' + PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=" target="_blank" rel="noopener">' + I('out') + 'Open preview</a>' +
@@ -1652,33 +2191,33 @@ var require_bb_embedded_files = __commonJS({
       const showBrief = !sp || st.sb_rebrief;
       const left = st.sb_busy ? busy(inst) : showBrief ? briefCard(inst, p, !!sp) : panel(inst, p, site);
       const src = sp ? PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=1&t=' + encodeURIComponent(sp.at || '') + (sp.direction + (sp.accent || '')) : '';
-      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
-          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + ' \xB7 ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
+      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['tablet', 'Tablet'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
+          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + (sp.template && M.pageTemplates[sp.template] ? ' \xB7 ' + esc(M.pageTemplates[sp.template].name) : '') + ' \xB7 ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
           '<span class="sb-tools">' + ((site.history || []).length ? '<button class="btn sm ghost" data-ag="sb-undo">' + I('back') + 'Undo</button>' : '') + (!st.sb_rebrief ? '<button class="btn sm ghost" data-ag="sb-new">' + I('plus') + 'New design</button>' : '') + '</span></div>' +
           (sp.note ? '<div class="ag-banner warn">' + I('bolt') + '<p>' + esc(sp.note) + '</p></div>' : '') +
-          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : 1360) + '"></div></div></div>'
-        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>Eight art directions, each with a tested type pairing and palette. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
+          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : dev === 'tablet' ? 820 : 1360) + '"></div></div></div>'
+        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>' + Object.keys(M.directions).length + ' art directions, ' + Object.keys(M.fonts || {}).length + ' font pairings, ' + Object.keys(M.palettes || {}).length + ' palettes and ' + Object.keys(M.pageTemplates || {}).length + ' page templates, so no two sites look alike. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
           '<ul>' + M.principles.slice(0, 4).map(x => '<li>' + I('check') + esc(x.split('. ')[0]) + '</li>').join('') + '</ul></div></div>';
       return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium, direct-booking website for each home. Every page follows a tested design system, so it never looks like a template or like AI.', acts) + tabsH +
         (pubd && !dirty ? '<div class="ag-banner good">' + I('check') + '<p>Live on <b class="mono">' + esc(p.domain || '') + '</b> since ' + ago(site.publishedAt) + '. Search engines see the same structured data as before.</p></div>' : '') +
         '<div class="sb-cols">' + left + right + '</div></div>';
     },
     after: previewAfter,
-    click(ev, inst) { const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
+    click(ev, inst) { const sm = ev.target.closest('.sb-wg > summary'); if (sm) { const g = sm.parentNode; inst.st.sb_wopen = g.open ? '-' : g.dataset.wg; return; } const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
     input(ev, inst) {
       const el = ev.target, f = el.dataset && el.dataset.agf; if (!f) return; const [sc, k] = f.split('.');
       if (sc === 'sb' && k === 'ask') inst.st.sb_ask = el.value;
       else if (sc === 'sb') { (inst.st.sb_brief = inst.st.sb_brief || {})[k] = el.value; }
-      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; if (!was) inst.render(); }
+      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; const c = inst.root.querySelector('[data-cnt="' + k + '"]'); if (c) { const mx = +c.textContent.split('/')[1]; c.textContent = el.value.length + '/' + mx; c.classList.toggle('over', el.value.length > mx); } if (!was) inst.render(); }
     },
-    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
+    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbvar != null) { const i = +el.dataset.sbvar; secEdit(inst, a => { a[i].variant = el.value; }); return; } if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
     submit(ev, inst) { if (ev.target.dataset.agform === 'sb-ask') { ev.preventDefault(); H['sb-revise'](inst); } },
   };
 
   /* =====================================================================
      FUNNELS
      ===================================================================== */
-  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart' };
+  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart', event: 'cal' };
   const STEP_NAME = { optin: 'Sign-up page', offer: 'Offer page', thanks: 'Thank-you page' };
   const FH = {};
   const fns = () => ((S().studio || {}).funnels) || [];
@@ -1714,7 +2253,7 @@ var require_bb_embedded_files = __commonJS({
       if (st.fn_new) {
         const t = st.fn_tpl, f = st.fn_form || {};
         main = '<section class="a-card ag-card"><div class="a-card-h"><h3>' + (t ? M.templates[t].name : 'What should this funnel do?') + '</h3><button class="btn sm ghost" data-ag="fn-cancel">' + I('x') + 'Cancel</button></div>' +
-          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' \xB7 ' + x.steps.map(z => STEP_NAME[z]).join(' \u2192 ') + '</em></button>').join('') + '</div>'
+          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).filter(([, x]) => !x.hidden).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' \xB7 ' + x.steps.map(z => STEP_NAME[z]).join(' \u2192 ') + '</em></button>').join('') + '</div>'
             : '<p class="muted" style="margin:0 0 14px">' + esc(M.templates[t].blurb) + '</p><div class="sb-fform">' +
               (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-agf="fn.propertyId">' + s.properties.map(p => '<option value="' + p.id + '"' + (f.propertyId === p.id ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
               '<label class="field"><span>Discount for guests who book</span><select data-agf="fn.pct">' + [5, 10, 15, 20, 25].map(x => '<option' + (+f.pct === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></label>' +
@@ -2348,6 +2887,16 @@ var require_bb_embedded_files = __commonJS({
 .a-decl-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
 /* bank transfer settings (Payments) */
+.x-app .a-paym { display: grid; gap: 8px; margin-top: 4px; }
+.x-app .a-paym-o { display: flex; gap: 10px; align-items: flex-start; text-align: left; width: 100%; padding: 11px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: transparent; color: var(--fg); font: inherit; cursor: pointer; }
+.x-app .a-paym-o:hover:not(:disabled) { border-color: var(--primary); }
+.x-app .a-paym-o:disabled { opacity: .55; cursor: not-allowed; }
+.x-app .a-paym-o[aria-checked="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+.x-app .a-paym-o i { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; border: 1.5px solid var(--line-2); }
+.x-app .a-paym-o[aria-checked="true"] i { border: 5px solid var(--primary); }
+.x-app .a-paym-o span { display: grid; gap: 2px; min-width: 0; }
+.x-app .a-paym-o b { font-size: 14px; font-weight: 600; }
+.x-app .a-paym-o em { font-style: normal; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
 .x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
 .x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }
@@ -3187,6 +3736,22 @@ var require_bb_embedded_files = __commonJS({
      PAYMENTS
      ===================================================================================== */
   // Bank transfer settings: the details printed on invoices, and whether guests can choose it at checkout.
+  // The host picks how guests pay on their sites: card through Stripe, bank transfer, or let the guest choose.
+  function guestPayCard(inst) {
+    const gp = BB.guestPay(), bank = BB.bankReady(), stripeOn = BB.q.connected('stripe');
+    const opts = [
+      ['card', 'Card only', 'Card, Apple Pay and Google Pay through Stripe. The stay is paid the moment it is booked.'],
+      ['transfer', 'Bank transfer only', 'Guests book, get an invoice with your bank details and a payment reference, and the booking waits as unpaid until you mark it paid.'],
+      ['both', 'Guests choose', 'Card is the main button, with bank transfer offered underneath.'],
+    ];
+    const note = !bank && gp.want !== 'card' ? 'Add your bank details below to offer bank transfer. Until then guests pay by card.' :
+      gp.card && !stripeOn ? 'Stripe is not connected yet, so card guests send a booking request instead of paying.' : '';
+    return card('How guests pay', BB.pill('info', gp.mode === 'both' ? 'Card or transfer' : gp.mode === 'card' ? 'Card' : 'Bank transfer'),
+      '<div class="a-paym" role="radiogroup" aria-label="How guests pay">' + opts.map(([v, t, d]) => {
+        const locked = v !== 'card' && !bank;
+        return '<button type="button" role="radio" class="a-paym-o" data-guestpay="' + v + '" aria-checked="' + (gp.want === v) + '"' + (locked ? ' disabled title="Add your bank details first"' : '') + '><i aria-hidden="true"></i><span><b>' + t + '</b><em>' + d + '</em></span></button>';
+      }).join('') + '</div>' + (note ? '<p class="a-note">' + esc(note) + '</p>' : ''));
+  }
   function bankCard(inst) {
     const st = inst.st, k = S().account.bank || {}, d = Object.assign({}, k, st.bank || {}), ready = BB.bankReady();
     if (!st.bank_edit && (k.holder || k.iban)) {
@@ -3236,7 +3801,7 @@ var require_bb_embedded_files = __commonJS({
           (unpaid.length ? '<div class="a-s12">' + card('Waiting for payment', plural(unpaid.length, 'booking'), '<div class="a-list">' + unpaid.map(b => '<div class="a-row">' + BB.avatar(gOf(b).name) + '<span class="a-row-t"><b>' + esc(gOf(b).name) + ' \xB7 ' + BB.money(b.total) + '</b><span>' + b.id + ' \xB7 ' + esc(P(b.propertyId).short) + ' \xB7 arrives ' + relDay(b.checkIn, true) + '</span></span><span class="a-row-m"><button class="btn sm" data-a="nav" data-view="booking" data-id="' + b.id + '">Open</button><button class="btn sm primary" data-paid="' + b.id + '">Mark paid</button></span></div>').join('') + '</div>') + '</div>' : '') +
           '<div class="a-s8">' + card('Direct payouts', plural(direct.length, 'booking'), '<div class="tblwrap a-flushx" id="paytbl-' + inst.uid + '"><table class="tbl a-tbl"><thead><tr><th>Payout</th><th>Guest</th><th>Stay</th><th class="r">Amount</th><th class="r">Fee avoided</th><th>Status</th></tr></thead><tbody>' + (rows || '<tr><td colspan="6"><div class="a-empty"><p>No direct bookings yet.</p></div></td></tr>') + '</tbody></table></div>' +
             (direct.length > lim ? '<div class="a-more"><button class="btn sm" data-paymore>Show more</button><span class="muted">Showing ' + lim + ' of ' + direct.length + '</span></div>' : ''), 'a-flushb') + '</div>' +
-          '<div class="a-s4"><div class="a-stack">' + bankCard(inst) + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' \xB7 ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
+          '<div class="a-s4"><div class="a-stack">' + guestPayCard(inst) + bankCard(inst) + card('Security deposits', BB.money(DEP) + ' per stay', deps.length ? '<div class="a-list">' + deps.map(b => '<button class="a-row" data-a="nav" data-view="booking" data-id="' + b.id + '">' + BB.avatar(gOf(b).name, 'sm') + '<span class="a-row-t"><b>' + esc(gOf(b).name) + '</b><span>' + esc(P(b.propertyId).short) + ' \xB7 ' + (b.deposit === 'held' ? 'releases ' + D.fmt(D.add(b.checkOut, 3)) : b.deposit === 'releasing' ? 'releasing now' : 'released' + (D.add(b.checkOut, 3) <= t ? ' ' + D.fmt(D.add(b.checkOut, 3)) : ' after checkout')) + '</span></span><span class="a-row-m">' + (b.deposit === 'held' ? BB.pill('good', 'Held') : b.deposit === 'releasing' ? BB.pill('info', 'Releasing') : BB.pill('muted', 'Released')) + '</span></button>').join('') + '</div>' : '<div class="a-empty"><p>No deposits yet.</p></div>') +
             card('Fees you didn\u2019t pay', yr, (() => { const rev = yearDirect.reduce((a, x) => a + x.b.total, 0); return '<p class="a-note a-nt0">What the platforms would have taken from your ' + BB.money(rev) + ' of direct bookings this year.</p>' + [['airbnb', 'Airbnb', 'host fee 15.5%'], ['booking', 'Booking.com', 'commission 15%'], ['vrbo', 'Vrbo', 'fees about 8%']].map(([k, n, e]) => '<div class="a-trow"><span>' + n + '<em>' + e + '</em></span><b class="num a-saved">' + BB.money(Math.round(rev * BB.PLATFORM_FEE[k])) + '</b></div>').join('') + (platFees ? '<div class="a-trow"><span>Fees on add-on bookings<em>Stays synced from platforms</em></span><b class="num">' + BB.money(platFees) + '</b></div>' : ''); })()) +
           '</div></div>' +
         '</div>';
@@ -3245,6 +3810,8 @@ var require_bb_embedded_files = __commonJS({
     change(ev, inst) { const f = ev.target.closest('[data-bank]'); if (f && f.type === 'checkbox') { inst.st.bank = inst.st.bank || {}; inst.st.bank.on = f.checked; } },
     click(ev, inst) {
       if (ev.target.closest('[data-paymore]')) return inst.set({ pay_lim: (inst.st.pay_lim || 12) + 20 });
+      const gpb = ev.target.closest('[data-guestpay]');
+      if (gpb) { const r = BB.act.setGuestPay(gpb.dataset.guestpay); if (r && r.ok) BB.toast(gpb.dataset.guestpay === 'card' ? 'Guests now pay by card' : gpb.dataset.guestpay === 'transfer' ? 'Guests now pay by bank transfer' : 'Guests can pay by card or bank transfer', 'good'); else BB.toast((r && r.error) || 'Could not change that.'); return; }
       if (ev.target.closest('[data-bankedit]')) return inst.set({ bank_edit: true, bank: null });
       if (ev.target.closest('[data-bankcancel]')) return inst.set({ bank_edit: false, bank: null, bank_err: null });
       if (ev.target.closest('[data-banksave]')) {
@@ -3407,6 +3974,18 @@ button { cursor: pointer; }
 .ai-name .ai-logo { vertical-align: 0; }
 .ai-logos { display: inline-flex; align-items: center; gap: .6em; flex-wrap: wrap; }
 .ai-tm { font-size: 11px; line-height: 1.45; color: var(--muted); margin: 12px 0 0; font-weight: 400; }
+
+/* Own-domain DNS guide (sign-up and console) */
+.dg { display: grid; gap: 10px; }
+.dg-q { margin: 0; font-weight: 600; font-size: 14px; }
+.dg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dg-chip { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); cursor: pointer; }
+.dg-chip:hover { background: var(--surface-2); }
+.dg-chip.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+.dg-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; line-height: 1.45; }
+.dg-tip { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 13px; color: var(--muted); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.dg-tip .ic { width: 16px; height: 16px; flex: none; color: var(--primary); margin-top: 1px; }
+.dg-tip b { color: var(--fg); }
 ` }, "/app/web/src/guest.css": { "t": `/* Guest app: the property's own brand inside a phone. Theme colors come in as --g-acc/--g-soft/--g-deep/--g-disp on .g-app. */
 .x-guest { padding: 28px 16px 48px; }
 .x-guest.emb { padding: 0; }
@@ -3985,26 +4564,30 @@ button { cursor: pointer; }
       '<p class="g-fine">Sample details are filled in for the demo. Change them to anything.</p></form>' + powered();
     return { body, cta: '<button class="g-btn" type="submit" form="gDet-' + u + '">Continue to payment</button>', back: true };
   }
+  // How guests pay is the host's choice: card (Stripe), bank transfer, or both. Trip links get it already resolved.
+  const payHow = () => REAL() ? (S().account.guestPay || 'both') : BB.guestPay ? BB.guestPay().mode : 'both';
+  const transferDays = () => Math.max(1, Math.min(30, +(S().account.bank && S().account.bank.days) || 3));
   function payView(inst, p) {
     const st = inst.st, k = st.bk, c = st.card, u = inst.uid;
     const q = BB.quote(p.id, k.a, k.b, k); if (!q) return bookView(inst, p);
     const cancelBy = D.add(k.a, -7);
-    const stripeErr = st.err && /Stripe/.test(st.err);
+    const stripeErr = st.err && /Stripe/.test(st.err), bankOnly = payHow() === 'transfer';
     const body = '<p class="g-step">Step 3 of 3 \xB7 Review and pay</p><h2 class="g-h">' + esc(D.fmt(k.a)) + ' \u2013 ' + esc(D.fmt(k.b)) + ' \xB7 ' + nightsWord(q.nights) + '</h2>' +
       '<div class="g-cmp"><div><span>Same stay on Airbnb</span><s>' + money(q.airbnb) + '</s></div><div class="win"><span>Booking direct</span><b>' + money(q.total) + '</b></div><div class="g-cmp-s">' + BB.icon('tag') + 'You save ' + money(q.guestSaves) + '</div></div>' +
       '<div class="g-sum"><div><span>' + money(q.avg) + ' \xD7 ' + nightsWord(q.nights) + '</span><span>' + money(q.nightly) + '</span></div><div><span>Cleaning</span><span>' + money(q.cleaning) + '</span></div>' +
       (q.pet ? '<div><span>Dog fee</span><span>' + money(q.pet) + '</span></div>' : '') + (q.discount ? '<div class="g-disc"><span>Code ' + esc(q.promo) + ', ' + q.promoPct + '% off</span><span>' + money(-q.discount) + '</span></div>' : '') +
-      '<div class="g-tot"><span>Total, charged today</span><span>' + money(q.total) + '</span></div></div>' +
+      '<div class="g-tot"><span>' + (bankOnly ? 'Total, by bank transfer' : 'Total, charged today') + '</span><span>' + money(q.total) + '</span></div></div>' +
       '<p class="g-fine">' + esc(partyText(k)) + ' \xB7 ' + (cancelBy > S().today ? 'Free cancellation until ' + esc(D.fmt(cancelBy)) + '.' : 'Cancel within 24 hours for a full refund.') + '</p>' +
-      '<button type="button" class="g-apple" data-g="pay" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>' + BB.icon('lock') + 'Pay with Apple Pay</button>' +
+      (bankOnly ? '<div class="g-alert g-bank"><b>Pay by bank transfer</b><p>' + esc(first(S().account.owner) || 'Your host') + ' takes payment by bank transfer. Book now and you get an invoice with the bank details and your payment reference. Pay within ' + transferDays() + ' day' + (transferDays() === 1 ? '' : 's') + ' to keep the booking.</p></div>' : '<button type="button" class="g-apple" data-g="pay" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>' + BB.icon('lock') + 'Pay with Apple Pay</button>' +
       '<div class="g-or"><span>or pay by card</span></div>' +
       '<div class="g-cardf"><label class="g-fld"><span>Card number</span><span class="g-cardn"><input id="gCn-' + u + '" data-f="cnum" inputmode="numeric" value="' + esc(c.num) + '" autocomplete="cc-number"><i class="g-visa">VISA</i></span></label>' +
       '<div class="g-two"><label class="g-fld"><span>Expiry</span><input id="gCe-' + u + '" data-f="cexp" value="' + esc(c.exp) + '" autocomplete="cc-exp"></label><label class="g-fld"><span>CVC</span><input id="gCc-' + u + '" data-f="ccvc" inputmode="numeric" value="' + esc(c.cvc) + '" autocomplete="cc-csc"></label><label class="g-fld"><span>Postcode</span><input id="gCp-' + u + '" data-f="cpost" value="' + esc(c.post || '') + '" autocomplete="postal-code" autocapitalize="characters"></label></div>' +
-      '<p class="g-fine">' + BB.icon('lock') + 'Test card ending 4242. Payments are processed by Stripe.</p></div>' +
+      '<p class="g-fine">' + BB.icon('lock') + 'Test card ending 4242. Payments are processed by Stripe.</p></div>') +
       (st.err ? '<div class="g-alert" role="alert"><b>' + (stripeErr ? 'Card payments are paused' : 'We could not book that') + '</b><p>' + esc(st.err) + '</p>' +
         (stripeErr ? '<button type="button" class="g-btn sm" data-g="request">Send a booking request instead</button><small>No charge now. ' + esc(first(S().account.owner)) + ' confirms and sends a payment link.</small>' : '<button type="button" class="g-btn sm ghost" data-g="to" data-v="book">Change dates</button>') + '</div>' : '') +
       powered();
-    const cta = '<button class="g-btn" data-g="pay" data-m="card"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Processing payment' : 'Pay ' + money(q.total)) + '</button>';
+    const cta = bankOnly ? '<button class="g-btn" data-g="pay" data-m="transfer"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Booking' : 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' :
+      '<button class="g-btn" data-g="pay" data-m="card"' + (st.paying ? ' disabled' : '') + '>' + (st.paying ? '<span class="g-spin"></span>Processing payment' : 'Pay ' + money(q.total)) + '</button>';
     return { body, cta, back: true };
   }
   function doneView(inst, p) {
@@ -4386,7 +4969,7 @@ button { cursor: pointer; }
     if (request) input.pay = 'manual';
     inst.set({ paying: true, err: null });
     if (BB.api && (BB.BOOT.mode === 'trip' || BB.BOOT.mode === 'site')) {
-      BB.api.book(input, request ? 'request' : 'pay').then(j => {
+      BB.api.book(input, request ? 'request' : method === 'transfer' ? 'transfer' : 'pay').then(j => {
         if (!inst.alive) return;
         if (!j.ok) return inst.set({ paying: false, err: j.error || 'That did not go through. Try again.' });
         if (j.checkoutUrl) { location.href = j.checkoutUrl; return; }
@@ -4396,7 +4979,7 @@ button { cursor: pointer; }
     }
     const id = setTimeout(() => {
       if (!inst.alive) return;
-      const r = request ? BB.act.requestGuestBooking(input) : BB.act.createBooking(input);
+      const r = request ? BB.act.requestGuestBooking(input) : method === 'transfer' ? BB.act.bookByTransfer(input) : BB.act.createBooking(input);
       if (!r.ok) return inst.set({ paying: false, err: r.error });
       if (!request && method === 'Apple Pay') BB.toast('Paid with Apple Pay', 'good');
       st.paying = false;
@@ -6479,12 +7062,12 @@ body.p-lock { overflow: hidden; }
     const stripe = BB.q.connected('stripe');
     const fld = (k, label, type, ac, ph) => '<label class="p-field' + (e[k] ? ' bad' : '') + '"><span>' + label + '</span><input id="' + ID(inst, 'f-' + k) + '" data-f="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(f[k] || '') + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '>' + (e[k] ? '<em>' + esc(e[k]) + '</em>' : '') + '</label>';
     return '<div class="p-w p-co"><button class="p-back" data-x="home">' + BB.icon('back') + 'Back to ' + esc(p.short) + '</button>' +
-      '<h1 class="p-co-h">' + (REALSITE() && !BB.BOOT.stripe ? (bankOn() ? 'Book your stay' : 'Request to book') : 'Confirm and pay') + '</h1>' +
+      '<h1 class="p-co-h">' + ((REALSITE() ? BB.BOOT.stripe && cardOn() : cardOn()) ? 'Confirm and pay' : bankOn() ? 'Book your stay' : 'Request to book') + '</h1>' +
       '<div class="p-co-grid"><form class="p-co-form" data-x="payform" novalidate>' +
         '<section class="p-card"><h3><span class="p-num">1</span>Your details</h3><div class="p-fgrid">' +
           fld('name', 'Full name', 'text', 'name', 'Jordan Avery') + fld('email', 'Email', 'email', 'email', 'you@example.com') + fld('phone', 'Mobile phone', 'tel', 'tel', 'For your check-in link and door code') +
         '</div><label class="p-check"><input type="checkbox" id="' + ID(inst, 'f-optin') + '" data-f="optin"' + (f.optin ? ' checked' : '') + '><span>Send me early access to open dates and returning-guest offers from ' + esc(p.short) + '. Unsubscribe any time.</span></label></section>' +
-        (REALSITE() ? realPay(inst, p, q, stripe) :
+        (REALSITE() ? realPay(inst, p, q, stripe) : !cardOn() && bankOn() ? bankPay(inst, q) :
         '<section class="p-card"><h3><span class="p-num">2</span>Payment</h3>' +
           '<div class="p-wallets"><button type="button" class="p-wal apple" data-x="wallet" data-m="Apple Pay"' + (st.paying ? ' disabled' : '') + '>Apple Pay</button><button type="button" class="p-wal google" data-x="wallet" data-m="Google Pay"' + (st.paying ? ' disabled' : '') + '><b>G</b>oogle Pay</button></div>' +
           '<p class="p-or"><span>or pay by card</span></p>' +
@@ -6500,8 +7083,11 @@ body.p-lock { overflow: hidden; }
   }
 
   const REALSITE = () => !!(BB.BOOT && BB.BOOT.mode === 'site');
+  // How guests pay is the host's choice in Payments: card (Stripe), bank transfer, or both. Booking sites get it already resolved.
+  const payHow = () => { const a = BB.store.get().account; return REALSITE() ? (a.guestPay || 'both') : BB.guestPay ? BB.guestPay().mode : 'both'; };
+  const cardOn = () => payHow() !== 'transfer';
   // Bank transfer: the host turned it on in Payments. Booking sites only see that it is on and how many days guests have to pay.
-  const bankOn = () => { const k = BB.store.get().account.bank; return !!(k && k.on && (REALSITE() || !BB.bankReady || BB.bankReady())); };
+  const bankOn = () => { const k = BB.store.get().account.bank; return payHow() !== 'card' && !!(k && k.on && (REALSITE() || !BB.bankReady || BB.bankReady())); };
   const bankDays = () => { const k = BB.store.get().account.bank; return Math.max(1, Math.min(30, +(k && k.days) || 3)); };
   function transferOpt(inst, q, alt) {
     if (!bankOn()) return '';
@@ -6510,18 +7096,24 @@ body.p-lock { overflow: hidden; }
       '<button type="button" class="p-btn' + (alt ? ' ghost' : ' p-pay') + '" data-x="transfer"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying && st.method === 'transfer' ? '<i class="p-spin"></i>Booking' : BB.icon('send') + 'Book and pay ' + money(q.total) + ' by bank transfer') + '</button>' +
       '<p class="p-fine">You get an invoice by email with the bank details. Pay within ' + bankDays() + ' day' + (bankDays() === 1 ? '' : 's') + ' to keep the booking. Your dates are held in the meantime.</p>';
   }
+  // Bank transfer as the way to pay: the host chose bank transfer only, or has not connected Stripe yet.
+  function bankPay(inst, q) {
+    const st = inst.st, host = firstName(BB.store.get().account.owner) || 'your host';
+    const err = st.payErr ? '<div class="p-err" role="alert"><b>' + BB.icon('x') + 'That did not go through</b><p>' + esc(st.payErr) + '</p></div>' : '';
+    return '<section class="p-card"><h3><span class="p-num">2</span>Pay by bank transfer</h3>' +
+      '<p class="p-lead-s">Book now and pay ' + esc(host) + ' by bank transfer. You get an invoice with the bank details and your payment reference straight away.</p>' + err + transferOpt(inst, q, false) +
+      '<p class="p-or"><span>or</span></p><button type="button" class="p-btn ghost" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + BB.icon('send') + 'Send a booking request instead</button></section>';
+  }
   // Real booking sites: card details are taken on Stripe's own page, or the guest sends a request when the host has not connected Stripe yet.
   function realPay(inst, p, q) {
     const st = inst.st, host = firstName(BB.store.get().account.owner) || 'your host';
     const err = st.payErr ? '<div class="p-err" role="alert"><b>' + BB.icon('x') + 'That did not go through</b><p>' + esc(st.payErr) + '</p></div>' : '';
-    if (BB.BOOT.stripe) return '<section class="p-card"><h3><span class="p-num">2</span>Payment</h3>' +
+    if (BB.BOOT.stripe && cardOn()) return '<section class="p-card"><h3><span class="p-num">2</span>Payment</h3>' +
       '<p class="p-lead-s">You pay on Stripe\u2019s secure page by card, Apple Pay or Google Pay. Your dates are held for 30 minutes while you pay.</p>' +
       '<p class="p-fine">' + BB.icon('lock') + 'Secured by Stripe. A refundable ' + money(q.deposit) + ' damage deposit card check happens during online check-in, not now.</p>' + err +
       '<button type="submit" class="p-btn p-pay"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Opening secure payment' : BB.icon('lock') + 'Pay ' + money(q.total) + ' securely') + '</button>' +
       '<p class="p-fine">By paying you agree to the house rules and the rental agreement you sign at check-in.</p>' + transferOpt(inst, q, true) + '</section>';
-    if (bankOn()) return '<section class="p-card"><h3><span class="p-num">2</span>Pay by bank transfer</h3>' +
-      '<p class="p-lead-s">Book now and pay ' + esc(host) + ' by bank transfer. You get an invoice with the bank details straight away.</p>' + err + transferOpt(inst, q, false) +
-      '<p class="p-or"><span>or</span></p><button type="button" class="p-btn ghost" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + BB.icon('send') + 'Send a booking request instead</button></section>';
+    if (bankOn()) return bankPay(inst, q);
     return '<section class="p-card"><h3><span class="p-num">2</span>No payment today</h3>' +
       '<p class="p-lead-s">Send ' + esc(host) + ' your request. Your dates are held, and ' + esc(host) + ' sends you a secure payment link to confirm.</p>' + err +
       '<button type="button" class="p-btn p-pay" data-x="request"' + (st.paying || !q.ok ? ' disabled' : '') + '>' + (st.paying ? '<i class="p-spin"></i>Sending' : BB.icon('send') + 'Send booking request') + '</button>' +
@@ -6656,6 +7248,16 @@ body.p-lock { overflow: hidden; }
       BB.toast(j.request ? 'Request sent to ' + firstName(BB.store.get().account.owner) : j.invoiceUrl ? 'Booked. Invoice sent to ' + f.email.trim() : 'Booked. Confirmation sent to ' + f.email.trim(), 'good');
     }).catch(e => { if (inst.alive) inst.set({ paying: false, payErr: e.message }); });
   }
+  function bookTransfer(inst) {
+    if (inst.st.paying) return;
+    const e = validate(inst); delete e.card;
+    if (Object.keys(e).length) return inst.set({ errors: e });
+    inst.set({ paying: true, method: 'transfer', errors: {}, payErr: null });
+    if (BB.api && BB.BOOT.mode === 'site') return serverBook(inst, 'transfer');
+    const r = BB.act.bookByTransfer(input(inst));
+    if (r.ok) { inst.st.paying = false; inst.set({ view: 'done', bookingId: r.booking.id, request: false }); window.scrollTo({ top: 0 }); BB.toast('Booked. Invoice sent to ' + inst.form.email.trim(), 'good'); }
+    else inst.set({ paying: false, payErr: r.error });
+  }
   function input(inst) {
     const st = inst.st, f = inst.form;
     return { propertyId: st.pid, checkIn: st.sel.a, checkOut: st.sel.b, name: String(f.name).trim(), email: String(f.email).trim(), phone: String(f.phone || '').trim(), adults: st.adults, children: st.children, pets: st.pets, promo: st.promo, channel: 'direct', source: 'website', subscribe: !!f.optin };
@@ -6720,16 +7322,7 @@ body.p-lock { overflow: hidden; }
             else inst.set({ payErr: r.error });
             break;
           }
-          case 'transfer': {
-            const e = validate(inst); delete e.card;
-            if (Object.keys(e).length) { inst.set({ errors: e }); break; }
-            inst.set({ paying: true, method: 'transfer', errors: {}, payErr: null });
-            if (BB.api && BB.BOOT.mode === 'site') { serverBook(inst, 'transfer'); break; }
-            const r = BB.act.bookByTransfer(input(inst));
-            if (r.ok) { inst.st.paying = false; inst.set({ view: 'done', bookingId: r.booking.id, request: false }); window.scrollTo({ top: 0 }); BB.toast('Booked. Invoice sent to ' + inst.form.email.trim(), 'good'); }
-            else inst.set({ paying: false, payErr: r.error });
-            break;
-          }
+          case 'transfer': bookTransfer(inst); break;
           case 'changedates': inst.set({ view: 'site', payErr: null }); openBooking(inst); break;
           case 'guestapp': BB.go('guest', { bookingId: st.bookingId, propertyId: st.pid }); break;
           case 'console': BB.go('app', { view: 'booking', id: st.bookingId }); break;
@@ -6773,7 +7366,7 @@ body.p-lock { overflow: hidden; }
           if (BB.store.get().promos[code]) inst.set({ promo: code, promoOpen: false, promoMsg: null });
           else inst.set({ promoMsg: 'That code is not valid for this home.' });
         }
-        if (f.dataset.x === 'payform') pay(inst, 'card');
+        if (f.dataset.x === 'payform') { if (cardOn()) pay(inst, 'card'); else if (bankOn()) bookTransfer(inst); }
       });
       inst._key = ev => {
         if (!inst.alive || !document.body.contains(root)) return;
@@ -6808,6 +7401,308 @@ body.p-lock { overflow: hidden; }
       document.body.classList.toggle('p-lock', !!(inst.st.sheet || inst.st.lb != null));
     },
   });
+})();
+` }, "/app/web/src/seo-rules.js": { "t": `/* Bookingbooster: search health rules for host sites, shared by the browser and the server engine.
+   BB.seo.audit(p) scores one home across every kind of search work that applies to a holiday let:
+   on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO (brand and off-page) and Google AI Overviews.
+   Everything here is rule-based: it reads the home's own facts and the results of real AI checks, and makes no calls.
+   BB.seo.faqIdeas, BB.seo.keywords and BB.seo.draft give rule-based drafts the host edits; the server can replace a
+   draft with one written by Claude (see server/seo-tools.js). */
+(function () {
+  const BB = window.BB; if (!BB) return;
+  const S = () => BB.store.get();
+  const money = n => '\xA3' + Number(n || 0).toLocaleString('en-GB');
+  const words = t => String(t || '').trim().split(/\\s+/).filter(Boolean).length;
+  const town = p => String(p.area || '').split(',')[0].trim();
+  const county = p => String(p.area || '').split(',').slice(1).join(',').trim() || town(p);
+  const kind = p => ({ cabin: 'cabin', lake: 'cottage', city: 'apartment' }[p.theme] || 'holiday let');
+  const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  const POSTCODE = /\\b[A-Z]{1,2}\\d[A-Z\\d]?\\s*\\d[A-Z]{2}\\b/i;
+  const clip = (t, n) => String(t || '').trim().slice(0, n);
+
+  // The SEO fields a host can edit, kept together on the home so they never collide with booking fields.
+  const SEO_KEYS = { summary: 600, areaIntro: 4000, videoUrl: 300, sameAs: 12, keywords: 20, gbp: 20, metaTitle: 70, metaDescription: 170 };
+  const seoOf = p => Object.assign({ summary: '', areaIntro: '', videoUrl: '', sameAs: [], keywords: [], gbp: {}, metaTitle: '', metaDescription: '' }, p.seo || {});
+
+  // Where a link points, so we can tell listings, social profiles, maps and local press apart.
+  function linkKind(u) {
+    const h = String(u || '').toLowerCase();
+    if (/airbnb\\.|vrbo\\.|booking\\.com|tripadvisor\\.|sykescottages|cottages\\.com|holidaycottages|canopyandstars|hipcamp\\.|expedia\\.|holidaylettings|independentcottages|coolstays|uniquehomestays|plumguide/.test(h)) return 'listing';
+    if (/instagram\\.com|facebook\\.com|tiktok\\.com|youtube\\.com|youtu\\.be|pinterest\\.|x\\.com|twitter\\.com|threads\\.net/.test(h)) return 'social';
+    if (/google\\.[a-z.]+\\/maps|maps\\.app\\.goo\\.gl|g\\.page|business\\.google|goo\\.gl\\/maps/.test(h)) return 'maps';
+    return 'local';
+  }
+  const LINK_LABEL = { listing: 'Listing', social: 'Social profile', maps: 'Google Maps', local: 'Local site or press' };
+
+  function faqList(pid) { return ((S().website.faqs || {})[pid] || []).map(x => { const i = x.indexOf('|'); return i < 0 ? [x, ''] : [x.slice(0, i), x.slice(i + 1)]; }); }
+  function siteText(p) {
+    const o = seoOf(p);
+    return [p.name, p.area, p.headline, p.sub, p.about, p.parking, p.entry, o.summary, o.areaIntro].concat(p.amenities || [], p.rules || [], p.guide || [], faqList(p.id).map(f => f[0] + ' ' + f[1])).join(' \\n').toLowerCase();
+  }
+  function reviewsShown(p) {
+    const s = S();
+    return s.bookings.filter(b => b.propertyId === p.id && b.review && b.review.text && (s.live ? b.review.public : b.review.stars >= 4)).length;
+  }
+  // The same title and description the server writes into the page (server/seo.js titleOf / descOf), unless the host set their own.
+  function titleOf(p) { const o = seoOf(p); if (o.metaTitle) return o.metaTitle; const k = kind(p); return p.name + ' \xB7 ' + k[0].toUpperCase() + k.slice(1) + ' in ' + town(p) + ' \xB7 Book direct'; }
+  function descOf(p) { const o = seoOf(p); if (o.metaDescription) return o.metaDescription; return (p.headline ? p.headline + ' ' : '') + (p.sub ? String(p.sub).replace(/ \xB7 /g, ', ') + '. ' : '') + 'Book direct from ' + money(p.nightly) + ' a night with no platform fees.'; }
+
+  // Topics travellers ask about, and the words on a page that answer them.
+  const TOPICS = [
+    ['dogs', /\\bdog|\\bpet/, /\\bdog|\\bpet/], ['hot tub', /hot tub|jacuzzi|\\bspa\\b/, /hot tub|jacuzzi|\\bspa\\b/], ['families', /family|kids|child|children/, /family|child|cot|high chair|kids/],
+    ['parking', /parking|car park/, /parking|park\\b|driveway|space/], ['Wi-Fi and remote work', /wi-?fi|remote work|work from/, /wi-?fi|broadband|mbps|desk/],
+    ['the beach', /beach|seaside|coast|\\bsea\\b/, /beach|coast|\\bsea\\b|harbour/], ['walks', /walk|hike|hiking|trail|fell/, /walk|footpath|trail|fell|hike/],
+    ['couples', /romantic|couple|honeymoon|anniversary/, /couple|romantic|for two|sleeps 2/], ['EV charging', /\\bev\\b|electric car|charg/, /\\bev\\b|charg/],
+    ['accessibility', /accessible|wheelchair|step-free|mobility/, /accessible|wheelchair|step-free|ground floor/], ['a wood burner', /log burner|wood burner|fireplace|open fire/, /log burner|wood burner|fireplace|open fire/],
+  ];
+
+  /* ---------- the audit ---------- */
+  const CATS = [
+    ['onpage', 'On-page SEO', 'Titles, descriptions, headings and the words on each page.'],
+    ['content', 'Content SEO', 'Enough useful, original writing about the home and the area.'],
+    ['technical', 'Technical SEO', 'Crawling, indexing, sitemaps, schema and speed.'],
+    ['local', 'Local SEO', 'Maps, Google Business Profile, address and reviews.'],
+    ['media', 'Image and video SEO', 'Photos with descriptions, and a walkthrough video.'],
+    ['sxo', 'Search experience (SXO)', 'Visitors who land can see the price, trust you and book.'],
+    ['aeo', 'Answer engines (AEO)', 'Clear questions and answers that search and voice can quote.'],
+    ['geo', 'Generative engines (GEO)', 'Being named and linked in ChatGPT, Gemini, Perplexity and Claude.'],
+    ['llmo', 'Brand and off-page (LLMO)', 'The same home, named the same way, across the web.'],
+    ['aio', 'Google AI Overviews (AIO)', 'Showing in the AI summary at the top of Google.'],
+  ];
+  function audit(p) {
+    const s = S(); if (!p) return null;
+    const o = seoOf(p), faqs = faqList(p.id), text = siteText(p);
+    const others = s.properties.filter(x => x.id !== p.id);
+    const qs = (s.ai.questions || []).filter(q => q.propertyId === p.id);
+    const conn = id => BB.q.connected(id);
+    const photos = p.photos || [], links = (o.sameAs || []).filter(Boolean);
+    const kinds = links.map(linkKind); const has = k => kinds.includes(k);
+    const checks = [];
+    // status: 'ok' | 'warn' | 'fail' | 'auto' (handled by Bookingbooster). act: what the fix button does.
+    const add = (cat, id, label, status, weight, detail, fix, act) => checks.push({ cat, id, label, status, weight, detail, fix: status === 'ok' || status === 'auto' ? '' : fix, act: status === 'ok' || status === 'auto' ? null : act });
+    const T = titleOf(p), Dn = descOf(p);
+
+    // On-page
+    add('onpage', 'area', 'Town and county are set', town(p) && county(p) !== town(p) ? 'ok' : town(p) ? 'warn' : 'fail', 3, p.area ? 'Area: ' + p.area : 'No area set', 'Add the town and county, like "Troutbeck, Cumbria". Every title, heading and schema uses it.', { kind: 'nav', view: 'website' });
+    add('onpage', 'title', 'Google title is a good length', T.length >= 30 && T.length <= 62 ? 'ok' : 'warn', 2, T.length + ' characters: "' + T + '"', T.length > 62 ? 'Google cuts titles after about 62 characters. Write a shorter one.' : 'Make the title say what and where, like "Hot tub cabin in Troutbeck".', { kind: 'meta' });
+    add('onpage', 'desc', 'Description is a good length', Dn.length >= 70 && Dn.length <= 160 ? 'ok' : 'warn', 2, Dn.length + ' characters', Dn.length > 160 ? 'Google shows about 160 characters. Shorten it so the price and "book direct" are not cut off.' : 'Write a description of 70 to 160 characters with the price and what makes the home special.', { kind: 'meta' });
+    add('onpage', 'headline', 'Headline is short and specific', p.headline && words(p.headline) <= 12 ? 'ok' : p.headline ? 'warn' : 'fail', 2, p.headline ? words(p.headline) + ' words' : 'No headline', 'Use one line of up to 12 words that names the best thing about the home.', { kind: 'nav', view: 'website' });
+    const kw = (o.keywords || []).length ? o.keywords : [kind(p) + ' ' + town(p).toLowerCase()];
+    const kwHit = kw.filter(k => String(k).toLowerCase().split(/\\s+/).every(w => w.length < 3 || text.includes(w.toLowerCase())));
+    add('onpage', 'keywords', 'Target searches appear on the page', kwHit.length === kw.length ? 'ok' : kwHit.length ? 'warn' : 'fail', 3, kwHit.length + ' of ' + kw.length + ' target searches are covered', 'Pick target searches below, then use their words in your headline, about text or FAQs.', { kind: 'scroll', to: 'keywords' });
+    add('onpage', 'links', 'Every page links to booking', 'auto', 1, 'Each page has a "Check dates and book direct" link.', '', null);
+
+    // Content
+    const aw = words(p.about);
+    add('content', 'about', 'About text is long enough', aw >= 80 ? 'ok' : aw >= 40 ? 'warn' : 'fail', 4, aw + ' words', 'Write 80 to 200 words: who it suits, what is inside, what is nearby, and one thing guests love.', { kind: 'nav', view: 'website' });
+    const ai = words(o.areaIntro);
+    add('content', 'areaIntro', 'Local area guide is written', ai >= 120 ? 'ok' : ai >= 40 ? 'warn' : 'fail', 4, ai ? ai + ' words' : 'Not written yet', 'Write a short guide to the area: walks, pubs, beaches and days out. Searches like "things to do near ' + (town(p) || 'here') + '" find it.', { kind: 'write', what: 'area' });
+    const gl = (p.guide || []).length;
+    add('content', 'guide', 'Nearby places are listed', gl >= 4 ? 'ok' : gl ? 'warn' : 'fail', 3, plural(gl, 'place'), 'List at least 4 places nearby, one per line: place | how far | your tip.', { kind: 'nav', view: 'website' });
+    const am = (p.amenities || []).length;
+    add('content', 'amenities', 'Amenities are complete', am >= 8 ? 'ok' : am >= 5 ? 'warn' : 'fail', 2, plural(am, 'amenity'), 'List at least 8 things the home offers. Searches and AI answers match on them, like "hot tub" or "EV charger".', { kind: 'nav', view: 'website' });
+    const sim = (a, b) => { const A = new Set(String(a || '').toLowerCase().match(/[a-z]{4,}/g) || []), B = new Set(String(b || '').toLowerCase().match(/[a-z]{4,}/g) || []); if (!A.size || !B.size) return 0; let n = 0; A.forEach(w => { if (B.has(w)) n++; }); return n / Math.min(A.size, B.size); };
+    const dup = others.find(x => sim(x.about, p.about) > 0.7);
+    add('content', 'unique', 'Writing is original to this home', !p.about ? 'fail' : dup ? 'warn' : 'ok', 2, dup ? 'Very close to the text for ' + dup.name : 'No copies found across your homes', 'Rewrite the about text so it does not repeat another home. Search engines show only one of two similar pages.', { kind: 'nav', view: 'website' });
+
+    // Technical
+    add('technical', 'crawl', 'Pages readable without JavaScript', 'auto', 2, 'Every page is sent as plain HTML with the full text, so any crawler can read it.', '', null);
+    add('technical', 'sitemap', 'Sitemap with images', 'auto', 2, 'sitemap.xml lists the page, its photos and llms.txt, and robots.txt points to it.', '', null);
+    add('technical', 'schema', 'Structured data (schema.org)', 'auto', 3, 'VacationRental, LodgingBusiness, FAQPage, BreadcrumbList, reviews, nearby places and offers are added for you.', '', null);
+    add('technical', 'canonical', 'Canonical address, HTTPS and mobile', 'auto', 1, 'One canonical address per home, served over HTTPS, built for phones first.', '', null);
+    add('technical', 'published', 'Site is published', p.published === false ? 'fail' : 'ok', 3, p.published === false ? 'Hidden from search' : 'Live', 'Publish the site so search engines can see it.', { kind: 'nav', view: 'website' });
+    add('technical', 'geo', 'Map pin (latitude and longitude)', p.lat && p.lng ? 'ok' : 'warn', 2, p.lat && p.lng ? p.lat + ', ' + p.lng : 'Not set', 'Add the map pin so maps and AI assistants place the home exactly. Paste it from Google Maps.', { kind: 'scroll', to: 'listed' });
+    const gs = ((p.indexing || {}).google || {}).state;
+    add('technical', 'gsc', 'Submitted to Google Search Console', conn('gsc') || gs === 'submitted' ? 'ok' : 'warn', 2, gs === 'submitted' ? 'Sitemap submitted for you' : conn('gsc') ? 'Rankings tracked' : gs === 'error' ? 'Google could not take it yet' : 'Not submitted yet', gs === 'error' ? 'We retry every day. Check that the site is published and loads.' : 'Press Submit now under Indexing. We verify the site and send the sitemap for you, no Google login needed.', { kind: 'scroll', to: 'index' });
+
+    // Local
+    add('local', 'address', 'Full address with postcode', POSTCODE.test(p.address || '') ? 'ok' : p.address ? 'warn' : 'fail', 3, p.address ? (POSTCODE.test(p.address) ? 'Postcode found' : 'No postcode') : 'No address', 'Add the full address with the postcode. Guests get it after booking; it also lets us place your map pin and keep your details the same everywhere.', { kind: 'nav', view: 'website' });
+    const gbpDone = Object.values(o.gbp || {}).filter(Boolean).length;
+    add('local', 'gbp', 'Google Business Profile set up', conn('google') || gbpDone >= GBP.length - 1 ? 'ok' : gbpDone >= 3 ? 'warn' : 'fail', 4, conn('google') ? 'Connected' : gbpDone + ' of ' + GBP.length + ' steps done', 'Follow the Google Business Profile checklist below. It decides whether you show in the map pack.', { kind: 'scroll', to: 'gbp' });
+    add('local', 'rating', 'Strong guest rating', p.rating >= 4.7 && p.reviews >= 10 ? 'ok' : p.rating >= 4.3 ? 'warn' : 'fail', 2, p.reviews ? p.rating + ' from ' + plural(p.reviews, 'review') : 'No reviews yet', 'Ask every guest for a review. The post-stay email does it for you.', { kind: 'nav', view: 'automations' });
+    add('local', 'maps', 'Google Maps link added', has('maps') ? 'ok' : 'warn', 2, has('maps') ? 'Linked' : 'Not linked', 'Paste the Google Maps link for your Business Profile under "Where this home is listed".', { kind: 'scroll', to: 'listed' });
+    add('local', 'citations', 'Listed on local and travel sites', links.filter(u => ['listing', 'local'].includes(linkKind(u))).length >= 2 ? 'ok' : links.length ? 'warn' : 'fail', 2, plural(links.filter(u => ['listing', 'local'].includes(linkKind(u))).length, 'listing'), 'Add your other listings and the local tourism site. The same name, town and phone everywhere is a strong local signal.', { kind: 'scroll', to: 'listed' });
+
+    // Image and video
+    add('media', 'photos', 'Enough photos', photos.length >= 8 ? 'ok' : photos.length >= 4 ? 'warn' : 'fail', 3, plural(photos.length, 'photo'), 'Add at least 8 photos: outside, every room, the view and one nearby.', { kind: 'nav', view: 'website' });
+    const capped = photos.filter(x => String(x.cap || '').trim().length >= 5).length;
+    add('media', 'alt', 'Every photo has a description', photos.length && capped === photos.length ? 'ok' : capped ? 'warn' : 'fail', 2, capped + ' of ' + photos.length + ' described', 'Write a short caption on each photo, like "Hot tub on the deck at dusk". It becomes the alt text Google Images reads.', { kind: 'nav', view: 'website' });
+    add('media', 'video', 'Walkthrough video linked', o.videoUrl ? 'ok' : 'warn', 1, o.videoUrl ? 'Linked' : 'No video', 'Film a 60-second walkthrough on your phone, upload it to YouTube and paste the link. It adds video schema and a video result.', { kind: 'scroll', to: 'listed' });
+
+    // SXO
+    add('sxo', 'instant', 'Guests can book and pay instantly', conn('stripe') ? 'ok' : 'warn', 3, conn('stripe') ? 'Card, Apple Pay and Google Pay' : 'Booking requests only', 'Connect Stripe so visitors who land can book on the spot instead of waiting for you.', { kind: 'nav', view: 'connections' });
+    add('sxo', 'price', 'Price shown up front', p.nightly > 0 ? 'ok' : 'fail', 2, p.nightly ? 'From ' + money(p.nightly) + ' a night' : 'No nightly rate', 'Set a nightly rate so search visitors see the price before they leave.', { kind: 'nav', view: 'website' });
+    add('sxo', 'proof', 'Reviews shown on the page', reviewsShown(p) >= 3 ? 'ok' : reviewsShown(p) ? 'warn' : 'fail', 2, plural(reviewsShown(p), 'review') + ' on the site', 'Reviews from direct guests appear on the page by themselves once they share them. Ask past guests for one.', { kind: 'nav', view: 'reviews' });
+    add('sxo', 'host', 'A personal line from you', p.hostNote ? 'ok' : 'warn', 1, p.hostNote ? 'Shown next to your name' : 'Not written', 'Add one friendly line from you. Visitors trust a real host more than a listing.', { kind: 'nav', view: 'website' });
+    add('sxo', 'minstay', 'Short stays allowed', p.minNights <= 3 ? 'ok' : 'warn', 1, 'Minimum ' + plural(p.minNights || 1, 'night'), 'A minimum of 4 or more nights turns away most weekend searches. Consider 2 or 3.', { kind: 'nav', view: 'website' });
+
+    // AEO
+    add('aeo', 'faqs', 'Questions answered in your words', faqs.length >= 6 ? 'ok' : faqs.length >= 3 ? 'warn' : 'fail', 4, plural(faqs.length, 'FAQ') + ' of your own (plus 6 we add)', 'Add the questions guests really ask. Pick from the suggestions below; each answer is drafted from your facts.', { kind: 'scroll', to: 'faqs' });
+    const crisp = faqs.filter(f => f[1].length >= 30 && f[1].length <= 320).length;
+    add('aeo', 'crisp', 'Answers are short and direct', !faqs.length ? 'warn' : crisp === faqs.length ? 'ok' : 'warn', 2, crisp + ' of ' + faqs.length + ' answers are 1 to 3 sentences', 'Start each answer with the answer ("Yes, dogs are welcome."), then one detail. Answer boxes quote the first sentence.', { kind: 'nav', view: 'website' });
+    const sw = words(o.summary);
+    add('aeo', 'summary', 'Answer-first summary', sw >= 25 && sw <= 80 ? 'ok' : sw ? 'warn' : 'fail', 4, sw ? sw + ' words' : 'Not written yet', 'Write 40 to 60 words that say what the home is, where, who it sleeps, the price and the best feature. It goes at the top of the page and in llms.txt.', { kind: 'write', what: 'summary' });
+    const asked = new Set(); qs.forEach(q => TOPICS.forEach(t => { if (t[1].test(String(q.q).toLowerCase())) asked.add(t[0]); }));
+    const gaps = TOPICS.filter(t => asked.has(t[0]) && !t[2].test(text)).map(t => t[0]);
+    add('aeo', 'coverage', 'Tracked questions are answered on the site', !qs.length ? 'warn' : gaps.length ? 'fail' : 'ok', 3, !qs.length ? 'No questions tracked yet' : gaps.length ? 'Nothing on the site about ' + gaps.join(', ') : 'Every topic travellers ask about is covered', gaps.length ? 'Add an FAQ or amenity about ' + gaps.join(', ') + '. AI assistants cannot recommend you for what your site does not say.' : 'Track the questions travellers ask in AI visibility.', gaps.length ? { kind: 'scroll', to: 'faqs' } : { kind: 'scroll', to: 'keywords' });
+    add('aeo', 'faqschema', 'FAQ schema and speakable summary', 'auto', 2, 'FAQPage schema and a speakable summary are added for every question.', '', null);
+
+    // GEO
+    add('geo', 'llms', 'llms.txt for AI assistants', 'auto', 2, 'A plain-text fact sheet at /llms.txt with prices, rules, FAQs and nearby places.', '', null);
+    add('geo', 'bots', 'AI crawlers are welcome', 'auto', 2, 'robots.txt lets GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended and others read the site.', '', null);
+    const factsOk = [p.maxGuests, p.bedrooms, p.baths, p.nightly, p.checkinTime, p.checkoutTime, p.area].every(Boolean);
+    add('geo', 'facts', 'Key facts are complete', factsOk ? 'ok' : 'fail', 3, factsOk ? 'Sleeps, rooms, price, times and area are set' : 'Some facts are missing', 'Fill in sleeps, bedrooms, bathrooms, price, check-in and checkout times and the area. AI answers quote facts, not adjectives.', { kind: 'nav', view: 'website' });
+    add('geo', 'tracked', 'Traveller questions tracked', qs.length >= 5 ? 'ok' : qs.length >= 3 ? 'warn' : 'fail', 2, plural(qs.length, 'question'), 'Track at least 5 questions travellers ask. Pick from the ideas below.', { kind: 'scroll', to: 'keywords' });
+    const named = qs.filter(q => Object.values(q.engines || {}).some(Boolean)).length;
+    add('geo', 'named', 'Named in AI answers', !s.ai.checkedAt ? 'warn' : named >= Math.ceil(qs.length / 2) ? 'ok' : named ? 'warn' : 'fail', 4, s.ai.checkedAt ? 'Named in ' + named + ' of ' + qs.length + ' questions' : 'Not checked yet', s.ai.checkedAt ? 'Close the gaps above, add your listings and press links, then re-check. Answers usually move within 2 to 6 weeks.' : 'Run an AI check to see where you stand.', s.ai.checkedAt ? { kind: 'nav', view: 'ai' } : { kind: 'aicheck' });
+    const cited = qs.filter(q => Object.values(q.cited || {}).some(Boolean)).length;
+    add('geo', 'cited', 'Your site is linked, not just named', !s.ai.live ? 'warn' : cited ? 'ok' : 'fail', 2, s.ai.live ? 'Linked in ' + cited + ' of ' + qs.length + ' questions' : 'Shown after a live AI check', 'AI assistants link to pages that state facts plainly. Write the summary and FAQs, and add your listings so they can confirm the home is real.', { kind: 'nav', view: 'ai' });
+
+    // LLMO and off-page
+    add('llmo', 'profiles', 'Profiles that confirm the home is real', links.length >= 3 ? 'ok' : links.length ? 'warn' : 'fail', 3, plural(links.length, 'link'), 'Add your listings, Instagram or Facebook and Google Maps. They become sameAs links that tie every mention to this home.', { kind: 'scroll', to: 'listed' });
+    add('llmo', 'social', 'A social profile', has('social') ? 'ok' : 'warn', 1, has('social') ? 'Linked' : 'None linked', 'Link one social profile where the home is named exactly as on your site.', { kind: 'scroll', to: 'listed' });
+    add('llmo', 'press', 'Mentions on local sites or press', has('local') ? 'ok' : 'warn', 2, has('local') ? 'Linked' : 'None linked', 'Get listed on your local tourism site, a local blog or a "best stays" round-up, then add the link. Models learn brands from mentions like these.', { kind: 'scroll', to: 'listed' });
+    add('llmo', 'name', 'One name used everywhere', p.name && p.short && p.name.toLowerCase().includes(String(p.short).toLowerCase()) ? 'ok' : 'warn', 1, '"' + p.name + '"', 'Use exactly "' + p.name + '" on every listing and profile.', null);
+    add('llmo', 'volume', 'Plenty of reviews across the web', (p.reviews || 0) >= 25 ? 'ok' : (p.reviews || 0) >= 10 ? 'warn' : 'fail', 2, plural(p.reviews || 0, 'review'), 'More reviews mean more text about you for models to learn from. Ask every guest.', { kind: 'nav', view: 'automations' });
+
+    // AIO
+    const gq = qs.filter(q => q.engines && q.engines.google).length;
+    add('aio', 'overview', 'Shown in Google AI answers', !s.ai.checkedAt ? 'warn' : gq ? 'ok' : 'fail', 3, s.ai.checkedAt ? 'Shown for ' + gq + ' of ' + qs.length + ' questions' : 'Not checked yet', 'AI Overviews pull from pages that already rank and answer the question in the first lines. Write the summary and area guide, and connect Search Console.', s.ai.checkedAt ? { kind: 'write', what: 'summary' } : { kind: 'aicheck' });
+    add('aio', 'lead', 'Answer in the first lines', sw >= 25 ? 'ok' : 'fail', 2, sw >= 25 ? 'The summary leads the page' : 'The page opens with a headline only', 'Write the answer-first summary. It is placed straight under the main heading, where AI Overviews look.', { kind: 'write', what: 'summary' });
+    add('aio', 'nearby', 'Distances to nearby places', (p.guide || []).filter(g => /\\d/.test(g)).length >= 3 ? 'ok' : 'warn', 1, (p.guide || []).filter(g => /\\d/.test(g)).length + ' places with a distance', 'Give how far each place is, like "Windermere | 10 minutes drive". Questions like "near Windermere" match on it.', { kind: 'nav', view: 'website' });
+
+    const val = c => c.status === 'ok' || c.status === 'auto' ? 1 : c.status === 'warn' ? 0.5 : 0;
+    const cats = CATS.map(([id, label, about]) => { const list = checks.filter(c => c.cat === id); const tot = list.reduce((a, c) => a + c.weight, 0); const got = list.reduce((a, c) => a + c.weight * val(c), 0); return { id, label, about, score: tot ? Math.round(100 * got / tot) : 100, checks: list, todo: list.filter(c => c.fix).length }; });
+    const tot = checks.reduce((a, c) => a + c.weight, 0), got = checks.reduce((a, c) => a + c.weight * val(c), 0);
+    const score = Math.round(100 * got / tot);
+    const fixes = checks.filter(c => c.fix).map(c => Object.assign({ gain: Math.max(1, Math.round(100 * c.weight * (1 - val(c)) / tot)) }, c)).sort((a, b) => b.gain - a.gain || (a.status === 'fail' ? -1 : 1));
+    return { score, grade: score >= 85 ? 'Excellent' : score >= 70 ? 'Good' : score >= 50 ? 'Needs work' : 'Weak', cats, checks, fixes, auto: checks.filter(c => c.status === 'auto').length };
+  }
+
+  /* ---------- Google Business Profile checklist (guidance; the host ticks each step) ---------- */
+  const GBP = [
+    ['claim', 'Claim and verify the profile', 'At business.google.com, add the home as a business. Google verifies by video, post or phone.'],
+    ['category', 'Pick the right category', 'Use "Holiday home", "Cottage", "Chalet" or "Holiday apartment rental", whichever fits. The category matters more than anything else.'],
+    ['website', 'Link your booking site', 'Set the website to your own booking site, not a platform listing, so the Book button goes direct.'],
+    ['photos', 'Add 10 or more photos', 'Outside, every room, the view. Add new ones each season.'],
+    ['attributes', 'Fill in amenities and attributes', 'Hot tub, Wi-Fi, pets, parking, accessibility. Google matches searches on them.'],
+    ['reviews', 'Ask guests for Google reviews', 'Paste your review link into the post-stay automation. Reply to every review within a week.'],
+    ['posts', 'Post an update each month', 'A seasonal photo, an offer or local news keeps the profile active.'],
+    ['nap', 'Same name, address and phone as your site', 'Copy them from your site exactly. Small differences split your local ranking.'],
+  ];
+
+  /* ---------- rule-based drafts ---------- */
+  function faqIdeas(p) {
+    const have = faqList(p.id).map(f => f[0].toLowerCase()); const am = (p.amenities || []).join(' ').toLowerCase(); const out = [];
+    const add = (q, a, needs) => { if (!have.some(h => h.includes(q.toLowerCase().slice(0, 18)))) out.push({ q, a, needs: !!needs }); };
+    const g = (p.guide || []).map(x => x.split('|').map(y => y.trim()));
+    if (p.parking) add('Is there parking?', 'Yes. ' + String(p.parking).replace(/\\.?$/, '.') + ' Parking is free for guests.');
+    if (/wi-?fi|broadband|mbps/.test(am)) add('Is the Wi-Fi good enough to work?', 'Yes. ' + ((p.amenities || []).find(a => /wi-?fi|mbps/i.test(a)) || 'Fast Wi-Fi') + ' is included, so video calls and streaming work well.');
+    add(p.petsAllowed ? 'Can I bring my dog?' : 'Are dogs allowed?', p.petsAllowed ? 'Yes. Dogs are welcome' + (p.petFee ? ' for a ' + money(p.petFee) + ' fee per stay' : '') + '. Let us know when you book.' : 'Sorry, no. ' + p.name + ' is pet-free, which suits guests with allergies.');
+    if (/hot tub/.test(am)) add('Is the hot tub private?', 'Yes. The hot tub is private to your stay and is cleaned and refilled between guests.');
+    if (/wood burner|log burner|fire/.test(am)) add('Are logs provided for the wood burner?', 'Yes. A starter basket of logs and kindling is waiting for you.', true);
+    add('Is it suitable for families with a baby?', p.maxGuests >= 3 ? 'Yes. ' + p.name + ' sleeps ' + p.maxGuests + '. Ask us for a travel cot and high chair when you book.' : '', p.maxGuests >= 3);
+    if (g[0]) add('How far is ' + g[0][0] + '?', g[0][0] + ' is ' + (g[0][1] || 'nearby') + ' from ' + p.name + '.' + (g[0][2] ? ' ' + g[0][2].replace(/\\.?$/, '.') : ''));
+    if (g[1]) add('What is there to do nearby?', 'Within a short drive: ' + g.slice(0, 4).map(x => x[0] + (x[1] ? ' (' + x[1] + ')' : '')).join(', ') + '. Our full area guide is on this page.');
+    add('What is the nearest pub?', '', true);
+    add('What is your cancellation policy?', '', true);
+    add('Is there an EV charger?', /\\bev\\b|charg/.test(am) ? 'Yes. There is an EV charger on site.' : '', !/\\bev\\b|charg/.test(am));
+    add('Is ' + p.name + ' accessible?', '', true);
+    return out.slice(0, 10);
+  }
+  // Searches worth targeting: what travellers type into Google and ask AI assistants, built from the home's facts.
+  function keywords(p) {
+    const t = town(p), c = county(p), k = kind(p), am = (p.amenities || []).join(' ').toLowerCase(), txt = siteText(p); if (!t) return [];
+    const g = (p.guide || []).map(x => x.split('|')[0].trim()).filter(Boolean);
+    const L = [];
+    const add = (q, intent, use) => { const low = q.toLowerCase(); if (!L.some(x => x.q === low)) L.push({ q: low, intent, use, onSite: low.split(/\\s+/).filter(w => w.length > 3).every(w => txt.includes(w.replace(/s$/, ''))) }); };
+    add(k + ' in ' + t, 'Book', 'Title and headline');
+    add(k + 's in ' + c, 'Book', 'About text');
+    add('self catering ' + t, 'Book', 'About text');
+    if (/hot tub/.test(am)) add(k + ' with hot tub ' + c, 'Book', 'Headline or summary');
+    if (p.petsAllowed) add('dog friendly ' + k + ' ' + t, 'Book', 'FAQ and summary');
+    if (p.maxGuests <= 2) add('romantic ' + k + ' ' + c, 'Book', 'Summary');
+    if (p.maxGuests >= 5) add('large ' + k + ' ' + c + ' sleeps ' + p.maxGuests, 'Book', 'About text');
+    else if (p.maxGuests >= 3) add('family ' + k + ' ' + c, 'Book', 'FAQ');
+    if (/wi-?fi|mbps/.test(am)) add(k + ' with fast wifi ' + c, 'Book', 'Amenities and FAQ');
+    if (/wood burner|log burner/.test(am)) add('cosy ' + k + ' with log burner ' + c, 'Book', 'Summary');
+    g.slice(0, 2).forEach(x => add(k + ' near ' + x, 'Book', 'Area guide'));
+    add('last minute ' + k + ' ' + c, 'Book', 'Campaigns and gap nights');
+    add('things to do in ' + t, 'Plan', 'Area guide');
+    add('best walks near ' + t, 'Plan', 'Area guide');
+    add('where to stay in ' + t, 'Compare', 'Summary and FAQs');
+    add('best place to stay in ' + c + ' for a weekend', 'Compare', 'Summary');
+    add(t + ' holiday let book direct', 'Compare', 'Title');
+    return L.slice(0, 16);
+  }
+  // Rule-based first drafts. The server can write better ones with Claude when an API key is set.
+  function draft(p, what) {
+    const t = town(p), k = kind(p), am = (p.amenities || []).slice(0, 3).map(a => { a = String(a).split(',')[0].trim(); return /^[A-Z][a-z]/.test(a) ? a[0].toLowerCase() + a.slice(1) : a; });
+    if (what === 'summary') return p.name + ' is a ' + p.bedrooms + '-bedroom ' + k + ' in ' + (p.area || t) + ' that sleeps ' + p.maxGuests + '. ' + (am.length ? 'Highlights: ' + (am.length > 1 ? am.slice(0, -1).join(', ') + ' and ' + am[am.length - 1] : am[0]) + '. ' : '') + (p.petsAllowed ? 'Dogs are welcome. ' : '') + 'Book direct from ' + money(p.nightly) + ' a night, with check-in from ' + p.checkinTime + ' and no platform fees.';
+    if (what === 'area') { const g = (p.guide || []).map(x => x.split('|').map(y => y.trim())); if (!g.length) return ''; return 'Staying at ' + p.name + ' puts you in ' + (p.area || t) + '. ' + (g.length ? 'Here is what is close by.\\n\\n' + g.map(x => x[0] + (x[1] ? ' (' + x[1] + ')' : '') + (x[2] ? ': ' + x[2] : '.')).join('\\n') : ''); }
+    if (what === 'meta') return { title: clip(titleOf(Object.assign({}, p, { seo: {} })), 62), description: clip((p.petsAllowed ? 'Dog friendly ' : '') + k + ' in ' + t + ', sleeps ' + p.maxGuests + (am[0] ? ', ' + am[0] : '') + '. Book direct from ' + money(p.nightly) + ' a night and skip the platform fees.', 160) };
+    return '';
+  }
+
+  /* ---------- actions (run in the browser and on the server) ---------- */
+  function cleanSeo(patch) {
+    const o = {};
+    Object.keys(patch || {}).forEach(k => {
+      if (!(k in SEO_KEYS)) return; const v = patch[k], n = SEO_KEYS[k];
+      if (k === 'sameAs') o[k] = (Array.isArray(v) ? v : []).map(u => String(u).trim()).filter(u => /^https:\\/\\/[^\\s<>"]+$/i.test(u)).slice(0, n);
+      else if (k === 'keywords') o[k] = (Array.isArray(v) ? v : []).map(x => clip(String(x).toLowerCase().replace(/\\s+/g, ' '), 80)).filter(Boolean).slice(0, n);
+      else if (k === 'gbp') { o[k] = {}; GBP.forEach(([id]) => { if (v && v[id]) o[k][id] = true; }); }
+      else if (k === 'videoUrl') o[k] = /^https:\\/\\/(www\\.)?(youtube\\.com|youtu\\.be|vimeo\\.com)\\/[^\\s<>"]+$/i.test(String(v || '').trim()) ? String(v).trim().slice(0, n) : '';
+      else o[k] = clip(v, n);
+    });
+    return o;
+  }
+  BB.act.updateSeo = function (pid, patch) {
+    const p = BB.q.property(pid); if (!p) return null;
+    const o = cleanSeo(patch); if (!Object.keys(o).length) return null;
+    const keys = Object.keys(o);
+    if (patch && (patch.lat !== undefined || patch.lng !== undefined)) { const la = Number(patch.lat), ln = Number(patch.lng); if (la >= 49 && la <= 61 && ln >= -9 && ln <= 2.5) { p.lat = Math.round(la * 1e5) / 1e5; p.lng = Math.round(ln * 1e5) / 1e5; } }
+    if ('videoUrl' in o && o.videoUrl && o.videoUrl !== seoOf(p).videoUrl) o.videoAt = S().today;
+    p.seo = Object.assign(seoOf(p), o);
+    const what = { summary: 'the answer-first summary', areaIntro: 'the local area guide', videoUrl: 'the walkthrough video', sameAs: 'where the home is listed', keywords: 'target searches', gbp: 'the Google Business Profile checklist', metaTitle: 'the Google title', metaDescription: 'the Google description' };
+    if (!keys.every(k => k === 'gbp' || k === 'keywords')) BB.log('site', 'Search health', 'Updated ' + keys.map(k => what[k]).join(' and ') + ' for ' + p.domain + '.', pid, ['Search health', p.domain, 'AI answers']);
+    BB.store.commit({ type: 'property', id: pid });
+    return p.seo;
+  };
+  BB.act.setMapPin = function (pid, lat, lng) {
+    const p = BB.q.property(pid); const la = Number(lat), ln = Number(lng); if (!p || !(la >= 49 && la <= 61 && ln >= -9 && ln <= 2.5)) return false;
+    p.lat = Math.round(la * 1e5) / 1e5; p.lng = Math.round(ln * 1e5) / 1e5;
+    BB.log('site', 'Search health', 'Set the map pin for ' + p.name + '.', pid); BB.store.commit({ type: 'property', id: pid }); return true;
+  };
+  BB.act.addFaqs = function (pid, list) {
+    const p = BB.q.property(pid); if (!p) return 0; const s = S(); s.website.faqs = s.website.faqs || {};
+    const cur = (s.website.faqs[pid] = s.website.faqs[pid] || []); let n = 0;
+    (Array.isArray(list) ? list : []).slice(0, 12).forEach(f => { const q = clip(f && f.q, 200).replace(/\\|/g, '/'), a = clip(f && f.a, 600); if (q && a && !cur.some(x => x.split('|')[0].toLowerCase() === q.toLowerCase())) { cur.push(q + '|' + a); n++; } });
+    if (n) { BB.log('site', 'Search health', 'Added ' + plural(n, 'FAQ') + ' to ' + p.domain + '.', pid, ['Search health', p.domain, 'AI answers']); BB.store.commit({ type: 'property', id: pid }); }
+    return n;
+  };
+  BB.act.trackAiQuestions = function (pid, list) {
+    const s = S(); if (!BB.q.property(pid)) return 0; let n = 0;
+    (Array.isArray(list) ? list : []).slice(0, 10).forEach(q => { q = clip(q, 140); if (q && !s.ai.questions.some(x => x.q.toLowerCase() === q.toLowerCase() && x.propertyId === pid) && s.ai.questions.length < 40) { s.ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true }); n++; } });
+    if (n) { BB.log('ai', 'AI visibility', 'Tracking ' + plural(n, 'new traveller question') + ' for ' + BB.q.property(pid).short + '.', pid); BB.store.commit({ type: 'ai' }); }
+    return n;
+  };
+
+  // Results from the server's search engine submissions (Google Search Console, IndexNow). Server only.
+  BB.act.setIndexing = function (pid, patch) {
+    const p = BB.q.property(pid); if (!p || !patch) return;
+    const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
+    if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    BB.store.commit({ type: 'property', id: pid, quiet: true });
+  };
+  // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
+  function sources(pid) {
+    const tally = {};
+    (S().ai.questions || []).filter(q => !pid || q.propertyId === pid).forEach(q => Object.entries(q.sources || {}).forEach(([eng, list]) => (list || []).forEach(d => { const t = (tally[d] = tally[d] || { domain: d, n: 0, engines: {} }); t.n++; t.engines[eng] = 1; })));
+    return Object.values(tally).sort((a, b) => b.n - a.n).slice(0, 10);
+  }
+
+  BB.seo = { audit, CATS, GBP, faqIdeas, keywords, draft, linkKind, LINK_LABEL, seoOf, titleOf, descOf, sources, town, kind };
 })();
 ` }, "/app/web/src/shell-prod.css": { "t": '/* real app shell */\n.hbar { position: relative; }\n.pbar-tabs a { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-muted); padding: 8px 12px; border-radius: 999px; font-weight: 600; font-size: 13.5px; white-space: nowrap; text-decoration: none; }\n.pbar-tabs a:hover { color: #fff; background: rgba(255,255,255,.06); }\n.pbar-tabs a[aria-current="page"] { background: #fff; color: #0A0F2C; }\n.pbar-tabs a .ic { width: 16px; height: 16px; }\n.pbtn .avatar.sm { width: 20px; height: 20px; font-size: 10px; margin: -3px 0 -3px -5px; }\n.hmenu { position: absolute; z-index: 70; top: calc(100% + 6px); min-width: 260px; max-width: calc(100vw - 32px); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px -18px rgba(10,15,44,.45); padding: 6px; display: grid; gap: 2px; }\n.hm-sites { left: 180px; } .hm-me { right: 16px; }\n@media (max-width: 760px) { .hm-sites { left: 16px; } }\n.hmenu a, .hmenu button { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; color: inherit; text-decoration: none; background: none; border: 0; width: 100%; text-align: left; font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; }\n.hmenu a:hover, .hmenu button:hover { background: var(--surface-2); }\n.hmenu .ic { width: 18px; height: 18px; color: var(--muted); flex: none; }\n.hmenu span { display: grid; min-width: 0; } .hmenu em { font-style: normal; font-weight: 500; font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }\n.hmenu p { margin: 0; padding: 8px 10px 10px; display: grid; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }\n.hmenu p em { font-style: normal; color: var(--muted); font-size: 13px; }\n.hmenu form { margin: 0; }\n/* guest-facing pages: no prototype controls */\n.prod .p-strip { display: none !important; }\n.prod-site .x-property { --p-top: 0px !important; }\n.prod-trip { background: #EEF0F5; }\n.prod-trip .surface-root { min-height: 100vh; display: grid; place-items: start center; padding: 24px 16px 40px; }\n.prod-trip .x-guest.emb { width: 100%; max-width: 420px; }\n@media (max-width: 520px) { .prod-trip .surface-root { padding: 0; } .prod-trip .x-guest.emb { max-width: none; } }\n.test-banner { position: fixed; z-index: 90; left: 50%; bottom: 14px; transform: translateX(-50%); background: #0A0F2C; color: #fff; font: 600 12.5px/1.3 var(--font-body); padding: 8px 14px; border-radius: 999px; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); max-width: calc(100vw - 32px); text-align: center; }\n.test-banner b { color: var(--accent); }\n' }, "/app/web/src/shell-prod.js": { "t": `/* Bookingbooster: shell for the real app (replaces the prototype bar outside /demo).
    Host console and host phone app at /app, a home's booking site at /s/\u2026, a guest's trip app at /trip/\u2026,
@@ -7641,6 +8536,16 @@ body.p-lock { overflow: hidden; }
 .x-site .s-social a:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
 .x-site .s-social svg { width: 20px; height: 20px; display: block; }
 
+/* "Explore AI summary" in the footer: brand marks in full colour on white chips, so no logo is recoloured */
+.x-site .s-ai-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 18px; }
+.x-site .s-ai-sum b { font: 500 11.5px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+.x-site .s-ai-sum ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; }
+.x-site .s-ai-sum a { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 0 var(--yel); transition: box-shadow .15s, transform .15s; }
+.x-site .s-ai-sum a:hover { box-shadow: 0 0 0 3px var(--yel); transform: translateY(-1px); }
+.x-site .s-ai-sum a:focus-visible { outline: 3px solid var(--yel); outline-offset: 3px; }
+.x-site .s-ai-sum svg { width: 20px; height: 20px; display: block; }
+@media (prefers-reduced-motion: reduce) { .x-site .s-ai-sum a { transition: none; } .x-site .s-ai-sum a:hover { transform: none; } }
+
 /* fixes */
 .x-site .s-myth-grid span { display: block; width: fit-content; }
 .x-site .s-head .s-pill + .s-h2 { margin-top: 20px; }
@@ -8306,6 +9211,27 @@ body.p-lock { overflow: hidden; }
 .s-acct .s-ob-sub { margin: 0; }
 .s-terms { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); }
 .s-terms input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+
+/* Onboarding: "I already have a domain" */
+.x-site .s-dmode { margin: 4px 0 18px; }
+.x-site .s-own { display: grid; gap: 14px; margin-top: 20px; }
+.x-site .s-own-ok { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--primary-soft); border: 1px solid var(--primary); }
+.x-site .s-own-ok .ic { width: 18px; height: 18px; flex: none; color: var(--primary); margin-top: 2px; }
+.x-site .s-own-ok p { margin: 0; font-size: 14px; line-height: 1.45; }
+.x-site .s-own-h { font-size: 16px; margin: 6px 0 0; }
+.x-site .s-own-recs { display: grid; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.x-site .s-own-r { display: grid; grid-template-columns: 64px 140px minmax(0, 1fr); gap: 12px; padding: 10px 14px; align-items: start; font-size: 13.5px; border-top: 1px solid var(--line); }
+.x-site .s-own-r:first-child { border-top: 0; }
+.x-site .s-own-th { background: var(--surface-2); font-size: 12px; color: var(--muted); font-weight: 600; }
+.x-site .s-own-t { font-weight: 700; }
+.x-site .s-own-r b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.x-site .s-own-r b.s-own-later { font-weight: 400; color: var(--muted); font-style: italic; }
+.x-site .s-own-r em { display: block; font-style: normal; color: var(--muted); font-size: 12.5px; }
+.x-site .s-own-next { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.x-site .s-own-next b { display: block; font-size: 14.5px; }
+.x-site .s-own-next span { color: var(--muted); font-size: 13.5px; overflow-wrap: anywhere; }
+.x-site .s-own-next span span { color: var(--fg); }
+@media (max-width: 560px) { .x-site .s-own-r { grid-template-columns: 52px minmax(0, 1fr); } .x-site .s-own-r > span:last-child { grid-column: 1 / -1; } .x-site .s-own-th > span:last-child { display: none; } }
 ` }, "/app/web/src/site.js": { "t": `/* Bookingbooster prototype: our own marketing website (bookingbooster.com, selling to hosts) and the host signup wizard.
    Surface 'site'. opts.view: 'home' | 'onboard' | 'pricing'. Reads live numbers from the shared store and ends onboarding
    with BB.act.addProperty, so the new home shows up in the console, the property site and the activity feed. */
@@ -8694,22 +9620,37 @@ body.p-lock { overflow: hidden; }
   ];
   const socials = () => '<ul class="s-social" aria-label="Follow Bookingbooster">' + SOCIAL.map(([n, u, d]) => '<li><a href="' + u + '" target="_blank" rel="me noopener" aria-label="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg></a></li>').join('') + '</ul>';
 
-  function footer() {
+  /* "Explore AI summary": each assistant opens with a prompt asking it to summarise our site. The marks are the brands' own
+     logos (@lobehub/icons-static-svg 1.95.1, the source of brand/ai-platforms), on white chips so they are never recoloured.
+     Gradient ids carry the instance uid so two renders on one page cannot clash. */
+  const AI_PROMPT = 'Summarise what Bookingbooster (https://booking-booster.co.uk) offers UK holiday let and short-term let hosts: who it is for, what is included, what it costs and how it helps hosts take direct bookings. Use the website as your source.';
+  const AI_SUMMARY = [
+    ['ChatGPT', 'https://chatgpt.com/?q=', '<path fill="#000" fill-rule="evenodd" d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path>'],
+    ['Claude', 'https://claude.ai/new?q=', '<path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path>'],
+    ['Perplexity', 'https://www.perplexity.ai/search/new?q=', '<path d="M19.785 0v7.272H22.5V17.62h-2.935V24l-7.037-6.194v6.145h-1.091v-6.152L4.392 24v-6.465H1.5V7.188h2.884V0l7.053 6.494V.19h1.09v6.49L19.786 0zm-7.257 9.044v7.319l5.946 5.234V14.44l-5.946-5.397zm-1.099-.08l-5.946 5.398v7.235l5.946-5.234V8.965zm8.136 7.58h1.844V8.349H13.46l6.105 5.54v2.655zm-8.982-8.28H2.59v8.195h1.8v-2.576l6.192-5.62zM5.475 2.476v4.71h5.115l-5.115-4.71zm13.219 0l-5.115 4.71h5.115v-4.71z" fill="#22B8CD" fill-rule="nonzero"></path>'],
+    ['Gemini', 'https://gemini.google.com/app?q=', '<path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#bbai-gemini0-{u})"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#bbai-gemini1-{u})"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#bbai-gemini2-{u})"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="bbai-gemini0-{u}" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"></stop><stop offset="1" stop-color="#08B962" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="bbai-gemini1-{u}" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"></stop><stop offset="1" stop-color="#F94543" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="bbai-gemini2-{u}" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"></stop><stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop></linearGradient></defs>'],
+    ['Grok', 'https://grok.com/?q=', '<path fill="#000" fill-rule="evenodd" d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path>'],
+    ['Copilot', 'https://copilot.microsoft.com/?q=', '<path d="M17.533 1.829A2.528 2.528 0 0015.11 0h-.737a2.531 2.531 0 00-2.484 2.087l-1.263 6.937.314-1.08a2.528 2.528 0 012.424-1.833h4.284l1.797.706 1.731-.706h-.505a2.528 2.528 0 01-2.423-1.829l-.715-2.453z" fill="url(#bbai-copilot0-{u})" transform="translate(0 1)"></path><path d="M6.726 20.16A2.528 2.528 0 009.152 22h1.566c1.37 0 2.49-1.1 2.525-2.48l.17-6.69-.357 1.228a2.528 2.528 0 01-2.423 1.83h-4.32l-1.54-.842-1.667.843h.497c1.124 0 2.113.75 2.426 1.84l.697 2.432z" fill="url(#bbai-copilot1-{u})" transform="translate(0 1)"></path><path d="M15 0H6.252c-2.5 0-4 3.331-5 6.662-1.184 3.947-2.734 9.225 1.75 9.225H6.78c1.13 0 2.12-.753 2.43-1.847.657-2.317 1.809-6.359 2.713-9.436.46-1.563.842-2.906 1.43-3.742A1.97 1.97 0 0115 0" fill="url(#bbai-copilot2-{u})" transform="translate(0 1)"></path><path d="M15 0H6.252c-2.5 0-4 3.331-5 6.662-1.184 3.947-2.734 9.225 1.75 9.225H6.78c1.13 0 2.12-.753 2.43-1.847.657-2.317 1.809-6.359 2.713-9.436.46-1.563.842-2.906 1.43-3.742A1.97 1.97 0 0115 0" fill="url(#bbai-copilot3-{u})" transform="translate(0 1)"></path><path d="M9 22h8.749c2.5 0 4-3.332 5-6.663 1.184-3.948 2.734-9.227-1.75-9.227H17.22c-1.129 0-2.12.754-2.43 1.848a1149.2 1149.2 0 01-2.713 9.437c-.46 1.564-.842 2.907-1.43 3.743A1.97 1.97 0 019 22" fill="url(#bbai-copilot4-{u})" transform="translate(0 1)"></path><path d="M9 22h8.749c2.5 0 4-3.332 5-6.663 1.184-3.948 2.734-9.227-1.75-9.227H17.22c-1.129 0-2.12.754-2.43 1.848a1149.2 1149.2 0 01-2.713 9.437c-.46 1.564-.842 2.907-1.43 3.743A1.97 1.97 0 019 22" fill="url(#bbai-copilot5-{u})" transform="translate(0 1)"></path><defs><radialGradient cx="85.44%" cy="100.653%" fx="85.44%" fy="100.653%" gradientTransform="scale(-.8553 -1) rotate(50.927 2.041 -1.946)" id="bbai-copilot0-{u}" r="105.116%"><stop offset="9.6%" stop-color="#00AEFF"></stop><stop offset="77.3%" stop-color="#2253CE"></stop><stop offset="100%" stop-color="#0736C4"></stop></radialGradient><radialGradient cx="18.143%" cy="32.928%" fx="18.143%" fy="32.928%" gradientTransform="scale(.8897 1) rotate(52.069 .193 .352)" id="bbai-copilot1-{u}" r="95.612%"><stop offset="0%" stop-color="#FFB657"></stop><stop offset="63.4%" stop-color="#FF5F3D"></stop><stop offset="92.3%" stop-color="#C02B3C"></stop></radialGradient><radialGradient cx="82.987%" cy="-9.792%" fx="82.987%" fy="-9.792%" gradientTransform="scale(-1 -.9441) rotate(-70.872 .142 1.17)" id="bbai-copilot4-{u}" r="140.622%"><stop offset="6.6%" stop-color="#8C48FF"></stop><stop offset="50%" stop-color="#F2598A"></stop><stop offset="89.6%" stop-color="#FFB152"></stop></radialGradient><linearGradient id="bbai-copilot2-{u}" x1="39.465%" x2="46.884%" y1="12.117%" y2="103.774%"><stop offset="15.6%" stop-color="#0D91E1"></stop><stop offset="48.7%" stop-color="#52B471"></stop><stop offset="65.2%" stop-color="#98BD42"></stop><stop offset="93.7%" stop-color="#FFC800"></stop></linearGradient><linearGradient id="bbai-copilot3-{u}" x1="45.949%" x2="50%" y1="0%" y2="100%"><stop offset="0%" stop-color="#3DCBFF"></stop><stop offset="24.7%" stop-color="#0588F7" stop-opacity="0"></stop></linearGradient><linearGradient id="bbai-copilot5-{u}" x1="83.507%" x2="83.453%" y1="-6.106%" y2="21.131%"><stop offset="5.8%" stop-color="#F8ADFA"></stop><stop offset="70.8%" stop-color="#A86EDD" stop-opacity="0"></stop></linearGradient></defs>'],
+  ];
+  const AI_TM = 'ChatGPT, Claude, Perplexity, Gemini, Grok and Copilot are trademarks of their owners. Bookingbooster is not affiliated with or endorsed by them.';
+  const aiSummary = uid => '<div class="s-ai-sum"><b id="s-ai-sum-' + uid + '">Explore AI summary</b><ul aria-labelledby="s-ai-sum-' + uid + '">' + AI_SUMMARY.map(([n, u, d]) => '<li><a href="' + u + encodeURIComponent(AI_PROMPT) + '" target="_blank" rel="noopener nofollow" aria-label="Summarise Bookingbooster in ' + n + ' (opens in a new tab)" title="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + d.replace(/\\{u\\}/g, uid) + '</svg></a></li>').join('') + '</ul></div>';
+
+  function footer(inst) {
     return '<section class="s-final"><div class="s-w"><h2 class="s-final-h">Keep the 15%.<br>Get found. <span>Get booked.</span></h2>' +
       '<div class="s-cta"><button class="btn accent lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn lg s-ghost-inv"' + go('live') + '>See the live demo</button></div>' +
-      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em>' + socials() + '</span>' +
+      '<footer class="s-foot"><span class="s-foot-brand">' + BB.lockup() + '<em>Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.</em>' + socials() + aiSummary(inst.uid) + '</span>' +
       '<nav aria-label="Footer"><div><b>Product</b><button data-scroll="product">Overview</button><button data-scroll="ai">AI search</button><button data-scroll="pricing">Pricing</button></div>' +
       '<div><b>Try it</b><button' + go('live') + '>Live demo</button><button' + go('app') + '>Host console</button><button' + go('property', { propertyId: 'laurel' }) + '>Property site</button></div>' +
       '<div><b>Company</b>' + (LIVE() ? '<a href="/help">Help</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>' : '<button data-scroll="customers">Customers</button>') + '<button data-act="start">Get started</button><button' + go('app') + '>Log in</button></div></nav>' +
-      (LIVE() ? '<p class="s-foot-fine">\xA9 ' + new Date().getFullYear() + ' ' + esc(CO().name) + '.' + (CO().number ? ' Registered in England and Wales, company no. ' + esc(CO().number) + '.' : '') + (CO().address && !/to be confirmed/i.test(CO().address) ? ' Registered office: ' + esc(CO().address) + '.' : '') + (CO().vat ? ' VAT no. ' + esc(CO().vat) + '.' : '') + ' Prices include VAT. <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a></p></footer>'
-        : '<p class="s-foot-fine">\xA9 2026 Bookingbooster Ltd. Registered in England and Wales, company no. 01234567. Registered office: 1 Sample Street, Manchester M1 1AA. Prices include VAT. <b>Sample details:</b> this is a prototype, and customers, figures and stories are sample data.</p></footer>') +
+      (LIVE() ? '<p class="s-foot-fine">\xA9 ' + new Date().getFullYear() + ' ' + esc(CO().name) + '.' + (CO().number ? ' Registered in England and Wales, company no. ' + esc(CO().number) + '.' : '') + (CO().address && !/to be confirmed/i.test(CO().address) ? ' Registered office: ' + esc(CO().address) + '.' : '') + (CO().vat ? ' VAT no. ' + esc(CO().vat) + '.' : '') + ' Prices include VAT. ' + AI_TM + ' <a href="mailto:' + esc(CO().support) + '">' + esc(CO().support) + '</a></p></footer>'
+        : '<p class="s-foot-fine">\xA9 2026 Bookingbooster Ltd. Registered in England and Wales, company no. 01234567. Registered office: 1 Sample Street, Manchester M1 1AA. Prices include VAT. ' + AI_TM + ' <b>Sample details:</b> this is a prototype, and customers, figures and stories are sample data.</p></footer>') +
       '</div></section>';
   }
 
   function home(inst) {
     const L = liveData();
     const F = features(inst, L);
-    return nav(inst) + hero(inst) + proof() + F.top + film() + calc(inst) + aiSection(inst) + F.bottom + how(inst) + myths() + customers(inst) + pricing(inst) + faq(inst) + footer();
+    return nav(inst) + hero(inst) + proof() + F.top + film() + calc(inst) + aiSection(inst) + F.bottom + how(inst) + myths() + customers(inst) + pricing(inst) + faq(inst) + footer(inst);
   }
 
   /* =====================================================================
@@ -8729,7 +9670,7 @@ body.p-lock { overflow: hidden; }
 
   function newOb(planId) {
     return { step: 1, url: '', urlErr: '', source: 'airbnb', importN: 0, imported: false, importedFrom: '', d: { name: '', area: '', nightly: '', sleeps: '', bedrooms: '', pets: false }, dErr: '',
-      theme: 'cabin', dq: '', dState: 'idle', dRes: null, dErr2: '', domain: '', conn: { stripe: 'off', lock: 'off' }, addon: false, plan: planId || 'growth', annual: false, launchN: -1, launched: null };
+      theme: 'cabin', dq: '', dState: 'idle', dRes: null, dErr2: '', domain: '', dMode: 'new', own: '', ownErr: '', reg: '', conn: { stripe: 'off', lock: 'off' }, addon: false, plan: planId || 'growth', annual: false, launchN: -1, launched: null };
   }
   function parseListing(u) {
     let url; try { url = new URL(/^https?:\\/\\//i.test(u.trim()) ? u.trim() : 'https://' + u.trim()); } catch (_) { return null; }
@@ -8751,6 +9692,30 @@ body.p-lock { overflow: hidden; }
     if (r.err) { ob.dErr2 = r.err; ob.dState = 'idle'; inst.render(); return; }
     ob.dErr2 = ''; ob.dState = 'checking'; inst.render();
     later(inst, 750, () => { ob.dState = 'done'; ob.dRes = r.list; if (!ob.domain) { const first = r.list.find(x => x.ok); if (first) ob.domain = first.d; } inst.render(); });
+  }
+  // "I already have a domain": tidy what they typed into a bare address, the same way the server does.
+  function cleanOwn(v) { return String(v || '').trim().toLowerCase().replace(/^[a-z]+:\\/\\//, '').replace(/[/?#].*$/, '').replace(/:\\d+$/, '').replace(/^www\\./, '').replace(/\\.$/, ''); }
+  function ownProblem(h) {
+    if (!h) return 'Type the domain you own, like larchcabin.co.uk.';
+    if (h.length > 80 || !/^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,}$/.test(h)) return 'That does not look like a domain. Type it like larchcabin.co.uk.';
+    if (/(^|\\.)(bookingbooster\\.site|booking-booster\\.co\\.uk)$/.test(h)) return 'That is one of our addresses. Type a domain you own, like larchcabin.co.uk.';
+    return '';
+  }
+  function ownDomain(ob, sub) {
+    const h = ob.domain, dns = (BB.BOOT && BB.BOOT.dns) || {}, target = dns.target || 'sites.booking-booster.co.uk', ips = dns.ips || [];
+    const recs = [['TXT', '_bookingbooster', 'Your own code, shown in your console after sign-up', 'Proves the domain is yours'], ['CNAME', 'www', target, 'Sends www.' + h + ' to your booking site']]
+      .concat(ips.length ? [['A', '@', ips.join(', '), 'Sends ' + h + ' to your booking site']] : []);
+    return '<div class="s-own">' +
+      '<div class="s-own-ok">' + icon('check') + '<p><b class="mono">' + esc(h) + '</b> stays registered where you bought it, and any email on it keeps working. You only add a few DNS records so it points at your booking site.</p></div>' +
+      '<h2 class="s-own-h">The records you will add</h2>' +
+      '<div class="s-own-recs" role="table" aria-label="DNS records"><div class="s-own-r s-own-th" role="row"><span role="columnheader">Type</span><span role="columnheader">Name</span><span role="columnheader">Value</span></div>' +
+        recs.map(r => '<div class="s-own-r" role="row"><span class="mono s-own-t" role="cell">' + r[0] + '</span><span class="mono" role="cell">' + esc(r[1]) + '</span><span role="cell"><b class="' + (r[0] === 'TXT' ? 's-own-later' : 'mono') + '">' + esc(r[2]) + '</b><em>' + esc(r[3]) + '</em></span></div>').join('') + '</div>' +
+      BB.dnsGuide(ob.reg, h) +
+      '<h2 class="s-own-h">What happens next</h2><ol class="s-own-next">' +
+        '<li><b>Your site goes live today</b><span>On your free address, <span class="mono">' + esc(sub) + '</span>, so you can take bookings straight away.</span></li>' +
+        '<li><b>You add the records</b><span>Your console shows the exact values with copy buttons. We check every few minutes and switch your site over by itself once we see them.</span></li>' +
+        '<li><b>We set up the padlock</b><span>A free security certificate (HTTPS) is added automatically, so guests see <span class="mono">https://' + esc(h) + '</span>.</span></li>' +
+      '</ol></div>';
   }
   function startImport(inst) {
     const ob = inst.st.ob; ob.importN = 0; ob.imported = false; ob.importedFrom = ob.url;
@@ -8799,7 +9764,7 @@ body.p-lock { overflow: hidden; }
     let signup = null;
     if (REAL()) {
       const a = ob.acct || {};
-      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url })
+      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url })
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     }
     const t = () => later(inst, 480, () => {
@@ -8868,7 +9833,16 @@ body.p-lock { overflow: hidden; }
         '<form data-form="next" class="s-ob-form">' + navRow('Use the ' + THEMES[ob.theme].label + ' look') + '</form>';
       case 4: {
         const sub = slug(d.name) + '.bookingbooster.site';
-        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' +
+        const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Domain">' + [['new', 'search', 'Get a new domain'], ['own', 'globe', 'I already have a domain']].map(([k, ic, t]) => '<button type="button" role="tab" aria-selected="' + (ob.dMode === k) + '" data-dmode="' + k + '">' + icon(ic) + t + '</button>').join('') + '</div>';
+        if (ob.dMode === 'own') {
+          const ok = !!ob.domain && ob.domain === cleanOwn(ob.own) && !ownProblem(ob.domain);
+          return '<h1 class="s-ob-h">Use your own domain.</h1><p class="s-ob-sub">Already bought one, at GoDaddy, 123-reg, IONOS or anywhere else? Keep it where it is. Your booking site moves onto it, and you pay nothing extra.</p>' + tabs +
+            '<form data-form="own" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Your domain</span><span class="s-inwrap">' + icon('globe') + '<input id="s-ob-own-' + u + '" data-ob="own" value="' + esc(ob.own) + '" placeholder="larchcabin.co.uk" autocomplete="off" spellcheck="false" inputmode="url"></span></label><button class="btn ink lg" type="submit">' + (ok ? 'Update' : 'Use this domain') + '</button></form>' +
+            (ob.ownErr ? '<p class="s-err" role="alert">' + esc(ob.ownErr) + '</p>' : '') +
+            (ok ? ownDomain(ob, sub) : '<p class="s-fine">Type it without www, like <b>larchcabin.co.uk</b>. Next we show you exactly what to change, step by step.</p>') +
+            '<form data-form="next" class="s-ob-form">' + navRow(ok ? 'Use ' + ob.domain : 'Type your domain to continue', !ok) + '</form>';
+        }
+        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' + tabs +
           '<form data-form="domain" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Search for a domain</span><span class="s-inwrap">' + icon('search') + '<input id="s-ob-dq-' + u + '" data-ob="dq" value="' + esc(ob.dq) + '" autocomplete="off" spellcheck="false"></span></label><button class="btn ink lg" type="submit"' + (ob.dState === 'checking' ? ' disabled' : '') + '>' + (ob.dState === 'checking' ? 'Checking\u2026' : 'Check') + '</button></form>' +
           (ob.dErr2 ? '<p class="s-err" role="alert">' + esc(ob.dErr2) + '</p>' : '') +
           '<div class="s-doms" aria-live="polite">' + (ob.dState === 'checking' ? '<p class="s-dom-wait"><i class="s-spin"></i>Checking availability\u2026</p>' : (ob.dRes || []).map(r =>
@@ -8889,7 +9863,7 @@ body.p-lock { overflow: hidden; }
                st === 'busy' ? '<span class="s-conn-ok"><i class="s-spin"></i>Connecting\u2026</span>' :
                st === 'auth' ? '' : '<button class="btn sm primary" data-conn="' + k + '" data-c="auth">Connect</button>') + '</div>' +
               (st === 'auth' ? '<div class="s-oauth"><p><b>' + name + '</b> will let Bookingbooster:</p><ul>' + perms.map(p => '<li>' + icon('check') + p + '</li>').join('') + '</ul>' +
-                '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">Simulated sign-in for the prototype.</p></div>' : '') +
+                '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">' + (REAL() ? 'You connect your real account securely from your console once you have signed up.' : 'Simulated sign-in for the demo.') + '</p></div>' : '') +
               '</div>';
           }).join('') +
           '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional \xB7 \xA3' + ADDON.price + ' a month</span></b><em>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
@@ -8915,7 +9889,7 @@ body.p-lock { overflow: hidden; }
           '<dl class="s-review">' +
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' \xB7 ' + $(+d.nightly) + ' a night \xB7 sleeps ' + esc(d.sleeps) + ' \xB7 ' + esc(d.bedrooms) + ' bedrooms \xB7 ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
-            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (/bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
+            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
@@ -8925,10 +9899,10 @@ body.p-lock { overflow: hidden; }
     return '';
   }
   function acctFields(inst) {
-    const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', terms: false }), u = inst.uid;
+    const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', ref: inst.ref || '', terms: false }), u = inst.uid;
     const f = (k, label, type, ac, ph) => '<label class="s-f"><span>' + label + '</span><input id="s-ac-' + k + '-' + u + '" data-ac="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(a[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
     return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
-      '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + '</div>' +
+      '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + f('ref', 'Referral code (optional)', 'text', 'off', 'If someone recommended us') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
       (inst.st.ob.acctErr ? '<p class="s-err" role="alert">' + esc(inst.st.ob.acctErr) + '</p>' : '') + '</div>';
   }
@@ -8952,7 +9926,7 @@ body.p-lock { overflow: hidden; }
     return '<div class="s-ob s-done"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home">' + BB.lockup() + '</button><span class="s-done-tag">' + BB.pill('good', 'Live') + '</span></div></header>' +
       '<div class="s-w s-done-in">' +
         '<div class="s-done-copy"><span class="s-burst">' + icon('check') + '</span><p class="eyebrow">' + esc(p.name) + '</p><h1 class="s-ob-h s-done-h">Your site is live.</h1>' +
-        '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> at <b class="s-dom-live">' + esc(p.domain) + '</b> right now, with no platform fee. We also told your console, so it is ready when you log in.</p>' +
+        (ob.dMode === 'own' ? '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> on your free address right now, with no platform fee. Add the DNS records shown in your console and your site moves to <b class="s-dom-live">' + esc(p.domain) + '</b> by itself.</p>' : '<p class="s-ob-sub">Guests can book <b>' + esc(p.name) + '</b> at <b class="s-dom-live">' + esc(p.domain) + '</b> right now, with no platform fee. We also told your console, so it is ready when you log in.</p>') +
         '<div class="s-cta"><button class="btn primary lg"' + go('property', { propertyId: p.id }) + '>' + icon('out') + 'Open your site</button><button class="btn lg"' + go('app', { view: 'website' }) + '>' + icon('dash') + 'Go to your console</button></div>' +
         '<div class="s-done-stats"><span><b class="num">' + p.reviews + '</b>reviews imported</span><span><b class="num">6</b>SEO pages for ' + esc(town(p.area)) + '</span><span><b class="num">' + $(Math.round(p.nightly * 0.155 * 3)) + '</b>kept on a 3-night stay</span></div>' +
         '<button class="btn ghost s-again" data-act="again">' + icon('plus') + 'Add another home</button></div>' +
@@ -8993,10 +9967,10 @@ body.p-lock { overflow: hidden; }
 
   BB.define('site', {
     create(root, opts, inst) {
-      inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = [];
+      inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = []; inst.ref = opts.ref || '';
       Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
         ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
-          opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', terms: false } } : {}) });
+          opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', ref: opts.ref || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
       root.classList.add('x-site');
 
@@ -9022,6 +9996,15 @@ body.p-lock { overflow: hidden; }
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
       });
       BB.on(root, 'click', '[data-theme-pick]', el => { inst.st.ob.theme = el.dataset.themePick; inst.render(); });
+      BB.on(root, 'click', '[data-dmode]', el => {
+        const ob = inst.st.ob, k = el.dataset.dmode; if (ob.dMode === k) return;
+        ob.dMode = k; ob.domain = ''; ob.ownErr = '';
+        if (k === 'own') { const h = cleanOwn(ob.own); if (h && !ownProblem(h)) ob.domain = h; }
+        else if (ob.dRes) { const first = ob.dRes.find(x => x.ok); if (first) ob.domain = first.d; }
+        else { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); return; }
+        inst.render();
+      });
+      BB.on(root, 'click', '[data-dns-reg]', el => { const ob = inst.st.ob; ob.reg = ob.reg === el.dataset.dnsReg ? '' : el.dataset.dnsReg; inst.render(); });
       BB.on(root, 'click', '[data-dom]', el => { inst.st.ob.domain = el.dataset.dom; inst.render(); });
       BB.on(root, 'click', '[data-pick-plan]', el => { inst.st.ob.plan = el.dataset.pickPlan; inst.render(); });
       BB.on(root, 'click', '[data-obbill]', el => { inst.st.ob.annual = el.dataset.obbill === 'y'; inst.render(); });
@@ -9042,7 +10025,7 @@ body.p-lock { overflow: hidden; }
       BB.on(root, 'input', '[data-ac]', el => { const a = inst.st.ob.acct; a[el.dataset.ac] = el.type === 'checkbox' ? el.checked : el.value; if (inst.st.ob.acctErr) { inst.st.ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'change', '[data-ac="terms"]', el => { inst.st.ob.acct.terms = el.checked; });
       BB.on(root, 'input', '[data-ob]', el => { inst.st.ob[el.dataset.ob] = el.value; if (el.dataset.ob === 'url' && inst.st.ob.urlErr) { inst.st.ob.urlErr = ''; inst.render(); } });
-      BB.on(root, 'input', '[data-d]', el => { inst.st.ob.d[el.dataset.d] = el.value; inst.st.ob.dErr = ''; if (el.dataset.d === 'name') { inst.st.ob.dq = ''; inst.st.ob.dRes = null; inst.st.ob.domain = ''; } inst.render(); });
+      BB.on(root, 'input', '[data-d]', el => { inst.st.ob.d[el.dataset.d] = el.value; inst.st.ob.dErr = ''; if (el.dataset.d === 'name') { inst.st.ob.dq = ''; inst.st.ob.dRes = null; if (inst.st.ob.dMode !== 'own') inst.st.ob.domain = ''; } inst.render(); });
 
       root.addEventListener('submit', ev => {
         const f = ev.target.closest('[data-form]'); if (!f) return; ev.preventDefault();
@@ -9056,10 +10039,11 @@ body.p-lock { overflow: hidden; }
         }
         if (kind === 'details') { const e = validDetails(ob.d); if (e) { ob.dErr = e; inst.render(); return; } ob.step = 3; inst.render(); scrollTopOb(); return; }
         if (kind === 'domain') { checkDomain(inst); return; }
+        if (kind === 'own') { const h = cleanOwn(ob.own), e = ownProblem(h); ob.ownErr = e; ob.domain = e ? '' : h; if (!e) ob.own = h; inst.render(); return; }
         if (kind === 'next') {
           if (ob.step === 4 && !ob.domain) return;
           if (ob.step === 5 && ob.conn.stripe !== 'on') return;
-          ob.step++; if (ob.step === 4 && !ob.dRes) { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
+          ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
         if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
@@ -9172,6 +10156,21 @@ body.p-lock { overflow: hidden; }
   BB.transferDays = function (s) { const k = (s || S()).account.bank; return Math.max(1, Math.min(30, (k && +k.days) || 3)); };
   // Due in the host's number of days, but never later than the day before arrival (or today, for a last-minute stay).
   BB.transferDue = function (b) { const t = S().today, due = D.add(t, BB.transferDays()), last = D.add(b.checkIn, -1); return due < last ? due : (last > t ? last : t); };
+  // How guests pay on the host's own sites: 'card' (Stripe), 'transfer' (bank transfer) or 'both' (the default).
+  // Bank transfer only counts once the bank details are complete, so a host can never be left with no way to get paid.
+  BB.GUEST_PAY = ['both', 'card', 'transfer'];
+  BB.guestPay = function (s) {
+    s = s || S(); const want = BB.GUEST_PAY.includes(s.account.guestPay) ? s.account.guestPay : 'both';
+    const transfer = want !== 'card' && BB.bankReady(s), card = want !== 'transfer' || !transfer;
+    return { want, card, transfer, mode: card && transfer ? 'both' : card ? 'card' : 'transfer' };
+  };
+  BB.act.setGuestPay = function (mode) {
+    if (!BB.GUEST_PAY.includes(mode)) return { ok: false, error: 'Choose card, bank transfer, or both.' };
+    if (mode !== 'card' && !BB.bankReady()) return { ok: false, error: 'Add your bank details and turn on bank transfer first.' };
+    S().account.guestPay = mode;
+    BB.log('payment', 'Payments', mode === 'card' ? 'Guests now pay by card through Stripe only.' : mode === 'transfer' ? 'Guests now book and pay by bank transfer only.' : 'Guests can now choose to pay by card or by bank transfer.', null, ['Payments']);
+    BB.store.commit({ type: 'account' }); return { ok: true };
+  };
   BB.act.saveBankTransfer = function (patch) {
     const a = S().account, k = Object.assign({}, a.bank || {});
     patch = patch || {};
@@ -9189,7 +10188,7 @@ body.p-lock { overflow: hidden; }
   };
   // A guest books on the site and pays by bank transfer: the stay is booked, unpaid, with an invoice due in a few days.
   BB.act.bookByTransfer = function (input) {
-    if (!BB.bankReady()) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
+    if (!BB.guestPay().transfer) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
     return BB.act.createBooking(Object.assign({}, input, { pay: 'manual', channel: 'direct', payBy: 'transfer', pending: false, request: false }));
   };
   // Host sends an invoice with bank details for any unpaid direct booking (a phone booking, or an accepted request).
@@ -9316,7 +10315,7 @@ body.p-lock { overflow: hidden; }
   // Results from real AI checks, run by the server against the answer engines the platform has keys for.
   BB.act.applyAiResults = function (results) {
     const s = S(); let changed = 0;
-    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; });
+    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; if (r.cited) q.cited = r.cited; if (r.sources) q.sources = r.sources; });
     s.ai.checkedAt = s.today; s.ai.live = true;
     const sc = BB.aiScore();
     BB.log('ai', 'AI visibility', 'Checked ' + s.ai.questions.length + ' traveller questions in ChatGPT, Gemini, Perplexity and Google. Your homes came up in ' + sc.score + '% of answers' + (changed ? ', ' + changed + ' changed since last time.' : '.'), null, ['AI visibility', 'Answer engines']);
@@ -9645,6 +10644,10 @@ body.p-lock { overflow: hidden; }
         { id: 'gbp-lake', text: 'Post harbour-view photos to the Google Business Profile', done: false, fixes: [3] },
       ],
     };
+
+    // Sites the answer engines cited for each question (what a live check records), and whether they linked to the home's own site.
+    const SRC = { laurel: ['airbnb.co.uk', 'visitlakedistrict.com', 'sykescottages.co.uk', 'tripadvisor.co.uk', 'larchfellcabin.co.uk'], lakeside: ['visitcornwall.com', 'classic.co.uk', 'airbnb.co.uk', 'tidewatercottage.co.uk'], loft: ['visitbath.co.uk', 'booking.com', 'airbnb.co.uk', 'theguardian.com'] };
+    ai.questions.forEach((q, i) => { q.sources = {}; q.cited = {}; Object.keys(q.engines).forEach((k, j) => { q.sources[k] = SRC[q.propertyId].filter((d, n) => (n + i + j) % 3 !== 0 && (q.engines[k] || !/cabin|cottage|pulteney/.test(d))); q.cited[k] = q.sources[k].some(d => /larchfell|tidewater|pulteney/.test(d)); }); });
 
     const website = { visitors: { laurel: 1840, lakeside: 1036, loft: 328 }, fromSearch: 0.64, conversion: 0.029, faqs: { laurel: ['Is the cabin dog friendly?|Yes. One well-behaved dog is welcome for a \xA335 fee. The garden is fully fenced.', 'How does check-in work?|Complete the 3-minute online check-in and your door code arrives on arrival day.', 'Why book direct?|You skip the platform service fee and talk to us directly.'] } };
 
@@ -10139,6 +11142,23 @@ body.p-lock { overflow: hidden; }
   };
 
   /* Copy with fallback to selecting the text */
+  /* A host's own domain: where to add DNS records at the common registrars. Shared by sign-up and the console.
+     BB.dnsGuide(pick, domain) returns the registrar chips and the steps for the one picked ('' shows the chips only). */
+  BB.REGISTRARS = [
+    ['godaddy', 'GoDaddy', ['Sign in at godaddy.com and open <b>My Products</b>.', 'Next to your domain, choose <b>DNS</b> (or <b>Manage DNS</b>).', 'Choose <b>Add New Record</b> for each record above. GoDaddy usually already has an A record for <b>@</b> marked \u201CParked\u201D and a CNAME for <b>www</b>. Edit those two instead of adding new ones.'], 'Type <b>@</b> in Name for your main address.'],
+    ['123reg', '123-reg', ['Sign in at 123-reg.co.uk and open your <b>Control Panel</b>.', 'Pick your domain, then <b>Manage DNS</b>, then the <b>Advanced DNS</b> tab.', 'Add each record above. If there is already an A record for <b>@</b> or <b>www</b> pointing at a 123-reg holding page, delete it first.'], 'Type <b>@</b> in Hostname for your main address.'],
+    ['ionos', 'IONOS', ['Sign in at ionos.co.uk and open <b>Domains &amp; SSL</b>.', 'Click your domain, then the <b>DNS</b> tab.', 'Choose <b>Add record</b> for each record above. If IONOS says a record conflicts with an existing one, choose to replace it.'], 'Type <b>@</b> in Host name for your main address.'],
+    ['namecheap', 'Namecheap', ['Sign in at namecheap.com and open <b>Domain List</b>.', 'Choose <b>Manage</b> next to your domain, then the <b>Advanced DNS</b> tab.', 'Delete the default <b>URL Redirect</b> record and the <b>www</b> parking page record, then use <b>Add New Record</b> for each record above.'], 'Type <b>@</b> in Host for your main address. Nameservers must be set to Namecheap BasicDNS.'],
+    ['cloudflare', 'Cloudflare', ['Sign in at dash.cloudflare.com and pick your domain.', 'Open <b>DNS</b>, then <b>Records</b>, then <b>Add record</b> for each record above.', 'Set <b>Proxy status</b> to <b>DNS only</b> (grey cloud) on the <b>@</b> and <b>www</b> records. With the orange cloud on we cannot see them and cannot set up your padlock.'], 'Type <b>@</b> in Name for your main address.'],
+    ['other', 'Somewhere else', ['Sign in where you bought the domain and look for <b>DNS</b>, <b>DNS settings</b>, <b>Zone editor</b> or <b>Advanced DNS</b>.', 'If your domain uses another company\u2019s nameservers (for example Cloudflare, Wix or Squarespace), add the records there instead.', 'Add each record above, and remove any old A record for <b>@</b> or CNAME for <b>www</b> that points somewhere else.'], 'Most registrars use <b>@</b> for your main address. If the Name box already shows your domain after it, type only the first part, like <b>www</b>.'],
+  ];
+  BB.dnsGuide = function (pick, domain) {
+    const r = BB.REGISTRARS.find(x => x[0] === pick);
+    return '<div class="dg"><p class="dg-q">Where did you buy ' + (domain ? '<b class="mono">' + BB.esc(domain) + '</b>' : 'your domain') + '?</p>' +
+      '<div class="dg-chips" role="radiogroup" aria-label="Where you bought your domain">' + BB.REGISTRARS.map(x => '<button type="button" class="dg-chip' + (x[0] === pick ? ' on' : '') + '" role="radio" aria-checked="' + (x[0] === pick) + '" data-dns-reg="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>' +
+      (r ? '<ol class="dg-steps">' + r[2].map(t => '<li>' + t + '</li>').join('') + '</ol><p class="dg-tip">' + BB.icon('spark') + '<span>' + r[3] + ' Changes usually show within an hour, and can take up to a day.</span></p>' : '') + '</div>';
+  };
+
   BB.copy = async function (text, el) { try { await navigator.clipboard.writeText(text); BB.toast('Copied'); } catch (_) { if (el) { const r = document.createRange(); r.selectNodeContents(el); getSelection().removeAllRanges(); getSelection().addRange(r); } } };
 
   /* Icons: 24px stroke icons */
@@ -12767,10 +13787,18 @@ var require_config = __commonJS({
         addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
       }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
       ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
+      // Event ads: our own event finder reads public what's-on and course pages in the background (server/studio/crawler.js).
+      events: { crawl: E.EVENT_CRAWL !== "off", seeds: E.EVENT_SEEDS || "" },
+      // EVENT_SEEDS: off, or a path to another starter list
       // AI credit: what each plan includes a month, in pounds, and how AI usage is priced (see server/credits.js).
       credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
+      // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
+      google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
       nuki: { token: E.NUKI_API_TOKEN },
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
+      // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
+      // is held for refunds, and the smallest payout (pence).
+      affiliate: { rate: Math.max(0, Math.min(100, +(E.AFFILIATE_RATE || 25))), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
       icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10)
     };
   }
@@ -12811,6 +13839,20 @@ create table if not exists ai_credit (workspace_id text primary key, anchor bigi
 create table if not exists ai_ledger (id bigserial primary key, workspace_id text not null, kind text not null, amount bigint not null,
   feature text, model text, tokens_in integer, tokens_out integer, ref text unique, created_at bigint not null);
 create index if not exists ai_ledger_ws on ai_ledger(workspace_id, created_at);
+create table if not exists affiliates (
+  id text primary key, code text not null unique, email text not null, name text not null, pass text not null,
+  payout text not null default '', status text not null default 'active', created_at bigint not null);
+create unique index if not exists affiliates_email_lower on affiliates (lower(email));
+create table if not exists aff_sessions (token text primary key, affiliate_id text not null references affiliates(id) on delete cascade, expires_at bigint not null);
+create table if not exists aff_clicks (affiliate_id text not null, day text not null, n integer not null default 0, primary key (affiliate_id, day));
+create table if not exists referrals (workspace_id text primary key, affiliate_id text not null references affiliates(id), how text not null, created_at bigint not null);
+create table if not exists commissions (
+  id text primary key, affiliate_id text not null references affiliates(id), workspace_id text not null, kind text not null, source text not null,
+  gross integer not null, amount integer not null, reversed integer not null default 0, refs text not null default '', note text,
+  clears_at bigint not null, created_at bigint not null, updated_at bigint not null);
+create table if not exists aff_payouts (id bigserial primary key, affiliate_id text not null references affiliates(id), amount integer not null, reference text, created_at bigint not null);
+create index if not exists comm_aff on commissions(affiliate_id, created_at);
+create index if not exists ref_aff on referrals(affiliate_id);
 create index if not exists lead_seq_due on lead_seq(status, next_at);
 create index if not exists outbox_ws on outbox(workspace_id, created_at);
 create index if not exists pay_ws on payments(workspace_id, booking_id);
@@ -13000,7 +14042,7 @@ var require_engine = __commonJS({
     var fs = require_vfs();
     var path = __require("path");
     var SRC = path.join(__dirname, "..", "web", "src");
-    var code = ["store.js", "store-ext.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
+    var code = ["store.js", "store-ext.js", "seo-rules.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
     var SHADOW = ["localStorage", "sessionStorage", "BroadcastChannel", "document", "navigator", "location", "fetch", "XMLHttpRequest", "WebSocket", "process", "require", "Deno", "globalThis", "self", "global"];
     var PARAMS = ["window", "__BB_BOOT__", "console", "Date", "Math", "JSON", "Intl", "setTimeout", "clearTimeout"].concat(SHADOW);
     var rules = new Function(...PARAMS, code + "\n//# sourceURL=bb-rules.js");
@@ -13454,7 +14496,7 @@ var require_auth = __commonJS({
         for (const [k, v] of hits) if (!v.some((x) => t - x < 36e5)) hits.delete(k);
       }, 6e5);
       if (sweep.unref) sweep.unref();
-      return { changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: (id) => q.user.get(id), userByEmail: (e) => q.userByEmail.get(String(e || "").trim().toLowerCase()) };
+      return { hashPass, checkPass, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: (id) => q.user.get(id), userByEmail: (e) => q.userByEmail.get(String(e || "").trim().toLowerCase()) };
     };
   }
 });
@@ -13468,10 +14510,10 @@ var require_build = __commonJS({
     var crypto = __require("crypto");
     var S = path.join(__dirname, "src");
     var rd = (f) => fs.existsSync(path.join(S, f)) ? fs.readFileSync(path.join(S, f), "utf8") : "";
-    var MODS = ["site", "app", "app-grow", "app-studio", "mobile", "property", "guest"];
+    var MODS = ["site", "app", "app-grow", "app-seo", "app-studio", "app-events", "mobile", "property", "guest"];
     function build() {
       const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css"), rd("site-social.css")]).join("\n");
-      const core = [rd("store.js"), rd("store-ext.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
+      const core = [rd("store.js"), rd("store-ext.js"), rd("seo-rules.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
       const prodJs = core.concat([rd("sync.js"), rd("shell-prod.js")]).join("\n;\n");
       const demoJs = core.concat([rd("sync.js"), rd("shell.js")]).join("\n;\n");
       const h = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 10);
@@ -13502,7 +14544,7 @@ var require_pages = __commonJS({
       return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title || "Bookingbooster") + "</title>" + (o.description ? '<meta name="description" content="' + esc(o.description) + '">' : "") + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + (o.head || "") + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml"><link rel="icon" href="/assets/icons/icon-192.png" type="image/png" sizes="192x192">' + (o.app ? APP_HEAD : "") + FONTS + '<link rel="stylesheet" href="/assets/app.' + bundle.hash.css + '.css"><style>[hidden]{display:none!important}body{margin:0}.seo{max-width:760px;margin:0 auto;padding:32px 20px;font:16px/1.6 system-ui,sans-serif;color:#1b1f2a}.seo h1{font-size:32px;line-height:1.15}</style></head><body><header class="pbar" id="bbBar"></header><main id="bbApp" class="surface">' + (o.content || "") + '</main><aside class="drawer" id="bbDrawer" hidden aria-label="Activity"><button class="iconbtn drawer-x" data-close aria-label="Close activity"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="drawer-body"></div></aside>' + (o.banner ? '<div class="test-banner" role="note">' + o.banner + "</div>" : "") + "<script>window.__BB_BOOT__=" + safeJson(o.boot) + ';</script><script src="/assets/' + js + "." + bundle.hash[js] + '.js"></script></body></html>';
     }
     function plain(o) {
-      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + "</title>" + (o.index ? "" : '<meta name="robots" content="noindex">') + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(o.title) + "</title>" + (o.index ? "" : '<meta name="robots" content="noindex">') + (o.head || "") + '<link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + FONTS + "<style>" + AUTH_CSS + '</style></head><body><main class="au' + (o.wide === "read" ? " read" : o.wide ? " wide" : "") + '"><a class="au-logo" href="/">' + MARK + "<b>bookingbooster</b></a>" + o.body + "</main></body></html>";
     }
     var MARK = '<svg viewBox="0 0 100 100" width="34" height="34" aria-hidden="true"><rect width="100" height="100" rx="26" fill="#3355FF"/><path d="M31 79 V34" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M20 35 L31 22 L42 35" fill="none" stroke="#FFC233" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 56 L54 39 L77 56 V79 H31" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><rect x="49" y="62" width="10" height="17" rx="2" fill="#FFC233"/></svg>';
     var AUTH_CSS = `:root{--p:#2747F5;--ink:#0F1630;--fg:#0F1630;--mut:#5A6386;--line:#E6E5E0;--bg:#F7F6F2;--bad:#B4362B;color-scheme:light}
@@ -13515,7 +14557,7 @@ button{font:inherit;font-weight:600;padding:13px 18px;border-radius:10px;border:
 .err{color:var(--bad);font-weight:600;margin:0}.ok{color:#178a4c;font-weight:600}.links{display:flex;justify-content:space-between;gap:12px;margin-top:18px;font-size:14px}a{color:var(--p)}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px}
 .au.wide{max-width:1180px}.au.read{max-width:720px}.au.read li{margin-bottom:6px}.wide table td,.wide table th{padding:8px 10px 8px 0}.wide td form{margin-top:6px;gap:4px}.wide td input{padding:7px 10px;font-size:13px;border-radius:8px}.wide td button{padding:7px 14px;font-size:13px}.wide td summary{cursor:pointer;color:var(--p);font-weight:600}.wide td.act{min-width:260px}.wide button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}@media(min-width:760px){.wide details.card>form{grid-template-columns:1fr 1fr}.wide details.card>form>p,.wide details.card>form>button{grid-column:1/-1}}`;
-    module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle };
+    module.exports = { page, plain, esc, safeJson, rebuild, assets: () => bundle, FONTS };
   }
 });
 
@@ -13550,11 +14592,19 @@ var require_seo = __commonJS({
         return { name: n[0] + (n[1] ? " " + n[1][0] + "." : ""), stars: b.review.stars, text: b.review.text, at: b.review.at };
       });
     }
+    var seoOf = (p) => p.seo || {};
+    var guideOf = (p) => (p.guide || []).map((x) => String(x).split("|").map((y) => y.trim())).filter((x) => x[0]);
+    var ytId = (u) => {
+      const m = String(u || "").match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+      return m ? m[1] : null;
+    };
     function titleOf(p) {
+      if (seoOf(p).metaTitle) return seoOf(p).metaTitle;
       const t = p.name + " \xB7 " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + town(p) + " \xB7 Book direct";
       return t;
     }
     function descOf(p) {
+      if (seoOf(p).metaDescription) return seoOf(p).metaDescription;
       return (p.headline ? p.headline + " " : "") + (p.sub ? p.sub.replace(/ · /g, ", ") + ". " : "") + "Book direct from " + money(p.nightly) + " a night with no platform fees.";
     }
     function jsonLd(s, p, url) {
@@ -13565,7 +14615,7 @@ var require_seo = __commonJS({
         "@id": url + "#rental",
         name: p.name,
         url,
-        description: p.about || p.headline,
+        description: seoOf(p).summary || p.about || p.headline,
         identifier: p.id,
         brand: { "@type": "Brand", name: s.account.business },
         address: { "@type": "PostalAddress", addressLocality: town(p), addressRegion: String(p.area || "").split(",").slice(1).join(",").trim() || void 0, addressCountry: "GB" },
@@ -13587,10 +14637,42 @@ var require_seo = __commonJS({
       if (p.photos && p.photos.length) rental.image = p.photos.map((x) => x.url);
       if (p.reviews && p.rating) rental.aggregateRating = { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews, bestRating: 5 };
       if (revs.length) rental.review = revs.map((r) => ({ "@type": "Review", reviewRating: { "@type": "Rating", ratingValue: r.stars, bestRating: 5 }, author: { "@type": "Person", name: r.name }, datePublished: r.at, reviewBody: r.text }));
+      const o = seoOf(p), same = (o.sameAs || []).filter((u) => /^https:\/\//.test(u));
+      if (same.length) rental.sameAs = same;
+      if (p.photos && p.photos.length) rental.image = p.photos.map((x) => x.cap ? { "@type": "ImageObject", url: x.url, contentUrl: x.url, caption: x.cap } : x.url);
+      const yt = ytId(o.videoUrl);
+      if (o.videoUrl) rental.subjectOf = { "@type": "VideoObject", name: p.name + " walkthrough", description: "A video tour of " + p.name + ", " + (p.area || town(p)) + ".", embedUrl: yt ? "https://www.youtube.com/embed/" + yt : o.videoUrl, contentUrl: o.videoUrl, thumbnailUrl: yt ? "https://i.ytimg.com/vi/" + yt + "/hqdefault.jpg" : p.photos && p.photos[0] ? p.photos[0].url : void 0, uploadDate: o.videoAt || s.today };
+      const region = String(p.area || "").split(",").slice(1).join(",").trim() || void 0;
+      const lodging = {
+        "@type": "LodgingBusiness",
+        "@id": url + "#lodging",
+        name: p.name,
+        url,
+        description: o.summary || p.headline,
+        image: rental.image ? (p.photos[0] || {}).url : void 0,
+        address: { "@type": "PostalAddress", addressLocality: town(p), addressRegion: region, addressCountry: "GB" },
+        priceRange: rental.priceRange,
+        checkinTime: p.checkinTime,
+        checkoutTime: p.checkoutTime,
+        petsAllowed: !!p.petsAllowed,
+        amenityFeature: rental.containsPlace.amenityFeature,
+        parentOrganization: { "@id": url + "#host" },
+        sameAs: same.length ? same : void 0,
+        makesOffer: p.nightly ? { "@type": "Offer", url: url + "#book", priceCurrency: "GBP", price: p.nightly, priceSpecification: { "@type": "UnitPriceSpecification", price: p.nightly, priceCurrency: "GBP", unitText: "night" }, availability: "https://schema.org/InStock" } : void 0
+      };
+      if (rental.geo) lodging.geo = rental.geo;
+      const near = guideOf(p);
+      const extra = [
+        lodging,
+        { "@type": "WebPage", "@id": url + "#page", url, name: titleOf(p), inLanguage: "en-GB", about: { "@id": url + "#rental" }, isPartOf: { "@id": url + "#site" }, speakable: { "@type": "SpeakableSpecification", cssSelector: ["#summary", "#faq"] }, dateModified: s.today },
+        { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [{ "@type": "ListItem", position: 1, name: s.account.business, item: url }, { "@type": "ListItem", position: 2, name: p.name, item: url + "#book" }] }
+      ];
+      if (near.length) extra.push({ "@type": "ItemList", "@id": url + "#nearby", name: "Things to do near " + p.name, itemListElement: near.slice(0, 20).map((g, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "TouristAttraction", name: g[0], description: [g[1] ? g[1] + " from " + p.name : "", g[2] || ""].filter(Boolean).join(". ") || void 0, address: { "@type": "PostalAddress", addressRegion: region, addressCountry: "GB" } } })) });
       return { "@context": "https://schema.org", "@graph": [
         rental,
+        ...extra,
         { "@type": "FAQPage", "@id": url + "#faq", mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
-        { "@type": "Organization", "@id": url + "#host", name: s.account.business, url },
+        Object.assign({ "@type": "Organization", "@id": url + "#host", name: s.account.business, url }, same.filter((u) => /instagram|facebook|tiktok|youtube|x\.com|twitter/.test(u)).length ? { sameAs: same.filter((u) => /instagram|facebook|tiktok|youtube|x\.com|twitter/.test(u)) } : {}),
         { "@type": "WebSite", "@id": url + "#site", name: p.name, url, inLanguage: "en-GB" }
       ] };
     }
@@ -13600,11 +14682,11 @@ var require_seo = __commonJS({
     }
     function content(s, p, url) {
       const revs = reviewsOf(s, p), faqs = faqsOf(s, p);
-      return '<article class="seo" id="seo"><p>' + esc(s.account.business) + " \xB7 " + esc(p.area) + "</p><h1>" + esc(p.name) + "</h1><p><strong>" + esc(p.headline) + "</strong></p><p>" + esc(p.sub) + "</p><p>" + esc(p.about) + "</p><p>From " + money(p.nightly) + " a night. Cleaning " + money(p.cleaning) + ". Minimum stay " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + '. <a href="#book">Check dates and book direct</a>.</p><h2>What you get</h2><ul>' + (p.amenities || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "</ul><h2>House rules</h2><ul>" + (p.rules || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "<li>Check-in from " + esc(p.checkinTime) + ", checkout by " + esc(p.checkoutTime) + ".</li></ul>" + (revs.length ? "<h2>What guests say</h2>" + revs.map((r) => "<blockquote><p>" + esc(r.text) + "</p><footer>" + esc(r.name) + ", " + "\u2605".repeat(r.stars) + "</footer></blockquote>").join("") + (s.live ? "<p>Every review is from a guest who stayed and chose to share it, whatever their rating.</p>" : "") : "") + "<h2>Questions</h2>" + faqs.map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + "</article>";
+      return '<article class="seo" id="seo"><p>' + esc(s.account.business) + " \xB7 " + esc(p.area) + "</p><h1>" + esc(p.name) + "</h1>" + (seoOf(p).summary ? '<p id="summary">' + esc(seoOf(p).summary) + "</p>" : "") + "<p><strong>" + esc(p.headline) + "</strong></p><p>" + esc(p.sub) + "</p><p>" + esc(p.about) + "</p><p>From " + money(p.nightly) + " a night. Cleaning " + money(p.cleaning) + ". Minimum stay " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + '. <a href="#book">Check dates and book direct</a>.</p><h2>What you get</h2><ul>' + (p.amenities || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "</ul><h2>House rules</h2><ul>" + (p.rules || []).map((a) => "<li>" + esc(a) + "</li>").join("") + "<li>Check-in from " + esc(p.checkinTime) + ", checkout by " + esc(p.checkoutTime) + ".</li></ul>" + (revs.length ? "<h2>What guests say</h2>" + revs.map((r) => "<blockquote><p>" + esc(r.text) + "</p><footer>" + esc(r.name) + ", " + "\u2605".repeat(r.stars) + "</footer></blockquote>").join("") + (s.live ? "<p>Every review is from a guest who stayed and chose to share it, whatever their rating.</p>" : "") : "") + (seoOf(p).areaIntro || guideOf(p).length ? '<h2 id="area">Things to do near ' + esc(p.name) + ", " + esc(town(p)) + "</h2>" + String(seoOf(p).areaIntro || "").split(/\n+/).filter(Boolean).map((x) => "<p>" + esc(x) + "</p>").join("") + (guideOf(p).length ? "<ul>" + guideOf(p).map((g) => "<li><strong>" + esc(g[0]) + "</strong>" + (g[1] ? ", " + esc(g[1]) : "") + (g[2] ? ". " + esc(g[2]) : "") + "</li>").join("") + "</ul>" : "") : "") + (p.photos && p.photos.length ? "<h2>Photos</h2>" + p.photos.slice(0, 12).map((x) => '<figure><img src="' + esc(x.url) + '" alt="' + esc(x.cap || p.name + ", " + town(p)) + '" loading="lazy" width="1200" height="800">' + (x.cap ? "<figcaption>" + esc(x.cap) + "</figcaption>" : "") + "</figure>").join("") : "") + (seoOf(p).videoUrl ? '<p><a href="' + esc(seoOf(p).videoUrl) + '">Watch a video tour of ' + esc(p.name) + "</a></p>" : "") + '<h2 id="faq">Questions</h2>' + faqs.map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + ((seoOf(p).sameAs || []).length ? "<h2>Find " + esc(p.name) + " elsewhere</h2><ul>" + seoOf(p).sameAs.map((u) => '<li><a href="' + esc(u) + '" rel="noopener">' + esc(u.replace(/^https:\/\/(www\.)?/, "").split("/")[0]) + "</a></li>").join("") + "</ul>" : "") + "</article>";
     }
     function llms(s, p, url) {
       const faqs = faqsOf(s, p);
-      return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
+      return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + (seoOf(p).summary ? "\n## In short\n\n" + seoOf(p).summary + "\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + (guideOf(p).length || seoOf(p).areaIntro ? "\n\n## Nearby\n\n" + (seoOf(p).areaIntro ? seoOf(p).areaIntro.trim() + "\n\n" : "") + guideOf(p).map((g) => "- " + g[0] + (g[1] ? ": " + g[1] : "") + (g[2] ? ". " + g[2] : "")).join("\n") : "") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + (reviewsOf(s, p).length ? "\n\n## What guests say\n\n" + reviewsOf(s, p).slice(0, 3).map((r) => "> " + r.text.replace(/\s+/g, " ") + " (" + r.name + ", " + r.stars + " stars)").join("\n\n") : "") + ((seoOf(p).sameAs || []).length || seoOf(p).videoUrl ? "\n\n## Elsewhere\n\n" + (seoOf(p).sameAs || []).map((u) => "- " + u).join("\n") + (seoOf(p).videoUrl ? "\n- Video tour: " + seoOf(p).videoUrl : "") : "") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
     }
     function robots(sitemapUrl) {
       return [
@@ -13615,7 +14697,7 @@ var require_seo = __commonJS({
         "Disallow: /api/",
         "",
         "# AI search and assistants are welcome to read and cite this site",
-        ...["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "PerplexityBot", "Google-Extended", "Applebot-Extended", "Bingbot"].map((b) => "User-agent: " + b + "\nAllow: /"),
+        ...["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot"].map((b) => "User-agent: " + b + "\nAllow: /"),
         "",
         "Sitemap: " + sitemapUrl,
         ""
@@ -13624,7 +14706,175 @@ var require_seo = __commonJS({
     function sitemap(urls) {
       return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => "  <url><loc>" + esc(u.loc) + "</loc>" + (u.lastmod ? "<lastmod>" + u.lastmod + "</lastmod>" : "") + "</url>").join("\n") + "\n</urlset>\n";
     }
-    module.exports = { head, content, llms, robots, sitemap, jsonLd, titleOf, descOf, faqsOf, reviewsOf };
+    function sitemapFor(s, homes, extra) {
+      const x = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
+      return x + homes.map(([p, loc]) => "  <url><loc>" + esc(loc) + "</loc><lastmod>" + s.today + "</lastmod>" + (p.photos || []).slice(0, 20).map((ph) => "<image:image><image:loc>" + esc(ph.url) + "</image:loc></image:image>").join("") + "</url>").join("\n") + (extra || []).map((loc) => "\n  <url><loc>" + esc(loc) + "</loc></url>").join("") + "\n</urlset>\n";
+    }
+    function indexNowKey(secret, wid) {
+      return __require("crypto").createHmac("sha256", String(secret || "bb")).update("indexnow:" + wid).digest("hex").slice(0, 32);
+    }
+    module.exports = { head, content, llms, robots, sitemap, sitemapFor, indexNowKey, jsonLd, titleOf, descOf, faqsOf, reviewsOf };
+  }
+});
+
+// server/answers.js
+var require_answers = __commonJS({
+  "server/answers.js"(exports, module) {
+    var { esc } = require_pages();
+    var mkt = require_marketing();
+    var P = mkt.PRICE;
+    var AIRBNB_FEE = 0.155;
+    var money = (n) => "\xA3" + Math.round(n).toLocaleString("en-GB");
+    var feeOn = (rev) => money(rev * AIRBNB_FEE);
+    var GUIDES = [
+      ["direct-booking-playbook.pdf", "The direct booking playbook", "The full plan for moving a UK holiday let from platform bookings to direct bookings, step by step."],
+      ["direct-booking-launch-checklist.pdf", "Direct booking launch checklist", "Everything to tick off before your booking site takes its first payment."],
+      ["direct-booking-website-must-haves.pdf", "Direct booking website must-haves", "The features guests expect before they trust a site enough to pay on it."],
+      ["fee-leak-worksheet.pdf", "Fee leak worksheet", "Work out what platform fees cost you each year, stay by stay."],
+      ["get-found-in-ai-search.pdf", "Get found in AI search", "How ChatGPT, Perplexity, Gemini and Google AI Overviews choose which holiday lets to recommend, and how to be one of them."],
+      ["ai-search-self-audit.pdf", "AI search self-audit", "A checklist to test how your holiday let shows up in AI answers today."],
+      ["guest-message-template-pack.pdf", "Guest message template pack", "Ready-to-send messages for every stage of a stay."],
+      ["repeat-guest-engine.pdf", "The repeat guest engine", "How to turn one stay into three with email and text marketing."],
+      ["repeat-guest-swipe-file.pdf", "Repeat guest swipe file", "Email and text examples that bring past guests back."]
+    ];
+    var TERMS = [
+      ["On-page SEO", "The words and HTML of each page: titles, descriptions, headings, keywords and internal links.", 'A title that says what and where ("Hot tub cabin in Troutbeck"), a description with the price, and words that match what guests search.', "classic", "Titles, descriptions and headings are written for every page. Hosts can set their own and see a Google preview."],
+      ["Off-page SEO", "Signals from outside your site, mainly links from other websites, brand mentions and digital PR.", 'Links from your local tourism site, local blogs, "best stays" round-ups and your own listings.', "classic", "We show which sites AI assistants cite for your area and add every listing and mention to your structured data."],
+      ["Technical SEO", "How easily search engines can crawl and index a site: speed, mobile, structure, sitemaps and structured data.", "Pages that load fast on a phone, can be read without JavaScript, and say in structured data that this is a holiday rental with a price and rules.", "classic", "Automatic: server-rendered pages, HTTPS, canonical tags, robots.txt, image sitemaps, VacationRental and LodgingBusiness schema, and IndexNow pings."],
+      ["Local SEO", 'Showing up in the Google Maps pack and "near me" searches, driven by your Google Business Profile, reviews and local citations.', "A verified Google Business Profile in the right category, a map pin, steady reviews, and the same name and address everywhere.", "classic", "Map pin, address and reviews go into the schema. A guided Google Business Profile checklist covers the rest."],
+      ["Content SEO", "Planning and writing content around what people actually search for.", 'An about text that answers who it suits and what is nearby, plus a local area guide for "things to do near" searches.', "classic", "Keyword ideas built from your home, and an area guide and summary drafted from your facts for you to approve."],
+      ["Image and video SEO", "Ranking in Google Images, YouTube and video results.", "Photos with descriptive captions, which become alt text, and a short walkthrough video on YouTube.", "classic", "Captions become alt text and image sitemap entries. A YouTube link adds video structured data."],
+      ["SXO (search experience optimisation)", "SEO combined with conversion work, so visitors who land from search actually book.", "The price up front, instant booking, real reviews and a note from the host on the page a searcher lands on.", "classic", "Live prices, instant card booking, guest reviews and a host note are on every page."],
+      ["AEO (answer engine optimisation)", "Being the direct answer: featured snippets, People Also Ask, voice answers and AI Overviews. In practice, clear questions and answers plus structured data.", "An answer-first summary of the home and short answers to the questions guests ask, starting with yes or no.", "ai", "An answer-first summary, FAQ ideas with answers drafted from your facts, FAQPage and speakable structured data."],
+      ["GEO (generative engine optimisation)", "Being named and cited inside answers written by AI assistants such as ChatGPT, Perplexity, Gemini, Claude and Copilot.", "Facts an assistant can check and quote, a page it is allowed to read, and a link it can give that books with you.", "ai", "llms.txt for every home, AI crawlers welcomed in robots.txt, and weekly checks of real answers with the sites they cite."],
+      ["LLMO (large language model optimisation)", "Helping AI models recognise your business as one consistent entity, mostly through consistent mentions across the web.", "The same home name, place and facts on your site, listings, Google Maps and social profiles, linked together.", "ai", "Your listings and profiles become sameAs links in your structured data, and we track whether answers link to your own site."],
+      ["AIO (AI Overview optimisation)", "Showing in Google\u2019s AI summary at the top of results. Some people use AIO loosely to mean AI optimisation in general.", "Pages that already rank and answer the question in their first lines.", "ai", "Google answers are checked with each AI run, and your summary sits straight under the main heading, where AI Overviews read first."],
+      ["AI SEO", "An umbrella label for AEO, GEO, LLMO and AIO. It is also used for doing normal SEO with AI tools, so check which one someone means.", "Both meanings help: be the answer, and use AI to write and check faster.", "ai", "Both: we optimise for AI answers, and hosts can draft their SEO writing with Claude."],
+      ["Ecommerce SEO", "Product and category pages, product schema and faceted navigation for online shops.", "Partly applies: each home is a bookable product with a price and availability, but there are no categories or filters to manage.", "part", "Offer structured data with the nightly price, and a checkout on the page."],
+      ["International SEO", "Targeting several countries or languages with hreflang tags and country domains.", "Partly applies: most UK holiday lets serve guests in English and price in pounds, so one en-GB version is right.", "part", "Pages are marked en-GB with prices in pounds."],
+      ["ASO (app store optimisation)", "Ranking apps in the App Store and Google Play.", "Does not apply to a holiday let unless you publish your own app.", "part", "Our guest app installs from your own site, so there is no store listing to optimise."]
+    ];
+    var DEFS = (list2) => "<dl>" + list2.map(([n, d, h, g, o]) => '<dt id="' + n.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "") + '"><strong>' + esc(n) + "</strong></dt><dd><p>" + esc(d) + "</p><p><em>For a holiday let:</em> " + esc(h) + "</p><p><em>With Bookingbooster:</em> " + esc(o) + "</p></dd>").join("") + "</dl>";
+    var CHECKLIST = [
+      ["Give the home its own website on its own domain.", "Search engines and AI assistants can read, trust and link a page you own.", "Technical, GEO"],
+      ["Claim and verify a Google Business Profile.", 'Pick "Holiday home", "Cottage" or the closest category and link your booking site.', "Local"],
+      ["Write an answer-first summary.", "40 to 60 words: what it is, where, who it sleeps, the price and the best feature, right under the main heading.", "AEO, AIO, GEO"],
+      ["Add structured data.", "VacationRental or LodgingBusiness, FAQPage, reviews and an offer with the nightly price.", "Technical, AEO"],
+      ["Answer the questions guests ask.", "Dogs, parking, Wi-Fi, check-in, families, accessibility. Start each answer with the answer.", "AEO, GEO"],
+      ["Publish a local area guide.", 'Walks, pubs and days out with distances, for "things to do near" searches.', "Content, Local, AIO"],
+      ["Caption every photo.", "Captions become alt text for Google Images. Aim for 8 or more photos.", "Image"],
+      ["Link your listings and profiles.", "Airbnb, Vrbo, Google Maps, Instagram: the same name everywhere, linked with sameAs.", "LLMO, Local, Off-page"],
+      ["Publish llms.txt and welcome AI crawlers.", "A plain-text fact sheet for assistants, and a robots.txt that lets GPTBot, ClaudeBot and PerplexityBot in.", "GEO"],
+      ["Submit your sitemap and ping IndexNow.", "Google Search Console for Google, IndexNow for Bing, whose results feed ChatGPT search and Copilot.", "Technical"],
+      ["Collect reviews steadily.", "Ask every guest. Reviews feed local rankings and give models text about you.", "Local, LLMO"],
+      ["Get mentioned locally.", "Your tourism board, local blogs and press. These are the sites AI answers cite.", "Off-page, LLMO"],
+      ["Check AI answers every week.", "Ask ChatGPT, Perplexity, Gemini and Google the questions guests ask, and note who they name and cite.", "GEO, AIO"]
+    ];
+    var PRICE_LINE = "\xA3" + P.month + " a month, or \xA3" + P.year.toLocaleString("en-GB") + " a year, with no setup fee and no commission on bookings. Prices include VAT and cover up to " + P.homes + " homes. Every plan includes \xA3" + P.aiCredit + " of AI credit a month.";
+    var PAGES = {
+      "/direct-booking-website": {
+        title: "Direct booking website for UK holiday lets \xB7 Bookingbooster",
+        h1: "A direct booking website for your UK holiday let",
+        description: "What a direct booking website is, what it costs, and how UK holiday let owners use one to take bookings without paying 15% or more to Airbnb or Vrbo. " + PRICE_LINE,
+        lead: "A direct booking website is your own website, on your own domain, where guests check live availability and pay you directly. There is no platform in the middle, so there is no platform fee on the stay. Bookingbooster builds and runs one for UK holiday let owners, with SEO, AI search visibility and guest marketing included.",
+        sections: [
+          ["What you get", "<ul>" + ["Your own booking site on your own .co.uk domain, with live availability and instant booking", "Card, Apple Pay and Google Pay payments through your own Stripe account, paid into your UK bank", "Security deposits taken as card holds that release on their own after checkout", "A guest check-in app with door codes", "Local SEO pages written for the searches guests make near you, added every month", "AI search visibility: structured data, llms.txt and answers that ChatGPT, Perplexity, Gemini and Google AI Overviews can read and cite", "Email and text campaigns to past guests, written and sent for you", "An optional calendar sync add-on (\xA3" + P.addon + " a month) so you never double book with Airbnb, Vrbo or Booking.com"].map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"],
+          ["What it costs", "<p>" + esc(PRICE_LINE) + "</p><p>Platform fees, by comparison, grow with every booking. At Airbnb\u2019s host-only fee of 15.5%, a holiday let taking \xA330,000 a year through Airbnb pays about " + feeOn(3e4) + " in fees, and one taking \xA360,000 pays about " + feeOn(6e4) + ". The plan costs \xA3" + P.year.toLocaleString("en-GB") + ' a year on annual billing, whatever you take.</p><table><tr><th align="left">Yearly bookings</th><th align="left">Airbnb fee at 15.5%</th><th align="left">Bookingbooster, annual plan</th></tr>' + [2e4, 3e4, 6e4, 1e5].map((r) => "<tr><td>" + money(r) + "</td><td>" + feeOn(r) + "</td><td>" + money(P.year) + "</td></tr>").join("") + "</table><p><small>Estimates. Most hosts keep some platform listings, so the saving depends on how many stays move direct.</small></p>"],
+          ["Who it is for", "<p>Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in England, Scotland, Wales and Northern Ireland who want more bookings direct and fewer platform fees. One plan covers up to " + P.homes + " homes.</p>"],
+          ["How it works", "<ol><li><strong>Paste your listing link.</strong> We copy your photos, reviews and house rules from Airbnb or Vrbo. Nothing there is changed.</li><li><strong>We build and tune it.</strong> Your site is live the same day on a free address. Your own domain, SEO pages and guest list take about a week.</li><li><strong>Bookings come direct.</strong> Guests find you on Google and in AI answers, pay you, and are invited back next season.</li></ol>"]
+        ],
+        faq: [
+          ["Is a direct booking website worth it for one holiday let?", "Usually, yes, once a home takes more than about \xA313,000 a year through Airbnb: at the 15.5% host-only fee that is roughly \xA32,000 in fees, the cost of a year of Bookingbooster on annual billing. Every direct stay after that is money you keep."],
+          ["Do I have to leave Airbnb to take direct bookings?", "No. Most hosts keep their listings and move repeat guests and search traffic to their own site over time. The calendar sync add-on blocks dates booked on the platforms so you never double book."],
+          ["Does Bookingbooster take commission?", "No. " + PRICE_LINE + " Guests pay you directly through your own Stripe account."],
+          ["How long does it take to set up?", "Your site can be live the same day on a free address. Connecting your own domain, local SEO pages and importing your guest list takes about a week."]
+        ]
+      },
+      "/ai-search-for-holiday-lets": {
+        title: "How to get your holiday let recommended by ChatGPT and AI search \xB7 Bookingbooster",
+        h1: "How to get your holiday let recommended in ChatGPT, Perplexity and Google AI answers",
+        description: "How AI assistants choose which UK holiday lets to recommend, and the steps that make your own booking site the one they cite. A guide for holiday let owners from Bookingbooster.",
+        lead: "More travellers now ask ChatGPT, Perplexity, Gemini, Claude, Copilot or Google\u2019s AI Overviews where to stay, instead of scrolling a listings site. These assistants recommend places they can read, check and link to. A holiday let that only exists inside Airbnb is hard for them to cite. A holiday let with its own clear, fast, well-structured website is easy.",
+        sections: [
+          ["What AI assistants look for", "<ul>" + ["A page they can read without running JavaScript, that says plainly what the place is, where it is, who it sleeps and what it costs", "Structured data (schema.org VacationRental, FAQPage and Organization) that confirms those facts in a machine-readable form", "Answers to the exact questions travellers ask, such as \u201Cdog friendly cottage near Keswick with a hot tub\u201D", "The same name, address and details on Google Business Profile, social profiles and listings sites, so the facts agree", "Recent reviews from real guests", "A robots.txt that lets AI crawlers such as GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot and Google-Extended in, and an llms.txt that sums the place up"].map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"],
+          ["Steps you can take this week", "<ol><li><strong>Check where you stand.</strong> Ask ChatGPT, Perplexity and Gemini the questions a guest would ask about your area, and note who they recommend and which sites they cite.</li><li><strong>Give your home its own website.</strong> On your own domain, with the facts written out in full, not only in photos.</li><li><strong>Answer the questions guests ask.</strong> Pets, parking, hot tub, distance to the beach or pub, check-in times, minimum stay. One clear answer each.</li><li><strong>Claim your Google Business Profile</strong> and keep its name, address and website the same as your site.</li><li><strong>Ask happy guests for reviews</strong> and publish them on your site.</li><li><strong>Let AI crawlers in.</strong> Check your robots.txt does not block them, and add an llms.txt.</li></ol>"],
+          ["What Bookingbooster does for you", "<p>Every Bookingbooster site is built this way from day one: crawlable pages, VacationRental and FAQ structured data, an llms.txt for each home, a robots.txt that welcomes AI crawlers and a sitemap. Each week we check the questions guests ask about your area across AI assistants, show you where you appear, and fix the gaps. " + esc(PRICE_LINE) + "</p>"]
+        ],
+        faq: [
+          ["What is AEO or AI search optimisation?", "AEO (answer engine optimisation) is making your website easy for AI assistants such as ChatGPT, Perplexity, Gemini and Google AI Overviews to read, trust and cite, so they recommend you when someone asks a question you can answer. For a holiday let, that means clear facts, structured data, answers to guest questions and consistent details across the web."],
+          ["Can ChatGPT recommend my Airbnb listing?", "Sometimes, but it often cannot read or link to platform listings reliably, and when it does the guest books through the platform and you pay the fee. A direct booking website gives the assistant a page it can read and a link that books with you."],
+          ["Does my holiday let need an llms.txt file?", "It helps. llms.txt is a short plain-text summary of a site written for AI assistants. It does not replace good pages or structured data, but it gives assistants the key facts in one place. Every Bookingbooster site has one."],
+          ["How long does it take to show up in AI answers?", "It varies. Assistants that search the web live, such as ChatGPT search and Perplexity, can find a new, well-structured page within days or weeks of it being indexed. Answers built from training data change more slowly."]
+        ]
+      },
+      "/seo-for-holiday-lets": {
+        title: "SEO, AEO, GEO and AI search for holiday lets, explained \xB7 Bookingbooster",
+        h1: "SEO, AEO, GEO and AI search for holiday lets: every type explained",
+        description: "Plain-English definitions of every kind of search optimisation, from on-page and local SEO to AEO, GEO, LLMO and Google AI Overviews, and what each one means for a UK holiday let.",
+        lead: "Search optimisation now means more than ranking on Google. Guests find holiday lets through Google results, Google Maps, AI Overviews and assistants such as ChatGPT, Perplexity, Gemini, Claude and Copilot. Each needs slightly different work. Here is every type in plain English, what it means for a holiday let, and what Bookingbooster does for you.",
+        sections: [
+          ["Classic search", DEFS(TERMS.filter((t) => t[3] === "classic"))],
+          ["AI-era search", DEFS(TERMS.filter((t) => t[3] === "ai"))],
+          ["Types that only partly apply to holiday lets", DEFS(TERMS.filter((t) => t[3] === "part"))]
+        ],
+        faq: [
+          ["What is the difference between SEO, AEO and GEO?", "SEO gets your pages ranked in search results. AEO (answer engine optimisation) gets your content quoted as the direct answer, in featured snippets, voice answers and AI Overviews. GEO (generative engine optimisation) gets you named and linked inside answers written by chatbots such as ChatGPT, Perplexity, Gemini and Claude. Good SEO is the base for both."],
+          ["Which type of SEO matters most for a holiday let?", 'Local SEO and AEO. Guests search by place ("cottage with hot tub in the Lake District") and increasingly ask AI assistants. A Google Business Profile, a fast site with clear facts and structured data, and answers to the questions guests ask cover most of what matters.'],
+          ["What is LLMO?", "LLMO (large language model optimisation) is helping AI models recognise your business as a real, consistent entity. For a holiday let that means the same name, place and facts on your website, your listings, Google Maps and social profiles, linked together, plus mentions on local and travel sites."],
+          ["Do I need to do all of this myself?", "No. With Bookingbooster the technical work (structured data, sitemaps, llms.txt, crawler access, IndexNow) is automatic. The Search health screen scores each home across every type above, drafts the writing from your facts, and gives you a short checklist for the parts only you can do, such as your Google Business Profile."]
+        ]
+      },
+      "/holiday-let-seo-checklist": {
+        title: "Holiday let SEO and AI search checklist \xB7 Bookingbooster",
+        h1: "The holiday let SEO and AI search checklist",
+        description: "A step-by-step checklist to get a UK holiday let found on Google, Google Maps and in AI answers from ChatGPT, Perplexity, Gemini and Google AI Overviews.",
+        lead: "Work through these steps in order. The first ones matter most. Each one says which kind of search it helps, so you know why it is there.",
+        sections: [
+          ["The checklist", "<ol>" + CHECKLIST.map(([h, why, tags]) => "<li><strong>" + esc(h) + "</strong> " + esc(why) + " <em>(" + esc(tags) + ")</em></li>").join("") + "</ol>"],
+          ["Check your score", "<p>Every Bookingbooster host gets a Search health score for each home. It runs these checks for you, orders the fixes by how much each one adds, and drafts the writing from your own facts. It also asks ChatGPT, Gemini, Perplexity and Google the questions guests ask about your area each week, and shows which sites they cite.</p>"]
+        ],
+        faq: [
+          ["How long does holiday let SEO take to work?", "Technical fixes and a Google Business Profile can show in weeks. Rankings for competitive searches and mentions in AI answers usually take two to six months of steady work: good pages, reviews and links from local sites."],
+          ["Should my holiday let have its own website if it is on Airbnb?", "Yes, if you want to be found directly. AI assistants and Google can cite and link your own site, and a guest who books there pays no platform fee. Keep your listings and link them to your site so search engines know they are the same home."]
+        ]
+      },
+      "/guides": {
+        title: "Free guides for UK holiday let hosts \xB7 Bookingbooster",
+        h1: "Free guides for UK holiday let hosts",
+        description: "Free PDF guides on direct bookings, platform fees, guest marketing and getting found in AI search, for UK holiday let and short-term let owners.",
+        lead: "Practical guides from Bookingbooster for owners of UK holiday lets who want more direct bookings and fewer platform fees. Free to download, no sign-up needed.",
+        sections: [["The guides", "<ul>" + GUIDES.map(([f, t, d]) => '<li><a href="/guides/' + f + '"><strong>' + esc(t) + "</strong></a> (PDF). " + esc(d) + "</li>").join("") + "</ul>"]],
+        faq: []
+      }
+    };
+    function jsonLd(base, path, pg) {
+      const url = base + path, home = base + "/";
+      const graph = [
+        { "@type": "WebPage", "@id": url + "#page", url, name: pg.h1, description: pg.description, inLanguage: "en-GB", isPartOf: { "@id": home + "#site" }, publisher: { "@id": home + "#org" }, about: { "@id": home + "#service" } },
+        { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Bookingbooster", item: home }, { "@type": "ListItem", position: 2, name: pg.h1, item: url }] },
+        { "@type": "Organization", "@id": home + "#org", name: "Bookingbooster", url: home, logo: base + "/assets/icons/icon-512.png", sameAs: mkt.SOCIAL.map((x) => x[1]) }
+      ];
+      if (pg.faq.length) graph.push({ "@type": "FAQPage", "@id": url + "#faq", mainEntity: pg.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) });
+      if (path === "/seo-for-holiday-lets") graph.push({ "@type": "DefinedTermSet", "@id": url + "#terms", name: "Search optimisation for holiday lets", hasDefinedTerm: TERMS.map(([n, d]) => ({ "@type": "DefinedTerm", name: n, description: d, url: url + "#" + n.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "") })) });
+      if (path === "/holiday-let-seo-checklist") graph.push({ "@type": "ItemList", "@id": url + "#steps", name: pg.h1, itemListOrder: "https://schema.org/ItemListOrderAscending", itemListElement: CHECKLIST.map(([h, why], i) => ({ "@type": "ListItem", position: i + 1, name: h, description: why })) });
+      graph[0].speakable = { "@type": "SpeakableSpecification", cssSelector: ["article > p:first-of-type"] };
+      if (path === "/guides") graph.push({ "@type": "ItemList", name: pg.h1, itemListElement: GUIDES.map(([f, t], i) => ({ "@type": "ListItem", position: i + 1, name: t, url: base + "/guides/" + f })) });
+      return { "@context": "https://schema.org", "@graph": graph };
+    }
+    var NAV = [["/", "Home and pricing"], ["/direct-booking-website", "Direct booking websites"], ["/ai-search-for-holiday-lets", "Getting found in AI search"], ["/seo-for-holiday-lets", "SEO, AEO and GEO explained"], ["/holiday-let-seo-checklist", "SEO checklist"], ["/guides", "Free guides"]];
+    function render(base, path) {
+      const pg = PAGES[path];
+      if (!pg) return null;
+      const head = '<meta name="description" content="' + esc(pg.description) + '"><link rel="canonical" href="' + esc(base + path) + '"><meta property="og:type" content="article"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(pg.h1) + '"><meta property="og:description" content="' + esc(pg.description) + '"><meta property="og:url" content="' + esc(base + path) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + "/assets/icons/icon-512.png") + '"><link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(base + "/llms.txt") + '"><script type="application/ld+json">' + JSON.stringify(jsonLd(base, path, pg)).replace(/</g, "\\u003c") + "</script>";
+      const body = "<article><h1>" + esc(pg.h1) + "</h1><p>" + esc(pg.lead) + "</p>" + pg.sections.map(([h, html]) => "<h2>" + esc(h) + "</h2>" + html).join("") + (pg.faq.length ? "<h2>Questions</h2>" + pg.faq.map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") : "") + '<p><a href="/start"><strong>Get my booking site</strong></a> \xB7 <a href="/demo">See the live demo</a></p><nav aria-label="More from Bookingbooster"><p>' + NAV.filter(([u]) => u !== path).map(([u, t]) => '<a href="' + u + '">' + esc(t) + "</a>").join(" \xB7 ") + "</p></nav></article>";
+      return { title: pg.title, head, body };
+    }
+    function fullText(base) {
+      const strip = (h) => String(h).replace(/<\/(p|li|dt|dd|tr|h\d)>/g, "\n").replace(/<br>/g, "\n").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\n{3,}/g, "\n\n").trim();
+      return Object.entries(PAGES).map(([path, pg]) => "# " + pg.h1 + "\n\nSource: " + base + path + "\n\n" + pg.lead + "\n\n" + pg.sections.map(([h, html]) => "## " + h + "\n\n" + strip(html)).join("\n\n") + (pg.faq.length ? "\n\n## Questions\n\n" + pg.faq.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") : "")).join("\n\n---\n\n") + "\n";
+    }
+    var list = () => Object.entries(PAGES).map(([path, pg]) => ({ path, title: pg.h1, description: pg.description }));
+    module.exports = { PAGES, GUIDES, TERMS, CHECKLIST, render, list, fullText };
   }
 });
 
@@ -13632,7 +14882,7 @@ var require_seo = __commonJS({
 var require_marketing = __commonJS({
   "server/marketing.js"(exports, module) {
     var { esc } = require_pages();
-    var PRICE = { setup: 0, month: 200, year: 2e3, addon: 15, homes: 3 };
+    var PRICE = { setup: 0, month: 200, year: 2e3, addon: 15, homes: 3, aiCredit: 50 };
     var FAQ = [
       ["Do I have to leave Airbnb or Vrbo?", "No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there."],
       ["How do guests pay?", "By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout."],
@@ -13645,6 +14895,9 @@ var require_marketing = __commonJS({
       ["What is Bookingbooster?", "Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission."],
       ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking."],
       ["Is Bookingbooster a channel manager?", "No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (\xA315 a month) keeps your calendars in step so you never double book."],
+      ["Is there a yearly plan?", "Yes. The plan is \xA3200 a month, or \xA32,000 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT."],
+      ["What AI credit is included?", "Every plan includes \xA350 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from \xA310, and top-ups never expire."],
+      ["Does Bookingbooster do SEO and AI search optimisation?", "Yes. Every site is built for Google, Google Maps and AI assistants: structured data, an image sitemap, llms.txt, AI crawler access and IndexNow are automatic. A Search health score for each home covers on-page, technical, local, content, image, AEO, GEO, LLMO and Google AI Overviews, drafts the writing from your facts, and checks real answers in ChatGPT, Gemini, Perplexity and Google every week."],
       ["Who is Bookingbooster for?", "Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us."]
     ];
     var FEATURES = [
@@ -13677,6 +14930,8 @@ var require_marketing = __commonJS({
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: co.support, areaServed: "GB", availableLanguage: "en-GB" }
       };
       org.sameAs = SOCIAL.map((x) => x[1]);
+      org.knowsAbout = ["Direct booking websites", "Holiday lets", "Short-term lets", "Search engine optimisation", "Local SEO", "Answer engine optimisation", "Generative engine optimisation", "Google AI Overviews", "Guest email marketing"];
+      org.slogan = "Fill your calendar without the 15% fee.";
       if (co.name) org.legalName = co.name;
       if (co.number) org.identifier = { "@type": "PropertyValue", propertyID: "Companies House number", value: co.number };
       if (co.vat) org.vatID = co.vat;
@@ -13692,7 +14947,19 @@ var require_marketing = __commonJS({
       return { "@context": "https://schema.org", "@graph": [
         org,
         { "@type": "WebSite", "@id": url + "#site", name: "Bookingbooster", url, inLanguage: "en-GB", publisher: { "@id": url + "#org" } },
-        { "@type": "WebPage", "@id": url + "#page", url, name: TITLE, description: DESCRIPTION, inLanguage: "en-GB", isPartOf: { "@id": url + "#site" }, about: { "@id": url + "#service" } },
+        { "@type": "WebPage", "@id": url + "#page", url, name: TITLE, description: DESCRIPTION, inLanguage: "en-GB", isPartOf: { "@id": url + "#site" }, about: { "@id": url + "#service" }, speakable: { "@type": "SpeakableSpecification", cssSelector: ["#seo > p:first-of-type", "#seo h3 + p"] } },
+        {
+          "@type": "SoftwareApplication",
+          "@id": url + "#app",
+          name: "Bookingbooster",
+          applicationCategory: "BusinessApplication",
+          applicationSubCategory: "Direct booking website builder for holiday lets",
+          operatingSystem: "Web, iOS, Android",
+          url,
+          publisher: { "@id": url + "#org" },
+          featureList: INCLUDED.concat(["Search health score for SEO, AEO, GEO and AI Overviews", "Weekly AI answer checks in ChatGPT, Gemini, Perplexity and Google", "llms.txt and structured data for every home"]),
+          offers: { "@type": "Offer", price: String(PRICE.month), priceCurrency: "GBP", url: base + "/start", priceSpecification: { "@type": "UnitPriceSpecification", price: String(PRICE.month), priceCurrency: "GBP", unitCode: "MON", valueAddedTaxIncluded: true } }
+        },
         {
           "@type": "Service",
           "@id": url + "#service",
@@ -13704,6 +14971,7 @@ var require_marketing = __commonJS({
           description: DESCRIPTION,
           hasOfferCatalog: { "@type": "OfferCatalog", name: "Bookingbooster pricing", itemListElement: [
             offer("Monthly plan", PRICE.month, "MON", { description: "No setup fee. Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
+            offer("Yearly plan", PRICE.year, "ANN", { description: "The same plan paid yearly: two months free. No setup fee." }),
             offer("Calendar sync add-on", PRICE.addon, "MON", { description: "Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager." })
           ] }
         },
@@ -13717,10 +14985,10 @@ var require_marketing = __commonJS({
     var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
     function content(base, co) {
       const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
-      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
+      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/direct-booking-website">Direct booking websites</a> \xB7 <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> \xB7 <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> \xB7 <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> \xB7 <a href="/guides">Free guides</a> \xB7 <a href="/help">Help</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Links\n\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
     }
     module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
@@ -13751,6 +15019,11 @@ var require_public = __commonJS({
       return !!(k && k.on && k.holder && (k.sortCode && k.account || k.iban));
     };
     var bankDays = (s) => Math.max(1, Math.min(30, +(s.account.bank && s.account.bank.days) || 3));
+    function guestPay(s) {
+      const want = ["both", "card", "transfer"].includes(s.account.guestPay) ? s.account.guestPay : "both";
+      const transfer = want !== "card" && bankReady(s), card = want !== "transfer" || !transfer;
+      return card && transfer ? "both" : card ? "card" : "transfer";
+    }
     var BANK_PUBLIC = ["holder", "bankName", "sortCode", "account", "iban", "bic", "note"];
     function base(s) {
       return {
@@ -13759,7 +15032,7 @@ var require_public = __commonJS({
         demo: !!s.demo,
         today: s.today,
         clock: s.clock,
-        account: { business: s.account.business, owner: String(s.account.owner || "").split(" ")[0], bank: bankReady(s) ? { on: true, days: bankDays(s) } : null },
+        account: { business: s.account.business, owner: String(s.account.owner || "").split(" ")[0], bank: bankReady(s) && guestPay(s) !== "card" ? { on: true, days: bankDays(s) } : null, guestPay: guestPay(s) },
         guests: [],
         threads: [],
         campaigns: [],
@@ -13830,12 +15103,12 @@ var require_public = __commonJS({
       o.properties = o.properties.map((x) => x.id === b.propertyId ? propPublic(p, !!(b.checkin && b.checkin.done) || b.checkIn <= s.today) : x);
       if (b.payBy === "transfer" && s.account.bank) {
         const k = s.account.bank;
-        o.account.bank = Object.assign({ on: bankReady(s), days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map((f) => [f, k[f] || ""])));
+        o.account.bank = Object.assign({ on: bankReady(s) && guestPay(s) !== "card", days: bankDays(s) }, Object.fromEntries(BANK_PUBLIC.map((f) => [f, k[f] || ""])));
       }
       o.trip = b.id;
       return o;
     }
-    module.exports = { siteState, tripState, fnv };
+    module.exports = { siteState, tripState, fnv, guestPay };
   }
 });
 
@@ -14302,17 +15575,38 @@ var require_ai = __commonJS({
         const hay = (res.text + " " + (res.urls || []).join(" ")).toLowerCase();
         return props.some((p) => [p.name, p.domain, p.short && p.short.length > 6 ? p.short : null].filter(Boolean).some((n) => hay.includes(String(n).toLowerCase())));
       }
+      function domains(urls) {
+        const out = [];
+        (urls || []).forEach((u) => {
+          const parts = String(u).split(" ");
+          let d = "";
+          try {
+            d = new URL(parts[0]).hostname;
+          } catch (_) {
+          }
+          if ((!d || /vertexaisearch|googleusercontent|google\.com$/.test(d)) && /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(parts[1] || "")) d = parts[1];
+          d = d.toLowerCase().replace(/^www\./, "");
+          if (d && !out.includes(d)) out.push(d);
+        });
+        return out.slice(0, 8);
+      }
+      const linked = (res, props) => {
+        const ds = domains(res.urls);
+        return props.some((p) => p.domain && ds.some((d) => String(p.domain).toLowerCase().replace(/^www\./, "").startsWith(d)));
+      };
       async function check(questions, props) {
         const keys = available();
         if (!keys.length) return { results: [], keys };
         const results = [];
         for (let i = 0; i < questions.length; i++) {
           const qn = questions[i], focus = props.filter((p) => p.id === qn.propertyId);
-          const out = { i, engines: {}, answers: {} };
+          const out = { i, engines: {}, answers: {}, cited: {}, sources: {} };
           await Promise.all(keys.map(async (k) => {
             try {
               const r = await engines[k](qn.q);
               out.engines[k] = mentions(r, focus.length ? focus : props);
+              out.cited[k] = linked(r, focus.length ? focus : props);
+              out.sources[k] = domains(r.urls);
               out.answers[k] = String(r.text || "").slice(0, 600);
             } catch (e) {
               out.answers[k] = "Check failed: " + String(e.message).slice(0, 120);
@@ -14322,7 +15616,7 @@ var require_ai = __commonJS({
         }
         return { results, keys };
       }
-      return { check, available };
+      return { check, available, domains };
     };
   }
 });
@@ -14495,6 +15789,184 @@ var require_assist = __commonJS({
   }
 });
 
+// server/seo-tools.js
+var require_seo_tools = __commonJS({
+  "server/seo-tools.js"(exports, module) {
+    module.exports = function(cfg) {
+      const enabled = !!cfg.ai.anthropic;
+      const money = (n) => "\xA3" + Number(n || 0).toLocaleString("en-GB");
+      function facts(s, p) {
+        const faqs = ((s.website.faqs || {})[p.id] || []).map((x) => "FAQ: " + x.replace("|", " \u2014 "));
+        return [
+          "Home: " + p.name,
+          "Area: " + (p.area || ""),
+          "Type: " + ({ cabin: "cabin", lake: "cottage", city: "apartment" }[p.theme] || "holiday let"),
+          "Sleeps " + p.maxGuests + ", " + p.bedrooms + " bedrooms, " + p.baths + " bathrooms",
+          "From " + money(p.nightly) + " a night" + (p.weekend ? " (+" + money(p.weekend) + " Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning),
+          "Minimum stay: " + p.minNights + " nights",
+          "Check-in from " + p.checkinTime + ", checkout by " + p.checkoutTime,
+          "Dogs: " + (p.petsAllowed ? "welcome" + (p.petFee ? " (" + money(p.petFee) + " per stay)" : "") : "not allowed"),
+          p.headline ? "Headline: " + p.headline : null,
+          p.about ? "About: " + p.about : null,
+          (p.amenities || []).length ? "Amenities: " + p.amenities.join(", ") : null,
+          (p.rules || []).length ? "House rules: " + p.rules.join(" ") : null,
+          p.parking ? "Parking: " + p.parking : null,
+          (p.guide || []).length ? "Nearby (place | distance | host tip): " + p.guide.join("; ") : null,
+          p.rating && p.reviews ? "Guest rating: " + p.rating + " from " + p.reviews + " reviews" : null,
+          ...faqs
+        ].filter(Boolean).join("\n");
+      }
+      const ASK = {
+        summary: ['Write an answer-first summary of this holiday let for the top of its booking page and for AI assistants to quote. 40 to 60 words, one paragraph. Say what it is, where, who it sleeps, the price from, and the one or two best features. Plain, factual, no superlatives like "stunning" or "nestled".', 300],
+        area: [`Write a local area guide for this holiday let's booking page, for searches like "things to do near <town>". 150 to 250 words in 3 short paragraphs: walks and outdoors, food and pubs, days out. Use only places from the facts; where the facts list none for a paragraph, write generally about the area without naming businesses. UK English.`, 900],
+        meta: [`Write a Google title (at most 60 characters) and meta description (120 to 155 characters) for this holiday let's booking page. Include the type of home and the town, and in the description the price from and "book direct". Reply as two lines: "Title: ..." then "Description: ...".`, 200],
+        faqs: [`Answer each question below for this holiday let's FAQ, one or two sentences each, starting with the direct answer (Yes, No, or the fact). If the facts do not answer a question, reply with exactly "ASK HOST" for it. Reply as lines "Q: ..." then "A: ...".`, 900]
+      };
+      async function write(s, p, what, onUsage, questions) {
+        if (!enabled || !ASK[what]) return null;
+        const system = "You write website copy for a UK holiday let host (" + s.account.business + "). Use UK English. Only state facts from the list provided. Never invent prices, amenities, distances, awards or business names. No emoji. Reply with the text only.";
+        const user = "Facts:\n" + facts(s, p) + "\n\n" + ASK[what][0] + (what === "faqs" ? "\n\nQuestions:\n" + (questions || []).slice(0, 10).map((q) => "- " + String(q).slice(0, 200)).join("\n") : "");
+        const r = await fetch((cfg.ai.anthropicBase || "https://api.anthropic.com") + "/v1/messages", {
+          method: "POST",
+          signal: AbortSignal.timeout(45e3),
+          headers: { "x-api-key": cfg.ai.anthropic, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+          body: JSON.stringify({ model: cfg.ai.anthropicModel, max_tokens: ASK[what][1] + 200, system, messages: [{ role: "user", content: user }] })
+        });
+        if (!r.ok) throw new Error("Claude answered " + r.status);
+        const j = await r.json();
+        if (onUsage) await onUsage(j.model || cfg.ai.anthropicModel, j.usage);
+        const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
+        if (what === "meta") {
+          const t = (text.match(/Title:\s*(.+)/i) || [])[1], d = (text.match(/Description:\s*(.+)/i) || [])[1];
+          return t && d ? { title: t.trim().slice(0, 70), description: d.trim().slice(0, 170) } : null;
+        }
+        if (what === "faqs") {
+          const out = [];
+          let q = null;
+          text.split("\n").forEach((l) => {
+            const mq = l.match(/^\s*Q:\s*(.+)/i), ma = l.match(/^\s*A:\s*(.+)/i);
+            if (mq) q = mq[1].trim();
+            else if (ma && q) {
+              const a = ma[1].trim();
+              out.push({ q, a: /^ASK HOST/i.test(a) ? "" : a.slice(0, 600), needs: /^ASK HOST/i.test(a) });
+              q = null;
+            }
+          });
+          return out;
+        }
+        return text.slice(0, what === "area" ? 4e3 : 600) || null;
+      }
+      async function ping(host, key, keyLocation, urls) {
+        if (!/^[a-z0-9.-]+(:\d+)?$/i.test(host) || /^(localhost|127\.|10\.|192\.168\.)/.test(host)) return { ok: false, status: 0, message: "Search engines cannot reach a local test address." };
+        try {
+          const r = await fetch("https://api.indexnow.org/indexnow", { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/json; charset=utf-8" }, body: JSON.stringify({ host, key, keyLocation, urlList: urls.slice(0, 100) }) });
+          const msg = { 200: "Accepted. Bing and the other IndexNow engines will recrawl soon.", 202: "Received. Bing is checking the key file, then recrawls.", 400: "IndexNow said the request was invalid.", 403: "IndexNow could not find the key file on the site yet.", 422: "IndexNow says these pages do not belong to the key.", 429: "Too many requests. Try again tomorrow." }[r.status] || "IndexNow answered " + r.status + ".";
+          return { ok: r.status === 200 || r.status === 202, status: r.status, message: msg };
+        } catch (e) {
+          return { ok: false, status: 0, message: "Could not reach IndexNow: " + e.message };
+        }
+      }
+      return { enabled, write, ping, facts };
+    };
+  }
+});
+
+// server/google-search.js
+var require_google_search = __commonJS({
+  "server/google-search.js"(exports, module) {
+    var crypto = __require("crypto");
+    module.exports = function(cfg, kv, log) {
+      const G = cfg.google || {};
+      let sa = null;
+      try {
+        const raw = String(G.serviceAccount || "").trim();
+        if (raw) sa = JSON.parse(raw.startsWith("{") ? raw : Buffer.from(raw, "base64").toString("utf8"));
+      } catch (e) {
+        log && log("google", "GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON");
+      }
+      const enabled = !!(sa && sa.client_email && sa.private_key);
+      const OAUTH = G.oauthUrl || "https://oauth2.googleapis.com/token", API = (G.apiBase || "https://www.googleapis.com").replace(/\/$/, "");
+      const SCOPES = "https://www.googleapis.com/auth/siteverification https://www.googleapis.com/auth/webmasters";
+      const b64u = (b) => Buffer.from(b).toString("base64").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+      let tok = null;
+      async function token() {
+        if (tok && tok.exp > Date.now() + 6e4) return tok.v;
+        const now = Math.floor(Date.now() / 1e3);
+        const head = b64u(JSON.stringify({ alg: "RS256", typ: "JWT" })), claim = b64u(JSON.stringify({ iss: sa.client_email, scope: SCOPES, aud: OAUTH, iat: now, exp: now + 3600 }));
+        const sig = b64u(crypto.sign("RSA-SHA256", Buffer.from(head + "." + claim), sa.private_key));
+        const r = await fetch(OAUTH, { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: head + "." + claim + "." + sig }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || !j.access_token) throw new Error("Google sign-in failed: " + (j.error_description || j.error || r.status));
+        tok = { v: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1e3 };
+        return tok.v;
+      }
+      async function call(method, path, body) {
+        const r = await fetch(API + path, { method, signal: AbortSignal.timeout(2e4), headers: { authorization: "Bearer " + await token(), "content-type": "application/json" }, body: body ? JSON.stringify(body) : void 0 });
+        const t = await r.text();
+        let j = {};
+        try {
+          j = t ? JSON.parse(t) : {};
+        } catch (_) {
+        }
+        if (!r.ok) {
+          const e = new Error(j.error && (j.error.message || j.error.status) || "Google answered " + r.status);
+          e.status = r.status;
+          throw e;
+        }
+        return j;
+      }
+      const key = (origin) => "gsv:" + origin;
+      const memo = /* @__PURE__ */ new Map();
+      async function metaFor(origin) {
+        if (!enabled) return "";
+        if (memo.has(origin)) return memo.get(origin);
+        const row = await kv.get(key(origin));
+        const v = row ? row.v : "";
+        memo.set(origin, v);
+        return v;
+      }
+      async function metaTag(origin) {
+        const v = await metaFor(origin);
+        return v ? '<meta name="google-site-verification" content="' + v.replace(/[^\w-]/g, "") + '">' : "";
+      }
+      async function verify(origin) {
+        const site = { type: "SITE", identifier: origin + "/" };
+        if (!await metaFor(origin)) {
+          const j = await call("POST", "/siteVerification/v1/token", { verificationMethod: "META", site });
+          const m = String(j.token || "").match(/content="([^"]+)"/);
+          const v = m ? m[1] : String(j.token || "");
+          if (!v) throw new Error("Google gave no verification token");
+          await kv.set(key(origin), v);
+          memo.set(origin, v);
+        }
+        await call("POST", "/siteVerification/v1/webResource?verificationMethod=META", { site });
+      }
+      const enc = encodeURIComponent;
+      async function submit(origin, sitemapUrl) {
+        const property = origin + "/";
+        const done = await kv.get("gsc:" + origin);
+        if (!done) {
+          await verify(origin);
+          await call("PUT", "/webmasters/v3/sites/" + enc(property));
+          await kv.set("gsc:" + origin, (/* @__PURE__ */ new Date()).toISOString());
+        }
+        await call("PUT", "/webmasters/v3/sites/" + enc(property) + "/sitemaps/" + enc(sitemapUrl));
+        return { property };
+      }
+      async function performance(origin, pagePrefix) {
+        const end = new Date(Date.now() - 2 * 864e5), start = new Date(end.getTime() - 27 * 864e5), d = (x) => x.toISOString().slice(0, 10);
+        const base = { startDate: d(start), endDate: d(end), dimensionFilterGroups: [{ filters: [{ dimension: "page", operator: "contains", expression: pagePrefix }] }] };
+        const path = "/webmasters/v3/sites/" + enc(origin + "/") + "/searchAnalytics/query";
+        const tot = ((await call("POST", path, base)).rows || [])[0] || {};
+        const q = (await call("POST", path, Object.assign({ dimensions: ["query"], rowLimit: 10 }, base))).rows || [];
+        const r1 = (n) => Math.round((n || 0) * 10) / 10;
+        return { from: d(start), to: d(end), clicks: tot.clicks || 0, impressions: tot.impressions || 0, ctr: r1(100 * (tot.ctr || 0)), position: r1(tot.position), queries: q.map((x) => ({ q: String(x.keys[0]).slice(0, 100), clicks: x.clicks || 0, impressions: x.impressions || 0, position: r1(x.position) })) };
+      }
+      return { enabled, metaTag, submit, performance, account: enabled ? sa.client_email : null };
+    };
+  }
+});
+
 // server/credits.js
 var require_credits = __commonJS({
   "server/credits.js"(exports, module) {
@@ -14519,7 +15991,7 @@ var require_credits = __commonJS({
     };
     var DEAREST = [10, 50, 1];
     var priceOf = (model) => PRICES[String(model || "").replace(/-\d{8}$/, "")] || DEAREST;
-    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", other: "AI" };
+    var FEATURES = { reply: "Reply drafts", studio: "Site builder", funnel: "Funnels", seo: "Search writer", eventads: "Event ads", other: "AI" };
     module.exports = function({ cfg, db, log }) {
       const C = cfg.credits;
       const q = {
@@ -14620,7 +16092,8 @@ var require_credits = __commonJS({
       }
       function cost(model, usage) {
         const u = usage || {}, [pin, pout, pread] = priceOf(model);
-        const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6;
+        const searches = num((u.server_tool_use || {}).web_search_requests);
+        const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6 + searches * 0.01;
         return Math.max(0, Math.ceil(dollars * C.usdToGbp * C.markup * UNIT - 1e-6));
       }
       async function charge(wid, feature, model, usage) {
@@ -15274,7 +16747,24 @@ var require_leads = __commonJS({
         const v = JSON.parse(row.vars || "{}");
         return { seq: row.seq, name: SEQ[row.seq] ? SEQ[row.seq].name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || "{}")), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
       }
-      return { series: SEQ, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async (s) => {
+      async function sample(seq, key) {
+        const S = SEQ[seq], step = S && S.steps.find((x) => x.key === key);
+        if (!step) return null;
+        await loadSettings();
+        const now = Date.now(), d = { rate: 210, nights: 16, homes: 1, fee: 15.5, town: "Keswick", listing: "https://www.airbnb.co.uk/rooms/1", page: "sample" };
+        const v = Object.assign({
+          score: 42,
+          competitor_count: 3,
+          top_question: "dog friendly cottage near Keswick with a hot tub",
+          audit_url: cfg.baseUrl + "/admin/emails",
+          proposal_url: cfg.baseUrl + "/admin/emails",
+          session_at: settings().webinar_at > now ? settings().webinar_at : now + 3 * 864e5,
+          call_at: now + 2 * 864e5
+        }, S.vars(d) || {});
+        const row = { lead_id: 0, seq, name: "Hannah Lees", vars: JSON.stringify(v), sent: "{}", start: now };
+        return render(row, step, context(row, now, false));
+      }
+      return { series: SEQ, sample, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async (s) => {
         await loadSettings();
         await setKv("lead-settings", Object.assign({}, current, s));
         await loadSettings();
@@ -15287,6 +16777,12 @@ var require_leads = __commonJS({
 var require_domains = __commonJS({
   "server/domains.js"(exports, module) {
     var dns = __require("node:dns").promises;
+    var tls = __require("node:tls");
+    var CF = [[104, 16, 31], [172, 64, 71], [188, 114, 114], [162, 158, 159], [141, 101, 101], [108, 162, 162], [190, 93, 93], [197, 234, 234], [198, 41, 41], [173, 245, 245], [103, 21, 22], [103, 22, 22], [103, 31, 31], [131, 0, 0]];
+    var cloudflare = (ip) => {
+      const [a, b] = String(ip).split(".").map(Number);
+      return CF.some(([x, lo, hi]) => a === x && b >= lo && b <= hi);
+    };
     module.exports = function({ cfg, auth, log }) {
       const mainHost = new URL(cfg.baseUrl).hostname;
       const target = (cfg.domains.target || mainHost).toLowerCase();
@@ -15329,7 +16825,7 @@ var require_domains = __commonJS({
         if (cn.some((c) => c === target)) return { ok: true, seen: "CNAME " + cn.join(", ") };
         const a = await look("a", name), ips = await ourIps();
         if (a.length && ips.length && a.every((x) => ips.includes(x))) return { ok: true, seen: "A " + a.join(", ") };
-        return { ok: false, seen: cn.length ? "CNAME " + cn.join(", ") : a.length ? "A " + a.join(", ") : "" };
+        return { ok: false, seen: cn.length ? "CNAME " + cn.join(", ") : a.length ? "A " + a.join(", ") : "", proxied: a.length > 0 && a.every(cloudflare) };
       }
       async function check(wid, h) {
         const [apex, www, txt, ips] = await Promise.all([points(h), points("www." + h), look("txt", txtName(h)), ourIps()]);
@@ -15341,10 +16837,11 @@ var require_domains = __commonJS({
           apex,
           www,
           proved,
+          proxied: !!(apex.proxied || www.proxied),
           records: [
             { type: "TXT", name: "_bookingbooster", value: want, ok: proved, why: "Proves the address is yours" },
-            { type: "CNAME", name: "www", value: target, ok: www.ok, why: "Sends www." + h + " to your booking site" },
-            ips.length ? { type: "A", name: "@", value: ips.join(", "), ok: apex.ok, why: "Sends " + h + " to your booking site" } : null
+            { type: "CNAME", name: "www", value: target, ok: www.ok, seen: www.ok ? "" : www.seen, why: "Sends www." + h + " to your booking site" },
+            ips.length ? { type: "A", name: "@", value: ips.join(", "), ok: apex.ok, seen: apex.ok ? "" : apex.seen, why: "Sends " + h + " to your booking site" } : null
           ].filter(Boolean)
         };
       }
@@ -15365,7 +16862,33 @@ var require_domains = __commonJS({
           }
         }
       }
-      return { clean, problem, check, certify, target, txtName, txtValue };
+      function https(h) {
+        if (cfg.domains.fakeDns) return Promise.resolve(cfg.domains.fakeDns.https ? !!cfg.domains.fakeDns.https[h] : null);
+        return new Promise((res) => {
+          let done = false;
+          const end = (v) => {
+            if (done) return;
+            done = true;
+            try {
+              s.destroy();
+            } catch (_) {
+            }
+            res(v);
+          };
+          const s = tls.connect({ host: h, port: 443, servername: h, timeout: 8e3 }, () => end(s.authorized));
+          s.on("error", () => end(false));
+          s.on("timeout", () => end(false));
+        });
+      }
+      async function targets() {
+        let ips = [];
+        try {
+          ips = await ourIps();
+        } catch (_) {
+        }
+        return { target, ips };
+      }
+      return { clean, problem, check, certify, https, targets, target, txtName, txtValue };
     };
   }
 });
@@ -15375,7 +16898,7 @@ var require_backup = __commonJS({
   "server/backup.js"(exports, module) {
     var fs = require_vfs();
     var path = __require("node:path");
-    var TABLES = ["workspaces", "users", "sessions", "domains", "outbox", "leads", "payments", "secrets", "resets", "lead_seq", "lead_optout", "kv"];
+    var TABLES = ["workspaces", "users", "sessions", "domains", "outbox", "leads", "payments", "secrets", "resets", "lead_seq", "lead_optout", "kv", "affiliates", "referrals", "commissions", "aff_payouts", "aff_clicks"];
     module.exports = function({ db, cfg, log }) {
       const dir = path.join(cfg.dataDir, "backups");
       async function dump() {
@@ -16295,83 +17818,123 @@ var require_campaigns = __commonJS({
 // server/campaigns-admin.js
 var require_campaigns_admin = __commonJS({
   "server/campaigns-admin.js"(exports, module) {
-    var CSS = '<style>select,textarea{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF;background:#fff;color:inherit;width:100%}textarea{min-height:260px;line-height:1.5;resize:vertical}.cm-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.cm-tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}.cm-tile b{display:block;font:600 26px/1.1 "Bricolage Grotesque",sans-serif;color:var(--ink)}.cm-tile small{color:var(--mut)}.cm-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:#EEF1FF;color:#2747F5}.cm-badge.sent{background:#E6F4EC;color:#12805C}.cm-badge.warn{background:#FFF3E0;color:#B4540A}.cm-badge.live{background:#FFF6D6;color:#8A6100}.cm-badge.off{background:#F0F0F0;color:#666}.cm-table{width:100%;border-collapse:collapse;font-size:13px}.cm-table th{text-align:left;color:var(--mut);font-weight:600}.cm-table tr+tr{border-top:1px solid #E4E7F0}.cm-table td{vertical-align:top}.cm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cm-row form,.wide td .cm-row form{margin:0;display:inline}.cm-table td .cm-row{flex-wrap:nowrap}.cm-row button{padding:8px 14px;font-size:14px}button.sec{background:transparent;color:var(--p);border:1px solid var(--line)}button.danger{background:#C62828}.cm-grid{display:grid;gap:18px}@media(min-width:1000px){.cm-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.cm-grid .cm-sticky{position:sticky;top:12px}}.cm-help{font-size:13px;color:var(--mut)}.cm-help code{background:#F1F2F6;border-radius:5px;padding:1px 5px;font-size:12px}h2{font:600 20px "Bricolage Grotesque",sans-serif;margin:28px 0 0}.cm-two{display:grid;gap:14px}@media(min-width:640px){.cm-two{grid-template-columns:1fr 1fr}}</style>';
-    module.exports = function({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me }) {
-      const html = (res, body) => send(res, 200, body, "text/html; charset=utf-8", { "cache-control": "no-store" });
+    module.exports = function({ campaigns, leads, cfg, E, ui, email, send, redirect, formBody, me }) {
       const day = (ms) => new Date(ms).toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const pct = (a, b) => b ? Math.round(100 * a / b) + "%" : "\u2013";
       const sentCount = (s) => Object.keys(s.sent || {}).length;
       const failedCount = (s) => Object.keys(s.failed || {}).length;
-      const field = (n, v, label, o) => {
-        o = o || {};
-        return "<label>" + E(label) + (o.area ? '<textarea name="' + n + '"' + (o.ph ? ' placeholder="' + E(o.ph) + '"' : "") + ">" + E(v || "") + "</textarea>" : '<input name="' + n + '" value="' + E(v || "") + '"' + (o.type ? ' type="' + o.type + '"' : "") + (o.ph ? ' placeholder="' + E(o.ph) + '"' : "") + (o.req ? " required" : "") + ' style="width:100%">') + (o.help ? '<small class="cm-help">' + o.help + "</small>" : "") + "</label>";
-      };
-      const audSelect = (cur, counts) => '<label>Who gets it<select name="audience">' + Object.entries(campaigns.AUDIENCES).map(([k, a]) => '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + E(a.label) + (counts ? " (" + counts[k] + ")" : "") + "</option>").join("") + "</select></label>";
+      const field = (n, v, label, o) => ui.field(n, v, label, o);
+      const audSelect = (cur, counts) => ui.field("audience", cur, "Who gets it", { options: Object.entries(campaigns.AUDIENCES).map(([k, a]) => [k, a.label + (counts ? " (" + counts[k] + ")" : "")]) });
+      const page = async (res, o) => send(res, 200, ui.shell(Object.assign({ email: await email(), active: "campaigns" }, o)), "text/html; charset=utf-8", { "cache-control": "no-store" });
       function badge(o) {
         const s = o.s;
-        if (s.status === "sent") return '<span class="cm-badge sent">Sent ' + E(day(s.sent_at)) + "</span>";
-        if (s.status === "sending") return '<span class="cm-badge live">Sending \xB7 ' + sentCount(s) + " so far</span>";
-        if (s.status === "scheduled") return '<span class="cm-badge live">Scheduled ' + E(day(s.scheduled_at)) + "</span>";
-        if (s.status === "stopped") return '<span class="cm-badge off">Stopped \xB7 ' + sentCount(s) + " sent</span>";
-        return o.blocked.length ? '<span class="cm-badge warn">Draft \xB7 needs details</span>' : '<span class="cm-badge">Draft \xB7 ready</span>';
+        if (s.status === "sent") return ui.pill("good", "Sent " + day(s.sent_at));
+        if (s.status === "sending") return ui.pill("info", "Sending \xB7 " + sentCount(s) + " so far");
+        if (s.status === "scheduled") return ui.pill("info", "Scheduled " + day(s.scheduled_at));
+        if (s.status === "stopped") return ui.pill("muted", "Stopped \xB7 " + sentCount(s) + " sent");
+        return o.blocked.length ? ui.pill("warn", "Draft \xB7 needs details") : ui.pill("muted", "Draft \xB7 ready");
       }
-      const tiles = (list) => '<div class="cm-tiles">' + list.map(([n, l]) => '<div class="cm-tile"><b>' + n + "</b><small>" + E(l) + "</small></div>").join("") + "</div>";
-      async function listPage(note, err) {
+      const tiles = (list) => '<div class="adm-kpis">' + list.map(([n, l, hi]) => ui.kpi(l, n, "", "", hi)).join("") + "</div>";
+      async function listPage(res, note, err) {
         const all = await campaigns.overview(), counts = await campaigns.audienceCounts();
         const done = all.filter((o) => ["sent", "stopped", "sending"].includes(o.s.status));
         const totSent = done.reduce((a, o) => a + sentCount(o.s), 0), totOpen = done.reduce((a, o) => a + o.stats.opens, 0), totClick = done.reduce((a, o) => a + o.stats.clicks, 0), totUnsub = done.reduce((a, o) => a + o.stats.unsubs, 0);
         const row = (o) => {
           const s = o.s, n = sentCount(s), st = o.stats;
-          return '<tr><td><a href="/admin/campaigns/' + s.id + '"><b>' + E(s.name) + "</b></a>" + (s.kind === "designed" ? ' <small class="cm-help">\xB7 designed</small>' : "") + '<br><small class="cm-help">' + E(s.subject || "No subject yet") + "</small></td><td><small>" + E(o.audienceLabel) + "</small></td><td>" + badge(o) + "</td><td>" + (n ? "<b>" + n + "</b> sent" : "<b>" + o.count + '</b> <small class="cm-help">can get it</small>') + "</td><td>" + (st && n ? pct(st.opens, n) + ' <small class="cm-help">opened</small><br>' + pct(st.clicks, n) + ' <small class="cm-help">clicked</small>' + (st.unsubs ? "<br>" + st.unsubs + ' <small class="cm-help">unsubscribed</small>' : "") : '<small class="cm-help">\u2013</small>') + '</td><td><div class="cm-row"><a href="/admin/campaigns/' + s.id + '">Open</a><form method="post" action="/admin/campaigns/' + s.id + '/duplicate"><button class="sec">Copy</button></form></div></td></tr>';
+          return '<tr><td><a href="/admin/campaigns/' + s.id + '" style="color:inherit"><b>' + E(s.name) + "</b></a>" + (s.kind === "designed" ? ' <span class="adm-help">\xB7 designed</span>' : "") + "<small>" + E(s.subject || "No subject yet") + '</small></td><td class="wrap">' + E(o.audienceLabel) + "</td><td>" + badge(o) + '</td><td class="num">' + (n ? "<b>" + n + "</b> sent" : "<b>" + o.count + "</b> can get it") + '</td><td class="num">' + (st && n ? "<b>" + pct(st.opens, n) + "</b> opened<small>" + pct(st.clicks, n) + " clicked" + (st.unsubs ? " \xB7 " + st.unsubs + " unsubscribed" : "") + "</small>" : '<span class="adm-help">\u2013</span>') + '</td><td><div class="adm-inline"><a class="btn sm" href="/admin/campaigns/' + s.id + '">Open</a><form method="post" action="/admin/campaigns/' + s.id + '/duplicate"><button class="btn sm ghost">Copy</button></form></div></td></tr>';
         };
-        const table = (title, list, empty) => "<h2>" + title + '</h2><div class="card" style="overflow:auto">' + (list.length ? '<table class="cm-table"><tr><th>Campaign</th><th>Audience</th><th>Status</th><th>People</th><th>Results</th><th></th></tr>' + list.map(row).join("") + "</table>" : '<p style="margin:0">' + empty + "</p>") + "</div>";
+        const table = (title, list, empty) => '<section class="a-card a-flush" style="margin-top:16px"><div class="a-card-h" style="padding:18px 20px 0"><h3>' + title + '</h3><div class="a-card-m">' + list.length + "</div></div>" + ui.table(["Campaign", "Audience", "Status", "People", "Results", ""], list.map(row), empty) + "</section>";
         const byNew = (a, b) => (b.s.sent_at || b.s.scheduled_at || b.s.updated_at || 0) - (a.s.sent_at || a.s.scheduled_at || a.s.updated_at || 0);
         const active = all.filter((o) => ["scheduled", "sending"].includes(o.s.status)), drafts = all.filter((o) => ["draft", "cancelled"].includes(o.s.status)).sort((a, b) => (a.s.kind === "designed") - (b.s.kind === "designed") || byNew(a, b)), sent = all.filter((o) => ["sent", "stopped"].includes(o.s.status)).sort(byNew);
-        const auto = Object.values(leads.series || {}).map((sq) => "<tr><td><b>" + E(sq.name) + "</b></td><td><small>" + sq.steps.map((st) => E(st.key) + (typeof st.subject === "function" ? "" : ": " + E(st.subject))).join("<br>") + "</small></td></tr>").join("");
-        return authPage("Email campaigns", CSS + '<p><a href="/admin">\u2190 Leads and accounts</a></p><h1>Email campaigns</h1>' + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err ? '<p class="err">' + E(err) + "</p>" : "") + "<p>Write an email, pick who gets it, send yourself a test, then send it now or schedule it. <b>Nothing goes out until you confirm the number of people.</b> Anyone who unsubscribed is always left out, and every email has a one-click unsubscribe.</p>" + tiles([[done.length, "campaigns sent"], [totSent.toLocaleString("en-GB"), "emails delivered"], [pct(totOpen, totSent), "opened (unique)"], [pct(totClick, totSent), "clicked a link"], [totUnsub, "unsubscribed from a campaign"]]) + '<details class="card"' + (all.some((o) => o.s.kind === "custom") ? "" : " open") + '><summary><b>New campaign</b></summary><form method="post" action="/admin/campaigns/new">' + field("name", "", "Name (only the team sees this)", { ph: "e.g. December newsletter", req: true }) + audSelect("leads:all", counts) + '<button>Create draft</button><p class="cm-help" style="margin:0">Or press <b>Copy</b> on any campaign below to start from it, including the five designed ones.</p></form></details>' + (active.length ? table("Scheduled and sending", active, "") : "") + table("Drafts", drafts, "No drafts.") + table("Sent", sent, "Nothing sent yet.") + '<h2>Audiences</h2><div class="card" style="overflow:auto"><table class="cm-table"><tr><th>Audience</th><th>Who</th><th>Can get emails now</th></tr>' + Object.entries(campaigns.AUDIENCES).map(([k, a]) => "<tr><td><b>" + E(a.label) + "</b></td><td><small>" + E(a.about) + "</small></td><td><b>" + counts[k] + "</b></td></tr>").join("") + '</table><p class="cm-help" style="margin:10px 0 0">Leads come from the website forms. Contact-form enquiries are never included, because they did not ask for emails. Hosts can turn off \u201CNews and offers\u201D in their account page or with the link in each email.</p></div><details class="card"><summary><b>Automatic emails already running</b></summary><p class="cm-help">These send by themselves from each lead form (see Leads) and to hosts after sign-up (welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed).</p><table class="cm-table">' + auto + "</table></details>", true);
+        const auto = Object.values(leads.series || {}).map((sq) => "<div><span><b>" + E(sq.name) + "</b><small>" + sq.steps.map((st) => E(st.key) + (typeof st.subject === "function" ? "" : ": " + E(st.subject))).join("<br>") + "</small></span></div>").join("");
+        const newForm = '<details class="a-card" id="new"' + (all.some((o) => o.s.kind === "custom") ? "" : " open") + '><summary class="a-card-h"><h3>New campaign</h3></summary><form class="adm-form" method="post" action="/admin/campaigns/new"><div class="adm-two">' + field("name", "", "Name (only the team sees this)", { ph: "e.g. December newsletter", req: true }) + audSelect("leads:all", counts) + '</div><div class="row"><button class="btn primary">' + ui.icon("plus") + 'Create draft</button><span class="adm-help">Or press <b>Copy</b> on any campaign below to start from it, including the five designed ones.</span></div></form></details>';
+        return page(res, {
+          title: "Email campaigns",
+          note,
+          err,
+          sub: "Write an email, pick who gets it, send yourself a test, then send it now or schedule it. Nothing goes out until you confirm the number of people, and anyone who unsubscribed is always left out.",
+          actions: '<a class="btn sm" href="/admin/emails">' + ui.icon("doc") + "All email templates</a>",
+          body: tiles([[done.length, "Campaigns sent"], [totSent.toLocaleString("en-GB"), "Emails delivered"], [pct(totOpen, totSent), "Opened (unique)"], [pct(totClick, totSent), "Clicked a link", true], [totUnsub, "Unsubscribed from a campaign"]]) + newForm + (active.length ? table("Scheduled and sending", active, "") : "") + table("Drafts", drafts, "No drafts.") + table("Sent", sent, "Nothing sent yet.") + '<div class="adm-cols" style="margin-top:16px"><section class="a-card a-flush"><div class="a-card-h" style="padding:18px 20px 0"><h3>Audiences</h3><div class="a-card-m">can get emails now</div></div>' + ui.table(["Audience", "Who", ">People"], Object.entries(campaigns.AUDIENCES).map(([k, a]) => "<tr><td><b>" + E(a.label) + '</b></td><td class="wrap">' + E(a.about) + '</td><td class="r num"><b>' + counts[k] + "</b></td></tr>")) + '<p class="adm-help" style="padding:12px 20px 16px;margin:0">Leads come from the website forms. Contact-form enquiries are never included, because they did not ask for emails. Hosts can turn off \u201CNews and offers\u201D in their account page or with the link in each email.</p></section>' + ui.card("Automatic emails already running", "send by themselves", '<p class="adm-help" style="margin:0 0 6px">From each lead form (see Leads), and to hosts after sign-up: welcome, day-2 checklist, site live, week-3 tips, Monday report, payment failed.</p><div class="adm-list">' + auto + "</div>") + "</div>"
+        });
       }
-      async function editPage(id, note, err) {
+      async function writePage(res, f, err) {
+        f = f || {};
+        const counts = await campaigns.audienceCounts(), designs = (await campaigns.overview()).filter((o) => o.s.kind === "designed");
+        const form = ui.card("Your email", "step 1 of 3", '<form class="adm-form" method="post" action="/admin/campaigns/new"><div class="adm-two">' + audSelect(f.audience || "leads:all", counts) + field("name", f.name || "", "Name (only the team sees this)", { ph: "e.g. December newsletter" }) + "</div>" + field("subject", f.subject || "", "Subject", { req: true, ph: "Fill your January gaps, {{first_name}}", help: "Personal fields work here too, like <code>{{first_name}}</code>." }) + field("preview", f.preview || "", "Preview line (shown after the subject in the inbox)", { ph: "Three quick wins for quiet weeks" }) + field("heading", f.heading || "", "Heading (optional)", { ph: "Fill January without the Airbnb discount" }) + field("body", f.body || "Hi {{first_name}},\n\n", "Email", { area: true, tall: true, help: "Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you." }) + '<div class="adm-two">' + field("button_label", f.button_label || "", "Button text (optional)", { ph: "Try the demo" }) + field("button_url", f.button_url || "", "Button link", { ph: "https://booking-booster.co.uk/demo" }) + '</div><div class="row"><button class="btn primary" name="then" value="test">' + ui.icon("mail") + 'Save and send me a test</button><button class="btn" name="then" value="save">Save and preview</button><span class="adm-help">Nothing goes to anyone else yet.</span></div></form>');
+        const steps = ui.card("How it works", "", '<div class="adm-list"><div><span><b>1. Write it</b><small>Pick who gets it, then write the subject and the email.</small></span></div><div><span><b>2. Check it</b><small>A test goes to you only, and the preview shows it with a real person\u2019s details.</small></span></div><div><span><b>3. Send or schedule</b><small>Type the number of people to confirm. Anyone who unsubscribed is always left out, and opens, clicks and unsubscribes are counted.</small></span></div></div>');
+        const start = ui.card("Or start from a designed email", designs.length + "", '<div class="adm-list">' + designs.map((o) => "<div><span><b>" + E(o.s.name) + "</b><small>" + E(o.audienceLabel) + " \xB7 " + o.count + ' can get it</small></span><span class="adm-inline" style="flex:none;flex-wrap:nowrap"><a class="btn sm ghost" href="/admin/emails?t=camp.' + E(o.s.id) + '#preview">Preview</a><a class="btn sm" href="/admin/campaigns/' + E(o.s.id) + '">Use it</a></span></div>').join("") + "</div>");
+        return page(res, {
+          title: "Write a marketing email",
+          active: "write",
+          err,
+          back: ["/admin/campaigns", "Email campaigns"],
+          sub: "Write it, send yourself a test, then send it now or schedule it.",
+          body: '<div class="adm-cols"><div class="adm-stack">' + form + '</div><div class="adm-stack adm-sticky">' + steps + start + "</div></div>"
+        });
+      }
+      async function editPage(res, id, note, err) {
         const o = (await campaigns.overview()).find((x) => x.s.id === id);
         if (!o) return null;
         const { s, d } = o, ed = campaigns.editable(s), n = sentCount(s), st = o.stats, counts = d ? null : await campaigns.audienceCounts();
         const skipped = Object.entries(o.skipped).map(([r, k]) => k + " " + r).join(" \xB7 ");
-        const head = '<p><a href="/admin/campaigns">\u2190 Email campaigns</a></p><h1>' + E(s.name) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (err ? '<p class="err" role="alert">' + E(err) + "</p>" : "") + "<p>" + badge(o) + " " + (d ? E(d.about) : "") + '</p><p class="cm-help"><b>Who:</b> ' + E(o.audienceLabel) + " \xB7 <b>" + o.count + "</b> " + (n ? "more " : "") + "can get it now" + (skipped ? " \xB7 left out: " + E(skipped) : "") + (d ? "<br><b>When:</b> " + E(d.when) : "") + "</p>";
+        const sub = badge(o) + " " + (d ? E(d.about) : "") + "<br><b>Who:</b> " + E(o.audienceLabel) + " \xB7 <b>" + o.count + "</b> " + (n ? "more " : "") + "can get it now" + (skipped ? " \xB7 left out: " + E(skipped) : "") + (d ? "<br><b>When:</b> " + E(d.when) : "");
         let results = "";
         if (n || ["sending", "sent", "stopped"].includes(s.status)) {
-          results = tiles([[n, "delivered"], [pct(st.opens, n), st.opens + " opened"], [pct(st.clicks, n), st.clicks + " clicked"], [st.unsubs, "unsubscribed"], [failedCount(s), "failed"]]) + (st.links.length ? '<div class="card"><b>Links clicked</b> <small class="cm-help">(people, once each)</small><table class="cm-table" style="margin-top:8px">' + st.links.map(([u, k]) => '<tr><td style="word-break:break-all"><small>' + E(u) + "</small></td><td><b>" + k + "</b></td></tr>").join("") + "</table></div>" : "") + '<p class="cm-help">Opens are a guide only: some email apps load images for privacy and count as an open, others block them. Clicks are exact.</p>';
+          results = tiles([[n, "Delivered"], [pct(st.opens, n), st.opens + " opened"], [pct(st.clicks, n), st.clicks + " clicked", true], [st.unsubs, "Unsubscribed"], [failedCount(s), "Failed"]]) + (st.links.length ? ui.card("Links clicked", "people, once each", ui.table(["Link", ">People"], st.links.map(([u, k]) => '<tr><td style="word-break:break-all">' + E(u) + '</td><td class="r num"><b>' + k + "</b></td></tr>")), "") : "") + '<p class="adm-help" style="margin:10px 0 16px">Opens are a guide only: some email apps load images for privacy and count as an open, others block them. Clicks are exact.</p>';
         }
         const actions = [];
-        if (s.status === "sending") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="danger">Stop sending</button></form>');
-        if (s.status === "scheduled") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="sec">Cancel the schedule</button></form>');
-        if (failedCount(s) && ["sent", "stopped"].includes(s.status)) actions.push('<form method="post" action="/admin/campaigns/' + id + '/retry"><button>Retry ' + failedCount(s) + " failed</button></form>");
-        actions.push('<form method="post" action="/admin/campaigns/' + id + '/duplicate"><button class="sec">Make a copy</button></form>');
-        if (s.kind === "custom" && ed) actions.push('<form method="post" action="/admin/campaigns/' + id + '/delete"><button class="sec">Delete draft</button></form>');
-        const actionRow = '<div class="cm-row" style="margin:12px 0">' + actions.join("") + "</div>";
+        if (s.status === "sending") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="btn sm danger">Stop sending</button></form>');
+        if (s.status === "scheduled") actions.push('<form method="post" action="/admin/campaigns/' + id + '/cancel"><button class="btn sm">Cancel the schedule</button></form>');
+        if (failedCount(s) && ["sent", "stopped"].includes(s.status)) actions.push('<form method="post" action="/admin/campaigns/' + id + '/retry"><button class="btn sm primary">Retry ' + failedCount(s) + " failed</button></form>");
+        actions.push('<form method="post" action="/admin/campaigns/' + id + '/duplicate"><button class="btn sm">Make a copy</button></form>');
+        if (s.kind === "custom" && ed) actions.push('<form method="post" action="/admin/campaigns/' + id + '/delete"><button class="btn sm danger">Delete draft</button></form>');
         let form = "", sendBox = "";
         if (ed) {
-          const fields = d ? d.needs.map(([k, label, , type]) => field(k, s.settings[k], label, { type })).join("") : audSelect(s.audience, counts) + field("heading", s.heading, "Heading (optional)", { ph: "Fill January without the Airbnb discount" }) + field("body", s.body, "Email", { area: true, help: "Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{name}}</code> <code>{{email}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you." }) + '<div class="cm-two">' + field("button_label", s.button_label, "Button text (optional)", { ph: "Try the demo" }) + field("button_url", s.button_url, "Button link", { ph: "https://booking-booster.co.uk/demo" }) + "</div>";
-          form = '<form method="post" action="/admin/campaigns/' + id + '/save" class="card" style="margin-top:0">' + field("name", s.name, "Name (only the team sees this)") + field("subject", s.subject, "Subject", { help: "Personal fields work here too, like <code>{{first_name}}</code>." }) + field("preview", s.preview, "Preview line (shown after the subject in the inbox)") + fields + '<div class="cm-row"><button>Save draft</button><button formaction="/admin/campaigns/' + id + '/test" class="sec">Save and send me a test</button></div>' + (s.tests ? '<p class="cm-help" style="margin:0">' + s.tests + " test" + (s.tests === 1 ? "" : "s") + " sent" + (s.last_test_to ? ", last to " + E(s.last_test_to) : "") + ".</p>" : "") + "</form>";
+          const fields = d ? d.needs.map(([k, label, , type]) => field(k, s.settings[k], label, { type })).join("") : audSelect(s.audience, counts) + field("heading", s.heading, "Heading (optional)", { ph: "Fill January without the Airbnb discount" }) + field("body", s.body, "Email", { area: true, tall: true, help: "Blank line for a new paragraph. Lines starting with <code>-</code> make a list. <code>**bold**</code>, <code>[words](https://link)</code>. Personal fields: <code>{{first_name}}</code> <code>{{name}}</code> <code>{{email}}</code> <code>{{property_name}}</code>. Links: <code>{{demo_url}}</code> <code>{{signup_url}}</code> <code>{{book_call_url}}</code>. The sign-off and unsubscribe link are added for you." }) + '<div class="adm-two">' + field("button_label", s.button_label, "Button text (optional)", { ph: "Try the demo" }) + field("button_url", s.button_url, "Button link", { ph: "https://booking-booster.co.uk/demo" }) + "</div>";
+          form = ui.card("Email", s.tests ? s.tests + " test" + (s.tests === 1 ? "" : "s") + " sent" : "Draft", '<form class="adm-form" method="post" action="/admin/campaigns/' + id + '/save">' + field("name", s.name, "Name (only the team sees this)") + field("subject", s.subject, "Subject", { help: "Personal fields work here too, like <code>{{first_name}}</code>." }) + field("preview", s.preview, "Preview line (shown after the subject in the inbox)") + fields + '<div class="row"><button class="btn">Save draft</button><button formaction="/admin/campaigns/' + id + '/test" class="btn primary">' + ui.icon("mail") + "Save and send me a test</button></div>" + (s.last_test_to ? '<small class="adm-help">Last test went to ' + E(s.last_test_to) + ".</small>" : "") + "</form>");
           const why = o.blocked.length ? E(o.blocked.join(" ")) : !s.tests ? "Send yourself a test first." : !o.count ? "Nobody in this audience can get it right now." : "";
-          sendBox = '<div class="card"><b>Send</b>' + (why ? '<p class="cm-help" style="margin:8px 0 0">' + why + "</p>" : '<p class="cm-help" style="margin:8px 0 0">This goes to <b>' + o.count + "</b> people and cannot be undone. Type <b>" + o.count + '</b> to confirm, then send now or pick a time.</p><form method="post" action="/admin/campaigns/' + id + '/send">' + field("confirm", "", "Type " + o.count + " to confirm", { req: true }) + '<div class="cm-two">' + field("day", "", "Day (UK)", { type: "date" }) + field("time", "09:30", "Time (UK)", { type: "time" }) + '</div><div class="cm-row"><button>Send now to ' + o.count + ' people</button><button formaction="/admin/campaigns/' + id + '/schedule" class="sec">Schedule for that time</button></div></form>') + "</div>";
+          sendBox = ui.card("Send", why ? "Not ready" : o.count + " people", why ? '<p class="adm-help" style="margin:0">' + why + "</p>" : '<form class="adm-form" method="post" action="/admin/campaigns/' + id + '/send"><p class="adm-help" style="margin:0">This goes to <b>' + o.count + "</b> people and cannot be undone. Type the number to confirm, then send now or pick a time.</p>" + field("confirm", "", "Type " + o.count + " to confirm", { req: true }) + '<div class="adm-two">' + field("day", "", "Day (UK)", { type: "date" }) + field("time", "09:30", "Time (UK)", { type: "time" }) + '</div><div class="row"><button class="btn primary">' + ui.icon("mail") + "Send now to " + o.count + ' people</button><button formaction="/admin/campaigns/' + id + '/schedule" class="btn">Schedule for that time</button></div></form>');
         } else if (s.status === "scheduled") {
-          sendBox = '<div class="card"><b>Scheduled for ' + E(day(s.scheduled_at)) + '</b><p class="cm-help" style="margin:8px 0 0">About ' + (s.planned || o.count) + " people. Anyone who unsubscribes before then is left out. Cancel the schedule to make changes.</p></div>";
+          sendBox = ui.card("Scheduled for " + day(s.scheduled_at), "about " + (s.planned || o.count) + " people", '<p class="adm-help" style="margin:0">Anyone who unsubscribes before then is left out. Cancel the schedule to make changes.</p>');
         }
-        const preview = '<div class="card cm-sticky" style="margin-top:0"><b>Preview</b> <small class="cm-help">(' + (o.count ? "with the first person\u2019s details" : "with sample details") + ', <a href="/admin/campaigns/' + id + '/preview" target="_blank">open full size</a>)</small><iframe title="Email preview" src="/admin/campaigns/' + id + '/preview" style="width:100%;height:860px;border:1px solid #E4E7F0;border-radius:8px;margin-top:8px;background:#fff" sandbox></iframe></div>';
-        return authPage(s.name, CSS + head + results + actionRow + '<div class="cm-grid"><div>' + form + sendBox + "</div>" + preview + "</div>", true);
+        const preview = '<div class="adm-sticky">' + ui.card("Preview", '<a href="/admin/campaigns/' + id + '/preview" target="_blank">Open full size</a>', '<p class="adm-help" style="margin:0 0 10px">' + (o.count ? "With the first person\u2019s details." : "With sample details.") + '</p><iframe class="adm-frame" title="Email preview" src="/admin/campaigns/' + id + '/preview" sandbox></iframe>') + "</div>";
+        return page(res, {
+          title: s.name,
+          note,
+          err,
+          sub,
+          back: ["/admin/campaigns", "Email campaigns"],
+          actions: '<div class="adm-inline">' + actions.join("") + "</div>",
+          body: results + '<div class="adm-cols"><div class="adm-stack">' + form + sendBox + "</div>" + preview + "</div>"
+        });
       }
       return async function(req, res, p, m, u) {
-        if (p === "/admin/campaigns") return html(res, await listPage(u.searchParams.get("note"), u.searchParams.get("err")));
+        if (p === "/admin/campaigns") return await listPage(res, u.searchParams.get("note"), u.searchParams.get("err"));
+        if (p === "/admin/campaigns/write") return await writePage(res);
         if (p === "/admin/campaigns/new" && m === "POST") {
           const f2 = await formBody(req);
+          if (!f2.then) {
+            const s3 = await campaigns.create(f2);
+            return redirect(res, "/admin/campaigns/" + s3.id + "?note=" + encodeURIComponent("Draft created. Write it, send yourself a test, then send or schedule it."));
+          }
+          if (!String(f2.subject || "").trim()) return await writePage(res, f2, "Add a subject.");
+          if (!f2.name || !String(f2.name).trim()) f2.name = String(f2.subject).replace(/\{\{[^}]*\}\}/g, "").replace(/[\s,]+$/, "").trim().slice(0, 80);
           const s2 = await campaigns.create(f2);
-          return redirect(res, "/admin/campaigns/" + s2.id + "?note=" + encodeURIComponent("Draft created. Write it, send yourself a test, then send or schedule it."));
+          await campaigns.update(s2.id, f2);
+          let note2 = "Draft saved. Check the preview, send yourself a test, then send or schedule it.", err2 = "";
+          if (f2.then === "test") {
+            const who = await me(req);
+            const r = await campaigns.sendTest(s2.id, who.email);
+            r.ok ? note2 = "Draft saved and a test sent to " + who.email + ". Nobody else got it. When it looks right, send or schedule it below." : err2 = r.error;
+          }
+          return redirect(res, "/admin/campaigns/" + s2.id + "?" + (err2 ? "err=" + encodeURIComponent(err2) : "note=" + encodeURIComponent(note2)));
         }
         const mm = p.match(/^\/admin\/campaigns\/([a-z0-9-]+)(?:\/(preview|save|test|send|schedule|cancel|retry|duplicate|delete))?$/);
         const s = mm && await campaigns.load(mm[1]);
-        if (!s) return send(res, 404, authPage("Not found", '<h1>Not found</h1><p><a href="/admin/campaigns">Email campaigns</a></p>'), "text/html; charset=utf-8");
+        if (!s) return send(res, 404, ui.shell({ email: await email(), active: "campaigns", title: "Not found", sub: 'That campaign does not exist. <a href="/admin/campaigns">Back to email campaigns</a>', body: "" }), "text/html; charset=utf-8");
         const id = s.id, act = mm[2];
         if (act === "preview") return send(res, 200, (await campaigns.preview(id)).html, "text/html; charset=utf-8", { "cache-control": "no-store", "content-security-policy": "default-src 'none'; img-src * data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" });
-        if (m !== "POST" || !act) return html(res, await editPage(id, u.searchParams.get("note"), u.searchParams.get("err")));
+        if (m !== "POST" || !act) return await editPage(res, id, u.searchParams.get("note"), u.searchParams.get("err"));
         const f = await formBody(req);
         let note = "", err = "";
         if (act === "save") {
@@ -16410,8 +17973,617 @@ var require_campaigns_admin = __commonJS({
           if (r.ok) return redirect(res, "/admin/campaigns?note=" + encodeURIComponent("Draft deleted."));
           err = r.error;
         }
-        return html(res, await editPage(id, note, err));
+        return await editPage(res, id, note, err);
       };
+    };
+  }
+});
+
+// server/admin-shell.js
+var require_admin_shell = __commonJS({
+  "server/admin-shell.js"(exports, module) {
+    var pages = require_pages();
+    var esc = pages.esc;
+    var I = {
+      dash: '<path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 8h6V4h-6z"/>',
+      users: '<circle cx="9" cy="8" r="3.5"/><path d="M2 20c1-4 4-6 7-6s6 2 7 6M16 4.5a3.5 3.5 0 010 7M18 14c2 .8 3.5 3 4 6"/>',
+      mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+      home: '<path d="M3 11l9-7 9 7v9H3z"/>',
+      card: '<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/>',
+      gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+      out: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
+      plus: '<path d="M12 5v14M5 12h14"/>',
+      back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+      check: '<path d="M5 12l5 5 9-10"/>',
+      spark: '<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+      down: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>',
+      x: '<path d="M6 6l12 12M18 6L6 18"/>',
+      doc: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+      share: '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>',
+      pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>'
+    };
+    var icon = (k, cls) => '<svg class="ic ' + (cls || "") + '" viewBox="0 0 24 24" aria-hidden="true">' + (I[k] || I.spark) + "</svg>";
+    var MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var NAV = [
+      ["Team", [["overview", "/admin", "dash", "Overview"], ["leads", "/admin/leads", "users", "Leads"], ["hosts", "/admin/hosts", "home", "Users"], ["partners", "/admin/affiliates", "share", "Partners"]]],
+      ["Marketing", [["campaigns", "/admin/campaigns", "mail", "Email campaigns"], ["emails", "/admin/emails", "doc", "Email templates"], ["social", "/admin/social", "share", "Social posts"]]],
+      ["Settings", [["settings", "/admin/settings", "gear", "Stripe, links and backups"]]]
+    ];
+    var CSS = `
+.x-app a.a-nav,.x-app a.a-tab,.x-app a.a-biz,.x-app a.a-side-foot{text-decoration:none}
+.x-app .adm-note{display:flex;gap:10px;align-items:center;border-radius:12px;padding:11px 14px;font-weight:600;font-size:14px;margin-bottom:16px;background:var(--good-soft);color:var(--good)}
+.x-app .adm-note.bad{background:var(--bad-soft);color:var(--bad)}
+.x-app .adm-note .ic{width:16px;height:16px}
+.x-app .adm-form{display:grid;gap:14px}
+.x-app .adm-form .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.x-app .adm-two{display:grid;gap:14px}@container xapp (min-width:700px){.x-app .adm-two{grid-template-columns:1fr 1fr}}
+.x-app .adm-help{font-size:12.5px;color:var(--muted);line-height:1.5}.x-app .adm-help code{font:500 11.5px var(--mono);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.x-app .field textarea.tall{min-height:280px;line-height:1.55}
+.x-app details.adm-x>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;color:var(--primary)}
+.x-app details.adm-x>summary::-webkit-details-marker{display:none}
+.x-app details.adm-x[open]>summary{margin-bottom:10px}
+.x-app details.adm-x .adm-form{gap:8px;min-width:240px}
+.x-app details.adm-x .field input{padding:8px 10px;font-size:13.5px}
+.x-app details.a-card>summary{cursor:pointer;list-style:none}.x-app details.a-card>summary::-webkit-details-marker{display:none}
+.x-app details.a-card>summary h3::after{content:' +';color:var(--muted);font-weight:500}.x-app details.a-card[open]>summary h3::after{content:''}
+.x-app details.a-card[open]>summary{margin-bottom:14px}
+.x-app .a-tbl td{vertical-align:top}.x-app .a-tbl td small,.x-app .adm-sub{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.x-app .a-tbl td.wrap{max-width:360px;font-size:13px;color:var(--muted)}
+.x-app .a-tbl td form{margin:0}
+.x-app .adm-inline{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}.x-app .adm-inline form{display:inline}
+.x-app .adm-list{display:grid;gap:0}.x-app .adm-list>div{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.x-app .adm-list>div:last-child{border-bottom:0}
+.x-app .adm-list .pill{flex:none}.x-app .adm-list b{font-weight:600}.x-app .adm-list small{display:block;color:var(--muted);font-size:12.5px}
+.x-app .adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:16px}
+.x-app .adm-stack{display:grid;gap:16px;align-content:start}
+.x-app .adm-cols{display:grid;gap:16px;align-items:start}@container xapp (min-width:1100px){.x-app .adm-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.x-app .adm-sticky{position:sticky;top:84px}}
+.x-app .adm-frame{width:100%;height:860px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.x-app .a-top .adm-title{font:600 14px var(--font-body);color:var(--muted)}@container xapp (max-width:1020px){.x-app .a-top .adm-title{display:none}}
+.x-app .a-tbl .adm-inline{flex-wrap:nowrap}.x-app .a-tbl td.num{white-space:nowrap}
+.x-app .a-grid.adm-top{align-items:start}
+.x-app .adm-mails{display:grid;gap:2px;margin:0 -8px}
+.x-app a.adm-mail{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;color:inherit;text-decoration:none}
+.x-app a.adm-mail:hover{background:var(--surface-2)}.x-app a.adm-mail.on{background:var(--primary-soft,var(--surface-2));box-shadow:inset 3px 0 0 var(--primary)}
+.x-app a.adm-mail b{font-weight:600;font-size:14px}.x-app a.adm-mail small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}.x-app a.adm-mail .pill{flex:none}
+.x-app .adm-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.x-app .adm-chips a.chip{text-decoration:none;color:inherit}.x-app .adm-chips a.chip.on{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+.x-app .adm-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.x-app .adm-cal-h{font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:2px 4px}
+.x-app .adm-cal-d{min-height:104px;border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:3px;background:var(--surface);min-width:0}
+.x-app .adm-cal-d.off{border:0;background:none}.x-app .adm-cal-d.past{background:var(--surface-2)}.x-app .adm-cal-d.today{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.x-app .adm-cal-d>b{font:600 12px var(--mono);color:var(--muted)}.x-app .adm-cal-d.today>b{color:var(--primary)}
+.x-app a.adm-cal-p{display:block;font-size:11.5px;line-height:1.3;padding:3px 6px;border-radius:6px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fg);background:var(--info-soft,#E7EEFF);border-left:3px solid var(--info,#2747F5)}
+.x-app a.adm-cal-p i{font-style:normal;font-family:var(--mono);opacity:.75;margin-right:4px}
+.x-app a.adm-cal-p.published{background:var(--good-soft);border-left-color:var(--good)}.x-app a.adm-cal-p.error{background:var(--bad-soft);border-left-color:var(--bad)}.x-app a.adm-cal-p.partial{background:var(--warn-soft,#FFF4D6);border-left-color:var(--warn,#B7791F)}
+.x-app .adm-cal-s{font-size:11px;color:var(--muted)}
+.x-app .adm-key{display:inline-block;width:10px;height:10px;border-radius:3px;margin:0 5px 0 10px;vertical-align:-1px;background:var(--info,#2747F5)}.x-app .adm-key:first-child{margin-left:0}
+.x-app .adm-key.published{background:var(--good)}.x-app .adm-key.error{background:var(--bad)}.x-app .adm-key.partial{background:var(--warn,#B7791F)}
+.x-app img.adm-thumb{width:56px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block;background:var(--surface-2)}
+@container xapp (max-width:700px){.x-app .adm-cal{gap:2px}.x-app .adm-cal-d{min-height:54px;padding:4px}.x-app a.adm-cal-p{font-size:0;padding:0;height:6px;border-left-width:0}.x-app a.adm-cal-p i{display:none}.x-app .adm-cal-s{display:none}}
+.x-app .a-tools .btn.adm-write{white-space:nowrap}@container xapp (max-width:560px){.x-app .a-tools .btn.adm-host{display:none}}
+`;
+    function shell(o) {
+      const a = pages.assets();
+      const nav = (cls, tag) => NAV.map(([g, items], gi) => (tag === "strip" ? gi ? '<span class="a-strip-sep" aria-hidden="true"></span>' : "" : '<div class="a-grp"><p>' + esc(g) + "</p>") + items.map(([k, href, ic, label]) => '<a class="' + cls + '" href="' + href + '"' + (k === o.active ? ' aria-current="page"' : "") + ">" + icon(ic) + "<span>" + esc(label) + "</span>" + (k === "leads" && o.waiting ? '<i class="a-badge num">' + o.waiting + "</i>" : "") + "</a>").join("") + (tag === "strip" ? "" : "</div>")).join("");
+      const who = String(o.email || ""), initials = (who.split("@")[0].replace(/[^a-z]/gi, " ").trim().split(/\s+/).map((x) => x[0]).join("").slice(0, 2) || "BB").toUpperCase();
+      const note = (o.note ? '<div class="adm-note" role="status">' + icon("check") + esc(o.note) + "</div>" : "") + (o.err ? '<div class="adm-note bad" role="alert">' + icon("x") + esc(o.err) + "</div>" : "");
+      const head = o.heading === false ? "" : '<div class="a-vh"><div>' + (o.back ? '<p style="margin:0 0 6px"><a href="' + o.back[0] + '" class="adm-help" style="text-decoration:none">\u2190 ' + esc(o.back[1]) + "</a></p>" : "") + '<h2 class="disp">' + esc(o.heading || o.title) + "</h2>" + (o.sub ? "<p>" + o.sub + "</p>" : "") + "</div>" + (o.actions ? '<div class="a-acts">' + o.actions + "</div>" : "") + "</div>";
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + ' \xB7 Bookingbooster team</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/mark.svg" type="image/svg+xml">' + pages.FONTS + '<link rel="stylesheet" href="/assets/app.' + a.hash.css + '.css"><style>body{margin:0}' + CSS + '</style></head><body class="prod prod-host"><main class="surface s-app"><div class="surface-root" style="--a-top:0px"><div class="x-app"><div class="a-frame"><aside class="a-side" aria-label="Team navigation"><div class="a-side-top"><a href="/admin" style="color:inherit;text-decoration:none"><span class="lockup">' + MARK + 'bookingbooster</span></a></div><a class="a-biz" href="/admin"><i></i><span><b>Bookingbooster team</b><em>Team admin</em></span></a><nav class="a-navs">' + nav("a-nav") + '</nav><a class="a-side-foot" href="/app"><span class="a-pulse"></span><span><b>Open the host console</b><em>' + esc(who) + '</em></span></a></aside><div class="a-main"><header class="a-top"><a class="a-mbrand" href="/admin" style="text-decoration:none">' + MARK + '<span>Team</span></a><span class="adm-title">Team admin</span><div class="a-tools">' + (o.tools || "") + (o.active === "write" ? "" : '<a class="btn primary sm adm-write" href="/admin/campaigns/write">' + icon("pen") + "<span>Write an email</span></a>") + '<a class="btn sm adm-host" href="/app">' + icon("out") + '<span>Host console</span></a><span class="a-me" title="' + esc(who) + '"><span class="avatar sm" style="--h:226">' + esc(initials) + '</span></span></div></header><nav class="a-strip" aria-label="Team navigation">' + nav("a-tab", "strip") + '</nav><main class="a-body"><div class="a-view a-v-admin">' + head + note + o.body + "</div></main></div></div></div></div></main></body></html>";
+    }
+    var field = (name, value, label, o) => {
+      o = o || {};
+      const attrs = (o.type ? ' type="' + o.type + '"' : "") + (o.ph ? ' placeholder="' + esc(o.ph) + '"' : "") + (o.req ? " required" : "") + (o.extra || "");
+      const ctl = o.area ? '<textarea name="' + name + '" class="' + (o.tall ? "tall" : "") + '"' + attrs + ">" + esc(value || "") + "</textarea>" : o.options ? '<select name="' + name + '">' + o.options.map(([v, l]) => '<option value="' + esc(v) + '"' + (v === value ? " selected" : "") + ">" + esc(l) + "</option>").join("") + "</select>" : '<input name="' + name + '" value="' + esc(value == null ? "" : value) + '"' + attrs + ">";
+      return '<label class="field"><span>' + esc(label) + "</span>" + ctl + (o.help ? '<small class="adm-help">' + o.help + "</small>" : "") + "</label>";
+    };
+    var kpi = (label, value, em, small, hi) => '<div class="a-kpi' + (hi ? " hi" : "") + '"><span>' + esc(label) + '</span><b class="num">' + value + "</b>" + (em ? '<em class="up">' + em + "</em>" : "<em></em>") + (small ? "<small>" + small + "</small>" : "") + "</div>";
+    var card = (title, meta, body, cls) => '<section class="a-card ' + (cls || "") + '"><div class="a-card-h"><h3>' + esc(title) + "</h3>" + (meta ? '<div class="a-card-m">' + meta + "</div>" : "") + "</div>" + body + "</section>";
+    var table = (heads, rows, empty) => '<div class="tblwrap"><table class="tbl a-tbl"><thead><tr>' + heads.map((h) => "<th" + (h[0] === ">" ? ' class="r">' + esc(h.slice(1)) : ">" + esc(h)) + "</th>").join("") + "</tr></thead><tbody>" + (rows.length ? rows.join("") : '<tr><td colspan="' + heads.length + '"><div class="a-empty"><p>' + esc(empty || "Nothing here yet.") + "</p></div></td></tr>") + "</tbody></table></div>";
+    var pill = (cls, text) => '<span class="pill ' + cls + '">' + esc(text) + "</span>";
+    module.exports = { shell, icon, field, kpi, card, table, pill };
+  }
+});
+
+// server/social-snapshot.json
+var require_social_snapshot = __commonJS({
+  "server/social-snapshot.json"(exports, module) {
+    module.exports = { source: "Metricool", brand: "BookingBooster", timezone: "Atlantic/St_Helena", as_of: "2026-11-15T22:50:00Z", posts: [{ id: 410600107, at: "2026-11-02T08:30:00", text: "TEST DRAFT - do not publish", kind: "post", draft: true, thumb: "", media: 0, video: false, title: "", nets: [["linkedin", "pending", ""]] }, { id: 414129128, at: "2026-11-03T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1072066532397631743.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1589092189634127"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022110811715025022"]] }, { id: 414129166, at: "2026-11-03T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5918607588980905046.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1673664637674650"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022112303352483770"]] }, { id: 414129205, at: "2026-11-03T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14210180659501508451.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1807387317255686"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022114480900545584"]] }, { id: 414129243, at: "2026-11-03T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16157465156979033790.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1688360723075705"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022116991250339113"]] }, { id: 414129270, at: "2026-11-03T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18057436971600788561.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1667949141671279"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022119508176553322"]] }, { id: 414129315, at: "2026-11-03T08:30:00", text: "More direct bookings. Less platform fees. Platforms take around 15% of every booking. Your own booking website. Found on Google and in AI answers. A guest app and a host app. All-in-one outreach. Fill your calendar without the 15% fee. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11534410458775811681.jpeg", media: 1, video: true, title: "What is Bookingbooster? | Bookingbooster", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1141512431696436"], ["youtube", "error", "https://www.youtube.com/watch?v=SWQbX6cxmlA"]] }, { id: 414129337, at: "2026-11-03T12:30:00", text: "5 ways to get more direct bookings. Save this for your next quiet week. 1) Give guests a reason. 2) Make booking instant. 3) Get found on Google. 4) Show up in AI answers. 5) Bring guests back. Get my booking site at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1154728526668693593.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122109203073514925"], ["instagram", "published", "https://www.instagram.com/p/DfR5AwTCIDz/"]] }, { id: 414127924, at: "2026-11-03T19:00:00", text: "POV: you just paid \xA3150 in fees on a \xA31,000 booking. Now do that 10 times a month. \xA318,000 a year gone to commission. Book direct instead with your own site. Keep it. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12763789151727728477.jpeg", media: 1, video: true, title: "Fee maths | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1586895059859486"], ["instagram", "published", "https://www.instagram.com/reel/DfSlgxRlfdt/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7704022613890288918"], ["youtube", "error", "https://www.youtube.com/shorts/zjz0JCEr0QA"]] }, { id: 414132262, at: "2026-11-04T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11160283936044522031.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2051601465756464"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022835094884256541"]] }, { id: 414132314, at: "2026-11-04T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12529482190553732539.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2186544472746374"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022836730897540236"]] }, { id: 414132402, at: "2026-11-04T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5422302739584277587.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2026361874986630"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022839243679890723"]] }, { id: 414132445, at: "2026-11-04T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15048220911849796622.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1008093782336981"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022841824905080633"]] }, { id: 414132497, at: "2026-11-04T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6704693904905856465.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1598861601466288"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4022844339633607764"]] }, { id: 414132544, at: "2026-11-04T12:30:00", text: "What a 15% fee really costs you. The maths most hosts never do. 1) One booking. 2) One month. 3) One year. 4) Now book half direct. 5) That is a new hot tub. Work out my savings at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6043406574165882597.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122109518481514925"], ["instagram", "published", "https://www.instagram.com/p/DfUdw_QCPYs/"]] }, { id: 414132594, at: "2026-11-04T19:00:00", text: "Your booking site, live in 7 days. We write it, design it and connect payments. You approve it. Guests book direct. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15540060333401998444.jpeg", media: 1, video: true, title: "Seven days | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1768750567544853"], ["instagram", "published", "https://www.instagram.com/reel/DfVKT9xiBT3/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7704393683856002326"], ["youtube", "error", "https://www.youtube.com/shorts/pdMeP6k32wk"]] }, { id: 414132642, at: "2026-11-05T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18197749578037161623.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2117229822265568"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4023560095807363453"]] }, { id: 414132695, at: "2026-11-05T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14708128905467537825.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1428632852229448"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4023561499657813353"]] }, { id: 414132723, at: "2026-11-05T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11003570685718538749.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1623802132621290"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4023564015015462317"]] }, { id: 414132753, at: "2026-11-05T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11939465573705666974.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1572207584578711"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4023566570235780814"]] }, { id: 414132786, at: "2026-11-05T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5981258687191979461.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1108347468756491"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4023569055017190662"]] }, { id: 414132819, at: "2026-11-05T12:30:00", text: "\xA38,309 saved in fees. One host. One year. Example figures from a three-property host on Bookingbooster. Work out my savings at bookingbooster.co.uk\n\n#bookdirect #holidaylet #directbookings #holidaycottage #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6310239123151236791.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122109844575514925"], ["instagram", "published", "https://www.instagram.com/p/DfXCZI8DXZq/"]] }, { id: 414132852, at: "2026-11-05T19:00:00", text: "Guests don\u2019t scroll anymore. They ask AI: \u201CDog-friendly cottage near Keswick?\u201D Is your home in the answer? We make sure it is, with AI search visibility. Be the answer. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2435487655441897269.jpeg", media: 1, video: true, title: "Ask AI | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1108644888830171"], ["instagram", "published", "https://www.instagram.com/reel/DfXvDkQAFvu/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7704764715313941782"], ["youtube", "error", "https://www.youtube.com/shorts/QB2PQ3YI-ok"]] }, { id: 414135287, at: "2026-11-06T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10757764516819852394.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1455176223427850"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4024284867981801101"]] }, { id: 414135328, at: "2026-11-06T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11005546122169734276.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2214052739548423"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4024286287669797915"]] }, { id: 414135373, at: "2026-11-06T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2925192497819067544.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1176693154902486"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4024288795972624873"]] }, { id: 414135444, at: "2026-11-06T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10545548257172062803.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1055152937584229"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4024291325825962624"]] }, { id: 414135482, at: "2026-11-06T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3774955267212444626.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1435722498686378"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4024293837576519000"]] }, { id: 414135542, at: "2026-11-06T08:30:00", text: "How a direct booking works. 1. A guest finds your site. 2. They book and pay instantly. 3. You see it straight away. 4. Payment lands in two days. Keep 100% of the booking. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6481636600602680464.jpeg", media: 1, video: true, title: "How direct bookings work | Bookingbooster", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1098294356538850"], ["youtube", "error", "https://www.youtube.com/watch?v=enHCOLz25Ew"]] }, { id: 414135593, at: "2026-11-06T12:30:00", text: "Direct vs platform: a side-by-side. Same stay, two very different outcomes. 1) The guest price. 2) Your payout. 3) The guest data. 4) The rules. 5) The next booking. Start booking direct at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3168160290349813908.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122110265115514925"], ["instagram", "published", "https://www.instagram.com/p/DfZnQa_jd2z/"]] }, { id: 414135630, at: "2026-11-06T19:00:00", text: "Stop renting your guests from a platform. Win them once. Keep them forever. Bookingbooster: direct bookings, done for you. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-719494001582377944.jpeg", media: 1, video: true, title: "Stop renting | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1933853177577322"], ["instagram", "published", "https://www.instagram.com/reel/DfaTzLIDrMw/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7705135608041049366"], ["youtube", "error", "https://www.youtube.com/shorts/7g86Mxv_RKE"]] }, { id: 414135682, at: "2026-11-07T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14305932382054653675.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1422024180099207"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025009398891607691"]] }, { id: 414135714, at: "2026-11-07T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10908498662013268946.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2052149125494115"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025011064332110052"]] }, { id: 414135756, at: "2026-11-07T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4920995861817692161.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1003220662839320"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025013573331199031"]] }, { id: 414135799, at: "2026-11-07T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14941705617308980744.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2201061287494298"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025016118048989647"]] }, { id: 414135838, at: "2026-11-07T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4406104303570339123.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/977054572136859"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025018624699273253"]] }, { id: 414135896, at: "2026-11-07T10:00:00", text: "How AI search is changing holiday lets. Guests are asking, not scrolling. 1) Guests ask AI where to stay. 2) AI picks a few names. 3) Listings are hard to cite. 4) Structure beats volume. 5) Track it weekly. Check my AI visibility at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6120798607017904247.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122110570215514925"], ["instagram", "published", "https://www.instagram.com/p/Dfb7C6GjZj5/"]] }, { id: 414135946, at: "2026-11-07T18:00:00", text: "Your whole business in your pocket. Today: arrivals and money. Calendar: every home. Inbox: every direct guest. Grow: campaigns and your AI score. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-355603190481284284.jpeg", media: 1, video: true, title: "Phone tour | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/3379333975787564"], ["instagram", "published", "https://www.instagram.com/reel/Dfcx8tvDFs4/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7705491748117646614"], ["youtube", "error", "https://www.youtube.com/shorts/xWeGcSQHxGA"]] }, { id: 414135984, at: "2026-11-08T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-762337481418364122.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1106987108843482"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025734127663209341"]] }, { id: 414136011, at: "2026-11-08T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16840075019320059136.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1358436306242904"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025735805837794506"]] }, { id: 414136048, at: "2026-11-08T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12270525206481002740.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2944935112537875"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025738319987849202"]] }, { id: 414136092, at: "2026-11-08T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9913800136299041659.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1137075055979058"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025740850277240200"]] }, { id: 414136132, at: "2026-11-08T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2724885285032095143.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1441387318190585"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4025743391177899476"]] }, { id: 414136201, at: "2026-11-08T10:00:00", text: "When guests ask ChatGPT, be the answer. We structure your site so AI assistants recommend and link to you. Check my AI visibility at bookingbooster.co.uk\n\n#aisearch #chatgpt #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5484536498756995661.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122110897227514925"], ["instagram", "published", "https://www.instagram.com/p/Dfeft9HiFuZ/"]] }, { id: 414136235, at: "2026-11-08T18:00:00", text: "2 empty nights between stays? Tap \u201COffer to past guests\u201D. An email and text go out with a direct-only code. Booked in an hour: \xA3476, no commission. Fill the gaps. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7066435528990291749.jpeg", media: 1, video: true, title: "Gap nights | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1070723609319847"], ["instagram", "published", "https://www.instagram.com/reel/DffXTusE85g/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7705862944743099670"], ["youtube", "error", "https://www.youtube.com/shorts/Bj8eVpupfwc"]] }, { id: 414139146, at: "2026-11-09T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1196190114862582247.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/29932607703056571"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4026459077609019398"]] }, { id: 414139188, at: "2026-11-09T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2880122661833882878.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/994291983742357"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4026460605526863681"]] }, { id: 414139228, at: "2026-11-09T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5703846153806917139.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1480478117300943"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4026463110692503465"]] }, { id: 414139259, at: "2026-11-09T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13837295485831138148.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1087028047495923"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4026465655217366871"]] }, { id: 414139293, at: "2026-11-09T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16352310533821592202.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2484849178706955"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4026468156951916267"]] }, { id: 414139336, at: "2026-11-09T12:30:00", text: "7 things every holiday let website needs. Use this as a checklist. 1) Instant booking. 2) Your best reviews. 3) Clear full prices. 4) A local area guide. 5) FAQs and house rules. Get my booking site at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4213442890593042610.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122111225079514925"], ["instagram", "published", "https://www.instagram.com/p/DfhVnkmjbBm/"]] }, { id: 414139390, at: "2026-11-09T19:00:00", text: "Website. SEO. AI search. Guest app. Outreach. One plan. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5571434517739408614.jpeg", media: 1, video: true, title: "Five tools | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1170607752164601"], ["instagram", "published", "https://www.instagram.com/reel/DfiCOfTjn0q/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7706249007000980758"], ["youtube", "error", "https://www.youtube.com/shorts/KSWZEDuLVpY"]] }, { id: 414139431, at: "2026-11-10T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8833594224172481235.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2160772437856971"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027183810793203094"]] }, { id: 414139463, at: "2026-11-10T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1621704444106718425.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2717115038704324"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027185420147666169"]] }, { id: 414139495, at: "2026-11-10T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15532105325790437487.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/4381102795474823"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027187898084041623"]] }, { id: 414139541, at: "2026-11-10T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12368277335657851056.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/3645419508965208"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027190445385371010"]] }, { id: 414139587, at: "2026-11-10T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8592412292809923657.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1117935011215694"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027192954988656561"]] }, { id: 414139629, at: "2026-11-10T08:30:00", text: "Is AI recommending your holiday let? Guests now ask ChatGPT where to stay. We check what AI says about you, then fix the gaps, with a link that books direct. Be the answer. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12696984847450643065.jpeg", media: 1, video: true, title: "AI search visibility | Bookingbooster", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/993879397137481"], ["youtube", "error", "https://www.youtube.com/watch?v=rHVtGi8eiYk"]] }, { id: 414139656, at: "2026-11-10T12:30:00", text: "Seven days to your booking site. What happens after you sign up. 1) Day 1. 2) Day 2. 3) Day 3 to 4. 4) Day 5. 5) Day 7. Start my seven days at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11798958568291633858.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122111578425514925"], ["instagram", "published", "https://www.instagram.com/p/Dfj6dzYCCEh/"]] }, { id: 414139679, at: "2026-11-10T19:00:00", text: "Platform guest: you can\u2019t email them. Direct guest: they\u2019re yours. Send offers for birthdays, seasons and gap nights. They come back and book direct. Own your guests. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14668503713845116020.jpeg", media: 1, video: true, title: "Whose guest | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1424915889345205"], ["instagram", "published", "https://www.instagram.com/reel/DfknCBEDG2h/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7706620065688423702"], ["youtube", "error", "https://www.youtube.com/shorts/cqhoZQ8Tnkw"]] }, { id: 414139703, at: "2026-11-11T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18370474969224016317.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/999237715933710"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027908493369052800"]] }, { id: 414139751, at: "2026-11-11T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8630004529693177538.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1148148761404942"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027910144297644196"]] }, { id: 414139786, at: "2026-11-11T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7202759382720152530.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1447297380866027"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027912678789394366"]] }, { id: 414139812, at: "2026-11-11T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17209391419245445548.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1170401145853892"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027915215051760207"]] }, { id: 414139838, at: "2026-11-11T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11655176903102878069.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1470735528587843"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4027917719789116806"]] }, { id: 414139864, at: "2026-11-11T12:30:00", text: "Live in seven days. Not seven months. We write it, design it and connect payments. You approve it. Get my booking site at bookingbooster.co.uk\n\n#holidayletwebsite #bookdirect #holidaycottage #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4232820825240177468.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122111897733514925"], ["instagram", "published", "https://www.instagram.com/p/DfmfIuHinAl/"]] }, { id: 414139908, at: "2026-11-11T19:00:00", text: "Guests search \u201Chot tub cottage Keswick\u201D. Your listing? Page 14 of a platform. Your website? #4 on Google. Local pages written for you every month. Get found. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-166574252937997151.jpeg", media: 1, video: true, title: "SEO in 15s | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1673854857650762"], ["instagram", "published", "https://www.instagram.com/reel/DfnMBbuCfRl/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7706991574969896214"], ["youtube", "error", "https://www.youtube.com/shorts/JTimYFPVOiA"]] }, { id: 414143852, at: "2026-11-12T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1349393205307621135.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2608430582964126"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4028633370342556000"]] }, { id: 414143879, at: "2026-11-12T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15208200036582548626.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2023897318275497"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4028634929641816736"]] }, { id: 414143906, at: "2026-11-12T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18131923701084542553.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2036706870215737"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4028637445444246069"]] }, { id: 414143951, at: "2026-11-12T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15344985650471865074.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1617988230013259"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4028640009984186967"]] }, { id: 414143976, at: "2026-11-12T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17002334250180173687.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1857075498618281"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4028642498833952151"]] }, { id: 414144017, at: "2026-11-12T12:30:00", text: "Fill your gap nights in 3 steps. Turn empty Tuesdays into income. 1) Spot the gaps. 2) Pick your guests. 3) Send the offer. 4) Bookings land. 5) Repeat every month. Fill my gaps at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3289236578755178454.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122112176637514925"], ["instagram", "published", "https://www.instagram.com/p/DfpEGIwCAG7/"]] }, { id: 414144063, at: "2026-11-12T19:00:00", text: "Guest checks in online in 3 minutes, on their phone. ID done. Agreement signed. Deposit held. The door code unlocks in the guest app. No calls. No chasing. From \u201Cbook direct\u201D to the door code. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10802858952691058991.jpeg", media: 1, video: true, title: "Door code | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/29317111284590259"], ["instagram", "published", "https://www.instagram.com/reel/Dfpww5tghZS/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7707362605697895702"], ["youtube", "error", "https://www.youtube.com/shorts/cOfPV-AzwN8"]] }, { id: 414144088, at: "2026-11-13T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4729073002010702494.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/3523869927781044"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4029358094492039926"]] }, { id: 414144135, at: "2026-11-13T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14740993663220761986.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1848118103171021"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4029359703116831053"]] }, { id: 414144170, at: "2026-11-13T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5177475014972324804.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2200167970567604"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4029362218138933015"]] }, { id: 414144219, at: "2026-11-13T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16041790076106668091.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1449046289964532"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4029364773853892292"]] }, { id: 414144257, at: "2026-11-13T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5969450956240867416.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1667743778210666"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4029367295343640425"]] }, { id: 414144302, at: "2026-11-13T08:30:00", text: "From \u201Cbook direct\u201D to the door code. Online check-in in three minutes. Everything in one place. The door code unlocks itself. Happier guests. Fewer messages. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1685850375007364031.jpeg", media: 1, video: true, title: "The guest app | Bookingbooster", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1808691190380178"], ["youtube", "error", "https://www.youtube.com/watch?v=oChij0Mg7lo"]] }, { id: 414144346, at: "2026-11-13T12:30:00", text: "Is your holiday let invisible to AI? A five-minute self check. 1) Ask ChatGPT. 2) Look for your name. 3) Check your FAQs. 4) Check your reviews. 5) Get the full report. Run my free check at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13042296564152206927.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122112443649514925"], ["instagram", "published", "https://www.instagram.com/p/Dfro2hVCNbH/"]] }, { id: 414144386, at: "2026-11-13T19:00:00", text: "Every Monday: your AI visibility report. ChatGPT mentioned you. Gemini mentioned you. Perplexity, not yet. We fix that next. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4872932652850795223.jpeg", media: 1, video: true, title: "AI report | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/2318628728680912"], ["instagram", "published", "https://www.instagram.com/reel/DfsVmNeHL4M/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7707733600317246742"], ["youtube", "error", "https://www.youtube.com/shorts/W1s1JMguW-w"]] }, { id: 414144418, at: "2026-11-14T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5738709481183024868.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1445843573789985"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030082749561313919"]] }, { id: 414144447, at: "2026-11-14T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15835511239906623957.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/28392984780376355"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030084468815100717"]] }, { id: 414144487, at: "2026-11-14T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5231222690589173673.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2356682981561627"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030086973577794135"]] }, { id: 414144528, at: "2026-11-14T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8475161147558092637.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/2639759559802048"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030089518236960571"]] }, { id: 414144592, at: "2026-11-14T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17517475944204305650.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1113322601595218"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030092034710188431"]] }, { id: 414144637, at: "2026-11-14T10:00:00", text: "412 past guests. One email. \xA321,480 booked. Example campaign results from the host console. Start a campaign at bookingbooster.co.uk\n\n#repeatguests #holidaylet #emailmarketing #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2377700208280258464.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122112736161514925"], ["instagram", "published", "https://www.instagram.com/p/Dft8fzDCJIT/"]] }, { id: 414144688, at: "2026-11-14T18:00:00", text: "One email to 412 past guests. 58% opened. 23 bookings. \xA321,480 booked direct (example result). Your list is gold. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9106866926050060928.jpeg", media: 1, video: true, title: "Campaign result | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1449599490038076"], ["instagram", "published", "https://www.instagram.com/reel/DfuzTIkipWl/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7708088902577360150"], ["youtube", "error", "https://www.youtube.com/shorts/DS0nEPcSN6s"]] }, { id: 414147453, at: "2026-11-15T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13540495186089115676.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1149760727557555"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030807525468858704"]] }, { id: 414147491, at: "2026-11-15T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10506990932222128382.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1140167698897324"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030809248379889123"]] }, { id: 414147518, at: "2026-11-15T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5895296654158305718.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1712238063950496"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030811759660504487"]] }, { id: 414147553, at: "2026-11-15T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16770604661518873684.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/1641548890546515"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030814299210931524"]] }, { id: 414147591, at: "2026-11-15T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12285770686968407641.jpeg", media: 1, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/4781381385475050"], ["instagram", "published", "https://www.instagram.com/stories/bookingbooster_1/4030816804896511312"]] }, { id: 414147628, at: "2026-11-15T10:00:00", text: "The host console tour. Everything in one screen. 1) Dashboard. 2) Calendar. 3) Inbox. 4) Payments. 5) Campaigns. Book a demo at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16832129153798294719.jpeg", media: 7, video: false, title: "", nets: [["facebook", "published", "https://facebook.com/122108909643514925/posts/122113006953514925"], ["instagram", "error", "https://www.instagram.com/p/DfwhaKMCstP/"]] }, { id: 414147671, at: "2026-11-15T18:00:00", text: "Myth: guests only book on big platforms. Truth: guests book where it\u2019s easy and cheaper. Easy: instant booking on your site. Cheaper: no service fee. Bookingbooster: more direct bookings. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18023069551296800228.jpeg", media: 1, video: true, title: "Myth bust | Bookingbooster #shorts", nets: [["facebook", "published", "https://facebook.com/reel/1363370795733374"], ["instagram", "published", "https://www.instagram.com/reel/DfxYE5RkwN1/"], ["tiktok", "published", "https://www.tiktok.com/@bookingbooster/video/7708459964955692310"], ["youtube", "error", "https://www.youtube.com/shorts/qFLdl_Vjfn4"]] }, { id: 414148365, at: "2026-11-16T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17330727723676828606.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414148398, at: "2026-11-16T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15863931038144623855.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414148445, at: "2026-11-16T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16979601815463332568.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414148472, at: "2026-11-16T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17573061106553252286.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414148501, at: "2026-11-16T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3158989191317205972.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414148529, at: "2026-11-16T12:30:00", text: "5 email campaigns every host should send. Steal these ideas. 1) The welcome back. 2) The gap filler. 3) The seasonal. 4) The anniversary. 5) The news. Start a campaign at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16675977396288675707.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414148558, at: "2026-11-16T19:00:00", text: "This host saved \xA38,309 in fees this year. 65 direct stays, no commission. Example figures from the host console. Your turn. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14327695982168723355.jpeg", media: 1, video: true, title: "Fees saved | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414149243, at: "2026-11-17T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4156439972628945453.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414149273, at: "2026-11-17T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7169180851822146292.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414149324, at: "2026-11-17T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1440562474778474351.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414149359, at: "2026-11-17T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6032698779313104790.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414149390, at: "2026-11-17T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8283548604453099578.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414149430, at: "2026-11-17T08:30:00", text: "Turn one stay into three. Your guest list, organised. Campaigns in a few clicks. Automations that run themselves. \xA321,480 booked from one email (example result). Your guests. Your bookings. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4473766868506949587.jpeg", media: 1, video: true, title: "Guest outreach | Bookingbooster", nets: [["facebook", "pending", ""], ["youtube", "pending", ""]] }, { id: 414149471, at: "2026-11-17T12:30:00", text: "Rank for \u201Chot tub cottage\u201D in your town. Monthly local pages, written and published for you. Get found on Google at bookingbooster.co.uk\n\n#localseo #holidaylet #bookdirect #holidaycottage #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10823036040505777435.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414149526, at: "2026-11-17T19:00:00", text: "6:45am host check. Two new direct bookings, paid. Inbox? Replies already drafted. Arrivals? Checked in online. Kettle on. Bookingbooster runs the rest. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9170563028419782185.jpeg", media: 1, video: true, title: "Morning routine | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414150254, at: "2026-11-18T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13994547820742062439.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414150287, at: "2026-11-18T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18349764499930515017.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414150309, at: "2026-11-18T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4790821097060870912.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414150337, at: "2026-11-18T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-714859761967349397.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414150363, at: "2026-11-18T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7288696504440020132.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414150413, at: "2026-11-18T12:30:00", text: "Local SEO for holiday lets, made simple. Rank for what guests search. 1) Think like a guest. 2) One page per search. 3) Name your town. 4) Keep publishing. 5) Link to booking. Get found on Google at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1982891822370071202.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414150464, at: "2026-11-18T19:00:00", text: "\u201CBest cottage with a hot tub in the Lake District?\u201D AI answer: Larch Fell Cabin, with a link that books direct. That could be you. Check your AI visibility. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8445673312859525980.jpeg", media: 1, video: true, title: "AI question | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414151e3, at: "2026-11-19T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-240732873502499138.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151025, at: "2026-11-19T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17623804953493689138.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151059, at: "2026-11-19T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5921826466204007975.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151089, at: "2026-11-19T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11748231998257461404.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151124, at: "2026-11-19T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9169062896423065889.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151163, at: "2026-11-19T12:30:00", text: "How to write FAQs that AI will quote. AEO for hosts, in plain English. 1) Ask real questions. 2) Answer in one sentence. 3) Include the facts. 4) Keep them current. 5) Put them on your site. Fix my AI visibility at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10427360887821058319.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151249, at: "2026-11-19T19:00:00", text: "Pick your look. Cabin. Coast. City. Live in 7 days. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8947072148430575249.jpeg", media: 1, video: true, title: "Theme picker | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414151840, at: "2026-11-20T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9916217159686966744.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151871, at: "2026-11-20T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5585009843512064791.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151892, at: "2026-11-20T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9614361744277449936.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151914, at: "2026-11-20T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3938890186558003166.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151951, at: "2026-11-20T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17215812140101961010.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414151980, at: "2026-11-20T08:30:00", text: "Run every holiday let from one screen: dashboard, calendar and inbox, and on your phone too. See it live. Book a demo at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5799211957275035410.jpeg", media: 1, video: true, title: "The host console | Bookingbooster", nets: [["facebook", "pending", ""], ["youtube", "pending", ""]] }, { id: 414152002, at: "2026-11-20T12:30:00", text: "Door codes that send themselves. The code unlocks in the app once check-in is complete. See the guest app at bookingbooster.co.uk\n\n#guestexperience #holidaylet #shortlet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17554247736013635757.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152048, at: "2026-11-20T19:00:00", text: "Online check-in in four taps. 1. Guests. 2. ID. 3. Agreement. 4. Deposit. Done. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4044500228111196992.jpeg", media: 1, video: true, title: "Check-in steps | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414152786, at: "2026-11-21T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4988759405537604992.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152823, at: "2026-11-21T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16836502700701140581.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152861, at: "2026-11-21T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12014499696906573886.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152896, at: "2026-11-21T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13976229381430513806.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152926, at: "2026-11-21T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2052646362183814317.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152963, at: "2026-11-21T10:00:00", text: "Your online check-in, step by step. Three minutes for guests, zero chasing for you. 1) Confirm the guests. 2) Verify ID. 3) Sign the agreement. 4) Hold the deposit. 5) Unlock the code. See check-in at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17826843762452963244.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414152995, at: "2026-11-21T18:00:00", text: "Guest checks out. Next day: thank-you and review ask. One week: returning-guest code. One year: \u201CSame dates again?\u201D They come back. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5520791451625578594.jpeg", media: 1, video: true, title: "Returning guests | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414153630, at: "2026-11-22T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11648605594284534209.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414153659, at: "2026-11-22T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-80761150330274487.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414153695, at: "2026-11-22T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18125291476422418411.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414153728, at: "2026-11-22T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8600901476468964552.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414153754, at: "2026-11-22T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5678504436955527666.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414153789, at: "2026-11-22T10:00:00", text: "How to win back last year\u2019s guests. Your cheapest bookings are already in your list. 1) Find them. 2) Remind them. 3) Give a reason. 4) Make it easy. 5) Thank them. Start a campaign at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15369764526534931560.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414153840, at: "2026-11-22T18:00:00", text: "Area guide: \u201CBest walks near Keswick\u201D. Guests read it. Google ranks it. Then they book direct. Content that converts. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8949939550678814174.jpeg", media: 1, video: true, title: "Local pages | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414154424, at: "2026-11-23T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7654990989683075556.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414154460, at: "2026-11-23T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15136405902160615463.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414154495, at: "2026-11-23T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1123839161856810817.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414154528, at: "2026-11-23T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15187536111805342864.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414154580, at: "2026-11-23T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15343579038865102786.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414154613, at: "2026-11-23T12:30:00", text: "Winter is quiet. Your inbox doesn\u2019t have to be. Seasonal offers to the guests most likely to come back. Plan my winter at bookingbooster.co.uk\n\n#repeatguests #holidaylet #emailmarketing #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14864641743548035122.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414154649, at: "2026-11-23T19:00:00", text: "Worried about direct bookings? A \xA3300 deposit is held on the card and released automatically after checkout. No awkward chats. Protected. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8064892699803592357.jpeg", media: 1, video: true, title: "Deposit | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414155441, at: "2026-11-24T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7344537220209480035.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414155462, at: "2026-11-24T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15052806466230634295.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414155500, at: "2026-11-24T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17431184116114258206.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414155527, at: "2026-11-24T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16238019139308341689.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414155560, at: "2026-11-24T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5950964703579022359.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414155598, at: "2026-11-24T08:30:00", text: "Get found on Google for the stays guests search. Guests search \u201Chot tub cottage Keswick\u201D. Local pages, written for you. Every page ends in a booking. Get found. Get booked. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9500095743112042582.jpeg", media: 1, video: true, title: "Local SEO | Bookingbooster", nets: [["facebook", "pending", ""], ["youtube", "pending", ""]] }, { id: 414155625, at: "2026-11-24T12:30:00", text: "The direct booking starter kit. Everything you need to begin. 1) A website. 2) A payment setup. 3) A guest list. 4) A reason to book. 5) A way to be found. Get the starter kit at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13641747147849895095.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414155650, at: "2026-11-24T19:00:00", text: "Platform payout: after check-in. Direct payout: 2 days after booking. Cash flow that works for you, with Stripe-powered cards and deposits. Get paid faster. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3112093546482388360.jpeg", media: 1, video: true, title: "Payout speed | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414156170, at: "2026-11-25T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14508923643382142140.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414156229, at: "2026-11-25T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12613756234943743285.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414156332, at: "2026-11-25T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14437719612353177929.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414156416, at: "2026-11-25T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-3557126264336179541.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414156430, at: "2026-11-25T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6200056781070482811.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414156481, at: "2026-11-25T12:30:00", text: "Automations that save hours every week. Set once, run forever. 1) Booking confirmation. 2) Check-in reminder. 3) Door code on check-in. 4) Checkout and review. 5) Welcome back offer. See automations at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18337356340724193988.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414156519, at: "2026-11-25T19:00:00", text: "Quiet winter? Email past guests about winter walks. Send Christmas dates to last year\u2019s guests. Follow up with a new year offer. Full calendar. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5891194444421948740.jpeg", media: 1, video: true, title: "Winter plan | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414157035, at: "2026-11-26T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7537046756732326657.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414157046, at: "2026-11-26T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5446427417918232085.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414157076, at: "2026-11-26T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4993325762526460467.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414157110, at: "2026-11-26T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17926522165701584231.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414157138, at: "2026-11-26T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8402877253149706755.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414157156, at: "2026-11-26T12:30:00", text: "Website. SEO. AI search. App. Outreach. One plan. Everything a holiday let needs to win direct bookings. See plans at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4461910688262627558.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414157183, at: "2026-11-26T19:00:00", text: "Dog-friendly? Say it loudly on your own site. Tag dog owners in your guest list and send them the offers. Good boys book direct. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-17117677855783105532.jpeg", media: 1, video: true, title: "Pets | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414157997, at: "2026-11-27T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-18366779673108545043.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414158019, at: "2026-11-27T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5804503949036319993.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414158050, at: "2026-11-27T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10679857926903376843.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414158082, at: "2026-11-27T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9712432020495843824.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414158121, at: "2026-11-27T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16933211203442940128.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159415, at: "2026-11-27T08:30:00", text: "Your booking site in seven days. Day 1: tell us about your home. Day 2: pick your theme. Day 5: payments connected. Day 7: live and taking bookings. Start your seven days. bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5557193161900605381.jpeg", media: 1, video: true, title: "Seven days to live | Bookingbooster", nets: [["facebook", "pending", ""], ["youtube", "pending", ""]] }, { id: 414158188, at: "2026-11-27T12:30:00", text: "Your winter booking plan. Quiet months, full calendar. 1) October. 2) November. 3) December. 4) January. 5) February. Plan my winter at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8761781052561129667.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414158231, at: "2026-11-27T19:00:00", text: "47 unread messages? Suggested replies are ready to send. Email and text in one inbox. Done in 5 minutes. Inbox zero. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15275935347545563713.jpeg", media: 1, video: true, title: "Inbox zero | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414159443, at: "2026-11-28T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16396779717613963194.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159471, at: "2026-11-28T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13832223342685137876.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159501, at: "2026-11-28T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6936272445360989074.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159534, at: "2026-11-28T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-14966983631878822995.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159579, at: "2026-11-28T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10532924417374296473.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159614, at: "2026-11-28T10:00:00", text: "Pet-friendly hosting that books itself. Dogs are good for business. 1) Say it everywhere. 2) Set a clear pet fee. 3) Tag the dog owners. 4) Send them offers. 5) Answer the questions. Get my booking site at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7102906827199164575.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414159657, at: "2026-11-28T18:00:00", text: "When should you ask for a review? Not at checkout. The morning after, automatically, from your own name. Five stars, on time. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10245105340308681196.jpeg", media: 1, video: true, title: "Review timing | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414160251, at: "2026-11-29T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12391425738657505608.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414160279, at: "2026-11-29T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16519844485218016978.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414160320, at: "2026-11-29T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6167169788761160944.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414160360, at: "2026-11-29T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13893540867110165243.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414160394, at: "2026-11-29T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9467265323667625513.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414160419, at: "2026-11-29T10:00:00", text: "Fill the gap nights before they go empty. Spot gaps and offer them to past guests in two taps. Fill my gaps at bookingbooster.co.uk\n\n#repeatguests #holidaylet #emailmarketing #bookdirect #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-10039864545507391422.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414160447, at: "2026-11-29T18:00:00", text: "Christmas at the cottage? Ask last year\u2019s guests first. One email with early-access dates, and it\u2019s booked before it hits the platforms. Plan it now. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-5281365884303820103.jpeg", media: 1, video: true, title: "Christmas | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414161249, at: "2026-11-30T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9447909318021771775.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414161283, at: "2026-11-30T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1786112729429634401.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414161320, at: "2026-11-30T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-15323083219897755264.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414161339, at: "2026-11-30T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-7178584454587984902.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414161378, at: "2026-11-30T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-11208681425816755691.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414161417, at: "2026-11-30T12:30:00", text: "Running multiple holiday lets? Scale without the spreadsheet. 1) One calendar. 2) One inbox. 3) One guest list. 4) One website or many. 5) One dashboard. Book a demo at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4683958174774534893.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414161524, at: "2026-11-30T19:00:00", text: "3 homes. 1 calendar for every direct stay. Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. No double bookings. 1 dashboard. Zero spreadsheets. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9442268251822239782.jpeg", media: 1, video: true, title: "Multi-property | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414162075, at: "2026-12-01T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4309607749196748955.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162102, at: "2026-12-01T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16811470084190785254.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162146, at: "2026-12-01T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16898547403142496299.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162166, at: "2026-12-01T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-2427546364595913177.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162214, at: "2026-12-01T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-774401503482642854.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162254, at: "2026-12-01T12:30:00", text: "Bookingbooster: what you get. One plan, five tools. 1) A booking website. 2) Google SEO. 3) AI search visibility. 4) Guest and host apps. 5) All-in-one outreach. See plans at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-9474053726813521812.jpeg", media: 7, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162297, at: "2026-12-01T19:00:00", text: "Everything for \xA399 a month. Website, SEO, AI search, guest app and outreach. No cut of your bookings. Ever. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4703655086796809306.jpeg", media: 1, video: true, title: "Price | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }, { id: 414162822, at: "2026-12-02T08:00:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-8942692644450223158.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162851, at: "2026-12-02T08:05:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-1764689279315153131.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162900, at: "2026-12-02T08:10:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-4260694027278054864.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162945, at: "2026-12-02T08:15:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-16005574418214646235.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414162982, at: "2026-12-02T08:20:00", text: "", kind: "story", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-13226386197001426212.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414163008, at: "2026-12-02T12:30:00", text: "From \xA399 a month. No cut of your bookings. A flat monthly price, however many direct stays you take. See plans at bookingbooster.co.uk\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "post", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-12498242106818996620.jpeg", media: 1, video: false, title: "", nets: [["facebook", "pending", ""], ["instagram", "pending", ""]] }, { id: 414163046, at: "2026-12-02T19:00:00", text: "Guest books on the site. Host sees it instantly. Payment taken. Check-in link sent. All connected. Link in bio.\n\n#bookingbooster #holidaylet #bookdirect #shortlet #ukhost", kind: "reel", draft: false, thumb: "https://static.metricool.com/planner/202611/7625878-file-6880623757847876549.jpeg", media: 1, video: true, title: "Live demo | Bookingbooster #shorts", nets: [["facebook", "pending", ""], ["instagram", "pending", ""], ["tiktok", "pending", ""], ["youtube", "pending", ""]] }] };
+  }
+});
+
+// server/social.js
+var require_social = __commonJS({
+  "server/social.js"(exports, module) {
+    var FILE = require_social_snapshot();
+    module.exports = function({ db }) {
+      const kvGet = db.prepare("SELECT v FROM kv WHERE k = ?");
+      const env = process.env, live = () => env.METRICOOL_TOKEN && env.METRICOOL_USER_ID && env.METRICOOL_BLOG_ID;
+      let cache = null;
+      const trim = (p) => {
+        const media = p.media || [], kind = ((p.instagramData || {}).type || (p.facebookData || {}).type || "POST").toLowerCase();
+        return {
+          id: p.id,
+          at: (p.publicationDate || {}).dateTime || "",
+          text: p.text || "",
+          kind,
+          draft: !!p.draft,
+          thumb: p.videoThumbnailUrl || media[0] || "",
+          media: media.length,
+          video: media.some((m) => /\.mp4($|\?)/.test(m)),
+          title: (p.youtubeData || {}).title || (p.tiktokData || {}).title || "",
+          nets: (p.providers || []).map((x) => [x.network, String(x.status || "").toLowerCase(), x.publicUrl || ""])
+        };
+      };
+      async function fromApi(now) {
+        const day = (ms) => new Date(ms).toISOString().slice(0, 19);
+        const q = new URLSearchParams({ blogId: env.METRICOOL_BLOG_ID, userId: env.METRICOOL_USER_ID, start: day(now - 35 * 864e5), end: day(now + 70 * 864e5), timezone: env.METRICOOL_TIMEZONE || "Europe/London" });
+        const r = await fetch((env.METRICOOL_API || "https://app.metricool.com/api") + "/v2/scheduler/posts?" + q, { headers: { "X-Mc-Auth": env.METRICOOL_TOKEN, accept: "application/json" }, signal: AbortSignal.timeout(8e3) });
+        if (!r.ok) throw new Error("Metricool " + r.status);
+        const j = await r.json(), list = Array.isArray(j) ? j : j.data || [];
+        return { source: "Metricool, live", as_of: new Date(now).toISOString(), posts: list.map(trim).sort((a, b) => a.at.localeCompare(b.at)) };
+      }
+      async function posts() {
+        const now = Date.now();
+        if (live()) {
+          if (cache && now - cache.at < 10 * 6e4) return cache.data;
+          try {
+            const data = await fromApi(now);
+            cache = { at: now, data };
+            return data;
+          } catch (e) {
+            console.warn("metricool: " + e.message);
+          }
+        }
+        const row = await kvGet.get("social:snapshot");
+        if (row) {
+          try {
+            const s = JSON.parse(row.v);
+            if (Array.isArray(s.posts) && (!FILE.as_of || String(s.as_of) > FILE.as_of)) return Object.assign({ source: "Metricool, saved copy" }, s);
+          } catch (_) {
+          }
+        }
+        return Object.assign({}, FILE, { source: "Metricool, saved copy" });
+      }
+      return { posts, live: () => !!live() };
+    };
+  }
+});
+
+// server/admin-content.js
+var require_admin_content = __commonJS({
+  "server/admin-content.js"(exports, module) {
+    var __dirname = "/app/server";
+    var fs = require_vfs();
+    var path = __require("node:path");
+    var PART = JSON.parse(fs.readFileSync(path.join(__dirname, "emails", "host-partials.json"), "utf8"));
+    module.exports = function({ cfg, msg, leads, campaigns, social, ui, E, send, email }) {
+      const html = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" };
+      const CSP = "default-src 'none'; img-src * data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com";
+      const page = async (res, o, status) => send(res, status || 200, ui.shell(Object.assign({ email: await email() }, o)), html["content-type"], { "cache-control": "no-store" });
+      const B = cfg.baseUrl, img = (f) => B + "/email-img/" + f;
+      const fill = (t, v) => t.replace(/\{\{([a-z_]+)\}\}/g, (m, k) => E(v[k]));
+      const rows = (list, row) => list.map((x, i) => row(x).split("[[BORDER]]").join(i < list.length - 1 ? "border-bottom:1px solid #E3E7F5;" : "")).join("");
+      const checklist = [
+        ["Your home\u2019s details", "Name, description and what the home offers, in Website & SEO.", true],
+        ["Photos, 10 or more", "Your best landscape shots. The first one is the cover.", true],
+        ["House rules and check-in details", "Address, how guests get in, Wi-Fi and house rules.", true],
+        ["Payouts", "Connect Stripe with your UK bank account in Connections.", false],
+        ["Your own domain", "Already own one? Add it under Your web address.", false, true],
+        ["Past guest list", "A CSV of guests who agreed to hear from you.", false, true]
+      ];
+      const SAMPLE = {
+        first_name: "Hannah",
+        email: "hannah@example.co.uk",
+        property_name: "Fellside Barn",
+        property_initials: "FB",
+        property_town: "Keswick",
+        host_name: "Sarah Lees",
+        host_phone: "07700 900123",
+        host_email: "stay@fellsidebarn.co.uk",
+        property_hero_image: img("hero-cabin.jpg"),
+        booking_ref: "FB-2741",
+        check_in_date: "Fri 12 December",
+        check_out_date: "Mon 15 December",
+        check_in_time: "4pm",
+        check_out_time: "10am",
+        nights: "3",
+        nights_total: "\xA3555",
+        nightly_rate: "\xA3185",
+        cleaning_fee: "\xA360",
+        pet_fee: "\xA325",
+        deposit_amount: "\xA3150",
+        total_paid: "\xA3640",
+        saved_amount: "\xA396",
+        card_last4: "4242",
+        card_brand: "Visa",
+        guest_summary: "2 adults, 1 dog",
+        days_to_arrival: "3",
+        steps_done: "2",
+        door_code: "4821",
+        door_code_digit_1: "4",
+        door_code_digit_2: "8",
+        door_code_digit_3: "2",
+        door_code_digit_4: "1",
+        address_line1: "Fellside Barn, Borrowdale Road",
+        address_line2: "Keswick CA12 5UY",
+        what3words: "filled.count.soap",
+        parking_note: "Two spaces in front of the barn.",
+        wifi_name: "Fellside-Guest",
+        wifi_password: "herdwick2024",
+        deposit_release_date: "Thu 18 December",
+        offer_percent: "10",
+        promo_code: "HANNAH10",
+        offer_expiry: "31 January",
+        compare_direct_total: "\xA3555",
+        compare_platform_total: "\xA3651",
+        compare_saving: "\xA396",
+        last_stay_month: "August",
+        calendar_month: "December",
+        gap_1_dates: "Mon 8 to Thu 11 Dec",
+        gap_1_nights: "3",
+        gap_1_price: "\xA3420",
+        gap_1_was: "\xA3555",
+        gap_2_dates: "Sun 4 to Wed 7 Jan",
+        gap_2_nights: "3",
+        gap_2_price: "\xA3390",
+        gap_2_was: "\xA3520",
+        gap_discount: "25%",
+        season_name: "Winter",
+        winter_rate: "\xA3150",
+        next_release_month: "January",
+        plan_name: "Growth",
+        plan_price: "\xA3200 a month",
+        go_live_date: "today",
+        setup_lead_name: "The Bookingbooster team",
+        setup_lead_initials: "BB",
+        pages_live: "6",
+        site_domain: "fellsidebarn.co.uk",
+        booked_at: "15 November, 09:42",
+        booking_total: "\xA3640",
+        guest_count: "2",
+        guest_fee_saved: "\xA396",
+        guest_first_name: "Tom",
+        guest_full_name: "Tom Ashworth",
+        fee_kept: "\xA399",
+        direct_bookings_total: "1",
+        fees_kept_total: "\xA399",
+        items_received: checklist.filter((x) => x[2]).length,
+        progress_pct: 50,
+        checklist_due_date: "29 November",
+        checklist_rows: rows(checklist, ([title, desc, done, opt]) => fill(PART.o02_row, { title, desc }).replace("[[ICON]]", done ? PART.icon_done : PART.icon_todo).replace("[[BADGE]]", done ? PART.badge_done : opt ? PART.badge_opt : "")),
+        automations_on: "4",
+        gap_nights: "23",
+        guest_list_count: "146",
+        automation_intro: "Here is what is still switched off on Fellside Barn:",
+        automation_block: '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + rows([["Gap night offers", "Spot empty nights. Offer them to past guests first."], ["Come back next year", "Ask last year\u2019s guests before the dates go on the platforms."]], ([name, desc]) => fill(PART.o05_row, { name, desc })) + "</table>",
+        amount_due: "\xA3200.00",
+        decline_reason: "Your bank declined the payment",
+        failed_date: "14 November",
+        next_retry_date: "17 November",
+        login_code: "482 913",
+        request_device: "Chrome on a Mac",
+        request_location: "Manchester, UK",
+        request_time: "15 November, 09:42",
+        week_range: "10 to 16 Nov",
+        direct_revenue: "\xA31,240",
+        direct_revenue_change: "+22%",
+        bookings_week: "4",
+        bookings_direct: "2",
+        direct_share: "50%",
+        direct_share_4w: "38%",
+        fees_kept_week: "\xA3192",
+        fees_kept_ytd: "\xA32,310",
+        site_visits: "312",
+        site_visits_change: "+18%",
+        headline_insight: "Two direct bookings came from past guests this week.",
+        ai_score: "62",
+        ai_score_change: "+4",
+        ai_next_fix: "Add your dog policy to the About page.",
+        ai_questions: "8",
+        ai_chatgpt: "3 of 8",
+        ai_gemini: "2 of 8",
+        ai_perplexity: "4 of 8",
+        ai_google: "3 of 8",
+        term_1: "Search engines",
+        term_1_clicks: "186",
+        term_1_pct: "100",
+        term_1_fill: "100",
+        term_2: "AI assistants",
+        term_2_clicks: "64",
+        term_2_pct: "34",
+        term_2_fill: "34",
+        term_3: "Past guest emails",
+        term_3_clicks: "41",
+        term_3_pct: "22",
+        term_3_fill: "22"
+      };
+      ["mon", "tue", "wed", "thu", "fri", "sat", "sun"].forEach((d, i) => {
+        SAMPLE[d + "_direct_px"] = [18, 30, 12, 26, 44, 52, 20][i];
+        SAMPLE[d + "_platform_px"] = [30, 22, 36, 28, 40, 34, 26][i];
+      });
+      const sampleVars = (file, subject) => {
+        const v = Object.assign({ company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat }, SAMPLE, { subject });
+        const src = fs.readFileSync(path.join(__dirname, "emails", file + ".html"), "utf8");
+        for (const [, k] of src.matchAll(/\{\{\{?\s*([a-z0-9_]+)\s*\}\}/g)) if (v[k] == null && /_url$/.test(k)) v[k] = "#";
+        return v;
+      };
+      const FILES = [
+        ["host-o01-welcome", "host", "Welcome to Bookingbooster", "Straight after a host signs up", true],
+        ["host-o02-setup-checklist", "host", "Day 2: the 15-minute checklist for Fellside Barn", "Day 2 after sign-up, unless setup is already done", true],
+        ["host-o03-site-live", "host", "Fellside Barn is live", "When the host publishes their site", true],
+        ["host-o05-week3-tips", "host", "Week 3: turn 146 past guests into direct bookings", "Week 3 after sign-up", true],
+        ["host-t04-weekly-report", "host", "Your week: \xA31,240 direct, \xA3192 in fees kept", "Monday mornings, unless the host turned it off", true],
+        ["host-t02-payment-failed", "host", "Action needed: your Bookingbooster payment did not go through", "When a subscription payment fails", true],
+        ["host-o04-first-direct-booking", "host", "Your first direct booking", "Designed, not switched on yet", false],
+        ["host-t03-magic-link", "host", "Your sign-in link", "Designed, not switched on yet", false],
+        ["guest-t01-booking-confirmed", "guest", "Booked: Fellside Barn, 12 Dec to 15 Dec", "When a guest books on a host\u2019s site", true],
+        ["guest-t02-checkin-reminder", "guest", "Finish check-in for Fellside Barn", "Before arrival, if online check-in is not finished", true],
+        ["guest-t03-arrival-door-code", "guest", "Your door code for Fellside Barn", "On arrival day, once check-in is done", true],
+        ["guest-t05-review-request", "guest", "How was your stay at Fellside Barn?", "After checkout", true],
+        ["guest-t04-checkout", "guest", "Checking out of Fellside Barn", "Designed, not switched on yet", false],
+        ["guest-t06-deposit-released", "guest", "Your deposit has been released", "Designed, not switched on yet", false],
+        ["guest-m01-come-back", "guest-m", "Come back to Fellside Barn", "Guest marketing design, not sent automatically", false],
+        ["guest-m02-gap-nights", "guest-m", "Gap nights at Fellside Barn", "Guest marketing design, not sent automatically", false],
+        ["guest-m03-seasonal", "guest-m", "Winter at Fellside Barn", "Guest marketing design, not sent automatically", false],
+        ["guest-m04-join-list", "guest-m", "Be first to hear when new dates open", "Guest marketing design, not sent automatically", false]
+      ];
+      const NAMES = { "host-o05-week3-tips": "Week 3 tips", "host-t04-weekly-report": "Monday report", "guest-t02-checkin-reminder": "Check-in reminder", "guest-t03-arrival-door-code": "Door code on arrival", "host-t03-magic-link": "Sign-in link", "guest-m01-come-back": "Come back offer", "guest-m04-join-list": "Join the dates list" };
+      const titleOf = (f) => NAMES[f] || f.replace(/^(host|guest)-[a-z]\d+-/, "").replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
+      async function catalogue() {
+        const out = [];
+        for (const [key, sq] of Object.entries(leads.series || {})) for (const st of sq.steps) out.push({ id: "lead." + key + "." + st.key, group: "lead", name: sq.name + " \xB7 " + st.key, subject: (await leads.sample(key, st.key) || {}).subject, series: sq.name, step: st.key, when: whenLead(key, st.key), live: true });
+        for (const d of campaigns.designs || []) out.push({ id: "camp." + d.key, group: "camp", name: d.name, subject: d.subject, when: d.when, live: false, campaign: d.key });
+        for (const [f, group, subject, when, live] of FILES) out.push({ id: "tpl." + f, group, name: titleOf(f), subject, when, live, file: f });
+        return out;
+      }
+      const whenLead = (seq, k) => k === "E1" ? "Straight after the form" : "Later in the series, timed from the form";
+      const GROUPS = [
+        ["lead", "To leads: automatic follow-up after a website form", "Each website form starts its own series. They send by themselves; see Leads for who is in which."],
+        ["camp", "To hosts and leads: designed marketing campaigns", "Ready-made campaigns. Open one in Email campaigns to fill in the details and send it."],
+        ["host", "To hosts: onboarding and account emails", "Sent to each host about their own account."],
+        ["guest", "To guests: from each host\u2019s booking site", "Sent in the host\u2019s name to their guests."],
+        ["guest-m", "To guests: marketing designs", "Designs for hosts\u2019 guest campaigns."]
+      ];
+      async function render(id) {
+        let m;
+        if (m = id.match(/^lead\.([a-z]+)\.([A-Za-z0-9]+)$/)) {
+          const r = await leads.sample(m[1], m[2]);
+          return r && { subject: r.subject, html: r.html };
+        }
+        if (m = id.match(/^camp\.([a-z0-9-]+)$/)) {
+          const r = await campaigns.preview(m[1]);
+          return r && { subject: r.subject, html: r.html };
+        }
+        if (m = id.match(/^tpl\.([a-z0-9-]+)$/)) {
+          const f = FILES.find((x) => x[0] === m[1]);
+          if (!f) return null;
+          return { subject: f[2], html: msg.template(f[0], sampleVars(f[0], f[2])) };
+        }
+        return null;
+      }
+      async function emailsPage(res, sel) {
+        const all = await catalogue(), cur = all.find((x) => x.id === sel) || all[0];
+        const r = cur && await render(cur.id);
+        if (cur && !cur.subject && r) cur.subject = r.subject;
+        const live = all.filter((x) => x.live).length;
+        const item = (x) => '<a href="/admin/emails?t=' + encodeURIComponent(x.id) + '#preview" class="adm-mail' + (x === cur ? " on" : "") + '"' + (x === cur ? ' aria-current="true"' : "") + "><span><b>" + E(x.name) + "</b><small>" + E(x.group === "lead" ? x.subject || x.when : x.when) + "</small></span>" + (x.live ? ui.pill("good", "Live") : x.group === "camp" ? ui.pill("info", "Campaign") : ui.pill("muted", "Design")) + "</a>";
+        const lists = GROUPS.map(([g, title, about]) => {
+          const xs = all.filter((x) => x.group === g);
+          return xs.length ? ui.card(title, xs.length + "", '<p class="adm-help" style="margin:0 0 8px">' + E(about) + '</p><div class="adm-mails">' + xs.map(item).join("") + "</div>") : "";
+        }).join("");
+        const use = !cur ? "" : cur.campaign ? '<a class="btn primary sm" href="/admin/campaigns/' + E(cur.campaign) + '">' + ui.icon("mail") + "Open in Email campaigns</a>" : '<a class="btn primary sm" href="/admin/campaigns/write">' + ui.icon("plus") + "Write a marketing email</a>";
+        const prev = cur ? '<div class="adm-sticky" id="preview">' + ui.card(
+          cur.name,
+          '<a href="/admin/emails/' + encodeURIComponent(cur.id) + '/preview" target="_blank">Open full size</a>',
+          '<div class="adm-list" style="margin-bottom:12px"><div><span><small>Subject</small><b>' + E(r && r.subject || cur.subject || "") + "</b></span></div><div><span><small>When it goes out</small><b>" + E(cur.when) + "</b></span>" + (cur.live ? ui.pill("good", "Sending automatically") : "") + '</div></div><p class="adm-help" style="margin:0 0 10px">Rendered by the same code that sends it, with sample details' + (cur.group === "camp" ? " or the first person in its audience" : "") + '.</p><iframe class="adm-frame" title="Email preview" src="/admin/emails/' + encodeURIComponent(cur.id) + '/preview" sandbox></iframe><div class="row" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">' + use + "</div>"
+        ) + "</div>" : "";
+        return page(res, {
+          title: "Email templates",
+          active: "emails",
+          sub: "Every email the system sends, exactly as it goes out. <b>" + live + "</b> send by themselves; the rest are designs and campaigns you send when you choose.",
+          actions: '<a class="btn primary sm" href="/admin/campaigns/write">' + ui.icon("plus") + "Write a marketing email</a>",
+          body: '<div class="adm-cols"><div class="adm-stack">' + lists + "</div>" + prev + "</div>"
+        });
+      }
+      const NET = { facebook: "Facebook", instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", linkedin: "LinkedIn", twitter: "X" };
+      const ST = { published: ["good", "Published"], pending: ["info", "Scheduled"], error: ["bad", "Failed"] };
+      const KIND = { story: "Story", reel: "Reel", post: "Post", short: "Short" };
+      const ms = (p) => Date.parse(p.at + "Z");
+      const ukDay = (t) => new Date(t).toLocaleDateString("en-CA", { timeZone: "Europe/London" });
+      const ukTime = (t) => new Date(t).toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" });
+      const longDay = (t) => new Date(t).toLocaleDateString("en-GB", { timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short" });
+      const stateOf = (p) => p.draft ? "draft" : p.nets.some((n) => n[1] === "error") ? "error" : p.nets.every((n) => n[1] === "published") ? "published" : p.nets.some((n) => n[1] === "published") ? "partial" : "pending";
+      const statePill = (s) => s === "draft" ? ui.pill("muted", "Draft") : s === "partial" ? ui.pill("warn", "Partly published") : ui.pill(ST[s][0], ST[s][1]);
+      const netPills = (p) => p.nets.map(([n, s, u]) => {
+        const c = (ST[s] || ["muted"])[0];
+        const t = (NET[n] || n) + (s === "error" ? " failed" : "");
+        return u ? '<a class="pill ' + c + '" href="' + E(u) + '" target="_blank" rel="noopener">' + E(t) + "</a>" : ui.pill(c, t);
+      }).join(" ");
+      const label = (p) => p.text ? p.text.split("\n")[0] : p.title || KIND[p.kind] || "Post";
+      async function socialPage(res, q) {
+        const data = await social.posts(), now = Date.now(), all = data.posts.filter((p) => p.at);
+        const net = NET[q.get("net")] ? q.get("net") : "", show = ["upcoming", "published", "problems", "all"].includes(q.get("show")) ? q.get("show") : "upcoming";
+        const stories = q.get("stories") === "1";
+        const ps = all.filter((p) => !net || p.nets.some((n) => n[0] === net));
+        const feed = ps.filter((p) => stories || p.kind !== "story");
+        const next7 = ps.filter((p) => ms(p) >= now && ms(p) < now + 7 * 864e5).length, last30 = ps.filter((p) => ms(p) < now && ms(p) >= now - 30 * 864e5 && stateOf(p) !== "pending").length;
+        const problems = ps.filter((p) => p.nets.some((n) => n[1] === "error"));
+        const lastAt = all.length ? ms(all[all.length - 1]) : 0;
+        const mq = /^\d{4}-\d{2}$/.test(q.get("m") || "") ? q.get("m") : ukDay(now).slice(0, 7);
+        const [y, mo] = mq.split("-").map(Number), first = new Date(Date.UTC(y, mo - 1, 1)), days = new Date(Date.UTC(y, mo, 0)).getUTCDate(), lead = (first.getUTCDay() + 6) % 7;
+        const shift = (n) => {
+          const d = new Date(Date.UTC(y, mo - 1 + n, 1));
+          return d.toISOString().slice(0, 7);
+        };
+        const qs = (o) => "/admin/social?" + new URLSearchParams(Object.assign({ m: mq, show, net, stories: stories ? "1" : "" }, o)).toString().replace(/(^|&)[a-z]+=(?=&|$)/g, "");
+        const byDay = {};
+        ps.forEach((p) => {
+          (byDay[ukDay(ms(p))] = byDay[ukDay(ms(p))] || []).push(p);
+        });
+        const today = ukDay(now);
+        let cells = "";
+        for (let i = 0; i < lead; i++) cells += '<div class="adm-cal-d off"></div>';
+        for (let d = 1; d <= days; d++) {
+          const key = mq + "-" + String(d).padStart(2, "0"), list2 = byDay[key] || [], main = list2.filter((p) => p.kind !== "story"), st = list2.length - main.length;
+          cells += '<div class="adm-cal-d' + (key === today ? " today" : "") + (key < today ? " past" : "") + '"><b>' + d + "</b>" + main.map((p) => {
+            const s = stateOf(p);
+            return '<a class="adm-cal-p ' + s + '" href="' + qs({ show: "all" }) + "#p" + p.id + '" title="' + E(label(p)) + '"><i>' + ukTime(ms(p)) + "</i>" + E(KIND[p.kind] || "Post") + "</a>";
+          }).join("") + (st ? '<span class="adm-cal-s">+' + st + " stor" + (st === 1 ? "y" : "ies") + "</span>" : "") + "</div>";
+        }
+        const monthName = first.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
+        const cal = ui.card(
+          "Content calendar",
+          '<span class="adm-inline"><a class="btn sm ghost" href="' + qs({ m: shift(-1) }) + '" aria-label="Previous month">\u2190</a><b>' + E(monthName) + '</b><a class="btn sm ghost" href="' + qs({ m: shift(1) }) + '" aria-label="Next month">\u2192</a></span>',
+          '<div class="adm-cal"><div class="adm-cal-h">Mon</div><div class="adm-cal-h">Tue</div><div class="adm-cal-h">Wed</div><div class="adm-cal-h">Thu</div><div class="adm-cal-h">Fri</div><div class="adm-cal-h">Sat</div><div class="adm-cal-h">Sun</div>' + cells + '</div><p class="adm-help" style="margin:10px 0 0"><span class="adm-key published"></span>Published <span class="adm-key pending"></span>Scheduled <span class="adm-key error"></span>Failed on a network <span class="adm-key partial"></span>Partly published. Times are UK time. Stories are counted under each day.</p>'
+        );
+        let list = show === "upcoming" ? feed.filter((p) => ms(p) >= now) : show === "published" ? feed.filter((p) => ms(p) < now).reverse() : show === "problems" ? problems.slice().reverse() : feed.slice().reverse();
+        const total = list.length;
+        list = list.slice(0, 60);
+        const row = (p) => '<tr id="p' + p.id + '"><td style="width:72px">' + (p.thumb ? '<img class="adm-thumb" src="' + E(p.thumb) + '" alt="" loading="lazy">' : "") + '</td><td class="num"><b>' + E(longDay(ms(p))) + "</b><small>" + ukTime(ms(p)) + " \xB7 " + E(KIND[p.kind] || "Post") + (p.media > 1 ? " \xB7 " + p.media + " images" : p.video ? " \xB7 video" : "") + '</small></td><td class="wrap" style="max-width:420px;color:var(--fg)">' + (p.text ? E(p.text.length > 220 ? p.text.slice(0, 220) + "\u2026" : p.text).replace(/\n/g, "<br>") : '<span class="adm-help">' + E(p.title || "No caption (" + (KIND[p.kind] || "post").toLowerCase() + ")") + "</span>") + "</td><td>" + statePill(stateOf(p)) + '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">' + netPills(p) + "</div></td></tr>";
+        const tab = (k, t, n) => '<a class="chip' + (show === k ? " on" : "") + '" href="' + qs({ show: k }) + '"' + (show === k ? ' aria-current="true"' : "") + ">" + E(t) + (n != null ? " \xB7 " + n : "") + "</a>";
+        const nets = ["", "facebook", "instagram", "tiktok", "youtube"].map((n) => '<a class="chip' + (net === n ? " on" : "") + '" href="' + qs({ net: n }) + '">' + (n ? NET[n] : "All networks") + "</a>").join("");
+        const listCard = '<section class="a-card a-flush" style="margin-top:16px" id="list"><div class="a-card-h" style="padding:18px 20px 0;flex-wrap:wrap;gap:8px"><h3>Posts</h3><div class="adm-chips">' + tab("upcoming", "Coming up", feed.filter((p) => ms(p) >= now).length) + tab("published", "Published", feed.filter((p) => ms(p) < now).length) + tab("problems", "Failed", problems.length) + tab("all", "All") + '<a class="chip' + (stories ? " on" : "") + '" href="' + qs({ stories: stories ? "" : "1" }) + '">' + (stories ? "Hide stories" : "Show stories") + '</a></div></div><div class="adm-chips" style="padding:10px 20px 0">' + nets + "</div>" + ui.table(["", "When", "Post", "Where"], list.map(row), show === "upcoming" ? "Nothing scheduled. Add posts in Metricool and they show up here." : "No posts here.") + (total > list.length ? '<p class="adm-help" style="padding:12px 20px;margin:0">Showing ' + list.length + " of " + total + ".</p>" : "") + "</section>";
+        const src = social.live() ? "Live from Metricool." : "From Metricool, copied " + E(longDay(Date.parse(data.as_of))) + " at " + ukTime(Date.parse(data.as_of)) + ". Set METRICOOL_TOKEN, METRICOOL_USER_ID and METRICOOL_BLOG_ID on the server to keep it live.";
+        const warn = lastAt && lastAt < now + 7 * 864e5 ? '<div class="adm-note bad" role="status">' + ui.icon("x") + "The schedule runs out on " + E(longDay(lastAt)) + ". Add more posts in Metricool to keep the feeds going.</div>" : "";
+        return page(res, {
+          title: "Social posts",
+          active: "social",
+          sub: "Bookingbooster\u2019s own Facebook, Instagram, TikTok and YouTube: what is scheduled and what has gone out. " + src,
+          actions: '<a class="btn sm" href="https://app.metricool.com/planner" target="_blank" rel="noopener">' + ui.icon("out") + "Open Metricool</a>",
+          body: warn + '<div class="adm-kpis">' + ui.kpi("Scheduled, next 7 days", next7, "", "posts and stories", true) + ui.kpi("Published, last 30 days", last30) + ui.kpi("Failed on a network", problems.length, "", problems.length ? '<a href="' + qs({ show: "problems" }) + '#list">See which</a>' : "none") + ui.kpi("Scheduled until", lastAt ? E(longDay(lastAt)) : "\u2013") + "</div>" + cal + listCard
+        });
+      }
+      return async function(req, res, p, m, u) {
+        if (p === "/admin/social") return await socialPage(res, u.searchParams);
+        if (p === "/admin/emails") return await emailsPage(res, u.searchParams.get("t"));
+        const mm = p.match(/^\/admin\/emails\/([a-z0-9.-]+)\/preview$/i);
+        if (mm) {
+          const r = await render(mm[1]);
+          if (r) return send(res, 200, r.html, "text/html; charset=utf-8", { "cache-control": "no-store", "content-security-policy": CSP });
+        }
+        return page(res, { title: "Not found", active: "emails", sub: 'That page does not exist. <a href="/admin/emails">Back to email templates</a>', body: "" }, 404);
+      };
+    };
+  }
+});
+
+// server/admin-users.js
+var require_admin_users = __commonJS({
+  "server/admin-users.js"(exports, module) {
+    module.exports = function({ db, ws, cfg, credits, urls, ui, E, send, email, admins }) {
+      const A = ui;
+      const d = (t) => t ? new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", year: "numeric" }) : "\u2013";
+      const dt = (t) => t ? new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "\u2013";
+      const ago = (t) => {
+        if (!t) return "never";
+        const m = (Date.now() - t) / 6e4;
+        return m < 60 ? Math.max(1, Math.round(m)) + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " days ago";
+      };
+      const gbp = (n) => "\xA3" + Math.round(Number(n) || 0).toLocaleString("en-GB");
+      const BILL = { trial: ["warn", "Not paid yet"], active: ["good", "Paying"], past_due: ["bad", "Payment failed"], cancelled: ["muted", "Cancelled"] };
+      const bill = (st) => {
+        const b = BILL[st] || ["warn", "Not paid yet"];
+        return A.pill(b[0], b[1]);
+      };
+      const page = async (res, o, status) => send(res, status || 200, A.shell(Object.assign({ email: await email(), active: "hosts" }, o)), "text/html; charset=utf-8", { "cache-control": "no-store" });
+      const Q = {
+        accts: db.prepare("SELECT w.id, w.slug, w.plan, w.billing_status, w.stripe_customer, w.stripe_account, w.created_at, w.last_seen, u.id AS user_id, u.email, u.name, u.verified, c.allowance_left, c.topup_left, (SELECT coalesce(sum(l.amount), 0) FROM ai_ledger l WHERE l.workspace_id = w.id AND l.kind = 'use' AND l.created_at > ?) AS ai_used FROM workspaces w LEFT JOIN users u ON u.workspace_id = w.id LEFT JOIN ai_credit c ON c.workspace_id = w.id WHERE w.kind = 'live' ORDER BY w.created_at DESC LIMIT 500"),
+        users: db.prepare("SELECT id, email, name, verified, created_at FROM users WHERE workspace_id = ? ORDER BY created_at"),
+        lastLogin: db.prepare("SELECT max(s.created_at) AS at FROM sessions s JOIN users u ON u.id = s.user_id WHERE u.workspace_id = ?"),
+        outbox: db.prepare("SELECT channel, recipient, subject, status, error, meta, created_at FROM outbox WHERE workspace_id = ? ORDER BY id DESC LIMIT 25"),
+        ledger: db.prepare("SELECT kind, amount, feature, model, created_at FROM ai_ledger WHERE workspace_id = ? ORDER BY id DESC LIMIT 15")
+      };
+      const creditLeft = (a) => a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT;
+      async function summary(id) {
+        const w = await ws.open(id);
+        if (!w) return null;
+        const s = w.state || {}, bs = (s.bookings || []).filter((b) => b.status !== "cancelled"), props = s.properties || [];
+        const direct = bs.filter((b) => (b.channel || "direct") === "direct");
+        return {
+          w,
+          s,
+          business: (s.account || {}).business || w.slug,
+          owner: (s.account || {}).owner || "",
+          props,
+          live: props.filter((p) => p.published !== false).length,
+          bookings: bs.length,
+          direct: direct.length,
+          revenue: direct.reduce((n, b) => n + (+b.total || 0), 0),
+          guests: (s.guests || []).length,
+          upcoming: bs.filter((b) => b.checkIn >= (s.today || "")).length,
+          onboarded: !!(s.account || {}).onboarded,
+          stripe: (s.integrations || []).some((i) => i.id === "stripe" && i.connected),
+          domains: (w.domains || []).filter((x) => x.verified && !ws.isOurs(x.host)).map((x) => x.host)
+        };
+      }
+      async function listPage(res, q, note, err) {
+        const rows = await Q.accts.all(Date.now() - 30 * 864e5);
+        const seen = /* @__PURE__ */ new Set(), accts = rows.filter((r) => !seen.has(r.id) && seen.add(r.id));
+        const sums = new Map(await Promise.all(accts.map(async (a) => [a.id, await summary(a.id).catch(() => null)])));
+        const term = String(q.get("q") || "").trim().toLowerCase(), fb = BILL[q.get("billing")] ? q.get("billing") : "";
+        const shown = accts.filter((a) => {
+          const s = sums.get(a.id) || {};
+          return (!fb || (a.billing_status || "trial") === fb) && (!term || [a.email, a.name, a.slug, s.business, s.owner].some((x) => String(x || "").toLowerCase().includes(term)));
+        });
+        const paying = accts.filter((a) => a.billing_status === "active").length, fails = accts.filter((a) => a.billing_status === "past_due").length;
+        const mrr = paying * 200, recent = accts.filter((a) => a.created_at > Date.now() - 30 * 864e5).length, active7 = accts.filter((a) => a.last_seen > Date.now() - 7 * 864e5).length;
+        const row = (a) => {
+          const s = sums.get(a.id) || {}, left = creditLeft(a);
+          return '<tr><td><a href="/admin/hosts/' + E(a.id) + '" style="color:inherit;text-decoration:none"><b>' + E(s.business || a.slug) + "</b></a><small>" + E(a.name || s.owner || "") + " \xB7 " + E(a.email || "no login") + (a.email && !a.verified ? " \xB7 email not confirmed" : "") + "</small></td><td>" + bill(a.billing_status) + "<small>" + E(a.plan || "No plan") + '</small></td><td class="num"><b>' + (s.live || 0) + "</b> of " + (s.props || []).length + " live" + (s.domains && s.domains.length ? "<small>" + E(s.domains[0]) + "</small>" : "") + '</td><td class="num"><b>' + (s.bookings || 0) + "</b><small>" + (s.direct || 0) + " direct \xB7 " + gbp(s.revenue) + '</small></td><td class="num">' + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + "<small>" + credits.money(Number(a.ai_used || 0) / credits.UNIT) + ' used, 30 days</small></td><td class="num">' + d(a.created_at) + "<small>Seen " + ago(a.last_seen) + '</small></td><td><a class="btn sm" href="/admin/hosts/' + E(a.id) + '">Open</a></td></tr>';
+        };
+        const chips = [["", "Everyone", accts.length]].concat(Object.entries(BILL).map(([k, [, l]]) => [k, l, accts.filter((a) => (a.billing_status || "trial") === k).length])).map(([k, l, n]) => '<a class="chip' + (fb === k ? " on" : "") + '" href="/admin/hosts?' + new URLSearchParams(Object.assign(k ? { billing: k } : {}, term ? { q: term } : {})) + '">' + E(l) + " \xB7 " + n + "</a>").join("");
+        const search = '<form method="get" action="/admin/hosts" class="adm-inline" style="padding:14px 20px 0;width:100%">' + (fb ? '<input type="hidden" name="billing" value="' + E(fb) + '">' : "") + '<label class="field" style="flex:1;min-width:200px;margin:0"><span class="sr-only" style="position:absolute;left:-9999px">Search</span><input name="q" value="' + E(term) + '" placeholder="Search by business, name or email"></label><button class="btn sm">Search</button></form>';
+        const team = await admins();
+        return page(res, {
+          title: "Users",
+          note,
+          err,
+          sub: accts.length + " host account" + (accts.length === 1 ? "" : "s") + " and everyone who can sign in to them. Open one to see their sites, bookings, billing, emails and AI use.",
+          actions: '<a class="btn sm" href="/admin/hosts/export.csv">' + A.icon("down") + "Download CSV</a>",
+          body: '<div class="adm-kpis">' + A.kpi("Host accounts", accts.length, "", recent + " joined in the last 30 days") + A.kpi("Paying", paying, "", "about " + gbp(mrr) + " a month", true) + A.kpi("Payment failed", fails, "", fails ? '<a href="/admin/hosts?billing=past_due">See who</a>' : "none") + A.kpi("Active this week", active7, "", "opened their console") + '</div><section class="a-card a-flush"><div class="a-card-h" style="padding:18px 20px 0;flex-wrap:wrap;gap:8px"><h3>Host accounts</h3><div class="adm-chips">' + chips + "</div></div>" + search + A.table(["Account", "Billing", "Sites", ">Bookings", ">AI credit", "Joined", ""], shown.map(row), term || fb ? "Nobody matches." : "No host accounts yet.") + "</section>" + A.card("Team", team.length + " with admin access", '<p class="adm-help" style="margin:0 0 8px">These people see this team admin. Add more in the server\u2019s ADMIN_EMAILS, or the kv key <code>config:admins</code>.</p><div class="adm-list">' + team.map((e) => "<div><span><b>" + E(e) + "</b></span>" + A.pill("info", "Team admin") + "</div>").join("") + "</div>", "").replace('<section class="a-card ', '<section style="margin-top:16px" class="a-card ')
+        });
+      }
+      async function csv(res) {
+        const accts = await Q.accts.all(Date.now() - 30 * 864e5), out = [["business", "owner", "email", "plan", "billing", "sites_live", "bookings", "direct_revenue", "joined", "last_seen"]];
+        for (const a of accts) {
+          const s = await summary(a.id).catch(() => null) || {};
+          out.push([s.business || a.slug, a.name || s.owner || "", a.email || "", a.plan || "", a.billing_status || "trial", s.live || 0, s.bookings || 0, s.revenue || 0, new Date(a.created_at).toISOString().slice(0, 10), a.last_seen ? new Date(a.last_seen).toISOString().slice(0, 10) : ""]);
+        }
+        const c = (v) => {
+          v = String(v);
+          if (/^[=+\-@]/.test(v)) v = "'" + v;
+          return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+        };
+        return send(res, 200, out.map((r) => r.map(c).join(",")).join("\n"), "text/csv; charset=utf-8", { "content-disposition": 'attachment; filename="bookingbooster-hosts.csv"', "cache-control": "no-store" });
+      }
+      async function detailPage(res, id, note, err) {
+        const a = (await Q.accts.all(Date.now() - 30 * 864e5)).find((x) => x.id === id);
+        const s = a && await summary(id);
+        if (!s) return page(res, { title: "Not found", sub: 'That account does not exist. <a href="/admin/hosts">Back to users</a>', body: "" }, 404);
+        const w = s.w, st = s.s, left = creditLeft(a), people = await Q.users.all(id), login = await Q.lastLogin.get(id);
+        const acct = A.card("Account", bill(a.billing_status), '<div class="adm-list"><div><span><small>Business</small><b>' + E(s.business) + "</b></span></div><div><span><small>Owner</small><b>" + E(a.name || s.owner || "\u2013") + "</b></span></div><div><span><small>Sign-in email</small><b>" + E(a.email || "No login") + "</b></span>" + (a.email ? A.pill(a.verified ? "good" : "warn", a.verified ? "Confirmed" : "Not confirmed") : "") + "</div><div><span><small>Plan</small><b>" + E(a.plan || "No plan") + "</b></span>" + bill(a.billing_status) + "</div><div><span><small>Joined</small><b>" + d(a.created_at) + "</b></span><span><small>Last seen</small><b>" + ago(a.last_seen) + "</b></span></div><div><span><small>Last sign-in</small><b>" + dt(login && login.at) + "</b></span><span><small>Setup</small><b>" + (s.onboarded ? "Finished" : "Not finished") + '</b></span></div><div><span><small>Stripe customer (their plan)</small><b class="mono">' + (a.stripe_customer ? '<a href="https://dashboard.stripe.com/customers/' + E(a.stripe_customer) + '" target="_blank" rel="noopener">' + E(a.stripe_customer) + "</a>" : "\u2013") + "</b></span></div><div><span><small>Guest payouts</small><b>" + (s.stripe ? "Stripe connected" : "Not connected") + '</b></span></div><div><span><small>Account id</small><b class="mono">' + E(id) + "</b></span></div></div>");
+        const sites = A.card("Sites", s.live + " of " + s.props.length + " live", s.props.length ? '<div class="adm-list">' + s.props.map((p) => {
+          const u = urls.site(w, p);
+          return "<div><span><b>" + E(p.name) + "</b><small>" + E(p.area || "") + (p.nightly ? " \xB7 from " + gbp(p.nightly) + " a night" : "") + '</small><small><a href="' + E(u) + '" target="_blank" rel="noopener">' + E(u.replace(/^https?:\/\//, "")) + "</a></small></span>" + A.pill(p.published === false ? "muted" : "good", p.published === false ? "Not live" : "Live") + "</div>";
+        }).join("") + "</div>" : '<p class="adm-help" style="margin:0">No homes added yet.</p>');
+        const bks = (st.bookings || []).slice().sort((x, y) => String(y.createdAt || y.checkIn).localeCompare(String(x.createdAt || x.checkIn))).slice(0, 12);
+        const prop = (pid) => (s.props.find((p) => p.id === pid) || {}).name || pid, guest = (gid) => ((st.guests || []).find((g) => g.id === gid) || {}).name || "";
+        const bookings = '<section class="a-card a-flush"><div class="a-card-h" style="padding:18px 20px 0"><h3>Latest bookings</h3><div class="a-card-m">' + s.bookings + " in total</div></div>" + A.table(["Booked", "Guest", "Home", "Stay", "Channel", ">Total", "Status"], bks.map((b) => '<tr><td class="num">' + E(b.createdAt || "") + "</td><td>" + E(guest(b.guestId)) + "</td><td>" + E(prop(b.propertyId)) + '</td><td class="num">' + E(b.checkIn) + " to " + E(b.checkOut) + "</td><td>" + A.pill(b.channel === "direct" || !b.channel ? "good" : "muted", b.channel || "direct") + '</td><td class="r num">' + gbp(b.total) + "</td><td>" + E(b.status || "") + (b.paid === false ? " \xB7 unpaid" : "") + "</td></tr>"), "No bookings yet.") + "</section>";
+        const mails = await Q.outbox.all(id);
+        const outbox = '<section class="a-card a-flush"><div class="a-card-h" style="padding:18px 20px 0"><h3>Emails and texts sent</h3><div class="a-card-m">latest ' + mails.length + "</div></div>" + A.table(["When", "To", "Subject", "Status"], mails.map((m) => '<tr><td class="num">' + dt(m.created_at) + "</td><td>" + E(m.recipient) + "<small>" + E(m.channel) + '</small></td><td class="wrap">' + E(m.subject || "") + "</td><td>" + A.pill(m.status === "sent" ? "good" : m.status === "failed" ? "bad" : "muted", m.status) + (m.error ? "<small>" + E(m.error) + "</small>" : "") + "</td></tr>"), "Nothing sent yet.") + "</section>";
+        const led = await Q.ledger.all(id);
+        const ai = A.card("AI credit", left == null ? "not used yet" : credits.money(left) + " left", '<div class="adm-list">' + (led.map((l) => "<div><span><b>" + E(l.kind === "use" ? l.feature || "AI use" : l.kind) + "</b><small>" + dt(l.created_at) + (l.model ? " \xB7 " + E(l.model) : "") + '</small></span><b class="num">' + (l.kind === "use" ? "\u2212" : "+") + credits.money(Math.abs(Number(l.amount)) / credits.UNIT) + "</b></div>").join("") || "<div><span><small>No AI use yet.</small></span></div>") + '</div><form class="adm-form" method="post" action="/admin/credits/' + E(id) + '" style="margin-top:12px"><input type="hidden" name="back" value="detail"><div class="row">' + A.field("pounds", "", "Add goodwill credit, \xA3", { type: "number", ph: "20" }) + '<button class="btn sm primary" style="align-self:end">Add AI credit</button></div></form>');
+        const logins = A.card("People who can sign in", people.length + "", '<div class="adm-list">' + (people.map((u) => "<div><span><b>" + E(u.email) + "</b><small>" + E(u.name || "") + " \xB7 since " + d(u.created_at) + "</small></span>" + A.pill(u.verified ? "good" : "warn", u.verified ? "Confirmed" : "Not confirmed") + "</div>").join("") || "<div><span><small>Nobody.</small></span></div>") + "</div>");
+        const actions = (a.email ? '<a class="btn sm" href="mailto:' + E(a.email) + '">' + A.icon("mail") + 'Email them</a><form method="post" action="/admin/hosts/' + E(id) + '/reset" style="display:inline"><button class="btn sm">Send a password reset</button></form>' : "") + (s.props[0] ? '<a class="btn sm" href="' + E(urls.site(w, s.props[0])) + '" target="_blank" rel="noopener">' + A.icon("out") + "Their site</a>" : "");
+        return page(res, {
+          title: s.business,
+          note,
+          err,
+          back: ["/admin/hosts", "Users"],
+          sub: bill(a.billing_status) + " " + E(a.plan || "") + " \xB7 " + E(a.name || s.owner || "") + " \xB7 " + E(a.email || "no login"),
+          actions: '<div class="adm-inline">' + actions + "</div>",
+          body: '<div class="adm-kpis">' + A.kpi("Bookings", s.bookings, "", s.upcoming + " still to come") + A.kpi("Direct bookings", s.direct, "", gbp(s.revenue) + " taken direct", true) + A.kpi("Guests", s.guests, "", "on their list") + A.kpi("Homes live", s.live + " of " + s.props.length, "", s.domains.length ? E(s.domains.join(", ")) : "on our address") + '</div><div class="a-grid adm-top"><div class="a-s8 adm-stack">' + bookings + outbox + '</div><div class="a-s4 adm-stack">' + acct + sites + ai + logins + "</div></div>"
+        });
+      }
+      return { listPage, detailPage, csv, summary };
     };
   }
 });
@@ -16424,7 +18596,7 @@ var require_stripe_auto = __commonJS({
       ["GROWTH", "Bookingbooster Growth", 200],
       ["CALENDAR_SYNC", "Bookingbooster calendar sync add-on", 15]
     ];
-    var PLATFORM_EVENTS = ["checkout.session.completed", "checkout.session.expired", "customer.subscription.deleted", "invoice.payment_failed", "invoice.paid"];
+    var PLATFORM_EVENTS = ["checkout.session.completed", "checkout.session.expired", "customer.subscription.deleted", "invoice.payment_failed", "invoice.paid", "charge.refunded", "charge.dispute.closed"];
     var CONNECT_EVENTS = ["account.updated"];
     async function setup(stripe, baseUrl, { recreate } = {}) {
       async function price(env, product2, amount, interval) {
@@ -16550,6 +18722,15 @@ var require_stripe_auto = __commonJS({
               log("stripe archive", e.message);
             }
           }
+          if (s.events !== PLATFORM_EVENTS.join(",") && s.endpoints && s.endpoints[0]) {
+            try {
+              await stripe.api("POST", "/webhook_endpoints/" + s.endpoints[0], { enabled_events: PLATFORM_EVENTS });
+              s.events = PLATFORM_EVENTS.join(",");
+              await set.run(KEY, JSON.stringify(s));
+            } catch (e) {
+              log("stripe events", e.message);
+            }
+          }
           apply(s);
           return s;
         }
@@ -16558,7 +18739,7 @@ var require_stripe_auto = __commonJS({
         if (envDone) return null;
         try {
           const r = await setup(stripe, cfg.baseUrl, { recreate: true });
-          const saved = { fp: fp(), mode: mode(), at: t, prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
+          const saved = { fp: fp(), mode: mode(), at: t, events: PLATFORM_EVENTS.join(","), prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
           await set.run(KEY, JSON.stringify(saved));
           apply(saved);
           log("stripe", "Prices and webhooks set up in " + mode() + " mode" + (cfg.stripe.keyName ? ", key from " + cfg.stripe.keyName : ""));
@@ -17267,7 +19448,18 @@ var require_effects = __commonJS({
         const text = g.name + " asked to book " + p.name + ", " + fmt(b.checkIn) + " to " + fmt(b.checkOut) + ", " + b.adults + " adult" + (b.adults === 1 ? "" : "s") + (b.children ? " and " + b.children + " children" : "") + (b.pets ? " and a dog" : "") + ", " + money(b.total) + ". The dates are held until you accept or decline.";
         await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: "Booking request: " + p.name + ", " + fmt(b.checkIn), text: text + "\n\nOpen your console: " + url, html: simple(p, vars(w, b, p, g), text, { label: "Accept or decline", url }), meta: { template: "host-request", bookingId: b.id } });
       }
-      async function hostEmail(w, d) {
+      const unpaid = async (w) => {
+        if (!stripe.enabled || w.kind !== "live") return false;
+        const r = await ws.row(w.id);
+        return !r || !r.billing_status || r.billing_status === "trial";
+      };
+      async function siteLive(wid) {
+        const w = await ws.open(wid);
+        if (!w) return;
+        for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true);
+      }
+      async function hostEmail(w, d, paid) {
+        if (!paid && await unpaid(w)) return;
         const s = w.state;
         const p = s.properties.find((x) => x.id === d.propertyId);
         if (!p) return;
@@ -17301,7 +19493,962 @@ var require_effects = __commonJS({
           }
         }
       }
-      return Object.assign(run, { calendars, freshen, channels, aiCheck });
+      return Object.assign(run, { calendars, freshen, channels, aiCheck, siteLive });
+    };
+  }
+});
+
+// server/studio/outcodes.json
+var require_outcodes = __commonJS({
+  "server/studio/outcodes.json"(exports, module) {
+    module.exports = { AB10: [57.1351, -2.1173], AB11: [57.1388, -2.0909], AB12: [57.101, -2.1106], AB13: [57.108, -2.2378], AB14: [57.1008, -2.2707], AB15: [57.1387, -2.1652], AB16: [57.1611, -2.1554], AB21: [57.2096, -2.2003], AB22: [57.1872, -2.1191], AB23: [57.2124, -2.0878], AB24: [57.1628, -2.1123], AB25: [57.1531, -2.1124], AB30: [56.8468, -2.4771], AB31: [57.0748, -2.5262], AB32: [57.1555, -2.3174], AB33: [57.2246, -2.742], AB34: [57.0939, -2.812], AB35: [57.0383, -3.1487], AB36: [57.1972, -3.0659], AB37: [57.331, -3.3505], AB38: [57.4859, -3.2261], AB39: [56.9778, -2.2172], AB41: [57.3759, -2.1048], AB42: [57.5008, -1.8882], AB43: [57.6571, -2.0436], AB44: [57.6688, -2.4912], AB45: [57.6514, -2.5664], AB51: [57.2891, -2.4049], AB52: [57.344, -2.6065], AB53: [57.5254, -2.3941], AB54: [57.4536, -2.7633], AB55: [57.5239, -2.9902], AB56: [57.6744, -2.9256], AL1: [51.7484, -0.3224], AL10: [51.7596, -0.2292], AL2: [51.7206, -0.3335], AL3: [51.7778, -0.3706], AL4: [51.7713, -0.294], AL5: [51.8162, -0.3518], AL6: [51.831, -0.1974], AL7: [51.7967, -0.1857], AL8: [51.8033, -0.2086], AL9: [51.7447, -0.1979], B1: [52.4787, -1.9072], B10: [52.4697, -1.8513], B11: [52.4544, -1.8587], B12: [52.4598, -1.8822], B13: [52.4364, -1.8779], B14: [52.4176, -1.8882], B15: [52.4661, -1.9235], B16: [52.476, -1.9337], B17: [52.4608, -1.9603], B18: [52.4913, -1.9234], B19: [52.4967, -1.9042], B2: [52.4787, -1.8969], B20: [52.5138, -1.9175], B21: [52.5066, -1.9396], B23: [52.5281, -1.854], B24: [52.5191, -1.8276], B25: [52.4651, -1.8204], B26: [52.4606, -1.7895], B27: [52.4445, -1.822], B28: [52.4265, -1.8412], B29: [52.4374, -1.947], B3: [52.4805, -1.9013], B30: [52.4221, -1.9279], B31: [52.4077, -1.9721], B32: [52.4482, -1.9926], B33: [52.4804, -1.7865], B34: [52.4956, -1.7805], B35: [52.519, -1.7878], B36: [52.5037, -1.779], B37: [52.4785, -1.7408], B38: [52.3996, -1.9339], B4: [52.4823, -1.894], B40: [52.4586, -1.7218], B42: [52.5336, -1.9115], B43: [52.548, -1.9292], B44: [52.5452, -1.8835], B45: [52.3879, -2.0088], B46: [52.508, -1.6935], B47: [52.387, -1.8795], B48: [52.3556, -1.9486], B49: [52.217, -1.8668], B5: [52.4697, -1.8955], B50: [52.1685, -1.8538], B6: [52.5039, -1.8851], B60: [52.3259, -2.0499], B61: [52.3448, -2.0675], B62: [52.4563, -2.0324], B63: [52.4518, -2.0662], B64: [52.4724, -2.0677], B65: [52.4832, -2.0427], B66: [52.4931, -1.9647], B67: [52.486, -1.9764], B68: [52.4788, -2], B69: [52.5021, -2.028], B7: [52.4931, -1.8719], B70: [52.5201, -2.0029], B71: [52.5354, -1.9897], B72: [52.5515, -1.8215], B73: [52.5524, -1.8422], B74: [52.583, -1.8583], B75: [52.5784, -1.8081], B76: [52.5451, -1.7862], B77: [52.6185, -1.6676], B78: [52.606, -1.6736], B79: [52.6501, -1.6807], B8: [52.4903, -1.8409], B80: [52.2764, -1.8959], B9: [52.4778, -1.8483], B90: [52.4004, -1.8236], B91: [52.4138, -1.7824], B92: [52.4363, -1.7734], B93: [52.3805, -1.7429], B94: [52.3509, -1.7915], B95: [52.2852, -1.7801], B96: [52.2522, -1.9604], B97: [52.2989, -1.9545], B98: [52.3034, -1.9135], BA1: [51.3911, -2.3593], BA10: [51.1129, -2.4458], BA11: [51.2365, -2.3252], BA12: [51.1712, -2.1874], BA13: [51.262, -2.1792], BA14: [51.3186, -2.2009], BA15: [51.3509, -2.2643], BA16: [51.1249, -2.7431], BA2: [51.3596, -2.3763], BA20: [50.9375, -2.6419], BA21: [50.9511, -2.6336], BA22: [50.9681, -2.6367], BA3: [51.2747, -2.4731], BA4: [51.171, -2.5307], BA5: [51.2127, -2.6529], BA6: [51.1404, -2.7048], BA7: [51.0883, -2.5183], BA8: [50.9988, -2.4105], BA9: [51.0573, -2.4095], BB1: [53.7563, -2.4627], BB10: [53.7992, -2.2186], BB11: [53.7829, -2.252], BB12: [53.8035, -2.29], BB18: [53.9143, -2.1705], BB2: [53.7417, -2.5004], BB3: [53.6978, -2.465], BB4: [53.7038, -2.2894], BB5: [53.7548, -2.3716], BB6: [53.7924, -2.416], BB7: [53.8734, -2.3864], BB8: [53.8577, -2.1627], BB9: [53.837, -2.2143], BD1: [53.7955, -1.7525], BD10: [53.8314, -1.725], BD11: [53.7513, -1.6754], BD12: [53.7461, -1.7604], BD13: [53.7858, -1.8588], BD14: [53.7822, -1.8163], BD15: [53.8092, -1.836], BD16: [53.8487, -1.8328], BD17: [53.8468, -1.7674], BD18: [53.8315, -1.7766], BD19: [53.7271, -1.712], BD2: [53.8144, -1.7342], BD20: [53.8965, -1.9467], BD21: [53.8641, -1.9057], BD22: [53.8452, -1.9529], BD23: [53.9926, -2.0534], BD24: [54.0777, -2.2736], BD3: [53.7982, -1.7267], BD4: [53.7757, -1.7177], BD5: [53.7785, -1.7572], BD6: [53.7641, -1.7831], BD7: [53.783, -1.7814], BD8: [53.801, -1.7813], BD9: [53.8118, -1.7889], BH1: [50.7243, -1.8597], BH10: [50.7585, -1.8908], BH11: [50.7612, -1.9163], BH12: [50.7369, -1.9263], BH13: [50.7099, -1.9179], BH14: [50.7216, -1.9433], BH15: [50.7216, -1.9844], BH16: [50.7378, -2.0439], BH17: [50.7459, -1.9745], BH18: [50.7585, -1.9929], BH19: [50.611, -1.9689], BH2: [50.7216, -1.881], BH20: [50.6865, -2.1458], BH21: [50.8125, -1.973], BH22: [50.8052, -1.8879], BH23: [50.7457, -1.7533], BH24: [50.8438, -1.7855], BH25: [50.7517, -1.6569], BH3: [50.7351, -1.8795], BH31: [50.8754, -1.8721], BH4: [50.7207, -1.898], BH5: [50.7251, -1.8342], BH6: [50.7269, -1.8045], BH7: [50.735, -1.8314], BH8: [50.7404, -1.8512], BH9: [50.7495, -1.871], BL0: [53.6453, -2.3147], BL1: [53.59, -2.4442], BL2: [53.5875, -2.3943], BL3: [53.5649, -2.4319], BL4: [53.547, -2.4], BL5: [53.5493, -2.5147], BL6: [53.5914, -2.5394], BL7: [53.6296, -2.4219], BL8: [53.6048, -2.3265], BL9: [53.5914, -2.2856], BN1: [50.839, -0.1379], BN10: [50.7953, 23e-4], BN11: [50.8129, -0.376], BN12: [50.8135, -0.4242], BN13: [50.8304, -0.4052], BN14: [50.8318, -0.3796], BN15: [50.8301, -0.3243], BN16: [50.8145, -0.4938], BN17: [50.8141, -0.535], BN18: [50.8488, -0.5793], BN2: [50.824, -0.103], BN20: [50.7745, 0.2554], BN21: [50.7723, 0.2765], BN22: [50.7883, 0.2844], BN23: [50.7976, 0.3132], BN24: [50.8162, 0.3312], BN25: [50.7763, 0.1093], BN26: [50.821, 0.2235], BN27: [50.8715, 0.2643], BN3: [50.8342, -0.175], BN41: [50.8402, -0.2145], BN42: [50.8369, -0.2317], BN43: [50.8356, -0.2658], BN44: [50.8904, -0.3221], BN45: [50.8892, -0.1842], BN5: [50.9265, -0.2681], BN6: [50.9292, -0.1528], BN7: [50.8772, 1e-4], BN8: [50.9132, 0.0515], BN9: [50.7954, 0.0506], BR1: [51.4111, 0.0219], BR2: [51.3886, 0.0224], BR3: [51.403, -0.0302], BR4: [51.3756, -69e-4], BR5: [51.3898, 0.1044], BR6: [51.3657, 0.0932], BR7: [51.4102, 0.0722], BR8: [51.3975, 0.1766], BS1: [51.4531, -2.593], BS10: [51.5061, -2.6095], BS11: [51.4967, -2.6742], BS13: [51.4116, -2.6112], BS14: [51.4128, -2.5608], BS15: [51.4589, -2.5053], BS16: [51.485, -2.5099], BS2: [51.4594, -2.5801], BS20: [51.4792, -2.7518], BS21: [51.4344, -2.8489], BS22: [51.3601, -2.9294], BS23: [51.3427, -2.9707], BS24: [51.3277, -2.9316], BS25: [51.3204, -2.8252], BS26: [51.2797, -2.8546], BS27: [51.2713, -2.7699], BS28: [51.2251, -2.8135], BS29: [51.3308, -2.8771], BS3: [51.4378, -2.6014], BS30: [51.4447, -2.472], BS31: [51.4077, -2.4918], BS32: [51.5423, -2.5596], BS34: [51.5234, -2.5636], BS35: [51.5963, -2.5487], BS36: [51.5255, -2.4858], BS37: [51.5393, -2.4167], BS39: [51.3275, -2.5311], BS4: [51.4344, -2.5611], BS40: [51.3464, -2.6907], BS41: [51.4222, -2.6516], BS48: [51.4252, -2.748], BS49: [51.3798, -2.8177], BS5: [51.4614, -2.5499], BS6: [51.4701, -2.599], BS7: [51.4864, -2.5805], BS8: [51.4575, -2.6204], BS9: [51.4871, -2.6251], BS99: [51.4577, -2.5729], BT1: [54.5994, -5.9284], BT10: [54.5598, -5.9834], BT11: [54.5756, -5.9973], BT12: [54.5922, -5.9556], BT13: [54.6056, -5.9584], BT14: [54.6208, -5.9614], BT15: [54.6236, -5.9307], BT16: [54.591, -5.7975], BT17: [54.5542, -6.0169], BT18: [54.6415, -5.8208], BT19: [54.6517, -5.6666], BT2: [54.5931, -5.9293], BT20: [54.6581, -5.6641], BT21: [54.6383, -5.5445], BT22: [54.5032, -5.5189], BT23: [54.563, -5.7144], BT24: [54.4168, -5.8723], BT25: [54.3954, -6.1108], BT26: [54.452, -6.0609], BT27: [54.51, -6.0203], BT28: [54.523, -6.088], BT29: [54.6202, -6.1939], BT3: [54.62, -5.904], BT30: [54.334, -5.7044], BT31: [54.2778, -5.9699], BT32: [54.335, -6.2448], BT33: [54.221, -5.8938], BT34: [54.1547, -6.1803], BT35: [54.165, -6.4436], BT36: [54.6768, -5.9545], BT37: [54.6766, -5.9063], BT38: [54.7295, -5.798], BT39: [54.7449, -6.0171], BT4: [54.6023, -5.8667], BT40: [54.8466, -5.8215], BT41: [54.733, -6.26], BT42: [54.8546, -6.2821], BT43: [54.8902, -6.2656], BT44: [54.9742, -6.2839], BT45: [54.7604, -6.6394], BT46: [54.8657, -6.6639], BT47: [54.9739, -7.2115], BT48: [55.0093, -7.3273], BT49: [55.0477, -6.9515], BT5: [54.5887, -5.87], BT51: [55.0576, -6.68], BT52: [55.1342, -6.6528], BT53: [55.0852, -6.473], BT54: [55.2, -6.2579], BT55: [55.1797, -6.71], BT56: [55.1982, -6.6493], BT57: [55.2014, -6.5175], BT6: [54.5797, -5.8971], BT60: [54.2922, -6.6495], BT61: [54.3679, -6.6226], BT62: [54.4126, -6.4642], BT63: [54.4036, -6.3892], BT64: [54.4494, -6.3925], BT65: [54.445, -6.3658], BT66: [54.4551, -6.3329], BT67: [54.4871, -6.2683], BT68: [54.3663, -6.8474], BT69: [54.4243, -6.9484], BT7: [54.5816, -5.9236], BT70: [54.5149, -6.8867], BT71: [54.5132, -6.704], BT74: [54.3432, -7.6643], BT75: [54.3753, -7.3156], BT76: [54.4194, -7.1917], BT77: [54.4271, -7.117], BT78: [54.5716, -7.3737], BT79: [54.6242, -7.2007], BT8: [54.5399, -5.9041], BT80: [54.6446, -6.7487], BT81: [54.694, -7.6137], BT82: [54.8258, -7.4278], BT9: [54.5718, -5.9489], BT92: [54.2229, -7.4618], BT93: [54.4651, -7.8264], BT94: [54.376, -7.5408], CA1: [54.8854, -2.9105], CA10: [54.611, -2.6597], CA11: [54.6642, -2.7861], CA12: [54.6021, -3.1333], CA13: [54.66, -3.3659], CA14: [54.6345, -3.537], CA15: [54.7116, -3.481], CA16: [54.5741, -2.4827], CA17: [54.4784, -2.3504], CA18: [54.3541, -3.3896], CA19: [54.3865, -3.383], CA2: [54.8841, -2.9494], CA20: [54.4099, -3.4608], CA21: [54.4452, -3.5145], CA22: [54.48, -3.5312], CA23: [54.5147, -3.4924], CA24: [54.5149, -3.5418], CA25: [54.5224, -3.5174], CA26: [54.5444, -3.4811], CA27: [54.4909, -3.5919], CA28: [54.5432, -3.5769], CA3: [54.9076, -2.939], CA4: [54.8464, -2.8333], CA5: [54.8548, -3.0157], CA6: [54.9942, -2.8926], CA7: [54.807, -3.237], CA8: [54.9389, -2.6853], CA9: [54.8018, -2.4185], CB1: [52.1761, 0.1895], CB10: [52.0299, 0.2655], CB11: [51.9994, 0.2144], CB2: [52.1628, 0.1333], CB21: [52.1319, 0.2955], CB22: [52.1272, 0.129], CB23: [52.2135, -0.0221], CB24: [52.3154, 0.0276], CB25: [52.2608, 0.2361], CB3: [52.2132, 0.0245], CB4: [52.2431, 0.1152], CB5: [52.2387, 0.2102], CB6: [52.4039, 0.2243], CB7: [52.3661, 0.3209], CB8: [52.2308, 0.4266], CB9: [52.0821, 0.4419], CF10: [51.4739, -3.1765], CF11: [51.4728, -3.1923], CF14: [51.5195, -3.2022], CF15: [51.534, -3.2732], CF23: [51.5155, -3.1502], CF24: [51.4848, -3.1638], CF3: [51.5195, -3.1113], CF31: [51.5088, -3.5751], CF32: [51.5599, -3.5827], CF33: [51.5242, -3.691], CF34: [51.6102, -3.6509], CF35: [51.5221, -3.5179], CF36: [51.4846, -3.6982], CF37: [51.6026, -3.3329], CF38: [51.5603, -3.3316], CF39: [51.6015, -3.4238], CF40: [51.6201, -3.4504], CF41: [51.6476, -3.4816], CF42: [51.6668, -3.5213], CF43: [51.6579, -3.4487], CF44: [51.718, -3.4579], CF45: [51.6688, -3.3609], CF46: [51.665, -3.3], CF47: [51.7514, -3.3749], CF48: [51.7407, -3.3688], CF5: [51.4822, -3.2415], CF61: [51.4075, -3.4796], CF62: [51.4041, -3.3084], CF63: [51.4119, -3.2554], CF64: [51.4333, -3.1884], CF71: [51.4618, -3.454], CF72: [51.5299, -3.3985], CF81: [51.6998, -3.2431], CF82: [51.6513, -3.236], CF83: [51.5859, -3.2169], CH1: [53.2017, -2.9073], CH2: [53.2164, -2.8687], CH3: [53.1664, -2.8213], CH4: [53.1682, -2.938], CH41: [53.394, -3.0302], CH42: [53.3743, -3.0207], CH43: [53.383, -3.0585], CH44: [53.4155, -3.0368], CH45: [53.428, -3.0506], CH46: [53.4032, -3.1102], CH47: [53.3963, -3.1687], CH48: [53.3712, -3.1695], CH49: [53.3808, -3.1021], CH5: [53.2042, -3.0406], CH6: [53.25, -3.1452], CH60: [53.326, -3.0947], CH61: [53.3475, -3.1012], CH62: [53.3342, -2.9807], CH63: [53.3447, -3.011], CH64: [53.2878, -3.0472], CH65: [53.2773, -2.9014], CH66: [53.277, -2.9344], CH7: [53.1692, -3.1326], CH8: [53.2814, -3.2405], CM0: [51.6622, 0.8372], CM1: [51.7445, 0.4569], CM11: [51.6234, 0.4461], CM12: [51.6276, 0.4159], CM13: [51.6156, 0.3387], CM14: [51.6183, 0.2926], CM15: [51.6433, 0.3054], CM16: [51.6998, 0.1216], CM17: [51.7704, 0.1452], CM18: [51.7558, 0.1069], CM19: [51.76, 0.0751], CM2: [51.7214, 0.4875], CM20: [51.7748, 0.1048], CM21: [51.8118, 0.1472], CM22: [51.8616, 0.2222], CM23: [51.8718, 0.1602], CM24: [51.8988, 0.2066], CM3: [51.7193, 0.5845], CM4: [51.6739, 0.3923], CM5: [51.7208, 0.2486], CM6: [51.8768, 0.3668], CM7: [51.8975, 0.538], CM77: [51.8622, 0.5255], CM8: [51.8054, 0.6387], CM9: [51.741, 0.7016], CO1: [51.8889, 0.9096], CO10: [52.0571, 0.7236], CO11: [51.9413, 1.0789], CO12: [51.9312, 1.2543], CO13: [51.838, 1.2388], CO14: [51.8498, 1.2687], CO15: [51.7962, 1.1561], CO16: [51.8204, 1.1258], CO2: [51.8695, 0.8953], CO3: [51.8847, 0.8628], CO4: [51.9065, 0.9238], CO5: [51.8146, 0.8221], CO6: [51.9242, 0.7897], CO7: [51.8838, 1.0052], CO8: [51.9733, 0.768], CO9: [51.9688, 0.6104], CR0: [51.3722, -0.0746], CR2: [51.3498, -0.0799], CR3: [51.2869, -0.0796], CR4: [51.4042, -0.1581], CR5: [51.3121, -0.1389], CR6: [51.308, -0.0515], CR7: [51.3952, -0.1024], CR8: [51.3359, -0.1106], CR9: [51.3722, -0.0746], CT1: [51.2772, 1.0873], CT10: [51.3621, 1.4307], CT11: [51.3356, 1.4144], CT12: [51.3422, 1.3732], CT13: [51.2669, 1.3304], CT14: [51.2158, 1.3869], CT15: [51.1711, 1.2834], CT16: [51.14, 1.3027], CT17: [51.1285, 1.2961], CT18: [51.1145, 1.1508], CT19: [51.0879, 1.1704], CT2: [51.2926, 1.0826], CT20: [51.079, 1.1655], CT21: [51.0723, 1.0779], CT3: [51.2774, 1.2121], CT4: [51.2246, 1.068], CT5: [51.3532, 1.0364], CT6: [51.3642, 1.1305], CT7: [51.3712, 1.3006], CT8: [51.38, 1.3415], CT9: [51.383, 1.3906], CV1: [52.4094, -1.506], CV10: [52.5254, -1.5003], CV11: [52.5189, -1.4532], CV12: [52.474, -1.4729], CV13: [52.6122, -1.4136], CV2: [52.4227, -1.4647], CV21: [52.3677, -1.2744], CV22: [52.3552, -1.2863], CV23: [52.3616, -1.3083], CV3: [52.3931, -1.4812], CV31: [52.2782, -1.5236], CV32: [52.2962, -1.5307], CV33: [52.2574, -1.4842], CV34: [52.2829, -1.5792], CV35: [52.229, -1.5944], CV36: [52.0673, -1.625], CV37: [52.1853, -1.7133], CV4: [52.3979, -1.5649], CV47: [52.2335, -1.3849], CV5: [52.4123, -1.5501], CV6: [52.4319, -1.5072], CV7: [52.4438, -1.563], CV8: [52.3511, -1.5434], CV9: [52.5849, -1.5586], CW1: [53.1028, -2.4347], CW10: [53.1891, -2.446], CW11: [53.1426, -2.3648], CW12: [53.1645, -2.2109], CW2: [53.0812, -2.4464], CW3: [52.9995, -2.4053], CW4: [53.2065, -2.3474], CW5: [53.062, -2.5208], CW6: [53.162, -2.6656], CW7: [53.1905, -2.5269], CW8: [53.2533, -2.5636], CW9: [53.259, -2.5007], DA1: [51.4464, 0.2092], DA10: [51.4445, 0.3084], DA11: [51.4346, 0.3539], DA12: [51.4276, 0.3881], DA13: [51.3824, 0.3555], DA14: [51.4248, 0.1132], DA15: [51.4403, 0.0995], DA16: [51.4644, 0.1092], DA17: [51.4871, 0.1492], DA18: [51.4916, 0.1436], DA2: [51.4315, 0.2343], DA3: [51.3842, 0.3096], DA4: [51.3911, 0.2324], DA5: [51.4403, 0.147], DA6: [51.4548, 0.1405], DA7: [51.4655, 0.1467], DA8: [51.4757, 0.1774], DA9: [51.4477, 0.2797], DD1: [56.4611, -2.977], DD10: [56.7472, -2.4268], DD11: [56.5731, -2.5974], DD2: [56.4697, -3.0276], DD3: [56.4826, -2.9889], DD4: [56.4821, -2.9353], DD5: [56.4781, -2.8622], DD6: [56.4372, -2.9261], DD7: [56.5033, -2.7181], DD8: [56.6565, -2.9217], DD9: [56.748, -2.6672], DE1: [52.9199, -1.4749], DE11: [52.7737, -1.5538], DE12: [52.7252, -1.5528], DE13: [52.8074, -1.6884], DE14: [52.8046, -1.6395], DE15: [52.7991, -1.6084], DE21: [52.9332, -1.4316], DE22: [52.9335, -1.4956], DE23: [52.9011, -1.4945], DE24: [52.8902, -1.4515], DE3: [52.9085, -1.5405], DE4: [53.1271, -1.5636], DE45: [53.2146, -1.6765], DE5: [53.0446, -1.4018], DE55: [53.101, -1.3711], DE56: [53.0215, -1.4737], DE6: [52.9936, -1.7169], DE65: [52.8665, -1.6093], DE7: [52.9722, -1.3209], DE72: [52.8933, -1.3593], DE73: [52.8469, -1.4357], DE74: [52.8437, -1.3288], DE75: [53.0128, -1.3531], DG1: [55.0735, -3.5804], DG10: [55.3198, -3.4373], DG11: [55.1133, -3.3358], DG12: [54.9893, -3.2504], DG13: [55.1729, -3.0285], DG14: [55.0807, -2.9854], DG16: [54.9973, -3.0678], DG2: [55.0644, -3.6568], DG3: [55.2368, -3.7993], DG4: [55.3755, -3.9524], DG5: [54.922, -3.8102], DG6: [54.8372, -4.0556], DG7: [54.9674, -4.0122], DG8: [54.8726, -4.5157], DG9: [54.8781, -5.0212], DH1: [54.781, -1.5662], DH2: [54.8593, -1.5965], DH3: [54.8718, -1.5668], DH4: [54.8544, -1.4906], DH5: [54.8237, -1.4536], DH6: [54.7528, -1.4639], DH7: [54.7894, -1.6641], DH8: [54.8554, -1.8442], DH9: [54.8677, -1.707], DL1: [54.5302, -1.5364], DL10: [54.4138, -1.6903], DL11: [54.4384, -1.8751], DL12: [54.5724, -1.9845], DL13: [54.7162, -1.9534], DL14: [54.652, -1.69], DL15: [54.7096, -1.7284], DL16: [54.6985, -1.6043], DL17: [54.6812, -1.5409], DL2: [54.5286, -1.6013], DL3: [54.5321, -1.5703], DL4: [54.6303, -1.6437], DL5: [54.6175, -1.5756], DL6: [54.3704, -1.3888], DL7: [54.3376, -1.4847], DL8: [54.2927, -1.7849], DL9: [54.3752, -1.709], DN1: [53.5221, -1.1296], DN10: [53.4271, -0.9434], DN11: [53.4516, -1.0828], DN12: [53.4831, -1.2208], DN14: [53.7075, -0.9364], DN15: [53.6147, -0.6499], DN16: [53.5678, -0.6393], DN17: [53.5721, -0.7011], DN18: [53.6805, -0.4464], DN19: [53.6839, -0.3585], DN2: [53.5326, -1.1022], DN20: [53.5572, -0.5053], DN21: [53.4193, -0.7013], DN22: [53.3235, -0.9264], DN3: [53.5458, -1.0582], DN31: [53.5701, -0.0865], DN32: [53.5627, -0.0687], DN33: [53.5397, -0.0969], DN34: [53.557, -0.1112], DN35: [53.5549, -0.0358], DN36: [53.5109, -0.0364], DN37: [53.5403, -0.1346], DN38: [53.5611, -0.3919], DN39: [53.617, -0.3338], DN4: [53.5058, -1.1209], DN40: [53.6208, -0.2233], DN41: [53.5835, -0.1947], DN5: [53.5376, -1.1715], DN6: [53.5961, -1.1764], DN7: [53.5814, -1.0151], DN8: [53.6142, -0.9554], DN9: [53.5066, -0.8932], DT1: [50.7109, -2.4405], DT10: [50.937, -2.3331], DT11: [50.8609, -2.1805], DT2: [50.7495, -2.4537], DT3: [50.6407, -2.4667], DT4: [50.6092, -2.4636], DT5: [50.5472, -2.4404], DT6: [50.7389, -2.7753], DT7: [50.7286, -2.9466], DT8: [50.8163, -2.7581], DT9: [50.9409, -2.5153], DY1: [52.5165, -2.0958], DY10: [52.3859, -2.2248], DY11: [52.385, -2.2601], DY12: [52.3857, -2.3292], DY13: [52.3364, -2.2803], DY14: [52.3798, -2.4628], DY2: [52.4967, -2.081], DY3: [52.5299, -2.1283], DY4: [52.5327, -2.0531], DY5: [52.4805, -2.1222], DY6: [52.4984, -2.1635], DY7: [52.466, -2.2238], DY8: [52.4598, -2.1545], DY9: [52.4355, -2.1221], E1: [51.5177, -0.0584], E10: [51.5681, -0.0115], E11: [51.5677, 0.0144], E12: [51.5499, 0.054], E13: [51.527, 0.0271], E14: [51.5062, -0.0186], E15: [51.5391, 31e-4], E16: [51.5108, 0.0263], E17: [51.5862, -0.018], E18: [51.5918, 0.0271], E1W: [51.5078, -0.0574], E2: [51.5294, -0.0608], E3: [51.5279, -0.0248], E4: [51.622, -34e-4], E5: [51.5589, -0.0523], E6: [51.5256, 0.0558], E7: [51.5468, 0.0279], E8: [51.542, -0.0631], E9: [51.5426, -0.0429], EC1: [51.5229, -0.1014], EC1A: [51.5202, -0.103], EC1M: [51.5211, -0.1015], EC1N: [51.5203, -0.1073], EC1R: [51.5247, -0.1071], EC1V: [51.5255, -0.097], EC1Y: [51.5227, -0.0928], EC2: [51.52, -0.0886], EC2A: [51.5226, -0.0856], EC2M: [51.5181, -0.0858], EC2N: [51.5163, -0.0859], EC2P: [51.5167, -0.0936], EC2R: [51.5164, -0.0916], EC2V: [51.5155, -0.0931], EC2Y: [51.5201, -0.0958], EC3: [51.5136, -0.0831], EC3A: [51.5153, -0.0816], EC3M: [51.5127, -0.0831], EC3N: [51.5126, -0.0788], EC3P: [51.5202, -0.1016], EC3R: [51.5118, -0.0846], EC3V: [51.5136, -0.086], EC4: [51.5147, -0.1003], EC4A: [51.5158, -0.1075], EC4M: [51.5147, -0.1003], EC4N: [51.5146, -0.0931], EC4R: [51.5119, -0.0918], EC4V: [51.5129, -0.099], EC4Y: [51.514, -0.1076], EH1: [55.9524, -3.1884], EH10: [55.9208, -3.2098], EH11: [55.9339, -3.2487], EH12: [55.9426, -3.2714], EH13: [55.9079, -3.2414], EH14: [55.9093, -3.2831], EH15: [55.9469, -3.1114], EH16: [55.9222, -3.1539], EH17: [55.907, -3.1422], EH18: [55.8767, -3.1221], EH19: [55.8732, -3.1045], EH2: [55.9542, -3.1949], EH20: [55.879, -3.1558], EH21: [55.9385, -3.0455], EH22: [55.8844, -3.06], EH23: [55.8396, -3.0508], EH24: [55.8505, -3.1326], EH25: [55.8582, -3.1743], EH26: [55.8326, -3.2231], EH27: [55.8906, -3.4232], EH28: [55.9306, -3.3862], EH29: [55.9565, -3.3984], EH3: [55.9541, -3.1997], EH30: [55.9845, -3.3834], EH31: [56.0363, -2.8266], EH32: [55.968, -2.9485], EH33: [55.942, -2.9447], EH34: [55.9092, -2.8799], EH35: [55.9105, -2.9423], EH36: [55.8564, -2.8516], EH37: [55.8619, -2.9587], EH38: [55.7864, -2.9601], EH39: [56.0477, -2.7305], EH4: [55.9625, -3.2576], EH40: [55.9906, -2.6557], EH41: [55.9485, -2.7751], EH42: [55.9939, -2.5243], EH43: [55.6242, -3.0101], EH44: [55.6202, -3.0656], EH45: [55.6549, -3.1921], EH46: [55.7369, -3.3491], EH47: [55.8598, -3.6634], EH48: [55.9011, -3.6635], EH49: [55.9766, -3.5979], EH5: [55.9746, -3.2163], EH51: [56.0115, -3.6041], EH52: [55.9376, -3.4826], EH53: [55.8936, -3.4761], EH54: [55.8921, -3.524], EH55: [55.8475, -3.5718], EH6: [55.9714, -3.1746], EH7: [55.9607, -3.1646], EH8: [55.9491, -3.1627], EH9: [55.9336, -3.1846], EN1: [51.6536, -0.0671], EN10: [51.74, -0.0199], EN11: [51.765, -72e-4], EN2: [51.6585, -0.0914], EN3: [51.6585, -0.0379], EN4: [51.6479, -0.1598], EN5: [51.6493, -0.1945], EN6: [51.6994, -0.1766], EN7: [51.7103, -0.0661], EN8: [51.698, -0.0319], EN9: [51.6945, 0.0143], EX1: [50.7254, -3.5048], EX10: [50.6925, -3.2446], EX11: [50.746, -3.2871], EX12: [50.7058, -3.0807], EX13: [50.7865, -3.0073], EX14: [50.8127, -3.1896], EX15: [50.8768, -3.3391], EX16: [50.9226, -3.4912], EX17: [50.8118, -3.702], EX18: [50.9016, -3.8874], EX19: [50.8771, -4.0044], EX2: [50.71, -3.517], EX20: [50.75, -4.0188], EX21: [50.8051, -4.2086], EX22: [50.828, -4.3673], EX23: [50.8237, -4.5332], EX24: [50.7382, -3.0885], EX3: [50.6865, -3.4582], EX31: [51.0857, -4.0634], EX32: [51.0712, -4.0185], EX33: [51.1134, -4.1689], EX34: [51.1983, -4.1028], EX35: [51.2236, -3.8275], EX36: [51.0164, -3.7922], EX37: [50.9787, -3.9518], EX38: [50.9438, -4.1511], EX39: [51.0139, -4.2456], EX4: [50.7306, -3.5262], EX5: [50.7568, -3.4392], EX6: [50.6774, -3.5967], EX7: [50.5918, -3.4723], EX8: [50.6296, -3.4013], EX9: [50.6386, -3.3224], FK1: [55.9856, -3.7938], FK10: [56.1152, -3.7805], FK11: [56.1501, -3.8498], FK12: [56.1526, -3.8], FK13: [56.1508, -3.7403], FK14: [56.1654, -3.6604], FK15: [56.2025, -3.949], FK16: [56.1908, -4.0597], FK17: [56.2402, -4.2189], FK18: [56.3245, -4.3273], FK19: [56.3706, -4.3139], FK2: [56.005, -3.7546], FK20: [56.4065, -4.6306], FK21: [56.4657, -4.3197], FK3: [56.0109, -3.7196], FK4: [55.9973, -3.9066], FK5: [56.0256, -3.8181], FK6: [56.0215, -3.9142], FK7: [56.0969, -3.9164], FK8: [56.1307, -4.05], FK9: [56.1424, -3.9396], FY1: [53.8155, -3.0451], FY2: [53.8452, -3.0382], FY3: [53.8211, -3.0209], FY4: [53.7914, -3.0278], FY5: [53.8742, -3.0207], FY6: [53.8682, -2.981], FY7: [53.9164, -3.0263], FY8: [53.7503, -3.001], G1: [55.8604, -4.2467], G11: [55.8736, -4.3114], G12: [55.8801, -4.3006], G13: [55.8936, -4.3462], G14: [55.8809, -4.3486], G15: [55.9094, -4.3648], G2: [55.8638, -4.2549], G20: [55.8858, -4.2818], G21: [55.8806, -4.2207], G22: [55.89, -4.25], G23: [55.9019, -4.2843], G3: [55.8662, -4.2726], G31: [55.8575, -4.2082], G32: [55.8484, -4.1629], G33: [55.8735, -4.1659], G34: [55.8682, -4.1113], G4: [55.8684, -4.252], G40: [55.8482, -4.222], G41: [55.8381, -4.2822], G42: [55.8323, -4.2563], G43: [55.8182, -4.289], G44: [55.8144, -4.2552], G45: [55.8049, -4.2307], G46: [55.8045, -4.3057], G5: [55.8477, -4.2524], G51: [55.8573, -4.3136], G52: [55.8477, -4.3482], G53: [55.8216, -4.3514], G60: [55.922, -4.4536], G61: [55.919, -4.3301], G62: [55.9426, -4.3203], G63: [56.0424, -4.3649], G64: [55.9113, -4.216], G65: [55.9733, -4.0577], G66: [55.9402, -4.1536], G67: [55.9475, -3.9859], G68: [55.9534, -4.0102], G69: [55.8737, -4.102], G71: [55.8221, -4.0721], G72: [55.8041, -4.1286], G73: [55.8198, -4.2061], G74: [55.7691, -4.1729], G76: [55.7781, -4.2723], G77: [55.7734, -4.3294], G78: [55.7926, -4.4087], G81: [55.9131, -4.4066], G82: [55.9519, -4.574], G83: [56.012, -4.5844], G84: [56.0137, -4.7531], GL1: [51.8599, -2.2396], GL10: [51.7429, -2.2839], GL11: [51.6887, -2.3559], GL12: [51.6248, -2.3843], GL13: [51.6929, -2.4587], GL14: [51.8169, -2.4788], GL15: [51.7366, -2.5504], GL16: [51.7956, -2.6105], GL17: [51.8554, -2.5141], GL18: [51.9412, -2.4146], GL19: [51.9425, -2.2866], GL2: [51.8464, -2.2671], GL20: [52.003, -2.1297], GL3: [51.8645, -2.1772], GL4: [51.842, -2.2163], GL5: [51.7385, -2.2187], GL50: [51.8997, -2.08], GL51: [51.8988, -2.1076], GL52: [51.9159, -2.0582], GL53: [51.8808, -2.0668], GL54: [51.8969, -1.8634], GL55: [52.0604, -1.7681], GL56: [51.9884, -1.7044], GL6: [51.735, -2.1912], GL7: [51.7126, -1.8972], GL8: [51.6415, -2.1705], GL9: [51.5576, -2.2972], GU1: [51.2426, -0.5644], GU10: [51.1975, -0.7962], GU11: [51.2484, -0.7619], GU12: [51.2517, -0.7303], GU13: [51.2744, -0.8372], GU14: [51.2925, -0.7608], GU15: [51.3345, -0.7395], GU16: [51.311, -0.7287], GU17: [51.3296, -0.7856], GU18: [51.3481, -0.6702], GU19: [51.3591, -0.69], GU2: [51.2447, -0.5915], GU20: [51.3678, -0.6567], GU21: [51.3201, -0.5777], GU22: [51.3116, -0.5493], GU23: [51.2967, -0.5082], GU24: [51.3296, -0.6262], GU25: [51.4009, -0.5695], GU26: [51.1124, -0.7456], GU27: [51.0816, -0.7178], GU28: [50.9906, -0.6291], GU29: [50.9838, -0.7462], GU3: [51.246, -0.623], GU30: [51.0744, -0.8023], GU31: [50.9962, -0.9026], GU32: [51.0085, -0.9693], GU33: [51.0491, -0.8914], GU34: [51.139, -0.9836], GU35: [51.1162, -0.8469], GU4: [51.2431, -0.54], GU46: [51.3372, -0.8256], GU47: [51.3476, -0.788], GU5: [51.2024, -0.5155], GU51: [51.2834, -0.8399], GU52: [51.2645, -0.8375], GU6: [51.1408, -0.4817], GU7: [51.1891, -0.6104], GU8: [51.1508, -0.6401], GU9: [51.2182, -0.7928], GY1: [49.4586, -2.5368], GY2: [49.5787, -2.4936], GY3: [49.5288, -2.4582], GY4: [49.5288, -2.4582], GY5: [49.4826, -2.581], GY6: [49.5288, -2.4582], GY7: [49.5288, -2.4582], GY8: [49.5288, -2.4582], GY9: [49.5718, -2.2824], HA0: [51.5502, -0.3037], HA1: [51.5795, -0.3358], HA2: [51.5735, -0.3577], HA3: [51.5927, -0.3195], HA4: [51.5697, -0.4098], HA5: [51.5945, -0.3844], HA6: [51.6103, -0.4199], HA7: [51.6097, -0.3073], HA8: [51.6109, -0.2726], HA9: [51.559, -0.2861], HD1: [53.6464, -1.7882], HD2: [53.6679, -1.7745], HD3: [53.6527, -1.8275], HD4: [53.6266, -1.7958], HD5: [53.6472, -1.7458], HD6: [53.7012, -1.7819], HD7: [53.624, -1.876], HD8: [53.6012, -1.6796], HD9: [53.5799, -1.7946], HG1: [53.9998, -1.5331], HG2: [53.9872, -1.5256], HG3: [54.0307, -1.6168], HG4: [54.1564, -1.5666], HG5: [54.013, -1.4567], HP1: [51.7551, -0.4873], HP10: [51.6093, -0.7016], HP11: [51.6241, -0.7445], HP12: [51.6254, -0.7777], HP13: [51.6331, -0.7414], HP14: [51.6484, -0.8291], HP15: [51.6561, -0.7118], HP16: [51.7021, -0.7177], HP17: [51.7756, -0.8693], HP18: [51.8135, -0.9816], HP19: [51.8219, -0.8246], HP2: [51.7627, -0.4523], HP20: [51.819, -0.803], HP21: [51.8064, -0.8047], HP22: [51.806, -0.7656], HP23: [51.795, -0.66], HP27: [51.7194, -0.8302], HP3: [51.7369, -0.4705], HP4: [51.7669, -0.5666], HP5: [51.7125, -0.6074], HP6: [51.6782, -0.5984], HP7: [51.6649, -0.6089], HP8: [51.6429, -0.5734], HP9: [51.6103, -0.638], HR1: [52.0641, -2.6696], HR2: [52.0095, -2.7839], HR3: [52.0935, -3.0745], HR4: [52.0878, -2.7663], HR5: [52.192, -3.0271], HR6: [52.2326, -2.7703], HR7: [52.1863, -2.5208], HR8: [52.0445, -2.4433], HR9: [51.9082, -2.5815], HS1: [58.2135, -6.3814], HS2: [58.2492, -6.4677], HS3: [57.8788, -6.8539], HS4: [57.8696, -6.6906], HS5: [57.7999, -6.9612], HS6: [57.6008, -7.2994], HS7: [57.447, -7.3389], HS8: [57.2325, -7.3459], HS9: [56.9715, -7.4715], HU1: [53.7429, -0.3349], HU10: [53.7515, -0.4408], HU11: [53.8257, -0.2192], HU12: [53.7237, -0.131], HU13: [53.7245, -0.4357], HU14: [53.728, -0.5008], HU15: [53.7483, -0.6214], HU16: [53.7818, -0.4199], HU17: [53.8466, -0.4266], HU18: [53.9094, -0.1669], HU19: [53.7228, 0.0357], HU2: [53.7501, -0.3377], HU20: [53.7884, -0.5123], HU3: [53.7415, -0.3638], HU4: [53.7357, -0.4004], HU5: [53.7596, -0.3752], HU6: [53.7811, -0.3683], HU7: [53.7886, -0.3255], HU8: [53.7685, -0.299], HU9: [53.7557, -0.2859], HX1: [53.7211, -1.8697], HX2: [53.7373, -1.9045], HX3: [53.7265, -1.8439], HX4: [53.6798, -1.8804], HX5: [53.686, -1.8349], HX6: [53.6978, -1.9243], HX7: [53.7392, -2.0076], IG1: [51.5585, 0.0746], IG10: [51.6478, 0.0657], IG11: [51.5357, 0.0938], IG2: [51.5737, 0.0811], IG3: [51.5617, 0.1007], IG4: [51.5769, 0.0553], IG5: [51.5875, 0.0658], IG6: [51.5925, 0.0892], IG7: [51.6132, 0.0887], IG8: [51.6069, 0.0335], IG9: [51.6239, 0.04], IM1: [54.1505, -4.4817], IM2: [54.1789, -4.4686], IM3: [54.1722, -4.4516], IM4: [54.1841, -4.533], IM5: [54.1932, -4.7065], IM6: [54.2866, -4.5804], IM7: [54.3261, -4.4104], IM8: [54.278, -4.0847], IM9: [54.0918, -4.6835], IP1: [52.0664, 1.1415], IP10: [52.0189, 1.2694], IP11: [51.9703, 1.3343], IP12: [52.0924, 1.3726], IP13: [52.1848, 1.3211], IP14: [52.206, 1.0342], IP15: [52.1569, 1.5969], IP16: [52.204, 1.586], IP17: [52.2298, 1.5032], IP18: [52.3299, 1.6726], IP19: [52.3398, 1.4957], IP2: [52.045, 1.1356], IP20: [52.406, 1.3215], IP21: [52.3643, 1.2361], IP22: [52.3755, 1.0532], IP23: [52.3062, 1.1247], IP24: [52.4187, 0.759], IP25: [52.5859, 0.8389], IP26: [52.5073, 0.5774], IP27: [52.4298, 0.5861], IP28: [52.3263, 0.5492], IP29: [52.1925, 0.663], IP3: [52.0418, 1.1879], IP30: [52.2091, 0.8368], IP31: [52.2902, 0.8288], IP32: [52.2533, 0.718], IP33: [52.2418, 0.7085], IP4: [52.06, 1.1805], IP5: [52.061, 1.2418], IP6: [52.131, 1.1154], IP7: [52.0687, 0.949], IP8: [52.0617, 1.0828], IP9: [51.9907, 1.1493], IV1: [57.4874, -4.2306], IV10: [57.5854, -4.1262], IV11: [57.6776, -4.0376], IV12: [57.5742, -3.8646], IV13: [57.3428, -4.0124], IV14: [57.5856, -4.5478], IV15: [57.5996, -4.43], IV16: [57.6643, -4.337], IV17: [57.6998, -4.2604], IV18: [57.7017, -4.1548], IV19: [57.8048, -4.0616], IV2: [57.4683, -4.1911], IV20: [57.7865, -3.9075], IV21: [57.7238, -5.7202], IV22: [57.7416, -5.5068], IV23: [57.7732, -5.0102], IV24: [57.8913, -4.3551], IV25: [57.8914, -4.043], IV26: [57.9158, -5.1724], IV27: [58.2768, -4.8003], IV28: [58.0153, -4.1567], IV3: [57.4773, -4.245], IV30: [57.6547, -3.3273], IV31: [57.7171, -3.2893], IV32: [57.6316, -3.1104], IV36: [57.611, -3.6036], IV4: [57.4484, -4.5333], IV40: [57.2745, -5.6498], IV41: [57.2737, -5.736], IV42: [57.2395, -5.8288], IV43: [57.1555, -5.8102], IV44: [57.1149, -5.8737], IV45: [57.0671, -5.9051], IV46: [57.1141, -5.9844], IV47: [57.2947, -6.3428], IV48: [57.311, -6.0971], IV49: [57.2277, -5.9469], IV5: [57.4679, -4.4112], IV51: [57.4806, -6.2464], IV52: [57.3374, -5.6511], IV53: [57.3447, -5.5537], IV54: [57.431, -5.6154], IV55: [57.4587, -6.611], IV56: [57.3664, -6.4279], IV6: [57.5263, -4.4568], IV63: [57.3223, -4.5046], IV7: [57.5844, -4.3838], IV8: [57.5542, -4.2648], IV9: [57.5692, -4.1771], JE1: [49.1909, -2.1196], JE2: [49.2018, -2.1072], JE3: [49.1858, -2.1342], JE4: [49.1939, -2.091], KA1: [55.5958, -4.4951], KA10: [55.5495, -4.6475], KA11: [55.6174, -4.6251], KA12: [55.6192, -4.6634], KA13: [55.6553, -4.6992], KA14: [55.7404, -4.6716], KA15: [55.7486, -4.626], KA16: [55.6071, -4.3307], KA17: [55.6108, -4.2816], KA18: [55.4506, -4.2392], KA19: [55.3458, -4.6671], KA2: [55.5962, -4.5634], KA20: [55.6416, -4.7507], KA21: [55.6418, -4.7825], KA22: [55.6502, -4.807], KA23: [55.6913, -4.8545], KA24: [55.7098, -4.7141], KA25: [55.7526, -4.6884], KA26: [55.2189, -4.8331], KA27: [55.5388, -5.1716], KA28: [55.7545, -4.9229], KA29: [55.757, -4.8529], KA3: [55.6444, -4.495], KA30: [55.7972, -4.8622], KA4: [55.5989, -4.3826], KA5: [55.5099, -4.3867], KA6: [55.4158, -4.5043], KA7: [55.4474, -4.628], KA8: [55.4711, -4.6122], KA9: [55.4973, -4.6045], KT1: [51.4071, -0.2961], KT10: [51.3675, -0.3536], KT11: [51.3277, -0.4024], KT12: [51.3772, -0.4064], KT13: [51.3679, -0.4484], KT14: [51.3387, -0.4853], KT15: [51.3631, -0.4945], KT16: [51.3831, -0.514], KT17: [51.3408, -0.2483], KT18: [51.3167, -0.2621], KT19: [51.351, -0.268], KT2: [51.416, -0.2885], KT20: [51.2856, -0.2303], KT21: [51.311, -0.3011], KT22: [51.3007, -0.3373], KT23: [51.2814, -0.3696], KT24: [51.2687, -0.4288], KT3: [51.3993, -0.2561], KT4: [51.3776, -0.2425], KT5: [51.3917, -0.2866], KT6: [51.3892, -0.2996], KT7: [51.3896, -0.3269], KT8: [51.4009, -0.3624], KT9: [51.364, -0.302], KW1: [58.458, -3.1209], KW10: [57.9751, -3.975], KW11: [58.3051, -4.1299], KW12: [58.5063, -3.4915], KW13: [58.4552, -3.8956], KW14: [58.5891, -3.5552], KW15: [58.9803, -2.9586], KW16: [58.9596, -3.2728], KW17: [59.0419, -3.0022], KW2: [58.3489, -3.1636], KW3: [58.3074, -3.2783], KW5: [58.2875, -3.3816], KW6: [58.2491, -3.4415], KW7: [58.1864, -3.5002], KW8: [58.1161, -3.6636], KW9: [58.0137, -3.8569], KY1: [56.1281, -3.1375], KY10: [56.2302, -2.7001], KY11: [56.0471, -3.4145], KY12: [56.0767, -3.4927], KY13: [56.2087, -3.4317], KY14: [56.3105, -3.2399], KY15: [56.3006, -3.0505], KY16: [56.3418, -2.8186], KY2: [56.1223, -3.1824], KY3: [56.0635, -3.2304], KY4: [56.1142, -3.3607], KY5: [56.1455, -3.2942], KY6: [56.1968, -3.1976], KY7: [56.1972, -3.154], KY8: [56.1975, -3.0106], KY9: [56.2097, -2.8336], L1: [53.4025, -2.9793], L10: [53.474, -2.9267], L11: [53.448, -2.9141], L12: [53.4347, -2.8942], L13: [53.4174, -2.9194], L14: [53.4186, -2.8788], L15: [53.3976, -2.919], L16: [53.3988, -2.8874], L17: [53.3777, -2.9396], L18: [53.3806, -2.9066], L19: [53.3591, -2.9017], L2: [53.407, -2.9884], L20: [53.4528, -2.988], L21: [53.4707, -2.9989], L22: [53.4768, -3.0262], L23: [53.4912, -3.022], L24: [53.3434, -2.8367], L25: [53.3783, -2.863], L26: [53.3641, -2.8326], L27: [53.3874, -2.8376], L28: [53.4349, -2.8641], L29: [53.5068, -2.9832], L3: [53.4088, -2.9839], L30: [53.4844, -2.9706], L31: [53.5135, -2.9366], L32: [53.4779, -2.8891], L33: [53.4896, -2.8758], L34: [53.4361, -2.8144], L35: [53.4148, -2.7824], L36: [53.4144, -2.8396], L37: [53.5573, -3.0629], L38: [53.5242, -3.05], L39: [53.5614, -2.8954], L4: [53.4378, -2.9605], L40: [53.6023, -2.8403], L5: [53.425, -2.9753], L6: [53.419, -2.9496], L69: [53.4071, -2.9734], L7: [53.4055, -2.9478], L70: [53.4089, -2.9704], L8: [53.3901, -2.9625], L9: [53.4612, -2.952], LA1: [54.0466, -2.7988], LA10: [54.3143, -2.4935], LA11: [54.2003, -2.9245], LA12: [54.2035, -3.0825], LA13: [54.1179, -3.198], LA14: [54.1185, -3.2302], LA15: [54.1559, -3.1777], LA16: [54.1862, -3.2016], LA17: [54.2386, -3.1755], LA18: [54.2151, -3.2745], LA19: [54.2931, -3.3752], LA2: [54.0654, -2.6739], LA20: [54.294, -3.2047], LA21: [54.3645, -3.0728], LA22: [54.4228, -2.9865], LA23: [54.3712, -2.9114], LA3: [54.0506, -2.8768], LA4: [54.0696, -2.8512], LA5: [54.1429, -2.79], LA6: [54.1754, -2.6113], LA7: [54.2257, -2.7716], LA8: [54.3237, -2.7596], LA9: [54.3256, -2.7427], LD1: [52.2605, -3.3657], LD2: [52.1414, -3.3927], LD3: [51.9601, -3.3711], LD4: [52.1179, -3.5542], LD5: [52.1269, -3.6158], LD6: [52.3091, -3.508], LD7: [52.3524, -3.0851], LD8: [52.2674, -3.0435], LE1: [52.6338, -1.1281], LE10: [52.5364, -1.3674], LE11: [52.7693, -1.2158], LE12: [52.7664, -1.1922], LE13: [52.7657, -0.8854], LE14: [52.7838, -0.8953], LE15: [52.6559, -0.7004], LE16: [52.4862, -0.8924], LE17: [52.4669, -1.1771], LE18: [52.5833, -1.1114], LE19: [52.5772, -1.2105], LE2: [52.6094, -1.1153], LE3: [52.6288, -1.1799], LE4: [52.6634, -1.1231], LE5: [52.6362, -1.0852], LE6: [52.6624, -1.2414], LE65: [52.7482, -1.4681], LE67: [52.7162, -1.3604], LE7: [52.6774, -1.0681], LE8: [52.5526, -1.0973], LE9: [52.5701, -1.2873], LL11: [53.0631, -3.0343], LL12: [53.086, -2.9885], LL13: [53.0359, -2.959], LL14: [52.992, -3.0504], LL15: [53.1026, -3.3146], LL16: [53.1849, -3.4323], LL17: [53.2532, -3.4346], LL18: [53.3102, -3.4755], LL19: [53.3308, -3.4087], LL20: [52.9595, -3.1598], LL21: [52.9901, -3.4095], LL22: [53.2683, -3.5926], LL23: [52.9049, -3.6], LL24: [53.057, -3.7847], LL25: [53.0546, -3.8787], LL26: [53.1388, -3.7851], LL27: [53.1472, -3.8229], LL28: [53.2875, -3.7598], LL29: [53.2892, -3.7074], LL30: [53.3181, -3.8151], LL31: [53.2903, -3.8095], LL32: [53.2602, -3.8397], LL33: [53.2499, -3.9802], LL34: [53.2708, -3.9121], LL35: [52.5466, -4.0413], LL36: [52.6037, -4.0631], LL37: [52.6655, -4.0823], LL38: [52.6977, -4.0394], LL39: [52.7108, -4.0104], LL40: [52.7561, -3.8747], LL41: [52.9691, -3.9375], LL42: [52.7253, -4.0541], LL43: [52.7741, -4.0919], LL44: [52.7911, -4.0957], LL45: [52.8199, -4.0956], LL46: [52.8548, -4.1062], LL47: [52.9014, -4.0624], LL48: [52.9354, -4.0699], LL49: [52.9288, -4.1381], LL51: [52.9738, -4.2371], LL52: [52.9243, -4.2405], LL53: [52.8842, -4.4912], LL54: [53.0583, -4.2848], LL55: [53.1335, -4.2035], LL56: [53.1867, -4.1988], LL57: [53.2072, -4.11], LL58: [53.2802, -4.0986], LL59: [53.2342, -4.1593], LL60: [53.215, -4.2691], LL61: [53.1954, -4.2621], LL62: [53.2101, -4.3857], LL63: [53.2182, -4.4701], LL64: [53.2281, -4.5171], LL65: [53.3007, -4.5694], LL66: [53.3805, -4.4043], LL67: [53.411, -4.4557], LL68: [53.3982, -4.3767], LL69: [53.3858, -4.3188], LL70: [53.364, -4.2876], LL71: [53.3273, -4.3682], LL72: [53.3496, -4.2402], LL73: [53.3351, -4.244], LL74: [53.3165, -4.2325], LL75: [53.2834, -4.2188], LL76: [53.3002, -4.2376], LL77: [53.2601, -4.3105], LL78: [53.3168, -4.2625], LN1: [53.2588, -0.5862], LN10: [53.1586, -0.217], LN11: [53.3732, 0.025], LN12: [53.3293, 0.2662], LN13: [53.2652, 0.1848], LN2: [53.2543, -0.5084], LN3: [53.2433, -0.4189], LN4: [53.1502, -0.3849], LN5: [53.1713, -0.5562], LN6: [53.2032, -0.594], LN7: [53.4922, -0.3433], LN8: [53.3732, -0.3238], LN9: [53.2172, -0.1112], LS1: [53.7967, -1.5475], LS10: [53.7616, -1.5312], LS11: [53.7761, -1.5554], LS12: [53.7906, -1.5962], LS13: [53.8105, -1.634], LS14: [53.8278, -1.456], LS15: [53.8062, -1.4442], LS16: [53.8509, -1.6017], LS17: [53.8596, -1.5271], LS18: [53.8402, -1.6413], LS19: [53.8592, -1.6822], LS2: [53.8012, -1.546], LS20: [53.8736, -1.7125], LS21: [53.9113, -1.6788], LS22: [53.9318, -1.3938], LS23: [53.9037, -1.3546], LS24: [53.8699, -1.2517], LS25: [53.7858, -1.3306], LS26: [53.7523, -1.4479], LS27: [53.7484, -1.6027], LS28: [53.8016, -1.669], LS29: [53.9206, -1.8036], LS3: [53.8013, -1.5596], LS4: [53.8094, -1.5808], LS5: [53.8185, -1.602], LS6: [53.8193, -1.567], LS7: [53.8183, -1.5397], LS8: [53.8244, -1.5093], LS9: [53.7993, -1.508], LU1: [51.8748, -0.4237], LU2: [51.8915, -0.3955], LU3: [51.9083, -0.4429], LU4: [51.8987, -0.4665], LU5: [51.9083, -0.5127], LU6: [51.8771, -0.5355], LU7: [51.9092, -0.6639], M1: [53.4773, -2.2351], M11: [53.4783, -2.1793], M12: [53.4648, -2.2019], M13: [53.4603, -2.2139], M14: [53.4477, -2.2244], M15: [53.4656, -2.2501], M16: [53.4548, -2.2636], M17: [53.4691, -2.3179], M18: [53.4613, -2.1687], M19: [53.437, -2.1942], M2: [53.48, -2.2426], M20: [53.4252, -2.2303], M21: [53.4377, -2.271], M22: [53.3856, -2.2586], M23: [53.399, -2.2873], M24: [53.5511, -2.1962], M25: [53.5285, -2.2746], M26: [53.5616, -2.3337], M27: [53.5122, -2.3363], M28: [53.5147, -2.3967], M29: [53.5082, -2.4569], M3: [53.4836, -2.2502], M30: [53.4842, -2.3542], M31: [53.4193, -2.4214], M32: [53.4502, -2.3087], M33: [53.4205, -2.3251], M34: [53.4559, -2.1175], M35: [53.5071, -2.1523], M38: [53.5317, -2.421], M4: [53.4845, -2.2291], M40: [53.5035, -2.19], M41: [53.4509, -2.3629], M43: [53.4838, -2.1477], M44: [53.4409, -2.4261], M45: [53.5473, -2.2883], M46: [53.526, -2.4903], M5: [53.479, -2.2848], M6: [53.4916, -2.297], M60: [53.4864, -2.2276], M7: [53.5052, -2.2609], M8: [53.5088, -2.2383], M9: [53.5214, -2.2127], M90: [53.3631, -2.2765], ME1: [51.3722, 0.5002], ME10: [51.3426, 0.737], ME11: [51.4125, 0.7483], ME12: [51.4228, 0.8051], ME13: [51.3028, 0.8968], ME14: [51.2804, 0.5411], ME15: [51.2545, 0.5339], ME16: [51.2741, 0.4991], ME17: [51.2348, 0.6102], ME18: [51.2443, 0.423], ME19: [51.2931, 0.4112], ME2: [51.3914, 0.4854], ME20: [51.3047, 0.4592], ME3: [51.4332, 0.5467], ME4: [51.3805, 0.5308], ME5: [51.349, 0.5334], ME6: [51.3266, 0.4417], ME7: [51.379, 0.5566], ME8: [51.361, 0.5987], ME9: [51.333, 0.7249], MK1: [52.0052, -0.7266], MK10: [52.0391, -0.6979], MK11: [52.0523, -0.8405], MK12: [52.0574, -0.8155], MK13: [52.0526, -0.7836], MK14: [52.0596, -0.7615], MK15: [52.0574, -0.728], MK16: [52.0888, -0.7213], MK17: [51.9924, -0.7007], MK18: [51.9797, -0.969], MK19: [52.0722, -0.8516], MK2: [51.9899, -0.7241], MK3: [51.9965, -0.7531], MK4: [52.004, -0.7776], MK40: [52.138, -0.4714], MK41: [52.1511, -0.4461], MK42: [52.12, -0.4735], MK43: [52.1184, -0.5568], MK44: [52.194, -0.4256], MK45: [52.0246, -0.468], MK46: [52.1541, -0.6916], MK5: [52.0202, -0.783], MK6: [52.0297, -0.7419], MK7: [52.0192, -0.6898], MK8: [52.0357, -0.803], MK9: [52.0406, -0.7591], ML1: [55.7994, -3.9751], ML10: [55.6801, -4.0693], ML11: [55.6666, -3.7856], ML12: [55.5668, -3.5954], ML2: [55.7771, -3.9118], ML3: [55.7703, -4.0534], ML4: [55.8185, -4.0208], ML5: [55.8596, -4.0309], ML6: [55.867, -3.9626], ML7: [55.8301, -3.793], ML8: [55.7305, -3.841], ML9: [55.725, -3.9666], N1: [51.5372, -0.0965], N10: [51.5937, -0.1432], N11: [51.6134, -0.1381], N12: [51.6149, -0.1756], N13: [51.6191, -0.1018], N14: [51.6339, -0.1286], N15: [51.5819, -0.0817], N16: [51.5629, -0.0752], N17: [51.5979, -0.0709], N18: [51.6131, -0.0645], N19: [51.5646, -0.1271], N2: [51.5896, -0.168], N20: [51.6292, -0.1736], N21: [51.6361, -0.0982], N22: [51.5994, -0.1098], N3: [51.5998, -0.1921], N4: [51.5705, -0.1009], N5: [51.5534, -0.0973], N6: [51.5712, -0.1413], N7: [51.5528, -0.1161], N8: [51.5834, -0.1163], N9: [51.6283, -0.0566], NE1: [54.9726, -1.611], NE10: [54.9473, -1.5534], NE11: [54.9412, -1.6316], NE12: [55.0246, -1.5682], NE13: [55.0464, -1.6447], NE15: [54.9837, -1.7203], NE16: [54.9324, -1.691], NE17: [54.9138, -1.8159], NE18: [55.0379, -1.8607], NE19: [55.179, -2.0958], NE2: [54.987, -1.6046], NE20: [55.053, -1.7855], NE21: [54.9576, -1.7189], NE22: [55.1361, -1.5843], NE23: [55.0804, -1.5817], NE24: [55.1224, -1.5201], NE25: [55.0495, -1.4866], NE26: [55.052, -1.4568], NE27: [55.0325, -1.5103], NE28: [55.0001, -1.5185], NE29: [55.0116, -1.4636], NE3: [55.0104, -1.6325], NE30: [55.0214, -1.44], NE31: [54.9714, -1.511], NE32: [54.9676, -1.4829], NE33: [54.9908, -1.4279], NE34: [54.9719, -1.4204], NE35: [54.9523, -1.4597], NE36: [54.945, -1.4379], NE37: [54.913, -1.5257], NE38: [54.8941, -1.5244], NE39: [54.9236, -1.7581], NE4: [54.9736, -1.6422], NE40: [54.9658, -1.7719], NE41: [54.9758, -1.8188], NE42: [54.9624, -1.8547], NE43: [54.948, -1.9047], NE44: [54.9427, -1.9781], NE45: [54.9768, -2.0156], NE46: [54.9795, -2.1063], NE47: [54.9289, -2.2513], NE48: [55.1311, -2.2572], NE49: [54.967, -2.4593], NE5: [54.9962, -1.6873], NE6: [54.977, -1.564], NE61: [55.1805, -1.689], NE62: [55.1613, -1.5919], NE63: [55.1774, -1.5619], NE64: [55.1844, -1.5147], NE65: [55.3127, -1.751], NE66: [55.4286, -1.7313], NE67: [55.5336, -1.6926], NE68: [55.574, -1.6574], NE69: [55.6047, -1.7159], NE7: [54.9995, -1.5779], NE70: [55.5941, -1.8159], NE71: [55.5556, -2.0444], NE8: [54.9555, -1.6033], NE9: [54.9312, -1.5833], NE99: [54.9672, -1.6126], NG1: [52.954, -1.147], NG10: [52.9001, -1.2819], NG11: [52.8993, -1.1733], NG12: [52.911, -1.0541], NG13: [52.9477, -0.9209], NG14: [53.0152, -1.037], NG15: [53.0452, -1.2034], NG16: [53.0269, -1.2932], NG17: [53.1157, -1.2604], NG18: [53.1377, -1.1837], NG19: [53.1593, -1.1968], NG2: [52.935, -1.131], NG20: [53.2096, -1.1839], NG21: [53.1407, -1.1044], NG22: [53.1783, -0.9705], NG23: [53.1155, -0.8001], NG24: [53.0697, -0.7984], NG25: [53.0729, -0.9551], NG3: [52.9674, -1.1289], NG31: [52.9142, -0.6391], NG32: [52.9494, -0.6499], NG33: [52.8182, -0.5783], NG34: [52.9875, -0.391], NG4: [52.9706, -1.0856], NG5: [52.9971, -1.1432], NG6: [52.9975, -1.1908], NG7: [52.9578, -1.1752], NG8: [52.9643, -1.2123], NG9: [52.9258, -1.2353], NN1: [52.2415, -0.8868], NN10: [52.2915, -0.5967], NN11: [52.2403, -1.1783], NN12: [52.1274, -0.9978], NN13: [52.0324, -1.1471], NN14: [52.4095, -0.6915], NN15: [52.3845, -0.7054], NN16: [52.4053, -0.721], NN17: [52.5003, -0.6888], NN18: [52.4799, -0.7144], NN2: [52.2623, -0.8951], NN29: [52.2599, -0.6636], NN3: [52.2618, -0.8453], NN4: [52.2165, -0.8962], NN5: [52.2473, -0.9292], NN6: [52.3221, -0.9435], NN7: [52.2095, -0.9271], NN8: [52.3025, -0.6975], NN9: [52.3329, -0.5983], NP10: [51.5794, -3.045], NP11: [51.6425, -3.1303], NP12: [51.6688, -3.1974], NP13: [51.7341, -3.1398], NP15: [51.7255, -2.8862], NP16: [51.6495, -2.6881], NP18: [51.6064, -2.943], NP19: [51.5891, -2.9629], NP20: [51.5906, -3.0048], NP22: [51.7707, -3.2567], NP23: [51.7848, -3.1961], NP24: [51.7196, -3.2379], NP25: [51.8031, -2.7223], NP26: [51.5905, -2.7767], NP4: [51.7188, -3.0453], NP44: [51.6506, -3.0264], NP7: [51.8288, -3.0086], NP8: [51.86, -3.1459], NR1: [52.6267, 1.3101], NR10: [52.7364, 1.2458], NR11: [52.8417, 1.276], NR12: [52.7597, 1.4714], NR13: [52.6337, 1.4733], NR14: [52.5645, 1.3807], NR15: [52.5064, 1.2701], NR16: [52.476, 1.0616], NR17: [52.5154, 0.9966], NR18: [52.571, 1.1111], NR19: [52.6754, 0.9291], NR2: [52.6301, 1.2852], NR20: [52.7245, 0.9812], NR21: [52.841, 0.8526], NR22: [52.8937, 0.8679], NR23: [52.9487, 0.8597], NR24: [52.8585, 1.0514], NR25: [52.9197, 1.0854], NR26: [52.9351, 1.216], NR27: [52.9247, 1.3016], NR28: [52.822, 1.4007], NR29: [52.6926, 1.6393], NR3: [52.6433, 1.2951], NR30: [52.6187, 1.7293], NR31: [52.5761, 1.7109], NR32: [52.489, 1.7345], NR33: [52.4544, 1.7198], NR34: [52.4379, 1.5844], NR35: [52.4612, 1.4346], NR4: [52.6136, 1.2648], NR5: [52.6405, 1.2343], NR6: [52.6607, 1.2831], NR7: [52.6506, 1.3352], NR8: [52.678, 1.2119], NR9: [52.6357, 1.1097], NW1: [51.5325, -0.1429], NW10: [51.5395, -0.2464], NW11: [51.5783, -0.1958], NW2: [51.558, -0.2183], NW3: [51.5518, -0.1709], NW4: [51.5868, -0.2229], NW5: [51.5514, -0.1421], NW6: [51.5414, -0.1944], NW7: [51.6149, -0.2348], NW8: [51.5312, -0.1718], NW9: [51.5864, -0.2547], OL1: [53.5494, -2.1057], OL10: [53.5906, -2.2221], OL11: [53.606, -2.1738], OL12: [53.6357, -2.1649], OL13: [53.7003, -2.203], OL14: [53.7139, -2.0985], OL15: [53.6438, -2.0998], OL16: [53.6123, -2.1315], OL2: [53.5719, -2.1087], OL3: [53.5531, -2.0091], OL4: [53.5423, -2.0724], OL5: [53.5171, -2.0377], OL6: [53.4937, -2.0859], OL7: [53.4901, -2.1055], OL8: [53.5261, -2.1162], OL9: [53.5395, -2.1419], OX1: [51.7445, -1.2598], OX10: [51.6078, -1.1262], OX11: [51.5996, -1.2463], OX12: [51.5944, -1.4254], OX13: [51.6785, -1.3477], OX14: [51.6673, -1.2755], OX15: [52.0322, -1.4067], OX16: [52.0624, -1.3406], OX17: [52.0729, -1.2894], OX18: [51.7623, -1.5913], OX2: [51.7644, -1.2769], OX20: [51.8566, -1.3581], OX25: [51.9007, -1.2122], OX26: [51.9011, -1.1511], OX27: [51.9371, -1.1475], OX28: [51.7853, -1.4868], OX29: [51.794, -1.4315], OX3: [51.7613, -1.2146], OX33: [51.7581, -1.1465], OX39: [51.7004, -0.9132], OX4: [51.7298, -1.2151], OX44: [51.7005, -1.1302], OX49: [51.65, -0.9997], OX5: [51.8292, -1.2802], OX6: [51.9085, -1.1669], OX7: [51.9113, -1.5275], OX8: [51.7896, -1.4548], OX9: [51.7379, -0.9818], PA1: [55.8446, -4.4167], PA10: [55.8338, -4.5518], PA11: [55.8565, -4.5821], PA12: [55.7954, -4.6227], PA13: [55.8924, -4.6293], PA14: [55.9276, -4.6637], PA15: [55.9428, -4.748], PA16: [55.9435, -4.7961], PA17: [55.8651, -4.8816], PA18: [55.8893, -4.8866], PA19: [55.9528, -4.8224], PA2: [55.829, -4.4333], PA20: [55.8348, -5.0567], PA21: [55.9019, -5.2476], PA22: [55.9707, -5.1572], PA23: [55.9547, -4.9315], PA24: [56.1568, -4.905], PA25: [56.2155, -5.0402], PA26: [56.2576, -4.9369], PA27: [56.1542, -5.0836], PA28: [55.436, -5.603], PA29: [55.8048, -5.4774], PA3: [55.852, -4.4476], PA30: [56.0133, -5.448], PA31: [56.0525, -5.4627], PA32: [56.2028, -5.1166], PA33: [56.3698, -5.0557], PA34: [56.4021, -5.4993], PA35: [56.4051, -5.2239], PA36: [56.5203, -4.7702], PA37: [56.4682, -5.3868], PA38: [56.5919, -5.3343], PA4: [55.8746, -4.3962], PA41: [55.6747, -5.7412], PA42: [55.6396, -6.1862], PA43: [55.7559, -6.2832], PA44: [55.7978, -6.2927], PA45: [55.8193, -6.1656], PA46: [55.8623, -6.119], PA47: [55.6824, -6.5029], PA48: [55.738, -6.3833], PA49: [55.7826, -6.3931], PA5: [55.831, -4.5085], PA6: [55.8638, -4.5346], PA60: [55.8798, -5.9129], PA61: [56.0718, -6.2009], PA62: [56.3593, -5.8501], PA63: [56.3823, -5.7147], PA64: [56.4384, -5.6747], PA65: [56.4692, -5.728], PA66: [56.3291, -6.3538], PA67: [56.3136, -6.2323], PA68: [56.4362, -6.142], PA69: [56.3804, -6.0889], PA7: [55.9094, -4.4992], PA70: [56.3643, -6.0337], PA71: [56.4811, -5.9811], PA72: [56.5176, -5.9638], PA73: [56.4969, -6.1828], PA74: [56.5331, -6.2291], PA75: [56.6123, -6.1222], PA76: [56.334, -6.3932], PA77: [56.4947, -6.8835], PA78: [56.6245, -6.5445], PA8: [55.9014, -4.4523], PA9: [55.8095, -4.5518], PE1: [52.587, -0.2389], PE10: [52.7769, -0.3765], PE11: [52.8071, -0.1662], PE12: [52.7833, 0.0286], PE13: [52.669, 0.1387], PE14: [52.6388, 0.2111], PE15: [52.5359, 0.0865], PE16: [52.4538, 0.0502], PE19: [52.242, -0.2584], PE2: [52.5604, -0.2635], PE20: [52.932, -0.1014], PE21: [52.9748, -0.022], PE22: [53.0483, 0.0455], PE23: [53.1724, 0.0918], PE24: [53.1656, 0.268], PE25: [53.1526, 0.3362], PE26: [52.4529, -0.1132], PE27: [52.3336, -0.0757], PE28: [52.3578, -0.1863], PE29: [52.3334, -0.1785], PE3: [52.5876, -0.2757], PE30: [52.7598, 0.4188], PE31: [52.8754, 0.5665], PE32: [52.7302, 0.6276], PE33: [52.6481, 0.4689], PE34: [52.7245, 0.3399], PE35: [52.8253, 0.5115], PE36: [52.936, 0.5075], PE37: [52.6441, 0.6934], PE38: [52.5898, 0.377], PE4: [52.6126, -0.2659], PE5: [52.5787, -0.344], PE6: [52.6556, -0.2553], PE7: [52.5388, -0.198], PE8: [52.5269, -0.4418], PE9: [52.6542, -0.4801], PH1: [56.4211, -3.4754], PH10: [56.6084, -3.3605], PH11: [56.6394, -3.2344], PH12: [56.5755, -3.1525], PH13: [56.5375, -3.2734], PH14: [56.453, -3.1861], PH15: [56.6097, -3.9406], PH16: [56.707, -3.81], PH17: [56.6874, -4.3823], PH18: [56.7741, -3.8885], PH19: [56.9343, -4.255], PH2: [56.3869, -3.4044], PH20: [57.0538, -4.155], PH21: [57.0883, -4.0217], PH22: [57.1986, -3.8059], PH23: [57.2876, -3.8003], PH24: [57.2542, -3.7489], PH25: [57.2619, -3.6465], PH26: [57.3298, -3.6046], PH3: [56.3023, -3.7035], PH30: [56.7918, -4.6002], PH31: [56.8923, -4.8158], PH32: [57.1442, -4.6828], PH33: [56.8215, -5.1121], PH34: [56.9257, -4.9268], PH35: [57.0758, -4.9303], PH36: [56.7212, -5.8658], PH38: [56.8454, -5.7474], PH39: [56.9126, -5.8412], PH4: [56.2607, -3.7824], PH40: [56.9638, -5.7856], PH41: [57.0037, -5.8325], PH42: [56.9022, -6.1409], PH43: [57.0153, -6.2805], PH44: [57.0569, -6.5032], PH49: [56.675, -5.1098], PH5: [56.3293, -3.8277], PH50: [56.7145, -4.9643], PH6: [56.3716, -3.9949], PH7: [56.3733, -3.8266], PH8: [56.5625, -3.5981], PH9: [56.6511, -3.6915], PL1: [50.3707, -4.1532], PL10: [50.3454, -4.2111], PL11: [50.3725, -4.2503], PL12: [50.4193, -4.2483], PL13: [50.3571, -4.4746], PL14: [50.4635, -4.4646], PL15: [50.6322, -4.3999], PL16: [50.6456, -4.2676], PL17: [50.5162, -4.3051], PL18: [50.5152, -4.219], PL19: [50.556, -4.1545], PL2: [50.3886, -4.1624], PL20: [50.5012, -4.0999], PL21: [50.3857, -3.9175], PL22: [50.4027, -4.6515], PL23: [50.3365, -4.6351], PL24: [50.3546, -4.7092], PL25: [50.3404, -4.7787], PL26: [50.342, -4.8252], PL27: [50.5225, -4.8741], PL28: [50.5337, -4.9665], PL29: [50.5856, -4.8299], PL3: [50.3874, -4.1258], PL30: [50.4999, -4.7274], PL31: [50.4686, -4.7214], PL32: [50.6328, -4.6601], PL33: [50.6213, -4.7302], PL34: [50.6597, -4.7423], PL35: [50.6844, -4.6843], PL4: [50.3748, -4.128], PL5: [50.4101, -4.1662], PL6: [50.4173, -4.1159], PL7: [50.3916, -4.0444], PL8: [50.3355, -4.0124], PL9: [50.3539, -4.0877], PO1: [50.799, -1.0875], PO10: [50.8507, -0.9288], PO11: [50.7918, -0.9755], PO12: [50.7976, -1.1414], PO13: [50.8123, -1.1781], PO14: [50.8368, -1.2188], PO15: [50.862, -1.2184], PO16: [50.8499, -1.1589], PO17: [50.8896, -1.1682], PO18: [50.864, -0.8148], PO19: [50.8376, -0.7771], PO2: [50.816, -1.0772], PO20: [50.7828, -0.7856], PO21: [50.7836, -0.6962], PO22: [50.7983, -0.6476], PO3: [50.8159, -1.0588], PO30: [50.6908, -1.3133], PO31: [50.7529, -1.3053], PO32: [50.7509, -1.2798], PO33: [50.7214, -1.1698], PO34: [50.7156, -1.1118], PO35: [50.6866, -1.084], PO36: [50.6575, -1.1624], PO37: [50.6315, -1.177], PO38: [50.6041, -1.2411], PO39: [50.6803, -1.5385], PO4: [50.7898, -1.0621], PO40: [50.682, -1.5201], PO41: [50.6998, -1.4774], PO5: [50.7882, -1.0849], PO6: [50.8456, -1.0681], PO7: [50.8823, -1.0375], PO8: [50.9108, -1.0128], PO9: [50.8629, -0.9825], PR1: [53.7578, -2.7008], PR2: [53.7775, -2.7072], PR25: [53.694, -2.6922], PR26: [53.6874, -2.7405], PR3: [53.8683, -2.7164], PR4: [53.7533, -2.8327], PR5: [53.7311, -2.6564], PR6: [53.6675, -2.61], PR7: [53.6448, -2.6521], PR8: [53.6261, -3.0102], PR9: [53.6597, -2.9686], RG1: [51.4537, -0.9694], RG10: [51.4806, -0.8622], RG12: [51.4066, -0.749], RG14: [51.3996, -1.3214], RG17: [51.44, -1.4877], RG18: [51.4333, -1.2418], RG19: [51.3937, -1.241], RG2: [51.4265, -0.9542], RG20: [51.4032, -1.3357], RG21: [51.2658, -1.0897], RG22: [51.2499, -1.1216], RG23: [51.2608, -1.1457], RG24: [51.2809, -1.0708], RG25: [51.2277, -1.1621], RG26: [51.3497, -1.1182], RG27: [51.2996, -0.9413], RG28: [51.2333, -1.3339], RG29: [51.2475, -0.9454], RG30: [51.4513, -1.0127], RG31: [51.4561, -1.0413], RG4: [51.4806, -0.9688], RG40: [51.3993, -0.8341], RG41: [51.4157, -0.8567], RG42: [51.4273, -0.7542], RG45: [51.3747, -0.8002], RG5: [51.4522, -0.9061], RG6: [51.4389, -0.9309], RG7: [51.3979, -1.0771], RG8: [51.5051, -1.1052], RG9: [51.5441, -0.9227], RH1: [51.2368, -0.1562], RH10: [51.1172, -0.1581], RH11: [51.1108, -0.2055], RH12: [51.0758, -0.3325], RH13: [51.037, -0.3254], RH14: [51.032, -0.4824], RH15: [50.9567, -0.1332], RH16: [51.002, -0.0971], RH17: [51.0212, -0.1149], RH18: [51.097, 0.031], RH19: [51.1247, -0.012], RH2: [51.2349, -0.2021], RH20: [50.9365, -0.4699], RH3: [51.2324, -0.2796], RH4: [51.2287, -0.3342], RH5: [51.1946, -0.3411], RH6: [51.1713, -0.1617], RH7: [51.1743, -0.0156], RH8: [51.2513, 34e-4], RH9: [51.2354, -0.0689], RM1: [51.5817, 0.184], RM10: [51.5444, 0.1591], RM11: [51.5694, 0.2194], RM12: [51.5525, 0.2085], RM13: [51.524, 0.1956], RM14: [51.5559, 0.265], RM15: [51.508, 0.2784], RM16: [51.4915, 0.341], RM17: [51.4791, 0.3303], RM18: [51.4665, 0.3772], RM19: [51.4825, 0.2483], RM2: [51.5832, 0.2028], RM20: [51.4781, 0.2885], RM3: [51.6016, 0.2268], RM4: [51.6326, 0.1604], RM5: [51.5992, 0.166], RM6: [51.5755, 0.1331], RM7: [51.5748, 0.1706], RM8: [51.5566, 0.1323], RM9: [51.5404, 0.1358], S1: [53.3802, -1.4678], S10: [53.3768, -1.5174], S11: [53.3615, -1.5056], S12: [53.3484, -1.4051], S13: [53.3645, -1.3823], S14: [53.3459, -1.4427], S17: [53.3211, -1.5256], S18: [53.2993, -1.4718], S2: [53.3693, -1.4469], S20: [53.3347, -1.3512], S21: [53.3121, -1.338], S25: [53.3689, -1.2139], S26: [53.3568, -1.2862], S3: [53.3874, -1.4722], S32: [53.2945, -1.6384], S33: [53.3415, -1.7206], S35: [53.4576, -1.4954], S36: [53.503, -1.6125], S4: [53.399, -1.4495], S40: [53.2336, -1.4456], S41: [53.247, -1.4275], S42: [53.2002, -1.4221], S43: [53.2672, -1.3417], S44: [53.2248, -1.3124], S45: [53.166, -1.4211], S5: [53.4215, -1.4612], S6: [53.4019, -1.5096], S60: [53.4138, -1.347], S61: [53.4437, -1.3932], S62: [53.465, -1.3462], S63: [53.5179, -1.3288], S64: [53.4908, -1.2991], S65: [53.4352, -1.3196], S66: [53.4203, -1.2415], S7: [53.3542, -1.4891], S70: [53.5411, -1.4733], S71: [53.5734, -1.4563], S72: [53.5785, -1.3913], S73: [53.5246, -1.3936], S74: [53.5005, -1.4391], S75: [53.562, -1.5198], S8: [53.3398, -1.4758], S80: [53.2921, -1.1493], S81: [53.3377, -1.1213], S9: [53.3979, -1.4164], SA1: [51.6274, -3.939], SA10: [51.6872, -3.7984], SA11: [51.6743, -3.7617], SA12: [51.6073, -3.7938], SA13: [51.6056, -3.7244], SA14: [51.7325, -4.1072], SA15: [51.6999, -4.1665], SA16: [51.6892, -4.2557], SA17: [51.7579, -4.2852], SA18: [51.798, -3.958], SA19: [51.9528, -3.9472], SA2: [51.6202, -3.9936], SA20: [52.0102, -3.7865], SA3: [51.5797, -4.0511], SA31: [51.8564, -4.3076], SA32: [51.886, -4.1711], SA33: [51.8502, -4.4351], SA34: [51.8526, -4.6182], SA35: [51.9735, -4.5597], SA36: [51.9572, -4.6068], SA37: [52.0168, -4.5928], SA38: [52.0401, -4.4731], SA39: [52.0196, -4.2417], SA4: [51.6705, -4.0479], SA40: [52.0838, -4.1734], SA41: [51.9972, -4.7068], SA42: [52.0153, -4.8522], SA43: [52.0862, -4.629], SA44: [52.0862, -4.372], SA45: [52.2079, -4.358], SA46: [52.2325, -4.2495], SA47: [52.1903, -4.2956], SA48: [52.1434, -4.1105], SA5: [51.6485, -3.9689], SA6: [51.6754, -3.9208], SA61: [51.7992, -4.9734], SA62: [51.8409, -5.0633], SA63: [51.8741, -4.8534], SA64: [52.0015, -5.0116], SA65: [51.9882, -4.9685], SA66: [51.8812, -4.7434], SA67: [51.7816, -4.7316], SA68: [51.7287, -4.766], SA69: [51.7103, -4.7055], SA7: [51.6615, -3.8899], SA70: [51.6718, -4.738], SA71: [51.6672, -4.9286], SA72: [51.6913, -4.9345], SA73: [51.7163, -5.0115], SA8: [51.7215, -3.8475], SA9: [51.7812, -3.7673], SE1: [51.4984, -0.0895], SE10: [51.4816, -9e-4], SE11: [51.4888, -0.1086], SE12: [51.4443, 0.0248], SE13: [51.4584, -91e-4], SE14: [51.4751, -0.0415], SE15: [51.4719, -0.0647], SE16: [51.496, -0.0521], SE17: [51.4876, -0.0928], SE18: [51.4839, 0.0741], SE19: [51.4173, -0.0842], SE2: [51.4894, 0.1176], SE20: [51.4115, -0.0572], SE21: [51.4381, -0.0863], SE22: [51.454, -0.0712], SE23: [51.4402, -0.0488], SE24: [51.4545, -0.0985], SE25: [51.3974, -0.075], SE26: [51.4267, -0.0536], SE27: [51.4302, -0.101], SE28: [51.5022, 0.1081], SE3: [51.4687, 0.0202], SE4: [51.4606, -0.0335], SE5: [51.4732, -0.0906], SE6: [51.4378, -0.0143], SE7: [51.4837, 0.0352], SE8: [51.4812, -0.0283], SE9: [51.4447, 0.0565], SG1: [51.911, -0.1942], SG10: [51.8446, 0.0718], SG11: [51.8813, 0.0328], SG12: [51.8137, -0.0167], SG13: [51.7867, -0.0686], SG14: [51.8069, -0.091], SG15: [52.0128, -0.2615], SG16: [52.0151, -0.2964], SG17: [52.0344, -0.3306], SG18: [52.0821, -0.2661], SG19: [52.1392, -0.2405], SG2: [51.8962, -0.1657], SG3: [51.8605, -0.1802], SG4: [51.921, -0.2592], SG5: [51.9673, -0.2865], SG6: [51.9789, -0.2206], SG7: [52.0033, -0.1744], SG8: [52.0637, -0.0129], SG9: [51.9458, -8e-3], SK1: [53.4074, -2.1504], SK10: [53.2779, -2.129], SK11: [53.2465, -2.1424], SK12: [53.3517, -2.0917], SK13: [53.4479, -1.9639], SK14: [53.4515, -2.0542], SK15: [53.4866, -2.0467], SK16: [53.474, -2.0814], SK17: [53.2438, -1.8786], SK2: [53.3948, -2.1324], SK22: [53.3724, -1.985], SK23: [53.3274, -1.9489], SK3: [53.3984, -2.17], SK4: [53.419, -2.1791], SK5: [53.4343, -2.152], SK6: [53.4056, -2.0797], SK7: [53.3696, -2.1413], SK8: [53.3794, -2.2075], SK9: [53.3272, -2.2298], SL0: [51.5243, -0.5137], SL1: [51.5175, -0.6192], SL2: [51.5335, -0.6028], SL3: [51.4996, -0.552], SL4: [51.4753, -0.6248], SL5: [51.4047, -0.6614], SL6: [51.5223, -0.7257], SL7: [51.5741, -0.7762], SL8: [51.5779, -0.7068], SL9: [51.5968, -0.5547], SM1: [51.366, -0.1913], SM2: [51.3526, -0.1961], SM3: [51.3699, -0.2127], SM4: [51.3922, -0.1989], SM5: [51.3674, -0.1668], SM6: [51.3598, -0.1427], SM7: [51.323, -0.2001], SN1: [51.5569, -1.7735], SN10: [51.3359, -1.9871], SN11: [51.4393, -1.9986], SN12: [51.3718, -2.1365], SN13: [51.4238, -2.21], SN14: [51.4751, -2.1944], SN15: [51.4725, -2.0792], SN16: [51.593, -2.0895], SN2: [51.5794, -1.7821], SN25: [51.5911, -1.7964], SN26: [51.6109, -1.7833], SN3: [51.5613, -1.7432], SN4: [51.5309, -1.8198], SN5: [51.5651, -1.837], SN6: [51.6207, -1.7414], SN7: [51.6489, -1.5635], SN8: [51.4074, -1.6851], SN9: [51.324, -1.7861], SO14: [50.9081, -1.3955], SO15: [50.9163, -1.4238], SO16: [50.9352, -1.4307], SO17: [50.926, -1.3938], SO18: [50.9241, -1.3597], SO19: [50.9024, -1.3543], SO20: [51.1136, -1.5042], SO21: [51.0749, -1.3133], SO22: [51.0651, -1.332], SO23: [51.0677, -1.3077], SO24: [51.0837, -1.1462], SO30: [50.9192, -1.3057], SO31: [50.8688, -1.2951], SO32: [50.9474, -1.2085], SO40: [50.9148, -1.5007], SO41: [50.755, -1.5647], SO42: [50.8098, -1.5344], SO43: [50.8873, -1.5834], SO45: [50.8478, -1.3934], SO50: [50.9689, -1.3391], SO51: [50.994, -1.5041], SO52: [50.9766, -1.4402], SO53: [50.9844, -1.3802], SP1: [51.074, -1.7887], SP10: [51.2107, -1.4831], SP11: [51.227, -1.513], SP2: [51.0741, -1.8244], SP3: [51.1012, -2.0057], SP4: [51.1648, -1.764], SP5: [51.0227, -1.7718], SP6: [50.9355, -1.8007], SP7: [51.0039, -2.1824], SP8: [51.037, -2.2896], SP9: [51.2302, -1.6605], SR1: [54.907, -1.3792], SR2: [54.8872, -1.3764], SR3: [54.8775, -1.4155], SR4: [54.9009, -1.4245], SR5: [54.9233, -1.4242], SR6: [54.9348, -1.3788], SR7: [54.8305, -1.3617], SR8: [54.7665, -1.3347], SR9: [54.9024, -1.3746], SS0: [51.546, 0.6915], SS1: [51.537, 0.7328], SS11: [51.6151, 0.5381], SS12: [51.6056, 0.5216], SS13: [51.5743, 0.5098], SS14: [51.5751, 0.4752], SS15: [51.5769, 0.432], SS16: [51.562, 0.4543], SS17: [51.5209, 0.4405], SS2: [51.5499, 0.7177], SS3: [51.5428, 0.7922], SS4: [51.5941, 0.7145], SS5: [51.6072, 0.6503], SS6: [51.5875, 0.6087], SS7: [51.562, 0.5798], SS8: [51.5222, 0.5906], SS9: [51.5541, 0.653], ST1: [53.0262, -2.1715], ST10: [52.9894, -1.9627], ST11: [52.9669, -2.0655], ST12: [52.9479, -2.1712], ST13: [53.1009, -2.0179], ST14: [52.903, -1.8677], ST15: [52.9003, -2.1472], ST16: [52.8132, -2.1187], ST17: [52.7889, -2.0994], ST18: [52.8141, -2.0816], ST19: [52.7124, -2.1466], ST2: [53.0271, -2.1357], ST20: [52.7985, -2.2626], ST21: [52.8678, -2.2585], ST3: [52.9804, -2.1221], ST4: [52.9947, -2.1833], ST5: [53.0153, -2.237], ST6: [53.0576, -2.1895], ST7: [53.088, -2.2658], ST8: [53.1152, -2.1673], ST9: [53.0505, -2.0985], SW1: [51.4956, -0.1386], SW10: [51.4836, -0.1809], SW11: [51.4663, -0.1643], SW12: [51.4454, -0.1478], SW13: [51.4747, -0.2446], SW14: [51.4651, -0.2651], SW15: [51.4573, -0.2251], SW16: [51.4216, -0.1272], SW17: [51.4303, -0.1628], SW18: [51.4496, -0.1894], SW19: [51.4228, -0.2034], SW1A: [51.5027, -0.1311], SW1E: [51.4974, -0.1385], SW1H: [51.4982, -0.1327], SW1P: [51.4955, -0.1328], SW1V: [51.4902, -0.1374], SW1W: [51.493, -0.1474], SW1X: [51.4976, -0.1529], SW1Y: [51.5054, -0.1339], SW2: [51.4494, -0.1189], SW20: [51.4106, -0.2255], SW3: [51.4897, -0.1648], SW4: [51.4605, -0.1357], SW5: [51.49, -0.1878], SW6: [51.4768, -0.1999], SW7: [51.4961, -0.1746], SW8: [51.4757, -0.1308], SW9: [51.4691, -0.1123], SY1: [52.7228, -2.7404], SY10: [52.8358, -3.1209], SY11: [52.8663, -3.0281], SY12: [52.9034, -2.8936], SY13: [52.9515, -2.6892], SY14: [53.0292, -2.762], SY15: [52.5552, -3.13], SY16: [52.52, -3.3118], SY17: [52.5164, -3.465], SY18: [52.4408, -3.5478], SY19: [52.5739, -3.6116], SY2: [52.7067, -2.7283], SY20: [52.614, -3.8184], SY21: [52.6578, -3.205], SY22: [52.756, -3.1855], SY23: [52.3818, -4.0513], SY24: [52.4704, -4.023], SY25: [52.2381, -3.9363], SY3: [52.6992, -2.7696], SY4: [52.7956, -2.7505], SY5: [52.653, -2.8279], SY6: [52.5391, -2.7904], SY7: [52.4251, -2.8869], SY8: [52.3652, -2.6947], SY9: [52.498, -2.9856], TA1: [51.0123, -3.102], TA10: [51.0326, -2.8244], TA11: [51.0604, -2.7021], TA12: [50.9745, -2.7721], TA13: [50.9464, -2.81], TA14: [50.9459, -2.7502], TA15: [50.9506, -2.7176], TA16: [50.9069, -2.7923], TA17: [50.9075, -2.835], TA18: [50.8827, -2.7862], TA19: [50.9339, -2.9137], TA2: [51.033, -3.1011], TA20: [50.8733, -2.9609], TA21: [50.9767, -3.2451], TA22: [51.0451, -3.5451], TA23: [51.1617, -3.3516], TA24: [51.1814, -3.5096], TA3: [50.994, -3.0389], TA4: [51.0709, -3.2676], TA5: [51.1463, -3.1038], TA6: [51.1248, -2.9989], TA7: [51.13, -2.9119], TA8: [51.2445, -2.9929], TA9: [51.2259, -2.9553], TD1: [55.6239, -2.81], TD10: [55.712, -2.4489], TD11: [55.7879, -2.3158], TD12: [55.6533, -2.2384], TD13: [55.9297, -2.3697], TD14: [55.8674, -2.1231], TD15: [55.747, -2.0128], TD2: [55.733, -2.7533], TD3: [55.7007, -2.5713], TD4: [55.6418, -2.6705], TD5: [55.5872, -2.4157], TD6: [55.5824, -2.6933], TD7: [55.5363, -2.8716], TD8: [55.4753, -2.5411], TD9: [55.3977, -2.7753], TF1: [52.7025, -2.5032], TF10: [52.7694, -2.3854], TF11: [52.6625, -2.3593], TF12: [52.6118, -2.48], TF13: [52.578, -2.5815], TF2: [52.7, -2.4396], TF3: [52.664, -2.4436], TF4: [52.6613, -2.4673], TF5: [52.7149, -2.5359], TF6: [52.7355, -2.554], TF7: [52.6352, -2.4493], TF8: [52.6297, -2.4787], TF9: [52.8977, -2.4683], TN1: [51.1349, 0.27], TN10: [51.2101, 0.2866], TN11: [51.206, 0.2692], TN12: [51.1719, 0.4407], TN13: [51.2759, 0.1852], TN14: [51.2953, 0.1617], TN15: [51.2995, 0.2695], TN16: [51.2936, 0.0526], TN17: [51.0961, 0.5381], TN18: [51.0433, 0.5266], TN19: [51.0026, 0.4075], TN2: [51.1373, 0.2873], TN20: [51.0263, 0.2561], TN21: [50.9587, 0.2643], TN22: [50.9807, 0.1001], TN23: [51.139, 0.8608], TN24: [51.1492, 0.8871], TN25: [51.1443, 0.9397], TN26: [51.0999, 0.8055], TN27: [51.1652, 0.7064], TN28: [50.982, 0.9523], TN29: [50.9933, 0.9344], TN3: [51.1227, 0.2523], TN30: [51.062, 0.6975], TN31: [50.9623, 0.6875], TN32: [50.9793, 0.4904], TN33: [50.9103, 0.4768], TN34: [50.8639, 0.5837], TN35: [50.8804, 0.6131], TN36: [50.9206, 0.7022], TN37: [50.8717, 0.5586], TN38: [50.863, 0.5453], TN39: [50.846, 0.4549], TN4: [51.1459, 0.2591], TN40: [50.8445, 0.4846], TN5: [51.0647, 0.3622], TN6: [51.0522, 0.1746], TN7: [51.092, 0.1094], TN8: [51.1942, 0.0797], TN9: [51.1905, 0.2771], TQ1: [50.4716, -3.5221], TQ10: [50.4241, -3.8191], TQ11: [50.4814, -3.7818], TQ12: [50.5288, -3.6114], TQ13: [50.593, -3.7182], TQ14: [50.55, -3.5063], TQ2: [50.474, -3.5433], TQ3: [50.443, -3.5747], TQ4: [50.4233, -3.5698], TQ5: [50.3915, -3.5223], TQ6: [50.3466, -3.5884], TQ7: [50.2826, -3.7828], TQ8: [50.2369, -3.7713], TQ9: [50.4162, -3.6892], TR1: [50.2624, -5.0535], TR10: [50.1662, -5.1174], TR11: [50.1491, -5.0868], TR12: [50.0431, -5.1792], TR13: [50.1095, -5.2843], TR14: [50.2099, -5.2969], TR15: [50.2323, -5.2367], TR16: [50.2327, -5.2199], TR17: [50.1248, -5.4673], TR18: [50.1163, -5.5409], TR19: [50.1001, -5.6278], TR2: [50.2533, -4.9519], TR20: [50.1314, -5.4888], TR21: [49.9294, -6.2562], TR22: [49.8919, -6.3435], TR23: [49.9528, -6.3517], TR24: [49.9553, -6.3338], TR25: [49.964, -6.2928], TR26: [50.2028, -5.4786], TR27: [50.1816, -5.4028], TR3: [50.2168, -5.1094], TR4: [50.2836, -5.1363], TR5: [50.3082, -5.1913], TR6: [50.3417, -5.1513], TR7: [50.413, -5.073], TR8: [50.3987, -5.0369], TR9: [50.4139, -4.9365], TS1: [54.5718, -1.2373], TS10: [54.6066, -1.0679], TS11: [54.5873, -1.025], TS12: [54.5626, -0.9653], TS13: [54.5499, -0.8543], TS14: [54.5319, -1.0603], TS15: [54.4914, -1.3299], TS16: [54.5239, -1.3526], TS17: [54.5371, -1.3029], TS18: [54.5624, -1.3226], TS19: [54.5778, -1.344], TS2: [54.5844, -1.2355], TS20: [54.5857, -1.3129], TS21: [54.6268, -1.4253], TS22: [54.6181, -1.3139], TS23: [54.608, -1.2847], TS24: [54.6966, -1.2102], TS25: [54.6634, -1.2232], TS26: [54.6877, -1.2289], TS27: [54.7231, -1.2873], TS28: [54.7254, -1.3726], TS29: [54.7103, -1.4195], TS3: [54.5607, -1.1958], TS4: [54.5555, -1.2222], TS5: [54.5512, -1.2501], TS6: [54.5658, -1.1524], TS7: [54.5337, -1.1839], TS8: [54.5214, -1.2305], TS9: [54.4661, -1.1637], TW1: [51.4498, -0.3247], TW10: [51.4495, -0.3017], TW11: [51.4265, -0.3313], TW12: [51.4217, -0.3689], TW13: [51.4383, -0.4], TW14: [51.452, -0.4182], TW15: [51.43, -0.4549], TW16: [51.4151, -0.4151], TW17: [51.3975, -0.4459], TW18: [51.428, -0.5068], TW19: [51.4522, -0.5017], TW2: [51.4466, -0.3493], TW20: [51.4267, -0.55], TW3: [51.4674, -0.3615], TW4: [51.4659, -0.3831], TW5: [51.4803, -0.3812], TW6: [51.4695, -0.4464], TW7: [51.4733, -0.3325], TW8: [51.4855, -0.3061], TW9: [51.4674, -0.2938], UB1: [51.5144, -0.3728], UB10: [51.5478, -0.4524], UB11: [51.5191, -0.4577], UB2: [51.4992, -0.3791], UB3: [51.5051, -0.4221], UB4: [51.5238, -0.407], UB5: [51.5431, -0.3746], UB6: [51.5391, -0.3431], UB7: [51.5058, -0.4696], UB8: [51.5346, -0.473], UB9: [51.5816, -0.4902], W1: [51.5145, -0.1421], W10: [51.521, -0.214], W11: [51.5119, -0.2042], W12: [51.5078, -0.2289], W13: [51.5127, -0.3195], W14: [51.4949, -0.2092], W1B: [51.5136, -0.1393], W1C: [51.5137, -0.1479], W1D: [51.5134, -0.1307], W1F: [51.5126, -0.135], W1G: [51.5182, -0.1463], W1H: [51.5166, -0.1594], W1J: [51.5074, -0.1439], W1K: [51.511, -0.1495], W1M: [51.5182, -0.1492], W1S: [51.5109, -0.1409], W1T: [51.5198, -0.1347], W1U: [51.5183, -0.1521], W1W: [51.519, -0.1391], W2: [51.5151, -0.1782], W3: [51.5093, -0.2677], W4: [51.4912, -0.2627], W5: [51.5124, -0.3008], W6: [51.4925, -0.2281], W7: [51.5111, -0.334], W8: [51.5, -0.1932], W9: [51.5261, -0.1907], WA1: [53.3944, -2.5685], WA10: [53.4536, -2.7545], WA11: [53.4772, -2.7188], WA12: [53.4534, -2.631], WA13: [53.3823, -2.4691], WA14: [53.3862, -2.3579], WA15: [53.3836, -2.3248], WA16: [53.3026, -2.3707], WA2: [53.4105, -2.5808], WA3: [53.4538, -2.5482], WA4: [53.3647, -2.5741], WA5: [53.3986, -2.6362], WA6: [53.2722, -2.7229], WA7: [53.3299, -2.7028], WA8: [53.3719, -2.7411], WA9: [53.4368, -2.7181], WC1: [51.5214, -0.1217], WC1A: [51.5169, -0.1247], WC1B: [51.5188, -0.1261], WC1E: [51.5207, -0.1318], WC1H: [51.5241, -0.1259], WC1N: [51.5214, -0.1202], WC1R: [51.5186, -0.116], WC1V: [51.5168, -0.119], WC1X: [51.5249, -0.1158], WC2: [51.5133, -0.1235], WC2A: [51.5159, -0.1147], WC2B: [51.5151, -0.122], WC2E: [51.5124, -0.1235], WC2H: [51.5134, -0.1278], WC2N: [51.5097, -0.125], WC2R: [51.5115, -0.1192], WD1: [51.6469, -0.3998], WD17: [51.6614, -0.4051], WD18: [51.648, -0.4143], WD19: [51.6315, -0.3903], WD2: [51.6673, -0.3774], WD23: [51.6455, -0.3652], WD24: [51.6703, -0.3976], WD25: [51.6836, -0.3884], WD3: [51.6453, -0.4808], WD4: [51.7088, -0.4556], WD5: [51.7047, -0.4166], WD6: [51.6568, -0.2751], WD7: [51.6861, -0.3088], WF1: [53.6868, -1.4912], WF10: [53.7239, -1.3437], WF11: [53.7108, -1.256], WF12: [53.6837, -1.6199], WF13: [53.6928, -1.6456], WF14: [53.6803, -1.6926], WF15: [53.7082, -1.6985], WF16: [53.7099, -1.6682], WF17: [53.7189, -1.6408], WF2: [53.6725, -1.511], WF3: [53.7229, -1.5241], WF4: [53.6474, -1.5189], WF5: [53.68, -1.576], WF6: [53.7, -1.4138], WF7: [53.6664, -1.3506], WF8: [53.685, -1.2989], WF9: [53.606, -1.3198], WN1: [53.5541, -2.6265], WN2: [53.5364, -2.5825], WN3: [53.5289, -2.6442], WN4: [53.4947, -2.6422], WN5: [53.5314, -2.685], WN6: [53.5737, -2.6691], WN7: [53.498, -2.5171], WN8: [53.5524, -2.7684], WR1: [52.1971, -2.2166], WR10: [52.1146, -2.0643], WR11: [52.0948, -1.9285], WR12: [52.0426, -1.8731], WR13: [52.0943, -2.3416], WR14: [52.1133, -2.3184], WR15: [52.3048, -2.5676], WR2: [52.1899, -2.2414], WR3: [52.216, -2.2108], WR4: [52.2044, -2.1844], WR5: [52.1774, -2.1989], WR6: [52.2273, -2.3704], WR7: [52.1964, -2.0527], WR8: [52.0821, -2.2029], WR9: [52.2683, -2.1568], WS1: [52.5795, -1.9779], WS10: [52.5606, -2.0206], WS11: [52.6891, -2.0178], WS12: [52.7062, -1.9985], WS13: [52.6917, -1.818], WS14: [52.6629, -1.8137], WS15: [52.7583, -1.917], WS2: [52.5885, -2.0015], WS3: [52.6181, -1.9897], WS4: [52.6055, -1.9587], WS5: [52.5678, -1.9587], WS6: [52.6577, -2.0222], WS7: [52.6801, -1.9127], WS8: [52.646, -1.9335], WS9: [52.6091, -1.9173], WV1: [52.5857, -2.1151], WV10: [52.6172, -2.1123], WV11: [52.61, -2.0709], WV12: [52.6055, -2.0399], WV13: [52.5848, -2.0605], WV14: [52.557, -2.0782], WV15: [52.5159, -2.3744], WV16: [52.5112, -2.4406], WV2: [52.574, -2.1181], WV3: [52.5794, -2.1505], WV4: [52.5623, -2.1416], WV5: [52.5334, -2.2094], WV6: [52.5955, -2.1816], WV7: [52.6331, -2.2704], WV8: [52.6234, -2.1832], WV9: [52.6333, -2.1404], YO1: [53.9586, -1.0809], YO10: [53.9503, -1.0582], YO11: [54.2651, -0.3953], YO12: [54.2736, -0.4227], YO13: [54.288, -0.4959], YO14: [54.199, -0.2967], YO15: [54.0939, -0.1772], YO16: [54.0951, -0.2], YO17: [54.1363, -0.754], YO18: [54.2587, -0.7672], YO19: [53.9105, -1.0211], YO21: [54.4765, -0.7112], YO22: [54.4504, -0.621], YO23: [53.9256, -1.1212], YO24: [53.9462, -1.1147], YO25: [54.0046, -0.413], YO26: [53.9745, -1.172], YO30: [53.9858, -1.1139], YO31: [53.9692, -1.0639], YO32: [54.0114, -1.0584], YO41: [53.9697, -0.9023], YO42: [53.9227, -0.7908], YO43: [53.8498, -0.6895], YO51: [54.0818, -1.3763], YO60: [54.0824, -0.9406], YO61: [54.1158, -1.1937], YO62: [54.2428, -0.9932], YO7: [54.2237, -1.3496], YO8: [53.7813, -1.0575], ZE1: [60.1523, -1.1678], ZE2: [60.3305, -1.2248], ZE3: [59.8837, -1.3032], W1A: [51.5186, -0.1438], BL11: [53.5762, -2.4287], BL78: [53.5717, -2.4163], BN50: [50.8234, -0.1404], BN51: [50.8048, -0.0587], BN52: [50.8293, -0.1684], BN88: [50.8312, -0.1404], BN99: [50.8202, -0.3799], BS80: [51.5219, -2.5725], BS98: [51.4591, -2.5815], CA95: [54.6447, -3.5665], CF30: [51.5196, -3.1196], CF91: [51.4657, -3.1936], CF95: [51.4812, -3.171], CF99: [51.4644, -3.1617], CH25: [53.397, -3.0119], CH26: [53.3657, -3.0659], CH27: [53.4183, -3.0331], CH28: [53.4004, -3.112], CH29: [53.3903, -3.1794], CH30: [53.3791, -3.0985], CH31: [53.3297, -3.0989], CH32: [53.3619, -2.9977], CH33: [53.2906, -3.0626], CH34: [53.2817, -2.9081], CH70: [53.1927, -2.9226], CH88: [53.1796, -2.8939], CH99: [53.1783, -2.8941], CM99: [51.7359, 0.473], CT50: [51.0757, 1.1491], CW98: [53.0893, -2.4317], DE99: [52.9155, -1.4611], DH97: [54.7793, -1.5781], DH98: [54.9346, -1.6151], DH99: [54.7862, -1.5571], DN55: [53.5129, -1.1257], E77: [51.5139, -0.0691], E98: [51.5137, -0.0609], EC1P: [51.5245, -0.1121], EC4P: [51.5245, -0.1121], EC50: [51.5245, -0.1121], EH91: [55.9232, -3.3051], EH95: [55.9786, -3.2535], EH99: [55.9556, -3.1761], FY0: [53.7546, -3.008], G58: [55.8484, -4.2772], G70: [55.9494, -3.989], G75: [55.7291, -4.1865], G79: [55.771, -4.2231], G9: [55.8686, -4.2419], G90: [55.8722, -4.2339], GU95: [51.3263, -0.7631], IP98: [52.3767, 1.1164], KY99: [56.0594, -3.4441], L67: [53.429, -2.9586], L68: [53.4731, -2.9607], L71: [53.4395, -2.9714], L72: [53.4803, -2.9884], L73: [53.4064, -2.9756], L74: [53.3938, -2.9881], L75: [53.4386, -2.9852], LE21: [52.6326, -1.1252], LE41: [52.6541, -1.1215], LE55: [52.6904, -1.2903], LE87: [52.597, -1.1541], LE94: [52.4837, -0.9055], LE95: [52.6062, -1.1906], LS88: [53.7508, -1.539], LS98: [53.7788, -1.525], LS99: [53.7867, -1.5928], M50: [53.4794, -2.3043], M99: [53.4845, -2.2349], MK77: [52.0421, -0.8189], N1P: [51.5384, -0.1033], NE82: [54.9381, -1.6155], NE83: [54.9346, -1.6151], NE85: [54.9217, -1.5548], NE88: [54.9418, -1.615], NE92: [54.9418, -1.615], NE98: [54.972, -1.5987], NG70: [53.1546, -1.1869], NG80: [52.9166, -1.159], NG90: [52.9272, -1.1911], NW1W: [51.5308, -0.1354], OL95: [53.5563, -2.1054], PH37: [56.8162, -5.5284], PL95: [50.3644, -4.1046], PR0: [53.7588, -2.6839], PR11: [53.7781, -2.6854], S49: [53.2343, -1.4356], S96: [53.403, -1.4275], S97: [53.4562, -1.3825], S98: [53.3866, -1.4552], S99: [53.4043, -1.431], SA80: [51.648, -3.924], SA99: [51.67, -3.9454], SE1P: [51.4928, -0.0802], SL95: [51.4979, -0.5325], SN38: [51.5628, -1.7953], SN99: [51.5565, -1.7559], SS22: [51.557, 0.7068], SS99: [51.5614, 0.6085], ST55: [53.0148, -2.2412], SW99: [51.4723, -0.1158], TR93: [50.1294, -5.5027], UB18: [51.5007, -0.4027], WA55: [53.4018, -2.619], WA88: [53.368, -2.7687], WR78: [52.1977, -2.2235], WR99: [52.201, -2.2144], YO90: [53.9601, -1.0893], YO91: [53.9766, -1.0704], E20: [51.5386, -0.0164], B99: [52.496, -1.8942], BB94: [53.9152, -2.138], BD97: [53.8505, -1.8374], BD98: [53.8377, -1.78], BD99: [53.7945, -1.7665], SL60: [51.5186, -0.7148], CA99: [54.8909, -2.9438], IV99: [57.4813, -4.224] };
+  }
+});
+
+// server/studio/geo.js
+var require_geo = __commonJS({
+  "server/studio/geo.js"(exports, module) {
+    var OC = require_outcodes();
+    var PC = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
+    var OUT = /^\s*([A-Z]{1,2}\d[A-Z\d]?)\s*$/i;
+    function outcode(text) {
+      const t = String(text || ""), m = t.match(PC) || t.match(OUT), k = m ? m[1].toUpperCase() : "";
+      return OC[k] ? k : "";
+    }
+    function point(text) {
+      const k = outcode(text);
+      return k ? { lat: OC[k][0], lng: OC[k][1], postcode: k } : null;
+    }
+    function miles(a, b) {
+      const r = (x) => x * Math.PI / 180, dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLng / 2) ** 2;
+      return 3958.8 * 2 * Math.asin(Math.min(1, Math.sqrt(h)));
+    }
+    function locate(p) {
+      const town = String(p.area || "").split(",")[0].trim();
+      if (+p.lat && +p.lng) return { lat: +p.lat, lng: +p.lng, place: town };
+      const q = point(p.address) || point(p.area) || point(p.postcode);
+      return q ? Object.assign(q, { place: town || q.postcode }) : null;
+    }
+    module.exports = { outcode, point, miles, locate, PC };
+  }
+});
+
+// server/studio/event-sources.json
+var require_event_sources = __commonJS({
+  "server/studio/event-sources.json"(exports, module) {
+    module.exports = {
+      about: "Starter pages the event finder reads for every host near them, about once a day. Each needs a public page of events, courses or shows, and a postcode district for where it covers. Hosts add their own pages in Event ads. Check a site's robots.txt and terms allow reading before adding it here.",
+      sources: [
+        { url: "https://www.visitmaidstone.com/whats-on", name: "Visit Maidstone: what's on", place: "Maidstone", postcode: "ME14" },
+        { url: "https://www.visitmaidstone.com/whats-on/searchresults", name: "Visit Maidstone: all events", place: "Maidstone", postcode: "ME14" }
+      ]
+    };
+  }
+});
+
+// server/studio/crawler.js
+var require_crawler = __commonJS({
+  "server/studio/crawler.js"(exports, module) {
+    var crypto = __require("crypto");
+    var dns = __require("dns").promises;
+    var { privateIp } = require_ical();
+    var G = require_geo();
+    var TOKEN = "BookingboosterEvents";
+    var ISO = /^\d{4}-\d{2}-\d{2}$/;
+    var add = (s, n) => {
+      const x = /* @__PURE__ */ new Date(s + "T00:00:00Z");
+      x.setUTCDate(x.getUTCDate() + n);
+      return x.toISOString().slice(0, 10);
+    };
+    var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    var sid = (url) => "src" + crypto.createHash("sha1").update(normUrl(url)).digest("hex").slice(0, 10);
+    function normUrl(u) {
+      try {
+        const x = new URL(u);
+        x.hash = "";
+        return x.toString().replace(/\/$/, "");
+      } catch (_) {
+        return String(u);
+      }
+    }
+    var site = (u) => {
+      try {
+        return new URL(u).hostname.replace(/^www\./, "");
+      } catch (_) {
+        return "";
+      }
+    };
+    async function get(url, o, hops = 0) {
+      const u = new URL(url);
+      if (!/^https?:$/.test(u.protocol)) throw new Error("Only http and https pages can be read.");
+      const addrs = await dns.lookup(u.hostname, { all: true }).catch(() => {
+        throw new Error("Could not find " + u.hostname + ".");
+      });
+      if (!o.allowPrivate && addrs.some((a) => privateIp(a.address))) throw new Error("That address is not allowed.");
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12e3);
+      try {
+        const r = await fetch(u, { redirect: "manual", signal: ctl.signal, headers: { "user-agent": o.ua, accept: o.accept || "text/html,application/xhtml+xml,text/calendar;q=0.9,*/*;q=0.5", "accept-language": "en-GB,en;q=0.8" } });
+        const loc = r.headers.get("location");
+        if (r.status >= 300 && r.status < 400 && loc && hops < 3) {
+          const next = new URL(loc, u);
+          if (site(next) !== site(u)) throw new Error("The page moved to another site (" + next.hostname + ").");
+          return get(next.toString(), o, hops + 1);
+        }
+        const reader = r.body ? r.body.getReader() : null, chunks = [];
+        let size = 0;
+        if (reader) for (; ; ) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          size += value.length;
+          if (size > 3e6) {
+            ctl.abort();
+            throw new Error("That page is too large.");
+          }
+          chunks.push(value);
+        }
+        return { url: u.toString(), status: r.status, type: r.headers.get("content-type") || "", robotsTag: r.headers.get("x-robots-tag") || "", text: Buffer.concat(chunks).toString("utf8") };
+      } catch (e) {
+        if (e.name === "AbortError") throw new Error(u.hostname + " took too long to answer.");
+        throw e;
+      } finally {
+        clearTimeout(t);
+      }
+    }
+    function robots(text, token) {
+      const groups = [];
+      let g = null, lastUA = false;
+      for (let line of String(text).split(/\r?\n/)) {
+        line = line.replace(/#.*/, "").trim();
+        const i = line.indexOf(":");
+        if (!line || i < 0) continue;
+        const k = line.slice(0, i).trim().toLowerCase(), v = line.slice(i + 1).trim();
+        if (k === "user-agent") {
+          if (!g || !lastUA) groups.push(g = { agents: [], rules: [], delay: null });
+          g.agents.push(v.toLowerCase());
+          lastUA = true;
+          continue;
+        }
+        lastUA = false;
+        if (!g) continue;
+        if (k === "allow" || k === "disallow") g.rules.push({ allow: k === "allow", path: v });
+        else if (k === "crawl-delay" && parseFloat(v) >= 0) g.delay = parseFloat(v);
+      }
+      const t = String(token).toLowerCase();
+      let pick = groups.filter((x) => x.agents.some((a) => a !== "*" && a && t.startsWith(a)));
+      if (!pick.length) pick = groups.filter((x) => x.agents.includes("*"));
+      return { rules: [].concat(...pick.map((x) => x.rules)), delay: pick.map((x) => x.delay).find((x) => x != null) ?? null };
+    }
+    var esc = (s) => s.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    function allowed(r, url) {
+      let path;
+      try {
+        const u = new URL(url);
+        path = u.pathname + u.search;
+      } catch (_) {
+        return false;
+      }
+      if (r.all === false) return false;
+      let best = null;
+      for (const x of r.rules) {
+        if (!x.path) continue;
+        const end = x.path.endsWith("$"), p = end ? x.path.slice(0, -1) : x.path;
+        if (!new RegExp("^" + p.split("*").map(esc).join(".*") + (end ? "$" : "")).test(path)) continue;
+        if (!best || x.path.length > best.path.length || x.path.length === best.path.length && x.allow) best = x;
+      }
+      return !best || best.allow;
+    }
+    async function robotsFor(url, o) {
+      const root = new URL("/robots.txt", url).toString();
+      try {
+        const r = await get(root, Object.assign({}, o, { accept: "text/plain" }));
+        if (r.status === 200) return robots(r.text, TOKEN);
+        if (r.status === 404 || r.status === 410) return { rules: [], delay: null };
+        return { rules: [], delay: null, all: false, why: "robots.txt answered " + r.status };
+      } catch (e) {
+        return { rules: [], delay: null, all: false, why: "could not read robots.txt (" + e.message + ")" };
+      }
+    }
+    var decode = (s) => String(s == null ? "" : s).replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#0?39;|&apos;|&rsquo;/g, "\u2019").replace(/&ndash;/g, "\u2013").replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/\s+/g, " ").trim();
+    var types = (n) => [].concat(n && n["@type"] || []).map(String);
+    var isEvent = (t) => t.some((x) => /(^|:)(\w*Event|Festival|CourseInstance|EventSeries)$/.test(x) && !/^(Virtual)/.test(x));
+    var KIND_RULES = [
+      ["course", /\b(course|training|certificate|certification|cpd|smsts|sssts|nebosh|iosh|cscs|citb|first aid|workshop|bootcamp|qualification|diploma|apprentice)/i],
+      ["exam", /\b(exam|examination|assessment centre|test centre)\b/i],
+      ["conference", /\b(conference|summit|congress|symposium|convention|forum)\b/i],
+      ["expo", /\b(expo|trade show|exhibition|trade fair|b2b)\b/i],
+      ["festival", /\b(festival|fest|music weekend)\b/i],
+      ["sport", /\b(championship|tournament|cup|race|rally|regatta|marathon|open|league|grand prix|games)\b/i],
+      ["show", /\b(show|fair|county show|agricultural|steam|game fair|motor)\b/i]
+    ];
+    function classify(t, text) {
+      const ty = t.join(" ");
+      if (/CourseInstance|EducationEvent|Course\b/.test(ty)) return "course";
+      if (/SportsEvent/.test(ty)) return "sport";
+      if (/Festival|MusicEvent/.test(ty) && !/\b(course|conference)\b/i.test(text)) return "festival";
+      if (/ExhibitionEvent/.test(ty)) return /\b(art|gallery|museum)\b/i.test(text) ? "other" : "expo";
+      for (const [k, re] of KIND_RULES) if (re.test(text)) return k;
+      if (/BusinessEvent/.test(ty)) return "conference";
+      return "other";
+    }
+    function dateOf(v) {
+      const s = String(v == null ? "" : v).trim();
+      let m;
+      if (m = s.match(/^(\d{4})-(\d{2})-(\d{2})/)) return m[1] + "-" + m[2] + "-" + m[3];
+      if (m = s.match(/^(\d{4})(\d{2})(\d{2})/)) return m[1] + "-" + m[2] + "-" + m[3];
+      if (m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/)) return m[3] + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
+      return "";
+    }
+    function place(loc) {
+      const L = [].concat(loc || []).find((x) => x && (typeof x === "string" || !/VirtualLocation/.test(types(x).join(" "))));
+      if (!L) return {};
+      if (typeof L === "string") return { venue: decode(L).replace(G.PC, "").replace(/[,\s]+$/, ""), postcode: G.outcode(L) };
+      const a = L.address || {}, adr = typeof a === "string" ? a : [a.streetAddress, a.addressLocality, a.addressRegion, a.postalCode].filter(Boolean).join(", ");
+      const geo = L.geo || {}, lat = parseFloat(geo.latitude), lng = parseFloat(geo.longitude);
+      return { venue: decode(L.name || (typeof a === "string" ? a : "")), town: decode(typeof a === "object" ? a.addressLocality : ""), postcode: G.outcode(adr), lat: isFinite(lat) && lat ? lat : null, lng: isFinite(lng) && lng ? lng : null };
+    }
+    function fromLd(n, pageUrl, parent) {
+      parent = parent || {};
+      const t = types(n).concat(parent.types || []), status = String(n.eventStatus || ""), mode = String(n.eventAttendanceMode || n.courseMode || "");
+      if (/Cancelled|Postponed/i.test(status) || /online|virtual/i.test(mode) && !/mixed|blended/i.test(mode)) return null;
+      const sch = [].concat(n.courseSchedule || [])[0] || {};
+      const name = decode(n.name || parent.name), start = dateOf(n.startDate || sch.startDate), end = dateOf(n.endDate || sch.endDate) || start;
+      if (!name || !start) return null;
+      let url = "";
+      try {
+        url = new URL(String(n.url || parent.url || pageUrl), pageUrl).toString();
+      } catch (_) {
+        url = pageUrl;
+      }
+      const cap = parseInt(n.maximumAttendeeCapacity, 10);
+      return Object.assign({ name, start, end, url, kind: classify(t, name + " " + decode(n.description || parent.description || "").slice(0, 300)), attendance: cap > 0 ? cap : null, how: "data" }, place(n.location || parent.location));
+    }
+    function walk(node, pageUrl, out, depth) {
+      if (!node || typeof node !== "object" || depth > 8 || out.length > 500) return;
+      if (Array.isArray(node)) {
+        node.forEach((x) => walk(x, pageUrl, out, depth + 1));
+        return;
+      }
+      const t = types(node);
+      if (t.some((x) => /(^|:)Course$/.test(x)) && node.hasCourseInstance) {
+        [].concat(node.hasCourseInstance).forEach((ci) => {
+          const e = fromLd(ci, pageUrl, { name: node.name, url: node.url, description: node.description, types: t, location: node.location });
+          if (e) out.push(e);
+        });
+        return;
+      }
+      if (isEvent(t)) {
+        const e = fromLd(node, pageUrl);
+        if (e) out.push(e);
+        if (node.subEvent) walk(node.subEvent, pageUrl, out, depth + 1);
+        return;
+      }
+      for (const v of Object.values(node)) if (v && typeof v === "object") walk(v, pageUrl, out, depth + 1);
+    }
+    function jsonLd(html, pageUrl) {
+      const out = [];
+      for (const m of html.matchAll(/<script[^>]*type=["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi)) {
+        let j;
+        try {
+          j = JSON.parse(m[1].trim().replace(/^<!--|-->$/g, ""));
+        } catch (_) {
+          continue;
+        }
+        walk(j, pageUrl, out, 0);
+      }
+      return out;
+    }
+    function microdata(html, pageUrl) {
+      const out = [], re = /itemtype=["']https?:\/\/schema\.org\/(\w*Event|Festival|CourseInstance)["']/gi, hits = [...html.matchAll(re)];
+      hits.forEach((h, i) => {
+        const chunk = html.slice(h.index, i + 1 < hits.length ? hits[i + 1].index : h.index + 1e4);
+        const prop = (name, from) => {
+          const c = from ? chunk.slice(from) : chunk, m = c.match(new RegExp(`<[^>]*itemprop=["'][^"']*\\b` + name + `\\b[^"']*["'][^>]*>`, "i"));
+          if (!m) return "";
+          const a = m[0].match(/\b(?:content|datetime)=["']([^"']*)["']/i);
+          if (a) return a[1];
+          const h2 = m[0].match(/\bhref=["']([^"']*)["']/i);
+          if (h2 && name === "url") return h2[1];
+          return decode(c.slice(m.index + m[0].length).split("<")[0]);
+        };
+        const li = chunk.search(/itemprop=["'][^"']*\blocation\b/i);
+        const n = {
+          "@type": h[1],
+          name: prop("name"),
+          startDate: prop("startDate"),
+          endDate: prop("endDate"),
+          url: prop("url"),
+          eventStatus: prop("eventStatus"),
+          description: prop("description"),
+          location: li >= 0 ? { name: prop("name", li), address: { postalCode: prop("postalCode", li), addressLocality: prop("addressLocality", li) } } : void 0
+        };
+        const e = fromLd(n, pageUrl);
+        if (e) out.push(e);
+      });
+      return out;
+    }
+    function ics(text, pageUrl) {
+      const out = [], lines = String(text).replace(/\r?\n[ \t]/g, "").split(/\r?\n/);
+      let ev = null;
+      const un = (v) => v.replace(/\\n/gi, " ").replace(/\\([,;\\])/g, "$1").trim();
+      for (const line of lines) {
+        if (line === "BEGIN:VEVENT") {
+          ev = {};
+          continue;
+        }
+        if (line === "END:VEVENT") {
+          if (ev && ev.name && ev.start && ev.status !== "CANCELLED") {
+            let end = ev.end || ev.start;
+            if (ev.end && ev.allDay && ev.end > ev.start) end = add(ev.end, -1);
+            const geo = (ev.geo || "").split(";").map(parseFloat);
+            let url = pageUrl;
+            try {
+              if (ev.url) url = new URL(ev.url, pageUrl).toString();
+            } catch (_) {
+            }
+            out.push(Object.assign({ name: ev.name, start: ev.start, end: end < ev.start ? ev.start : end, url, kind: classify([], ev.name + " " + (ev.desc || "")), attendance: null, how: "feed", venue: ev.loc ? ev.loc.split(",")[0].trim() : "", postcode: G.outcode(ev.loc || ""), lat: geo[0] || null, lng: geo[1] || null }));
+          }
+          ev = null;
+          continue;
+        }
+        if (!ev) continue;
+        const i = line.indexOf(":");
+        if (i < 0) continue;
+        const head = line.slice(0, i).toUpperCase(), key = head.split(";")[0], v = line.slice(i + 1);
+        if (key === "SUMMARY") ev.name = un(v).slice(0, 160);
+        else if (key === "DTSTART") {
+          ev.start = dateOf(v);
+          ev.allDay = /VALUE=DATE(?!-)/.test(head) || /^\d{8}$/.test(v.trim());
+        } else if (key === "DTEND") ev.end = dateOf(v);
+        else if (key === "LOCATION") ev.loc = un(v);
+        else if (key === "URL") ev.url = v.trim();
+        else if (key === "GEO") ev.geo = v;
+        else if (key === "STATUS") ev.status = v.trim().toUpperCase();
+        else if (key === "DESCRIPTION") ev.desc = un(v).slice(0, 300);
+      }
+      return out;
+    }
+    var MONTHS = "jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?";
+    var MI = (m) => ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].indexOf(m.slice(0, 3).toLowerCase()) + 1;
+    var ORD = "(?:\\s?(?:st|nd|rd|th)\\b)?";
+    var RANGE = new RegExp("\\b(\\d{1,2})" + ORD + "(?:\\s+(" + MONTHS + "))?(?:\\s+(\\d{4}))?(?:\\s*,\\s*\\d{1,2}" + ORD + ")*\\s*(?:-|\u2013|\u2014|to|until|and|&)\\s*(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\\s+)?(\\d{1,2})" + ORD + "\\s+(" + MONTHS + ")\\s+(\\d{4})", "gi");
+    function textEvent(html, pageUrl) {
+      const body = decode(html.replace(/<(script|style|nav|header|footer)\b[\s\S]*?<\/\1>/gi, " ")), p2 = (n) => String(n).padStart(2, "0");
+      let start = "", end = "";
+      for (const m of body.matchAll(RANGE)) {
+        const e = m[6] + "-" + p2(MI(m[5])) + "-" + p2(m[4]);
+        let sm = m[2] ? MI(m[2]) : MI(m[5]), sy = +(m[3] || m[6]);
+        if (!m[3] && sm > MI(m[5])) sy--;
+        const s = sy + "-" + p2(sm) + "-" + p2(m[1]);
+        if (ISO.test(s) && ISO.test(e) && !isNaN(new Date(s)) && !isNaN(new Date(e)) && e >= s && (new Date(e) - new Date(s)) / 864e5 <= 31) {
+          start = s;
+          end = e;
+          break;
+        }
+      }
+      if (!start) return [];
+      const og = html.match(/<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i) || html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || html.match(/<title>([\s\S]*?)<\/title>/i);
+      const name = og ? decode(og[1]).split(/\s+[|–-]\s+/)[0] : "";
+      if (!name) return [];
+      return [{ name, start, end, url: pageUrl, kind: classify([], name + " " + body.slice(0, 2e3)), attendance: null, how: "text", venue: "", postcode: G.outcode(body), lat: null, lng: null }];
+    }
+    function extract(page, base) {
+      const html = page.text, url = page.url, tag = (page.robotsTag || "") + " " + (html.match(/<meta[^>]+name=["']robots["'][^>]*>/i) || [""])[0];
+      const noindex = /noindex|none/i.test(tag), nofollow = /nofollow|none/i.test(tag);
+      if (/text\/calendar/i.test(page.type) || /^\s*BEGIN:VCALENDAR/.test(html)) return { events: ics(html, url), links: [], feeds: [] };
+      let events = noindex ? [] : jsonLd(html, url).concat(microdata(html, url));
+      const links = [], feeds = [];
+      if (!nofollow) {
+        for (const m of html.matchAll(/<(a|link)\b[^>]*href=["']([^"'#]+)["'][^>]*>/gi)) {
+          let u;
+          try {
+            u = new URL(decode(m[2]), url);
+          } catch (_) {
+            continue;
+          }
+          if (!/^https?:$/.test(u.protocol) || site(u) !== site(base)) continue;
+          u.hash = "";
+          const s = u.toString(), tagTxt = m[0];
+          if (/rel=["'][^"']*nofollow/i.test(tagTxt)) continue;
+          if (/\.ics(\?|$)/i.test(u.pathname) || /text\/calendar/i.test(tagTxt)) {
+            feeds.push(s);
+            continue;
+          }
+          if (/\.(pdf|jpe?g|png|gif|webp|svg|zip|docx?|xlsx?|css|js|mp4|mp3)$/i.test(u.pathname) || m[1].toLowerCase() === "link" && !/rel=["']next/i.test(tagTxt)) continue;
+          const next = /rel=["']next/i.test(tagTxt) || u.pathname === new URL(url).pathname && /[?&](page|p|pg)=\d+/i.test(u.search) || /\/page\/\d+\/?$/.test(u.pathname);
+          links.push({ url: s, next });
+        }
+      }
+      return { events, links, feeds, noindex };
+    }
+    var EVENTY = /(event|whats-on|what-s-on|whatson|course|training|show|festival|conference|exhibition|programme|fixture|calendar|diary|agenda|workshop)/i;
+    async function crawl(src, o) {
+      const opt = { ua: o.ua, allowPrivate: !!o.allowPrivate }, maxPages = o.maxPages || 25, until = Date.now() + (o.budgetMs || 12e4);
+      const rb = await robotsFor(src.url, opt);
+      if (rb.all === false) return { ok: false, error: "We are staying away: " + rb.why + ".", pages: 0, events: [] };
+      if (!allowed(rb, src.url)) return { ok: false, error: "This site\u2019s robots.txt asks crawlers not to read that page, so we don\u2019t.", pages: 0, events: [], blocked: true };
+      const gap = Math.max(1500, Math.min(rb.delay != null ? rb.delay * 1e3 : 0, 6e4)), seen = /* @__PURE__ */ new Set(), found = [];
+      const queue = [{ url: src.url, depth: 0 }], codes = {};
+      let pages = 0, last = 0, err = "", read = 0, empty = 0;
+      const note = (k) => {
+        codes[k] = (codes[k] || 0) + 1;
+      };
+      const baseDir = (() => {
+        const u = new URL(src.url);
+        return u.pathname.replace(/[^/]*$/, "");
+      })();
+      while (queue.length && pages < maxPages && Date.now() < until) {
+        const q = queue.shift(), key = normUrl(q.url);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (!allowed(rb, q.url)) continue;
+        const wait = last + gap - Date.now();
+        if (wait > 0) {
+          if (Date.now() + wait > until) break;
+          await sleep(wait);
+        }
+        last = Date.now();
+        pages++;
+        let page;
+        try {
+          page = await get(q.url, opt);
+        } catch (e) {
+          note("failed: " + String(e.message).slice(0, 60));
+          if (!q.depth) err = e.message;
+          continue;
+        }
+        if (page.status !== 200) {
+          note(String(page.status));
+          if (!q.depth && q.feed !== true) err = "The page answered " + page.status + ".";
+          if (page.status === 429 || page.status === 503) {
+            err = err || "The site asked us to slow down (" + page.status + "), so we stopped for today.";
+            break;
+          }
+          continue;
+        }
+        read++;
+        const x = extract(page, src.url), evs = x.events;
+        if (x.noindex) note("noindex");
+        if (q.depth === 1 && !evs.length && !x.noindex) evs.push(...textEvent(page.text, page.url));
+        if (!evs.length) empty++;
+        found.push(...evs);
+        if (q.depth === 0) {
+          x.feeds.slice(0, 3).forEach((f) => queue.unshift({ url: f, depth: 2, feed: true }));
+          x.links.filter((l) => l.next).slice(0, 5).forEach((l) => queue.push({ url: l.url, depth: 0 }));
+          const known = new Set(found.map((e) => normUrl(e.url)));
+          const leaf = (l) => /\d/.test(new URL(l.url).pathname.split("/").filter(Boolean).pop() || "") && !new URL(l.url).search ? 0 : 1;
+          x.links.filter((l) => !l.next && normUrl(l.url) !== key && (EVENTY.test(l.url) || new URL(l.url).pathname.startsWith(baseDir)) && new URL(l.url).pathname.length > baseDir.length && !known.has(normUrl(l.url))).map((l, i) => [leaf(l), i, l]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 40).forEach(([, , l]) => queue.push({ url: l.url, depth: 1 }));
+        }
+      }
+      const stats = { tried: pages, read, empty, codes };
+      if (!pages) return { ok: false, error: err || "Nothing could be read.", pages, events: [], stats };
+      const failed = pages - read, why = !found.length && !err ? failed ? failed + " of " + pages + " pages could not be read (" + Object.entries(codes).filter(([k]) => k !== "noindex").map(([k, n]) => k + (n > 1 ? " \xD7" + n : "")).join(", ") + ")." : "We read " + read + " page" + (read === 1 ? "" : "s") + " but found no event dates on them." : "";
+      return { ok: !err || found.length > 0, error: found.length ? "" : err || why, pages, events: tidy(found, o.today), stats };
+    }
+    function tidy(list, today) {
+      const by = /* @__PURE__ */ new Map();
+      list.forEach((e) => {
+        if (!e || !ISO.test(e.start) || !ISO.test(e.end) || today && e.end < today || e.end > add(e.start, 120)) return;
+        const k = e.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + "|" + e.start, old = by.get(k);
+        if (!old) return by.set(k, e);
+        ["end", "venue", "town", "postcode", "lat", "lng", "attendance"].forEach((f) => {
+          if (!old[f] && e[f]) old[f] = e[f];
+        });
+        if (e.end > old.end) old.end = e.end;
+        if (old.how === "data" && e.how === "data" && e.url && normUrl(e.url) !== normUrl(old.url) && e.url.length > old.url.length) old.url = e.url;
+      });
+      return [...by.values()].sort((a, b) => a.start.localeCompare(b.start)).slice(0, 400);
+    }
+    module.exports = function Finder({ kv, cfg, log }) {
+      const ua = TOKEN + "/1.0 (+" + (cfg.baseUrl || "https://booking-booster.co.uk") + "/bot)";
+      const allowPrivate = !!process.env.EVENTS_ALLOW_PRIVATE_FOR_TESTS;
+      const read = async (k) => {
+        try {
+          const r = await kv.get(k);
+          return r ? JSON.parse(r.v) : null;
+        } catch (_) {
+          return null;
+        }
+      };
+      const write = (k, o) => kv.set(k, JSON.stringify(o));
+      const seedFile = (cfg.events || {}).seeds;
+      let seeds = [];
+      if (seedFile !== "off") try {
+        seeds = (seedFile ? JSON.parse(require_vfs().readFileSync(seedFile, "utf8")) : require_event_sources()).sources.map((s) => Object.assign({ id: sid(s.url), seed: true, by: [], near: G.point(s.postcode) ? Object.assign(G.point(s.postcode), { place: s.place || "" }) : null }, s));
+      } catch (_) {
+      }
+      seeds = seeds.filter((x, i) => seeds.findIndex((y) => y.id === x.id) === i);
+      let lock = Promise.resolve();
+      const locked = (fn) => lock = lock.then(fn, fn);
+      async function all() {
+        const mine = await read("events:sources") || [];
+        const ids = new Set(mine.map((s) => s.id));
+        return mine.concat(seeds.filter((s) => !ids.has(s.id)));
+      }
+      const today = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      async function run(src, quick) {
+        const r = await crawl(src, { ua, allowPrivate, today: today(), maxPages: quick ? 6 : 25, budgetMs: quick ? 25e3 : 12e4 });
+        const old = await read("events:src:" + src.id) || {};
+        const keep = r.ok ? r.events : r.blocked ? [] : (old.events || []).filter((e) => e.end >= today());
+        await write("events:src:" + src.id, { at: (/* @__PURE__ */ new Date()).toISOString(), ok: r.ok, error: r.error || "", pages: r.pages, stats: r.stats || null, events: keep });
+        log && log("events", "read", src.url, r.pages + " pages", keep.length + " events", r.error || "", JSON.stringify(r.stats || {}));
+        return Object.assign({}, r, { events: keep });
+      }
+      async function forHost(wid, loc, radius) {
+        const list = (await all()).filter((s) => s.by.includes(wid) || loc && s.near && G.miles(loc, s.near) <= (radius || 25) + 15);
+        return Promise.all(list.map(async (s) => {
+          const x = await read("events:src:" + s.id) || {};
+          return { id: s.id, url: s.url, name: s.name, site: site(s.url), mine: s.by.includes(wid), seed: !!s.seed, place: (s.near || {}).place || "", at: x.at || null, ok: x.ok !== false, error: x.error || "", n: (x.events || []).filter((e) => e.end >= today()).length };
+        }));
+      }
+      async function near(wid, loc, o) {
+        const list = (await all()).filter((s) => s.by.includes(wid) || loc && s.near && G.miles(loc, s.near) <= o.radius + 15);
+        const out = [], stats = [];
+        for (const s of list) {
+          const x = await read("events:src:" + s.id) || {};
+          let n = 0;
+          (x.events || []).forEach((e) => {
+            const at = e.lat && e.lng ? { lat: e.lat, lng: e.lng } : G.point(e.postcode) || s.near;
+            if (loc && at && G.miles(loc, at) > o.radius) return;
+            if (!at && !s.by.includes(wid)) return;
+            out.push(Object.assign({}, e, { site: site(e.url || s.url) || site(s.url), sourceId: s.id }));
+            n++;
+          });
+          stats.push({ id: s.id, name: s.name, n, error: x.at ? x.ok === false ? x.error : "" : "not read yet" });
+        }
+        return { events: out, sources: stats };
+      }
+      async function watch(wid, url, near0, name) {
+        let u;
+        try {
+          u = new URL(String(url).trim());
+        } catch (_) {
+          throw new Error("That is not a valid link.");
+        }
+        if (!/^https?:$/.test(u.protocol)) throw new Error("Links start with https://");
+        u.hash = "";
+        const id = sid(u.toString());
+        const rb = await robotsFor(u.toString(), { ua, allowPrivate });
+        if (rb.all === false) throw new Error("We could not check that site\u2019s rules for crawlers (" + rb.why + "), so we won\u2019t read it. Try again later, or add its events yourself.");
+        if (!allowed(rb, u.toString())) throw new Error("That site\u2019s robots.txt asks crawlers not to read this page, so we won\u2019t. Add its events yourself instead.");
+        const src = await locked(async () => {
+          const list = await read("events:sources") || [], s0 = seeds.find((x2) => x2.id === id);
+          let s = list.find((x2) => x2.id === id);
+          if (!s) {
+            s = Object.assign({ id, url: u.toString(), name: String(name || "").replace(/[<>]/g, "").trim().slice(0, 80) || site(u.toString()), near: near0 || s0 && s0.near || null, by: [], added: today() });
+            if (list.length >= 5e3) throw new Error("We are watching too many pages right now.");
+            list.push(s);
+          }
+          if (!s.by.includes(wid)) s.by.push(wid);
+          if (!s.near && near0) s.near = near0;
+          await write("events:sources", list);
+          return s;
+        });
+        const x = await read("events:src:" + id);
+        const r = x && x.at && Date.now() - new Date(x.at) < 6 * 36e5 ? x : await run(src, true);
+        return { id, n: (r.events || []).length, error: r.ok === false ? r.error : "" };
+      }
+      async function unwatch(wid, id) {
+        await locked(async () => {
+          const list = await read("events:sources") || [];
+          const s = list.find((x) => x.id === id);
+          if (!s) return;
+          s.by = s.by.filter((x) => x !== wid);
+          await write("events:sources", s.by.length ? list : list.filter((x) => x.id !== id));
+        });
+      }
+      async function due(limit, budgetMs) {
+        const stop = Date.now() + (budgetMs || 24e4), list = await all(), pick = [];
+        for (const s of list) {
+          if (!s.seed && !s.by.length) continue;
+          const x = await read("events:src:" + s.id) || {}, age = x.at ? Date.now() - new Date(x.at) : Infinity;
+          if (age > (x.ok === false || !(x.events || []).length ? 6 : 22) * 36e5) pick.push([age, s]);
+        }
+        pick.sort((a, b) => b[0] - a[0]);
+        let n = 0;
+        for (const [, s] of pick.slice(0, limit || 3)) {
+          if (Date.now() > stop) break;
+          try {
+            await run(s);
+            n++;
+          } catch (e) {
+            log && log("events", s.url, e.message);
+          }
+        }
+        return n;
+      }
+      async function warm(loc, radius, max) {
+        if (!loc) return 0;
+        let n = 0;
+        for (const s of seeds.filter((s2) => s2.near && G.miles(loc, s2.near) <= radius + 15)) {
+          if (n >= (max || 2)) break;
+          if (!await read("events:src:" + s.id)) {
+            await run(s, true);
+            n++;
+          }
+        }
+        return n;
+      }
+      return { forHost, near, watch, unwatch, due, warm, run, all, ua };
+    };
+    Object.assign(module.exports, { robots, allowed, extract, jsonLd, microdata, ics, textEvent, crawl, tidy, classify, TOKEN, sid });
+  }
+});
+
+// server/affiliates.js
+var require_affiliates = __commonJS({
+  "server/affiliates.js"(exports, module) {
+    var crypto = __require("crypto");
+    module.exports = function({ db, cfg, auth, msg, stripe, log, h }) {
+      const A = cfg.affiliate, DAY = 864e5, now = () => Date.now();
+      const E = h.esc;
+      const q = {
+        byCode: db.prepare("SELECT * FROM affiliates WHERE code = ?"),
+        byEmail: db.prepare("SELECT * FROM affiliates WHERE lower(email) = lower(?)"),
+        byId: db.prepare("SELECT * FROM affiliates WHERE id = ?"),
+        all: db.prepare("SELECT * FROM affiliates ORDER BY created_at DESC"),
+        add: db.prepare("INSERT INTO affiliates (id, code, email, name, pass, payout, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"),
+        setDetails: db.prepare("UPDATE affiliates SET name = ?, payout = ? WHERE id = ?"),
+        setStatus: db.prepare("UPDATE affiliates SET status = ? WHERE id = ?"),
+        setPass: db.prepare("UPDATE affiliates SET pass = ? WHERE id = ?"),
+        addSess: db.prepare("INSERT INTO aff_sessions (token, affiliate_id, expires_at) VALUES (?, ?, ?)"),
+        sess: db.prepare("SELECT a.* FROM aff_sessions s JOIN affiliates a ON a.id = s.affiliate_id WHERE s.token = ? AND s.expires_at > ?"),
+        delSess: db.prepare("DELETE FROM aff_sessions WHERE token = ?"),
+        delSessFor: db.prepare("DELETE FROM aff_sessions WHERE affiliate_id = ?"),
+        click: db.prepare("INSERT INTO aff_clicks (affiliate_id, day, n) VALUES (?, ?, 1) ON CONFLICT (affiliate_id, day) DO UPDATE SET n = aff_clicks.n + 1"),
+        clicks: db.prepare("SELECT day, n FROM aff_clicks WHERE affiliate_id = ?"),
+        referral: db.prepare("SELECT * FROM referrals WHERE workspace_id = ?"),
+        addRef: db.prepare("INSERT OR IGNORE INTO referrals (workspace_id, affiliate_id, how, created_at) VALUES (?, ?, ?, ?)"),
+        refsFor: db.prepare("SELECT r.*, w.billing_status, w.slug FROM referrals r LEFT JOIN workspaces w ON w.id = r.workspace_id WHERE r.affiliate_id = ? ORDER BY r.created_at"),
+        allRefs: db.prepare("SELECT r.*, w.billing_status, w.slug, a.code FROM referrals r LEFT JOIN workspaces w ON w.id = r.workspace_id JOIN affiliates a ON a.id = r.affiliate_id ORDER BY r.created_at DESC"),
+        addComm: db.prepare("INSERT OR IGNORE INTO commissions (id, affiliate_id, workspace_id, kind, source, gross, amount, reversed, refs, note, clears_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?)"),
+        comm: db.prepare("SELECT * FROM commissions WHERE id = ?"),
+        commByRef: db.prepare("SELECT * FROM commissions WHERE source = 'stripe' AND refs LIKE ?"),
+        commsFor: db.prepare("SELECT * FROM commissions WHERE affiliate_id = ? ORDER BY created_at DESC"),
+        recentComms: db.prepare("SELECT c.*, a.code, w.slug FROM commissions c JOIN affiliates a ON a.id = c.affiliate_id LEFT JOIN workspaces w ON w.id = c.workspace_id ORDER BY c.created_at DESC LIMIT 200"),
+        setReversed: db.prepare("UPDATE commissions SET reversed = ?, note = ?, updated_at = ? WHERE id = ?"),
+        addPayout: db.prepare("INSERT INTO aff_payouts (affiliate_id, amount, reference, created_at) VALUES (?, ?, ?, ?)"),
+        payoutsFor: db.prepare("SELECT * FROM aff_payouts WHERE affiliate_id = ? ORDER BY created_at DESC"),
+        kvGet: db.prepare("SELECT v FROM kv WHERE k = ?"),
+        kvSet: db.prepare("INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)"),
+        kvDel: db.prepare("DELETE FROM kv WHERE k = ?"),
+        wsByEmail: db.prepare("SELECT u.workspace_id AS id FROM users u WHERE lower(u.email) = lower(?)"),
+        wsBySlug: db.prepare("SELECT id FROM workspaces WHERE slug = ? AND kind = 'live'")
+      };
+      const sha = (s) => crypto.createHash("sha256").update(String(s)).digest("hex");
+      const money = (p) => (p < 0 ? "-" : "") + "\xA3" + (Math.abs(p) / 100).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const day = (t) => new Date(t).toISOString().slice(0, 10);
+      const date = (t) => new Date(t).toLocaleDateString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", year: "numeric" });
+      const cleanCode = (c) => String(c || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 24);
+      const validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+      const KIND = { setup: "Package", plan: "Plan payment", other: "Other payment" };
+      const STATUS = { trial: "Signed up, not paid yet", active: "Paying", past_due: "Payment failed", cancelled: "Cancelled" };
+      const pct = A.rate + "%";
+      async function newCode(name) {
+        const base = String(name).split(/\s+/)[0].toLowerCase().normalize("NFKD").replace(/[^a-z]/g, "").slice(0, 10) || "partner";
+        for (let i = 0; i < 30; i++) {
+          const c = base + (100 + crypto.randomInt(900));
+          if (!await q.byCode.get(c)) return c;
+        }
+        return "p" + crypto.randomBytes(5).toString("hex");
+      }
+      const active = async (code) => {
+        const c = cleanCode(code);
+        if (!c) return null;
+        const a = await q.byCode.get(c);
+        return a && a.status === "active" ? a : null;
+      };
+      async function create({ name, email, password, payout }) {
+        const id = "af_" + crypto.randomBytes(9).toString("base64url"), code = await newCode(name);
+        await q.add.run(id, code, email.trim().toLowerCase(), name, auth.hashPass(password), String(payout || "").slice(0, 500), "active", now());
+        return q.byId.get(id);
+      }
+      async function startSession(id) {
+        const tok = crypto.randomBytes(32).toString("base64url");
+        await q.addSess.run(sha(tok), id, now() + 30 * DAY);
+        return tok;
+      }
+      const me = async (req) => {
+        const t = h.cookies(req).bb_aff;
+        return t ? await q.sess.get(sha(t), now()) || null : null;
+      };
+      const link = (a) => cfg.baseUrl + "/r/" + a.code;
+      const REF_PAGES = ["/", "/pricing", "/start", "/help", "/partners"];
+      async function capture(req, res, u) {
+        let code, to;
+        const m = u.pathname.match(/^\/r\/([A-Za-z0-9-]{1,30})\/?$/);
+        if (m) {
+          code = m[1];
+          const t = String(u.searchParams.get("to") || "");
+          to = REF_PAGES.includes(t) ? t : "/";
+        } else if (req.method === "GET" && u.searchParams.has("ref") && REF_PAGES.includes(u.pathname)) {
+          code = u.searchParams.get("ref");
+          const s = new URLSearchParams(u.search);
+          s.delete("ref");
+          to = u.pathname + (String(s) ? "?" + s : "");
+        } else return false;
+        const a = await active(code), headers = {};
+        if (a) {
+          headers["set-cookie"] = h.cookie("bb_ref", a.code, A.cookieDays * 86400);
+          if (auth.limit("affclick:" + h.ip(req) + ":" + a.code, 1, DAY)) await q.click.run(a.id, day(now()));
+        }
+        h.redirect(res, to, headers);
+        return true;
+      }
+      const cookieCode = (req) => cleanCode(h.cookies(req).bb_ref);
+      async function forSignup(req, typed, email) {
+        const t = cleanCode(typed), c = cookieCode(req);
+        let a = null, how = "";
+        if (t) {
+          a = await active(t);
+          how = "code";
+          if (!a && t !== c) throw Object.assign(new Error("We could not find that referral code. Check it, or leave it empty."), { status: 400 });
+        }
+        if (!a && c) {
+          a = await active(c);
+          how = "link";
+        }
+        if (!a || a.email.toLowerCase() === String(email || "").toLowerCase()) return null;
+        return { a, how };
+      }
+      async function attach(wid, ref) {
+        if (!ref) return;
+        const r = await q.addRef.run(wid, ref.a.id, ref.how, now());
+        if (!r.changes) return;
+        msg.sendEmail({ to: ref.a.email, subject: "Someone you referred just joined Bookingbooster", text: "Hi " + ref.a.name.split(" ")[0] + ",\n\nA host you referred has just created a Bookingbooster account. You earn " + pct + " of everything they pay us, starting with their first payment, for as long as they stay.\n\nSee your referrals: " + cfg.baseUrl + "/partners/dashboard\n\n" + cfg.leads.signoff, meta: { affiliate: ref.a.id } });
+      }
+      async function record({ workspaceId, id, kind, source, gross, refs, note }) {
+        if (!workspaceId || !(gross > 0)) return null;
+        const r = await q.referral.get(workspaceId);
+        if (!r) return null;
+        const a = await q.byId.get(r.affiliate_id);
+        if (!a || a.status !== "active") return null;
+        const amount = Math.round(gross * A.rate / 100), t = now();
+        const res = await q.addComm.run(id, a.id, workspaceId, KIND[kind] ? kind : "other", source, Math.round(gross), amount, " " + (refs || []).filter(Boolean).join(" ") + " ", String(note || "").slice(0, 200), t + A.holdDays * DAY, t, t);
+        if (res.changes) log("partner", a.code, kind, money(amount));
+        return { code: a.code, amount, created: !!res.changes };
+      }
+      async function reverse(c, amount, why) {
+        const rev = Math.max(c.reversed, Math.min(c.amount, Math.round(amount)));
+        if (rev !== c.reversed) await q.setReversed.run(rev, String(why || c.note || "").slice(0, 200), now(), c.id);
+        return rev;
+      }
+      const str = (x) => typeof x === "string" && x ? x : null;
+      async function stripeEvent(ev, findWorkspace) {
+        const o = ev.data && ev.data.object || {};
+        if (ev.type === "invoice.paid") {
+          const sd = o.subscription_details || o.parent && o.parent.subscription_details || {};
+          const wid = sd.metadata && sd.metadata.workspace || o.metadata && o.metadata.workspace || o.customer && await findWorkspace(o.customer);
+          const pays = (o.payments && o.payments.data || []).map((p) => p.payment || {});
+          const refs = [o.id, str(o.charge), str(o.payment_intent)].concat(pays.map((p) => str(p.payment_intent)), pays.map((p) => str(p.charge)));
+          const kind = o.subscription || /^subscription/.test(o.billing_reason || "") ? "plan" : "other";
+          return record({ workspaceId: wid, id: "stripe:" + o.id, kind, source: "stripe", gross: o.amount_paid, refs });
+        }
+        const lost = ev.type === "charge.dispute.closed" && o.status === "lost";
+        if (ev.type !== "charge.refunded" && !lost) return null;
+        const keys = (lost ? [o.charge, o.payment_intent] : [o.invoice, o.id, o.payment_intent]).map(str).filter(Boolean);
+        let c = null;
+        for (const k of keys) {
+          c = await q.commByRef.get("% " + k + " %");
+          if (c) break;
+        }
+        if (!c && str(o.payment_intent) && stripe && stripe.enabled) {
+          try {
+            const ip = await stripe.api("GET", "/invoice_payments", { payment: { type: "payment_intent", payment_intent: o.payment_intent }, limit: 1 });
+            const inv = ip.data && ip.data[0] && ip.data[0].invoice;
+            if (inv) c = await q.comm.get("stripe:" + (typeof inv === "string" ? inv : inv.id));
+          } catch (_) {
+          }
+        }
+        if (!c) return null;
+        const share = lost ? Math.min(1, (o.amount || c.gross) / c.gross) : Math.min(1, (o.amount_refunded || 0) / (o.amount || c.gross));
+        return { id: c.id, reversed: await reverse(c, c.amount * share, lost ? "Chargeback lost" : share >= 1 ? "Refunded" : "Part refunded") };
+      }
+      async function summary(a, t = now()) {
+        const comms = await q.commsFor.all(a.id), payouts = await q.payoutsFor.all(a.id), refs = await q.refsFor.all(a.id), clicks = await q.clicks.all(a.id);
+        let hold = 0, cleared = 0, earned = 0;
+        for (const c of comms) {
+          const net = c.amount - c.reversed;
+          earned += net;
+          if (c.clears_at > t) hold += net;
+          else cleared += net;
+        }
+        const paid = payouts.reduce((s, p) => s + Number(p.amount), 0), since = day(t - 30 * DAY);
+        return { comms, payouts, refs, hold, earned, paid, due: cleared - paid, clicks: clicks.reduce((s, c) => s + Number(c.n), 0), clicks30: clicks.filter((c) => c.day >= since).reduce((s, c) => s + Number(c.n), 0), paying: refs.filter((r) => r.billing_status === "active").length };
+      }
+      const commStatus = (c, t) => c.reversed >= c.amount ? c.note || "Refunded" : (c.reversed ? "Part refunded, " : "") + (c.clears_at > t ? "on hold until " + date(c.clears_at) : "cleared");
+      const page = (title, inner, wide) => h.authPage(title + " \xB7 Bookingbooster partners", inner, wide);
+      const terms = '<div class="card"><b>How it works</b><ul style="margin:8px 0 0;padding-left:20px;color:var(--mut)"><li>You get your own link and a code. Hosts who sign up through either are yours for life.</li><li>You earn <b>' + pct + "</b> of every plan or package payment they make to us, monthly or yearly, for as long as they keep paying.</li><li>Your link is remembered for " + A.cookieDays + " days. If a host clicks someone else's link later, the latest link counts. A code typed at sign-up always counts.</li><li>Each commission is held for " + A.holdDays + " days in case of a refund, then it is yours. If a payment is refunded, the same share of the commission is taken back.</li><li>We pay by bank transfer at the start of each month once you have " + money(A.minPayout) + " or more cleared.</li><li>You cannot refer yourself. No spam, no bidding on our name in search ads, and no promising things we do not offer. We can close an account that breaks these rules.</li></ul></div>";
+      function landing(o) {
+        o = o || {};
+        const inp = (l, n, t, ac, v) => "<label>" + l + '<input name="' + n + '" type="' + t + '" autocomplete="' + ac + '" value="' + E(v || "") + '" required></label>';
+        return page("Partner programme", "<h1>Earn " + pct + " for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. You earn " + pct + " of every plan and package payment, for as long as they stay with us.</p>" + terms + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + '<form class="card" method="post" action="/partners/join"><b>Join the programme</b>' + inp("Your name", "name", "text", "name", o.name) + inp("Email", "email", "email", "email", o.email) + inp("Password (at least 10 characters)", "password", "password", "new-password") + '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="agree" required style="margin-top:4px">I agree to the programme rules above and the <a href="/terms" target="_blank">terms</a>.</label><button>Get my link</button></form><div class="links"><a href="/partners/login">Partner sign in</a><a href="/">About Bookingbooster</a></div>');
+      }
+      function loginPage(o) {
+        o = o || {};
+        return page("Partner sign in", "<h1>Partner sign in</h1><p>Your link, referrals and commission.</p>" + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + (o.ok ? '<p class="ok">' + E(o.ok) + "</p>" : "") + '<form method="post" action="/partners/login"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || "") + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button>Sign in</button></form><div class="links"><a href="/partners/forgot">Forgot your password?</a><a href="/partners">Join the programme</a></div>');
+      }
+      async function dashboard(a, note) {
+        const t = now(), s = await summary(a, t), num = {};
+        s.refs.forEach((r, i) => {
+          num[r.workspace_id] = i + 1;
+        });
+        const stat = (n, l) => `<div><div style="font:600 24px/1.1 'Bricolage Grotesque',sans-serif">` + n + '</div><small style="color:var(--mut)">' + l + "</small></div>";
+        const tbl = (head, rows, empty) => rows.length ? '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px"><tr>' + head.map((x) => '<th align="left">' + x + "</th>").join("") + "</tr>" + rows.map((r) => '<tr style="border-top:1px solid var(--line)">' + r.map((x) => "<td>" + x + "</td>").join("") + "</tr>").join("") + "</table>" : '<p style="margin:8px 0 0">' + empty + "</p>";
+        return page("Your partner account", "<h1>Hi " + E(a.name.split(" ")[0]) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (a.status !== "active" ? '<p class="err">Your partner account is paused, so new payments do not earn commission. Email ' + E(cfg.company.support) + " to talk about it.</p>" : "") + '<div class="card"><b>Your link</b><p style="margin:6px 0 4px"><input readonly value="' + E(link(a)) + '" style="width:100%" onclick="this.select()"></p><p style="margin:0"><small>Or hosts can type your code <b>' + E(a.code) + "</b> when they sign up. Send people to a page with <code>?ref=" + E(a.code) + "</code> on the end, or to <code>" + E(link(a)) + '?to=/pricing</code>.</small></p></div><div class="card" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">' + stat(s.clicks30, "clicks, last 30 days") + stat(s.refs.length, "hosts signed up") + stat(s.paying, "paying now") + stat(money(s.earned), "earned in total") + stat(money(s.hold), "on hold") + stat(money(Math.max(0, s.due)), "ready to pay") + stat(money(s.paid), "paid to you") + "</div>" + (s.due < 0 ? "<p><small>A refund took back " + money(-s.due) + " that was already paid to you. It comes off your next payout.</small></p>" : s.due > 0 && s.due < A.minPayout ? "<p><small>We pay out once " + money(A.minPayout) + " has cleared.</small></p>" : "") + '<div class="card"><b>Hosts you referred</b>' + tbl(["", "Joined", "Status"], s.refs.map((r, i) => ["Host " + (i + 1), date(r.created_at), E(r.slug ? STATUS[r.billing_status] || "Signed up" : "Account closed")]), "Nobody yet. Share your link to get started.") + `<p style="margin:8px 0 0"><small>To protect their privacy we do not show hosts' names.</small></p></div><div class="card"><b>Commission</b>` + tbl(["Date", "Host", "For", "They paid", "You earn", "Status"], s.comms.map((c) => [date(c.created_at), "Host " + (num[c.workspace_id] || "?"), KIND[c.kind] || c.kind, money(c.gross), money(c.amount - c.reversed), E(commStatus(c, t))]), "Commission shows here as soon as a host you referred pays.") + '</div><div class="card"><b>Payouts</b>' + tbl(["Date", "Amount", "Reference"], s.payouts.map((p) => [date(p.created_at), money(p.amount), E(p.reference || "")]), "No payouts yet.") + '</div><form class="card" method="post" action="/partners/details"><b>Your details</b><label>Your name<input name="name" value="' + E(a.name) + '" required></label><label>Where we pay you<textarea name="payout" rows="3" style="font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF" placeholder="Account name, sort code and account number (or IBAN)">' + E(a.payout) + '</textarea></label><p style="margin:0"><small>Signed in as ' + E(a.email) + ". Only the Bookingbooster team sees these details.</small></p><button>Save</button></form>" + terms + '<form method="post" action="/partners/logout" style="margin-top:18px"><button class="sec" style="background:transparent;color:var(--p);border:1px solid var(--line)">Sign out</button></form>', "read");
+      }
+      async function route(req, res, u, p, m) {
+        if (await capture(req, res, u)) return true;
+        if (!(p === "/partners" || p.startsWith("/partners/"))) return false;
+        const html = (body, status) => {
+          h.send(res, status || 200, body, "text/html; charset=utf-8", { "cache-control": "no-store" });
+          return true;
+        };
+        const ip = h.ip(req);
+        if (p === "/partners" && m === "GET") {
+          if (await me(req)) {
+            h.redirect(res, "/partners/dashboard");
+            return true;
+          }
+          return html(landing());
+        }
+        if (p === "/partners/join" && m === "POST") {
+          const f = await h.formBody(req), name = String(f.name || "").trim().slice(0, 80), email = String(f.email || "").trim().toLowerCase().slice(0, 160), pw = String(f.password || "");
+          const back = (err) => html(landing({ err, name, email }), 400);
+          if (!auth.limit("affjoin:" + ip, 6, 36e5)) return back("Too many sign-ups from here. Try again later.");
+          if (name.length < 2) return back("Enter your name.");
+          if (!validEmail(email)) return back("Enter a valid email.");
+          if (pw.length < 10) return back("Use a password of at least 10 characters.");
+          if (!f.agree) return back("Tick the box to agree to the programme rules.");
+          if (await q.byEmail.get(email)) return back("There is already a partner account for that email. Sign in instead.");
+          const a2 = await create({ name, email, password: pw });
+          msg.sendEmail({ to: a2.email, subject: "Your Bookingbooster partner link", text: "Hi " + name.split(" ")[0] + ",\n\nWelcome to the Bookingbooster partner programme. Your link is " + link(a2) + " and your code is " + a2.code + ".\n\nYou earn " + pct + " of everything the hosts you refer pay us, for as long as they stay. Your account: " + cfg.baseUrl + "/partners/dashboard\n\n" + cfg.leads.signoff, meta: { affiliate: a2.id } });
+          h.redirect(res, "/partners/dashboard", { "set-cookie": h.cookie("bb_aff", await startSession(a2.id), 30 * 86400) });
+          return true;
+        }
+        if (p === "/partners/login") {
+          if (m !== "POST") return html(loginPage());
+          const f = await h.formBody(req), email = String(f.email || "").trim().toLowerCase();
+          if (!auth.limit("afflogin:" + ip, 10, 9e5)) return html(loginPage({ err: "Too many tries. Wait a few minutes.", email }), 429);
+          const a2 = await q.byEmail.get(email);
+          if (!a2 || !auth.checkPass(String(f.password || ""), a2.pass)) return html(loginPage({ err: "That email and password do not match.", email }), 401);
+          h.redirect(res, "/partners/dashboard", { "set-cookie": h.cookie("bb_aff", await startSession(a2.id), 30 * 86400) });
+          return true;
+        }
+        if (p === "/partners/logout" && m === "POST") {
+          const tk = h.cookies(req).bb_aff;
+          if (tk) await q.delSess.run(sha(tk));
+          h.redirect(res, "/partners/login", { "set-cookie": h.cookie("bb_aff", "", 0) });
+          return true;
+        }
+        if (p === "/partners/forgot") {
+          if (m !== "POST") return html(page("Reset password", '<h1>Reset your password</h1><p>We will email you a link.</p><form method="post"><label>Email<input name="email" type="email" required></label><button>Send the link</button></form>'));
+          const f = await h.formBody(req), a2 = auth.limit("affreset:" + ip, 5, 36e5) && await q.byEmail.get(String(f.email || "").trim());
+          if (a2) {
+            const tok = crypto.randomBytes(24).toString("base64url");
+            await q.kvSet.run("affreset:" + sha(tok), JSON.stringify({ id: a2.id, exp: now() + 36e5 }));
+            await msg.sendEmail({ to: a2.email, subject: "Reset your Bookingbooster partner password", text: "Choose a new password here (the link works for an hour): " + cfg.baseUrl + "/partners/reset?t=" + tok + "\n\nIf you did not ask, ignore this email.", meta: { affiliate: a2.id } });
+          }
+          return html(loginPage({ ok: "If there is a partner account for that email, a reset link is on its way." }));
+        }
+        if (p === "/partners/reset") {
+          const f = m === "POST" ? await h.formBody(req) : { t: u.searchParams.get("t") }, k = "affreset:" + sha(f.t || ""), row = await q.kvGet.get(k);
+          let r = null;
+          try {
+            r = row && JSON.parse(row.v);
+          } catch (_) {
+          }
+          if (!r || r.exp < now()) return html(page("Link expired", '<h1>That link has expired.</h1><p><a href="/partners/forgot">Ask for a new one</a></p>'), 400);
+          if (m !== "POST" || String(f.password || "").length < 10) return html(page("New password", "<h1>Choose a new password</h1>" + (m === "POST" ? '<p class="err">Use at least 10 characters.</p>' : "") + '<form method="post"><input type="hidden" name="t" value="' + E(f.t) + '"><label>New password<input name="password" type="password" minlength="10" required autocomplete="new-password"></label><button>Save</button></form>'), m === "POST" ? 400 : 200);
+          await q.setPass.run(auth.hashPass(f.password), r.id);
+          await q.delSessFor.run(r.id);
+          await q.kvDel.run(k);
+          return html(loginPage({ ok: "Password changed. Sign in with the new one." }));
+        }
+        const a = await me(req);
+        if (!a) {
+          h.redirect(res, "/partners/login");
+          return true;
+        }
+        if (p === "/partners/dashboard" && m === "GET") return html(await dashboard(a));
+        if (p === "/partners/details" && m === "POST") {
+          const f = await h.formBody(req), name = String(f.name || "").trim().slice(0, 80);
+          await q.setDetails.run(name.length >= 2 ? name : a.name, String(f.payout || "").trim().slice(0, 500), a.id);
+          return html(await dashboard(await q.byId.get(a.id), "Saved."));
+        }
+        h.notFound(res);
+        return true;
+      }
+      async function renderAdmin(res, note, err, who) {
+        const t = now(), list = await q.all.all(), refs = await q.allRefs.all(), comms = await q.recentComms.all(), ui = h.ui;
+        const sums = await Promise.all(list.map((a) => summary(a, t)));
+        const tot = (k) => sums.reduce((s, x) => s + x[k], 0);
+        const prow = list.map((a, i) => {
+          const s = sums[i];
+          const pay = '<form class="adm-form" method="post" action="/admin/affiliates/payout"><input type="hidden" name="id" value="' + E(a.id) + '"><div class="row"><input name="amount" type="number" step="0.01" min="0.01" value="' + (s.due > 0 ? (s.due / 100).toFixed(2) : "") + '" placeholder="\xA3" style="width:90px"><input name="reference" placeholder="Bank reference" style="width:130px"><button class="btn sm primary"' + (s.due > 0 ? "" : " disabled") + ">Mark paid</button></div></form>";
+          const st = '<form method="post" action="/admin/affiliates/status" style="margin-top:6px"><input type="hidden" name="id" value="' + E(a.id) + '"><input type="hidden" name="status" value="' + (a.status === "active" ? "paused" : "active") + '"><button class="btn sm">' + (a.status === "active" ? "Pause" : "Reactivate") + "</button></form>";
+          return "<tr><td><b>" + E(a.name) + "</b> " + (a.status !== "active" ? ui.pill("bad", "Paused") : "") + "<br><small>" + E(a.email) + "<br>Code " + E(a.code) + " \xB7 joined " + date(a.created_at) + "</small></td><td>" + s.clicks + " clicks<br>" + s.refs.length + " hosts<br>" + s.paying + " paying</td><td>Earned " + money(s.earned) + "<br>On hold " + money(s.hold) + "<br><b>Due " + money(s.due) + "</b>" + (s.due > 0 && s.due < A.minPayout ? "<br><small>under " + money(A.minPayout) + "</small>" : "") + "<br>Paid " + money(s.paid) + '</td><td><small style="white-space:pre-wrap">' + (a.payout ? E(a.payout) : "No payout details yet") + "</small></td><td>" + pay + st + "</td></tr>";
+        });
+        const opts = refs.filter((r) => r.slug).map((r) => [r.workspace_id, r.slug + " (" + r.code + ")"]);
+        const crow = comms.map((c) => "<tr><td>" + date(c.created_at) + "</td><td>" + E(c.code) + "</td><td>" + E(c.slug || "closed") + "</td><td>" + E(KIND[c.kind] || c.kind) + " \xB7 " + (c.source === "bank" ? "bank transfer" : "card") + "</td><td>" + money(c.gross) + "</td><td>" + money(c.amount - c.reversed) + "</td><td>" + E(commStatus(c, t)) + "</td><td>" + (c.reversed < c.amount ? '<form method="post" action="/admin/affiliates/reverse"><input type="hidden" name="id" value="' + E(c.id) + '"><button class="btn sm">Refunded</button></form>' : "") + "</td></tr>");
+        const bank = '<form class="adm-form" method="post" action="/admin/affiliates/bank">' + (opts.length ? ui.field("workspace", "", "Host", { options: opts }) + ui.field("amount", "", "Amount received (\xA3, as paid)", { type: "number", req: true, extra: ' step="0.01" min="0.01"' }) + ui.field("kind", "plan", "For", { options: [["plan", "Plan payment"], ["setup", "Package"], ["other", "Other"]] }) + ui.field("reference", "", "Bank reference", { req: true }) + '<button class="btn primary">Record payment and commission</button>' : "<p>No referred hosts yet.</p>") + "</form>";
+        const linkf = '<form class="adm-form" method="post" action="/admin/affiliates/link"><p class="adm-help">For a host who was referred but did not use the link or code. Only hosts without a partner can be linked, and only payments from now on earn commission.</p>' + ui.field("host", "", "Host sign-in email or site address name", { req: true }) + ui.field("code", "", "Partner code", { req: true }) + '<button class="btn">Link</button></form>';
+        h.send(res, err ? 400 : 200, ui.shell({
+          title: "Partners",
+          active: "partners",
+          email: who,
+          note,
+          err,
+          sub: "Partners earn " + pct + " of every payment from hosts they referred, for life. Commission clears after " + A.holdDays + " days; pay anyone due " + money(A.minPayout) + ' or more by bank transfer, then mark it paid here. Sign-up page: <a href="/partners">/partners</a>',
+          body: '<div class="adm-kpis">' + ui.kpi("Partners", list.length, "", refs.length + " hosts referred") + ui.kpi("Due now", money(Math.max(0, tot("due"))), "", "cleared, not paid yet", true) + ui.kpi("On hold", money(tot("hold")), "", "clears within " + A.holdDays + " days") + ui.kpi("Paid out", money(tot("paid")), "", "all time") + "</div>" + ui.card("Partners", "", ui.table(["Partner", "Referrals", "Commission", "Pay to", ""], prow, "Nobody has joined yet. Share /partners.")) + '<div class="adm-cols">' + ui.card("Record a bank transfer from a referred host", "", bank) + ui.card("Link a host to a partner", "", linkf) + "</div>" + ui.card("Commission", "", '<p class="adm-help">Card refunds and lost chargebacks come back from Stripe by themselves. Use Refunded for a bank transfer you paid back.</p>' + ui.table(["Date", "Partner", "Host", "For", "Paid", "Commission", "Status", ""], crow, "No commission yet."))
+        }), "text/html; charset=utf-8");
+        return true;
+      }
+      async function admin(req, res, p, m, who) {
+        const adminPage = (r, note, err) => renderAdmin(r, note, err, who);
+        if (p === "/admin/affiliates" && m === "GET") return adminPage(res);
+        if (m !== "POST") return false;
+        const f = await h.formBody(req), pence = (v) => Math.round(parseFloat(String(v || "").replace(/[£,\s]/g, "")) * 100);
+        if (p === "/admin/affiliates/payout") {
+          const a = await q.byId.get(String(f.id));
+          if (!a) return adminPage(res, null, "Partner not found.");
+          const amt = pence(f.amount), s = await summary(a);
+          if (!(amt > 0)) return adminPage(res, null, "Enter the amount you paid.");
+          if (amt > s.due) return adminPage(res, null, "That is more than the " + money(Math.max(0, s.due)) + " due to " + a.name + ".");
+          await q.addPayout.run(a.id, amt, String(f.reference || "").trim().slice(0, 120), now());
+          msg.sendEmail({ to: a.email, subject: "We have paid you " + money(amt), text: "Hi " + a.name.split(" ")[0] + ",\n\nWe have sent you " + money(amt) + " in partner commission" + (f.reference ? " (reference " + String(f.reference).slice(0, 120) + ")" : "") + ". It should reach your account within a couple of working days.\n\nYour statement: " + cfg.baseUrl + "/partners/dashboard\n\nThank you for sending hosts our way.\n\n" + cfg.leads.signoff, meta: { affiliate: a.id } });
+          return adminPage(res, "Marked " + money(amt) + " as paid to " + a.name + ".");
+        }
+        if (p === "/admin/affiliates/status") {
+          const a = await q.byId.get(String(f.id));
+          if (!a) return adminPage(res, null, "Partner not found.");
+          await q.setStatus.run(f.status === "active" ? "active" : "paused", a.id);
+          return adminPage(res, a.name + (f.status === "active" ? " is active again." : " is paused. Their link stops working and new payments earn nothing."));
+        }
+        if (p === "/admin/affiliates/bank") {
+          const amt = pence(f.amount), ref = String(f.reference || "").trim().slice(0, 120);
+          if (!(amt > 0) || !ref) return adminPage(res, null, "Enter the amount and the bank reference.");
+          const r = await record({ workspaceId: String(f.workspace || ""), id: "bank:" + sha(f.workspace + "|" + ref).slice(0, 20), kind: f.kind, source: "bank", gross: amt, refs: [], note: "Bank ref " + ref });
+          if (!r) return adminPage(res, null, "That host has no active partner, so there is no commission to record.");
+          return adminPage(res, r.created ? "Recorded. " + r.code + " earns " + money(r.amount) + "." : "That bank reference was already recorded for this host.");
+        }
+        if (p === "/admin/affiliates/reverse") {
+          const c = await q.comm.get(String(f.id));
+          if (!c) return adminPage(res, null, "Commission not found.");
+          await reverse(c, c.amount, "Refunded");
+          return adminPage(res, "Commission taken back.");
+        }
+        if (p === "/admin/affiliates/link") {
+          const host = String(f.host || "").trim(), a = await active(f.code);
+          const w = await q.wsByEmail.get(host) || await q.wsBySlug.get(host.toLowerCase());
+          if (!w) return adminPage(res, null, "No host account found for " + host + ".");
+          if (!a) return adminPage(res, null, "No active partner has that code.");
+          const r = await q.addRef.run(w.id, a.id, "team", now());
+          return adminPage(res, r.changes ? "Linked to " + a.name + "." : null, r.changes ? null : "That host already has a partner.");
+        }
+        return false;
+      }
+      return { route, capture, cookieCode, forSignup, attach, record, stripeEvent, summary, admin, me };
     };
   }
 });
@@ -17323,110 +20470,300 @@ var require_design = __commonJS({
       "Only state facts the host gave. Never invent prices, distances, awards, reviews or amenities."
     ];
     var CLICHES = ["nestled", "hidden gem", "boasts", "oasis", "perfect getaway", "home away from home", "look no further", "unwind and relax", "tranquil haven", "something for everyone", "whether you", "ideal base", "stunning", "breathtaking", "idyllic", "escape the hustle", "hustle and bustle", "elevate", "unparalleled", "world-class", "luxurious retreat", "a true haven", "in the heart of"];
+    var FONTS = {
+      cormorant: { name: "Cormorant & Jost", display: "Cormorant Garamond", text: "Jost", feel: "Light, literary serif", href: "family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500;600", disp: { weight: 500, track: "-0.015em", lead: 0.98, case: "none", scale: 1.08 } },
+      fraunces: { name: "Fraunces & Hanken", display: "Fraunces", text: "Hanken Grotesk", feel: "Soft modern serif", href: "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Hanken+Grotesk:wght@400;500;600", disp: { weight: 380, track: "-0.03em", lead: 0.96, case: "none", scale: 1 } },
+      dmserif: { name: "DM Serif & DM Sans", display: "DM Serif Display", text: "DM Sans", feel: "Confident classic serif", href: "family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400..600", disp: { weight: 400, track: "-0.02em", lead: 1, case: "none", scale: 0.96 } },
+      bodoni: { name: "Bodoni & Karla", display: "Bodoni Moda", text: "Karla", feel: "High-contrast fashion serif", href: "family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Karla:wght@400;500;600", disp: { weight: 500, track: "-0.02em", lead: 1, case: "none", scale: 0.95 } },
+      italiana: { name: "Italiana & Manrope", display: "Italiana", text: "Manrope", feel: "Thin, wide and luxurious", href: "family=Italiana&family=Manrope:wght@400;500;600", disp: { weight: 400, track: "0.02em", lead: 1.02, case: "uppercase", scale: 0.9 } },
+      syne: { name: "Syne & Figtree", display: "Syne", text: "Figtree", feel: "Wide, graphic grotesque", href: "family=Syne:wght@500..800&family=Figtree:wght@400;500;600", disp: { weight: 700, track: "-0.04em", lead: 0.92, case: "none", scale: 0.92 } },
+      young: { name: "Young Serif & Work Sans", display: "Young Serif", text: "Work Sans", feel: "Rounded old-style serif", href: "family=Young+Serif&family=Work+Sans:wght@400;500;600", disp: { weight: 400, track: "-0.02em", lead: 1.02, case: "none", scale: 0.92 } },
+      gloock: { name: "Gloock & Outfit", display: "Gloock", text: "Outfit", feel: "Chunky editorial serif", href: "family=Gloock&family=Outfit:wght@400;500;600", disp: { weight: 400, track: "-0.025em", lead: 0.98, case: "none", scale: 0.98 } },
+      instrument: { name: "Instrument Serif & Inter Tight", display: "Instrument Serif", text: "Inter Tight", feel: "Slim, modern Scandinavian serif", href: "family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600", disp: { weight: 400, track: "-0.025em", lead: 0.96, case: "none", scale: 1.1 } },
+      playfair: { name: "Playfair & Mulish", display: "Playfair Display", text: "Mulish", feel: "Glamorous Riviera serif", href: "family=Playfair+Display:ital,wght@0,400..700;1,400..600&family=Mulish:wght@400;500;600", disp: { weight: 500, track: "-0.02em", lead: 1.02, case: "none", scale: 0.92 } },
+      bricolage: { name: "Bricolage & Instrument Sans", display: "Bricolage Grotesque", text: "Instrument Sans", feel: "Characterful, friendly grotesque", href: "family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400;500;600", disp: { weight: 650, track: "-0.035em", lead: 0.94, case: "none", scale: 0.94 } },
+      caslon: { name: "Libre Caslon & Franklin", display: "Libre Caslon Display", text: "Libre Franklin", feel: "Country-house traditional", href: "family=Libre+Caslon+Display&family=Libre+Franklin:wght@400;500;600", disp: { weight: 400, track: "-0.01em", lead: 1.04, case: "none", scale: 1.02 } },
+      marcellus: { name: "Marcellus & Nunito Sans", display: "Marcellus", text: "Nunito Sans", feel: "Carved, calm and classical", href: "family=Marcellus&family=Nunito+Sans:opsz,wght@6..12,400..600", disp: { weight: 400, track: "0.01em", lead: 1.06, case: "none", scale: 0.9 } },
+      newsreader: { name: "Newsreader & Inter", display: "Newsreader", text: "Inter", feel: "Bookish, warm text serif", href: "family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Inter:wght@400;500;600", disp: { weight: 380, track: "-0.03em", lead: 0.98, case: "none", scale: 1.02 } },
+      space: { name: "Space Grotesk & Plex Sans", display: "Space Grotesk", text: "IBM Plex Sans", feel: "Technical and crisp", href: "family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600", disp: { weight: 600, track: "-0.04em", lead: 0.94, case: "none", scale: 0.92 } },
+      abril: { name: "Abril Fatface & Lato", display: "Abril Fatface", text: "Lato", feel: "Retro poster", href: "family=Abril+Fatface&family=Lato:wght@400;700", disp: { weight: 400, track: "-0.01em", lead: 1, case: "none", scale: 0.9 } },
+      unbounded: { name: "Unbounded & Onest", display: "Unbounded", text: "Onest", feel: "Bold, rounded and playful", href: "family=Unbounded:wght@400..700&family=Onest:wght@400;500;600", disp: { weight: 500, track: "-0.03em", lead: 1, case: "none", scale: 0.78 } }
+    };
+    var PALETTES = {
+      linen: { name: "Bone & terracotta", pal: { bg: "#F4EFE6", bg2: "#EBE4D7", ink: "#1E1B16", muted: "#5E574C", line: "#D8CFBF", accent: "#A4502E", accentInk: "#FFFFFF", deep: "#2A251F", deepInk: "#F4EFE6" } },
+      fell: { name: "Moss & slate", pal: { bg: "#EEF0EA", bg2: "#E2E6DD", ink: "#17201A", muted: "#4F5A52", line: "#CDD3C8", accent: "#9C5B2E", accentInk: "#FFFFFF", deep: "#1D2A22", deepInk: "#EEF0EA" } },
+      harbour: { name: "Whitewash & sea", pal: { bg: "#F7F6F2", bg2: "#E9EEF0", ink: "#0D2836", muted: "#4A5E69", line: "#D3DDE1", accent: "#0F6E8C", accentInk: "#FFFFFF", deep: "#0D2836", deepInk: "#F7F6F2" } },
+      georgian: { name: "Honey stone & bronze", pal: { bg: "#F3ECE0", bg2: "#E8DECD", ink: "#241C14", muted: "#5F5345", line: "#D6C8B2", accent: "#8A5A2B", accentInk: "#FFFFFF", deep: "#241C14", deepInk: "#F3ECE0" } },
+      nocturne: { name: "Night & brass", dark: true, pal: { bg: "#121110", bg2: "#1B1A18", ink: "#EDE6DA", muted: "#A39B8E", line: "#33302B", accent: "#C9A46B", accentInk: "#121110", deep: "#EDE6DA", deepInk: "#121110" } },
+      modernist: { name: "Concrete & signal", pal: { bg: "#F1F1EE", bg2: "#E4E4E0", ink: "#111111", muted: "#55554F", line: "#CFCFC9", accent: "#C03A12", accentInk: "#FFFFFF", deep: "#111111", deepInk: "#F1F1EE" } },
+      meadow: { name: "Oat & olive", pal: { bg: "#F5F0E4", bg2: "#EAE3D2", ink: "#2B281D", muted: "#5E5948", line: "#D9D0BB", accent: "#5E6E2E", accentInk: "#FFFFFF", deep: "#2F3322", deepInk: "#F5F0E4" } },
+      sunlit: { name: "Cream & tomato", pal: { bg: "#FFF8EE", bg2: "#FBEBD7", ink: "#221E1A", muted: "#5D554C", line: "#EAD9C2", accent: "#C2461C", accentInk: "#FFFFFF", deep: "#1F4F52", deepInk: "#FFF8EE" } },
+      birch: { name: "Birch & lingonberry", pal: { bg: "#F6F5F1", bg2: "#ECEAE3", ink: "#1C1D1F", muted: "#55585C", line: "#D9D7CF", accent: "#B23A3A", accentInk: "#FFFFFF", deep: "#22262A", deepInk: "#F6F5F1" } },
+      riviera: { name: "Riviera navy & coral", pal: { bg: "#FBF7F0", bg2: "#F1E9DC", ink: "#14233A", muted: "#4E5868", line: "#E2D8C6", accent: "#B8432A", accentInk: "#FFFFFF", deep: "#14233A", deepInk: "#FBF7F0" } },
+      cobalt: { name: "Chalk & cobalt", pal: { bg: "#F5F3EF", bg2: "#E9E6F2", ink: "#16151C", muted: "#555360", line: "#DAD7E3", accent: "#3B4FD8", accentInk: "#FFFFFF", deep: "#1B1A2E", deepInk: "#F5F3EF" } },
+      heritage: { name: "Racing green & claret", pal: { bg: "#F4F0E6", bg2: "#E9E2D2", ink: "#1B2620", muted: "#535B54", line: "#D6CDBA", accent: "#7A2631", accentInk: "#FFFFFF", deep: "#1F3A2E", deepInk: "#F4F0E6" } },
+      sage: { name: "Sage & deep teal", pal: { bg: "#F1F3EE", bg2: "#E1E8DF", ink: "#1A2622", muted: "#4F5D57", line: "#CED8CF", accent: "#2F6B62", accentInk: "#FFFFFF", deep: "#24413A", deepInk: "#F1F3EE" } },
+      blush: { name: "Blush & berry", pal: { bg: "#FBF4F1", bg2: "#F4E4DE", ink: "#2A1E1C", muted: "#66524D", line: "#EBD5CD", accent: "#A23E48", accentInk: "#FFFFFF", deep: "#3B2422", deepInk: "#FBF4F1" } },
+      ochre: { name: "Ochre & umber", pal: { bg: "#F7F1E3", bg2: "#EFE3C8", ink: "#262017", muted: "#5D5443", line: "#E0D3B4", accent: "#94570A", accentInk: "#FFFFFF", deep: "#3A2E1A", deepInk: "#F7F1E3" } },
+      mono: { name: "Paper & ink", pal: { bg: "#FFFFFF", bg2: "#F2F2F0", ink: "#0A0A0A", muted: "#575757", line: "#DEDEDB", accent: "#0A0A0A", accentInk: "#FFFFFF", deep: "#0A0A0A", deepInk: "#FFFFFF" } },
+      ember: { name: "Ember & amber", dark: true, pal: { bg: "#17120F", bg2: "#211A16", ink: "#F1E6D8", muted: "#B3A391", line: "#3A2F27", accent: "#E0A458", accentInk: "#17120F", deep: "#F1E6D8", deepInk: "#17120F" } },
+      midnight: { name: "Midnight & ice", dark: true, pal: { bg: "#0F1724", bg2: "#162033", ink: "#E8EDF4", muted: "#9AA7B8", line: "#2A3549", accent: "#7FB3D5", accentInk: "#0F1724", deep: "#E8EDF4", deepInk: "#0F1724" } },
+      pine: { name: "Pine & gold", dark: true, pal: { bg: "#121A15", bg2: "#19241D", ink: "#E7EDE6", muted: "#9DAA9F", line: "#2C3A31", accent: "#C7B37A", accentInk: "#121A15", deep: "#E7EDE6", deepInk: "#121A15" } }
+    };
+    var STYLE = {
+      corners: { sharp: { name: "Sharp", radius: 0, button: 0, image: 0 }, soft: { name: "Soft", radius: 6, button: 6, image: 6 }, round: { name: "Rounded", radius: 14, button: 999, image: 16 }, pebble: { name: "Pebble", radius: 26, button: 999, image: 30 } },
+      buttons: { solid: "Solid", outline: "Outline", link: "Underlined link" },
+      spacing: { compact: "Compact", regular: "Regular", airy: "Airy" },
+      scale: { quiet: "Quiet", regular: "Regular", loud: "Loud" },
+      headings: { sentence: "Sentence case", upper: "Capitals", italic: "Italic" },
+      texture: { none: "None", paper: "Paper", grain: "Film grain" },
+      nav: { classic: "Classic", centered: "Centred", minimal: "Minimal" },
+      images: { plain: "Plain", framed: "Print border", shadow: "Soft shadow" },
+      bands: { soft: "Soft tints", flat: "Flat with rules", bold: "Bold colour bands" }
+    };
+    var STYLE_KEYS = ["font", "palette"].concat(Object.keys(STYLE));
     var DIRECTIONS = {
       linen: {
         name: "Linen & Ink",
         mood: "Quiet editorial. Big light serif headlines, bone paper, terracotta accent. Like a good travel magazine.",
         suits: ["cottage", "townhouse", "barn", "any"],
+        font: "cormorant",
+        palette: "linen",
         fonts: { display: "Cormorant Garamond", text: "Jost", href: "family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500;600" },
         disp: { weight: 500, track: "-0.015em", lead: 0.98, italic: true, case: "none", scale: 1.08 },
         pal: { bg: "#F4EFE6", bg2: "#EBE4D7", ink: "#1E1B16", muted: "#5E574C", line: "#D8CFBF", accent: "#A4502E", accentInk: "#FFFFFF", deep: "#2A251F", deepInk: "#F4EFE6" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["editorial", "split", "cinematic"],
-        texture: "paper"
+        texture: "paper",
+        alts: { fonts: ["newsreader", "playfair"], palettes: ["blush", "ochre"] }
       },
       fell: {
         name: "Fell & Slate",
         mood: "Northern and grounded. Soft modern serif, moss and slate, warm wood accent. For cabins, lodges and fells.",
         suits: ["cabin", "lodge", "hut", "any"],
+        font: "fraunces",
+        palette: "fell",
         fonts: { display: "Fraunces", text: "Hanken Grotesk", href: "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Hanken+Grotesk:wght@400;500;600" },
         disp: { weight: 380, track: "-0.03em", lead: 0.96, italic: true, case: "none", scale: 1 },
         pal: { bg: "#EEF0EA", bg2: "#E2E6DD", ink: "#17201A", muted: "#4F5A52", line: "#CDD3C8", accent: "#9C5B2E", accentInk: "#FFFFFF", deep: "#1D2A22", deepInk: "#EEF0EA" },
         shape: { radius: 4, button: 999, image: 4 },
         heroes: ["cinematic", "mosaic", "split"],
-        texture: "grain"
+        texture: "grain",
+        alts: { fonts: ["instrument", "newsreader"], palettes: ["sage", "pine"] }
       },
       harbour: {
         name: "Harbour Light",
         mood: "Coastal and bright. Confident serif, whitewash and deep sea blue, a sand note. For seaside cottages and harbour flats.",
         suits: ["beach", "cottage", "apartment", "any"],
+        font: "dmserif",
+        palette: "harbour",
         fonts: { display: "DM Serif Display", text: "DM Sans", href: "family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400..600" },
         disp: { weight: 400, track: "-0.02em", lead: 1, italic: true, case: "none", scale: 0.96 },
         pal: { bg: "#F7F6F2", bg2: "#E9EEF0", ink: "#0D2836", muted: "#4A5E69", line: "#D3DDE1", accent: "#0F6E8C", accentInk: "#FFFFFF", deep: "#0D2836", deepInk: "#F7F6F2" },
         shape: { radius: 14, button: 999, image: 14 },
         heroes: ["split", "cinematic", "mosaic"],
-        texture: "none"
+        texture: "none",
+        alts: { fonts: ["playfair", "instrument"], palettes: ["riviera", "birch"] }
       },
       georgian: {
         name: "Bath Stone",
         mood: "Elegant and urban. High-contrast didone headlines, honey stone and ink, a bronze accent. For townhouses and city stays.",
         suits: ["townhouse", "apartment", "any"],
+        font: "bodoni",
+        palette: "georgian",
         fonts: { display: "Bodoni Moda", text: "Karla", href: "family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Karla:wght@400;500;600" },
         disp: { weight: 500, track: "-0.02em", lead: 1, italic: true, case: "none", scale: 0.95 },
         pal: { bg: "#F3ECE0", bg2: "#E8DECD", ink: "#241C14", muted: "#5F5345", line: "#D6C8B2", accent: "#8A5A2B", accentInk: "#FFFFFF", deep: "#241C14", deepInk: "#F3ECE0" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["editorial", "split", "cinematic"],
-        texture: "paper"
+        texture: "paper",
+        alts: { fonts: ["caslon", "playfair"], palettes: ["heritage", "mono"] }
       },
       nocturne: {
         name: "Nocturne",
         mood: "Dark and luxurious. Thin, wide display type on near-black, brass accent, photographs that glow. For design-led and luxury stays.",
         suits: ["luxury", "cabin", "apartment", "any"],
+        font: "italiana",
+        palette: "nocturne",
         fonts: { display: "Italiana", text: "Manrope", href: "family=Italiana&family=Manrope:wght@400;500;600" },
         disp: { weight: 400, track: "0.02em", lead: 1.02, italic: false, case: "uppercase", scale: 0.9 },
         pal: { bg: "#121110", bg2: "#1B1A18", ink: "#EDE6DA", muted: "#A39B8E", line: "#33302B", accent: "#C9A46B", accentInk: "#121110", deep: "#EDE6DA", deepInk: "#121110" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["cinematic", "editorial", "mosaic"],
         texture: "grain",
+        alts: { fonts: ["bodoni", "marcellus"], palettes: ["midnight", "pine"] },
         dark: true
       },
       modernist: {
         name: "Modernist",
         mood: "Architectural and graphic. Wide grotesque headlines, concrete grey, one hot accent. For contemporary builds and design homes.",
         suits: ["modern", "apartment", "any"],
+        font: "syne",
+        palette: "modernist",
         fonts: { display: "Syne", text: "Figtree", href: "family=Syne:wght@500..800&family=Figtree:wght@400;500;600" },
         disp: { weight: 700, track: "-0.04em", lead: 0.92, italic: false, case: "none", scale: 0.92 },
         pal: { bg: "#F1F1EE", bg2: "#E4E4E0", ink: "#111111", muted: "#55554F", line: "#CFCFC9", accent: "#C03A12", accentInk: "#FFFFFF", deep: "#111111", deepInk: "#F1F1EE" },
         shape: { radius: 0, button: 0, image: 0 },
         heroes: ["mosaic", "editorial", "cinematic"],
-        texture: "none"
+        texture: "none",
+        alts: { fonts: ["space", "unbounded"], palettes: ["mono", "cobalt"] }
       },
       meadow: {
         name: "Meadow",
         mood: "Warm and rustic. Rounded old-style serif, oat and olive, honest and generous. For barns, farm stays and shepherd\u2019s huts.",
         suits: ["barn", "farm", "hut", "cottage", "any"],
+        font: "young",
+        palette: "meadow",
         fonts: { display: "Young Serif", text: "Work Sans", href: "family=Young+Serif&family=Work+Sans:wght@400;500;600" },
         disp: { weight: 400, track: "-0.02em", lead: 1.02, italic: false, case: "none", scale: 0.92 },
         pal: { bg: "#F5F0E4", bg2: "#EAE3D2", ink: "#2B281D", muted: "#5E5948", line: "#D9D0BB", accent: "#5E6E2E", accentInk: "#FFFFFF", deep: "#2F3322", deepInk: "#F5F0E4" },
         shape: { radius: 10, button: 999, image: 10 },
         heroes: ["split", "mosaic", "cinematic"],
-        texture: "paper"
+        texture: "paper",
+        alts: { fonts: ["caslon", "gloock"], palettes: ["ochre", "sage"] }
       },
       sunlit: {
         name: "Sunlit",
         mood: "Bright and joyful. Chunky editorial serif, cream and tomato with a teal counterpoint. For family stays, seaside and summer.",
         suits: ["beach", "family", "cottage", "any"],
+        font: "gloock",
+        palette: "sunlit",
         fonts: { display: "Gloock", text: "Outfit", href: "family=Gloock&family=Outfit:wght@400;500;600" },
         disp: { weight: 400, track: "-0.025em", lead: 0.98, italic: false, case: "none", scale: 0.98 },
         pal: { bg: "#FFF8EE", bg2: "#FBEBD7", ink: "#221E1A", muted: "#5D554C", line: "#EAD9C2", accent: "#C2461C", accentInk: "#FFFFFF", deep: "#1F4F52", deepInk: "#FFF8EE" },
         shape: { radius: 18, button: 999, image: 18 },
         heroes: ["split", "mosaic", "cinematic"],
-        texture: "none"
+        texture: "none",
+        alts: { fonts: ["abril", "bricolage"], palettes: ["riviera", "ochre"] }
+      },
+      nordic: {
+        name: "Nordic",
+        mood: "Scandinavian calm. A slim modern serif, birch white and charcoal, a lingonberry accent, lots of air. For lodges, cabins and minimalist homes.",
+        suits: ["cabin", "lodge", "modern", "any"],
+        font: "instrument",
+        palette: "birch",
+        shape: { radius: 6, button: 6, image: 6 },
+        heroes: ["centered", "framed", "split"],
+        texture: "none",
+        alts: { fonts: ["newsreader", "space"], palettes: ["sage", "mono"] }
+      },
+      riviera: {
+        name: "Riviera",
+        mood: "Glamorous and sunny. A Playfair serif, warm white with navy and coral. For sea-view apartments and smart coastal homes.",
+        suits: ["beach", "apartment", "luxury", "any"],
+        font: "playfair",
+        palette: "riviera",
+        shape: { radius: 0, button: 999, image: 0 },
+        heroes: ["arch", "framed", "editorial"],
+        texture: "none",
+        alts: { fonts: ["bodoni", "marcellus"], palettes: ["harbour", "blush"] }
+      },
+      atelier: {
+        name: "Atelier",
+        mood: "Playful and contemporary. A friendly characterful grotesque, chalk and cobalt, rounded shapes. For design-led homes, city flats and younger guests.",
+        suits: ["modern", "apartment", "family", "any"],
+        font: "bricolage",
+        palette: "cobalt",
+        shape: { radius: 22, button: 999, image: 26 },
+        heroes: ["framed", "mosaic", "centered"],
+        texture: "none",
+        alts: { fonts: ["unbounded", "space"], palettes: ["blush", "ochre"] }
+      },
+      manor: {
+        name: "Country House",
+        mood: "Traditional and grand. Caslon headlines, cream and racing green, a claret accent. For manors, rectories, farmhouses and big group houses.",
+        suits: ["farm", "townhouse", "luxury", "any"],
+        font: "caslon",
+        palette: "heritage",
+        shape: { radius: 0, button: 0, image: 0 },
+        heroes: ["editorial", "centered", "arch"],
+        texture: "paper",
+        alts: { fonts: ["cormorant", "newsreader"], palettes: ["georgian", "pine"] }
+      },
+      saltmarsh: {
+        name: "Salt & Sage",
+        mood: "Soft and restorative. A carved classical face, sage and sand, deep teal. For spa breaks, wellness retreats and estuary cottages.",
+        suits: ["beach", "cottage", "luxury", "any"],
+        font: "marcellus",
+        palette: "sage",
+        shape: { radius: 10, button: 999, image: 18 },
+        heroes: ["arch", "split", "centered"],
+        texture: "paper",
+        alts: { fonts: ["instrument", "cormorant"], palettes: ["birch", "harbour"] }
+      },
+      ember: {
+        name: "Ember",
+        mood: "Dark, warm and cosy. A bookish serif on deep brown, amber light. For cabins with hot tubs, winter breaks and romantic hideaways.",
+        suits: ["cabin", "lodge", "luxury", "hut", "any"],
+        font: "newsreader",
+        palette: "ember",
+        shape: { radius: 4, button: 4, image: 4 },
+        heroes: ["cinematic", "framed", "centered"],
+        texture: "grain",
+        alts: { fonts: ["fraunces", "cormorant"], palettes: ["pine", "midnight"] }
       }
     };
+    for (const d of Object.values(DIRECTIONS)) {
+      const f = FONTS[d.font], pl = PALETTES[d.palette];
+      if (!d.fonts) d.fonts = { display: f.display, text: f.text, href: f.href };
+      if (!d.disp) d.disp = Object.assign({ italic: true }, f.disp);
+      if (!d.pal) d.pal = pl.pal;
+      if (pl.dark) d.dark = true;
+    }
     var SECTIONS = {
-      hero: ["cinematic", "split", "editorial", "mosaic", "type"],
-      facts: ["ruled"],
-      story: ["lede", "pull"],
-      highlights: ["numbered", "panels"],
-      gallery: ["grid", "strip"],
-      amenities: ["columns"],
-      reviews: ["wall", "feature"],
-      area: ["itinerary"],
-      host: ["note"],
-      book: ["panel"],
-      faq: ["accordion"],
-      closing: ["banner"]
+      hero: ["cinematic", "split", "editorial", "mosaic", "centered", "framed", "arch", "type"],
+      facts: ["ruled", "tiles", "inline"],
+      story: ["lede", "pull", "photo"],
+      highlights: ["numbered", "panels", "cards"],
+      gallery: ["grid", "strip", "masonry"],
+      amenities: ["columns", "tiles"],
+      reviews: ["wall", "feature", "band", "cards"],
+      area: ["itinerary", "cards"],
+      host: ["note", "centered"],
+      book: ["panel", "centered"],
+      faq: ["accordion", "columns", "centered"],
+      closing: ["banner", "split", "minimal"]
+    };
+    var VARIANT_NAMES = {
+      cinematic: "Cinematic",
+      split: "Split",
+      editorial: "Editorial",
+      mosaic: "Mosaic",
+      centered: "Centred",
+      framed: "Framed",
+      arch: "Arch",
+      type: "Type-led",
+      ruled: "Ruled row",
+      tiles: "Tiles",
+      inline: "One line",
+      lede: "Lede",
+      pull: "Pull quote",
+      photo: "With photo",
+      numbered: "Numbered",
+      panels: "Photo panels",
+      cards: "Cards",
+      grid: "Grid",
+      strip: "Scrolling strip",
+      masonry: "Masonry",
+      columns: "Columns",
+      wall: "Wall",
+      feature: "Featured quote",
+      band: "Colour band",
+      itinerary: "Itinerary",
+      note: "Note",
+      panel: "Dark panel",
+      accordion: "Accordion",
+      banner: "Photo banner",
+      minimal: "Minimal"
+    };
+    var TEMPLATES = {
+      classic: { name: "Classic", note: "Balanced and familiar", v: { hero: "split", facts: "ruled", story: "lede", highlights: "numbered", gallery: "grid", amenities: "columns", reviews: "wall", area: "itinerary", host: "note", book: "panel", faq: "accordion", closing: "banner" } },
+      magazine: { name: "Magazine", note: "Huge type, long-read feel", v: { hero: "editorial", facts: "inline", story: "pull", highlights: "panels", gallery: "strip", amenities: "columns", reviews: "feature", area: "itinerary", host: "note", book: "panel", faq: "columns", closing: "split" } },
+      showcase: { name: "Photo showcase", note: "Photos first, then the story", gallery: 2, v: { hero: "mosaic", facts: "tiles", story: "photo", highlights: "cards", gallery: "masonry", amenities: "tiles", reviews: "cards", area: "cards", host: "centered", book: "centered", faq: "accordion", closing: "banner" } },
+      minimal: { name: "Minimal", note: "Quiet, centred, lots of air", v: { hero: "centered", facts: "inline", story: "lede", highlights: "numbered", gallery: "grid", amenities: "tiles", reviews: "feature", area: "itinerary", host: "centered", book: "centered", faq: "centered", closing: "minimal" } },
+      bold: { name: "Bold", note: "Full-bleed and high contrast", v: { hero: "cinematic", facts: "tiles", story: "pull", highlights: "cards", gallery: "masonry", amenities: "tiles", reviews: "band", area: "cards", host: "centered", book: "panel", faq: "accordion", closing: "banner" } },
+      boutique: { name: "Boutique", note: "Framed photos, soft and refined", v: { hero: "arch", facts: "ruled", story: "photo", highlights: "panels", gallery: "strip", amenities: "columns", reviews: "band", area: "cards", host: "note", book: "centered", faq: "centered", closing: "split" } },
+      cosy: { name: "Cosy", note: "Framed hero, warm and friendly", v: { hero: "framed", facts: "tiles", story: "lede", highlights: "cards", gallery: "grid", amenities: "columns", reviews: "cards", area: "itinerary", host: "centered", book: "panel", faq: "accordion", closing: "minimal" } }
     };
     var ORDER = ["hero", "facts", "story", "highlights", "gallery", "amenities", "reviews", "area", "host", "book", "faq", "closing"];
     var REQUIRED = ["hero", "book", "faq"];
@@ -17449,8 +20786,10 @@ var require_design = __commonJS({
       const x = rgb(a), y = rgb(b);
       return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("");
     }
-    function palette(dir, accent) {
-      const d = DIRECTIONS[dir] || DIRECTIONS.linen;
+    function palette(dir, accent, palKey) {
+      const d0 = DIRECTIONS[dir] || DIRECTIONS.linen;
+      const pre = palKey && PALETTES[palKey];
+      const d = pre ? { pal: pre.pal, dark: !!pre.dark } : d0;
       const p = Object.assign({}, d.pal);
       if (hexOk(accent) && contrast(accent, p.bg) >= 3.2) {
         p.accent = accent.toUpperCase();
@@ -17469,14 +20808,83 @@ var require_design = __commonJS({
       p.deepBtnInk = strong ? p.accentInk : p.deep;
       return p;
     }
+    function seed(str) {
+      let h = 2166136261;
+      for (const ch of String(str)) {
+        h ^= ch.charCodeAt(0);
+        h = Math.imul(h, 16777619) >>> 0;
+      }
+      return h;
+    }
+    function cleanStyle(x) {
+      const o = {};
+      x = x || {};
+      if (FONTS[x.font]) o.font = x.font;
+      if (PALETTES[x.palette]) o.palette = x.palette;
+      for (const k of Object.keys(STYLE)) if (STYLE[k][x[k]]) o[k] = x[k];
+      return o;
+    }
+    function look(spec) {
+      spec = spec || {};
+      const dir = DIRECTIONS[spec.direction] ? spec.direction : "linen", d = DIRECTIONS[dir], st = cleanStyle(spec.style);
+      const font = FONTS[st.font] ? Object.assign({ italic: true }, FONTS[st.font], { disp: Object.assign({ italic: true }, FONTS[st.font].disp) }) : { display: d.fonts.display, text: d.fonts.text, href: d.fonts.href, disp: d.disp };
+      const disp = Object.assign({}, font.disp);
+      if (st.headings === "sentence") disp.case = "none";
+      if (st.headings === "upper") {
+        disp.case = "uppercase";
+        disp.scale = disp.scale * 0.82;
+        disp.track = "0.01em";
+      }
+      disp.scale = +(disp.scale * ({ quiet: 0.86, loud: 1.14 }[st.scale] || 1)).toFixed(3);
+      const palKey = st.palette || null;
+      const dark = palKey ? !!PALETTES[palKey].dark : !!d.dark;
+      const shape = st.corners ? STYLE.corners[st.corners] : d.shape;
+      return {
+        dir,
+        d,
+        style: st,
+        fonts: { display: font.display, text: font.text, href: font.href },
+        disp,
+        italicHead: st.headings === "italic",
+        pal: palette(dir, spec.accent, palKey),
+        dark,
+        shape,
+        texture: st.texture || d.texture,
+        spacing: { compact: 0.7, airy: 1.3 }[st.spacing] || 1,
+        buttons: st.buttons || "solid",
+        nav: st.nav || "classic",
+        images: st.images || "plain",
+        bands: st.bands || "soft"
+      };
+    }
+    function varyStyle(dir, key, used, n) {
+      const d = DIRECTIONS[dir] || DIRECTIONS.linen;
+      const h = seed(key + ":" + (n || 0));
+      const pick = (arr, salt) => arr[(h >>> salt) % arr.length];
+      const same = (used || []).filter((u) => u && u.direction === dir);
+      const style = {};
+      if (same.length || n) {
+        const fonts = [d.font].concat(d.alts.fonts).filter((f2) => !same.some((u) => ((u.style || {}).font || d.font) === f2));
+        const pals = [d.palette].concat(d.alts.palettes).filter((p2) => !same.some((u) => ((u.style || {}).palette || d.palette) === p2));
+        const f = fonts.length ? pick(fonts, 3) : pick(d.alts.fonts, 3), p = pals.length ? pick(pals, 7) : pick(d.alts.palettes, 7);
+        if (f !== d.font) style.font = f;
+        if (p !== d.palette) style.palette = p;
+      }
+      style.spacing = pick(["regular", "airy", "regular", "compact"], 11);
+      style.nav = pick(["classic", "centered", "classic", "minimal"], 13);
+      style.images = pick(["plain", "plain", "framed", "shadow"], 17);
+      style.bands = pick(["soft", "flat", "soft", "bold"], 19);
+      if (h % 5 === 0) style.buttons = "outline";
+      return cleanStyle(style);
+    }
     function qa(spec, facts) {
-      const p = palette(spec.direction, spec.accent);
+      const p = palette(spec.direction, spec.accent, (spec.style || {}).palette);
       const c = spec.copy || {};
       const words = (s) => String(s || "").trim().split(/\s+/).filter(Boolean).length;
       const all = JSON.stringify(c).toLowerCase();
       const found = CLICHES.filter((x) => all.includes(x));
       const types = (spec.sections || []).map((s) => s.type);
-      const imgHero = ["cinematic", "split", "mosaic", "editorial"].includes((spec.sections.find((s) => s.type === "hero") || {}).variant);
+      const imgHero = ["cinematic", "split", "mosaic", "editorial", "centered", "framed", "arch"].includes((spec.sections.find((s) => s.type === "hero") || {}).variant);
       return [
         { ok: contrast(p.ink, p.bg) >= 7, label: "Body text contrast is AAA (" + contrast(p.ink, p.bg).toFixed(1) + ":1)" },
         { ok: contrast(p.accentInk, p.accent) >= 4.5, label: "Buttons pass WCAG AA contrast (" + contrast(p.accentInk, p.accent).toFixed(1) + ":1)" },
@@ -17492,7 +20900,7 @@ var require_design = __commonJS({
         { ok: !!(c.seoTitle && c.seoTitle.length <= 62 && c.seoDescription && c.seoDescription.length <= 160), label: "Search title and description fit Google\u2019s limits" }
       ];
     }
-    module.exports = { PRINCIPLES, CLICHES, DIRECTIONS, SECTIONS, ORDER, REQUIRED, palette, contrast, mix, hexOk, qa };
+    module.exports = { PRINCIPLES, CLICHES, DIRECTIONS, FONTS, PALETTES, STYLE, STYLE_KEYS, SECTIONS, VARIANT_NAMES, TEMPLATES, ORDER, REQUIRED, palette, contrast, mix, hexOk, qa, look, cleanStyle, varyStyle, seed };
   }
 });
 
@@ -17550,10 +20958,22 @@ var require_render = __commonJS({
       };
     }
     var GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
-    function css(dir, pal) {
-      const d = D.DIRECTIONS[dir] || D.DIRECTIONS.linen;
-      const v = "--bg:" + pal.bg + ";--bg2:" + pal.bg2 + ";--ink:" + pal.ink + ";--mut:" + pal.muted + ";--line:" + pal.line + ";--ac:" + pal.accent + ";--acInk:" + pal.accentInk + ";--acT:" + pal.accentText + ";--acD:" + pal.accentDeep + ";--dBtn:" + pal.deepBtn + ";--dBtnI:" + pal.deepBtnInk + ";--deep:" + pal.deep + ";--deepInk:" + pal.deepInk + ";--fd:'" + d.fonts.display + "',Georgia,serif;--ft:'" + d.fonts.text + "',system-ui,sans-serif;--dw:" + d.disp.weight + ";--dt:" + d.disp.track + ";--dl:" + d.disp.lead + ";--dc:" + d.disp.case + ";--ds:" + d.disp.scale + ";--r:" + d.shape.radius + "px;--rb:" + d.shape.button + "px;--ri:" + d.shape.image + "px;--deepMut:" + D.mix(pal.deepInk, pal.deep, 0.32) + ";--deepLine:" + D.mix(pal.deepInk, pal.deep, 0.78);
-      return ":root{" + v + ";color-scheme:" + (d.dark ? "dark" : "light") + "}" + BASE + (d.texture === "grain" ? "body::after{opacity:.06}" : d.texture === "paper" ? "body::after{opacity:.045}" : "body::after{display:none}");
+    var IMGS = ".frame img,.h-ed .img img,.h-cen .wide img,.mos img,.h-arch .main,.hl-pan .pic img,.grid button,.strip img,.st-ph .pic img,.hl-cards img,.msn button,.cl-split .pic img";
+    function css(L) {
+      const pal = L.pal, d = L.d, ds = L.disp, sh = L.shape;
+      const v = "--bg:" + pal.bg + ";--bg2:" + pal.bg2 + ";--ink:" + pal.ink + ";--mut:" + pal.muted + ";--line:" + pal.line + ";--ac:" + pal.accent + ";--acInk:" + pal.accentInk + ";--acT:" + pal.accentText + ";--acD:" + pal.accentDeep + ";--dBtn:" + pal.deepBtn + ";--dBtnI:" + pal.deepBtnInk + ";--deep:" + pal.deep + ";--deepInk:" + pal.deepInk + ";--fd:'" + L.fonts.display + "',Georgia,serif;--ft:'" + L.fonts.text + "',system-ui,sans-serif;--dw:" + ds.weight + ";--dt:" + ds.track + ";--dl:" + ds.lead + ";--dc:" + ds.case + ";--ds:" + ds.scale + ";--r:" + sh.radius + "px;--rb:" + sh.button + "px;--ri:" + sh.image + "px;--sp:" + L.spacing + ";--deepMut:" + D.mix(pal.deepInk, pal.deep, 0.32) + ";--deepLine:" + D.mix(pal.deepInk, pal.deep, 0.78);
+      let x = "";
+      x += L.texture === "grain" ? "body::after{opacity:.06}" : L.texture === "paper" ? "body::after{opacity:.045}" : "body::after{display:none}";
+      if (L.dark) x += "body::after{mix-blend-mode:screen;opacity:.035}";
+      if (L.italicHead) x += ".disp{font-style:italic}.disp em{font-style:normal}";
+      const keep = ":not(.card .btn):not(.mbar .btn):not(.fn-form .btn)";
+      if (L.buttons === "outline") x += ".btn" + keep + ":not(.gh){background:transparent!important;color:inherit!important;border:1.5px solid currentColor!important}.btn" + keep + ":hover{background:color-mix(in srgb,currentColor 9%,transparent)!important;box-shadow:none!important}";
+      if (L.buttons === "link") x += ".btn" + keep + "{background:none!important;color:inherit!important;border:0!important;border-bottom:1.5px solid currentColor!important;border-radius:0!important;padding:0 2px!important;min-height:44px;box-shadow:none!important}.btn" + keep + ":hover{transform:none;gap:16px}.pill{padding-right:26px}";
+      if (L.images === "framed") x += IMGS + "{padding:clamp(6px,.8vw,12px)!important;background:#FFFFFF!important;box-shadow:0 1px 2px rgba(0,0,0,.06),0 22px 44px -26px rgba(0,0,0,.42)}.frame::before{display:none}";
+      if (L.images === "shadow") x += IMGS + "{box-shadow:0 34px 70px -34px rgba(0,0,0,.5)}";
+      if (L.bands === "flat") x += ".sec.alt{background:var(--bg);border-top:1px solid var(--line)}.sec.alt+.sec:not(.alt):not(.dk){border-top:1px solid var(--line)}";
+      if (L.bands === "bold") x += ".sec.alt{background:" + pal.deep + ";color:" + pal.deepInk + ";--bg:" + pal.deep + ";--bg2:" + D.mix(pal.deep, pal.deepInk, 0.08) + ";--ink:" + pal.deepInk + ";--mut:var(--deepMut);--line:var(--deepLine);--acT:var(--acD)}.sec.alt .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}.sec.alt .mono{background:var(--dBtn);color:var(--dBtnI)}";
+      return ":root{" + v + ";color-scheme:" + (L.dark ? "dark" : "light") + "}" + BASE + MORE + x;
     }
     var BASE = `
 *,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:84px}
@@ -17574,7 +20994,7 @@ p{margin:0 0 1.1em}.mut{color:var(--mut)}.num{font-variant-numeric:tabular-nums 
 .btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -14px color-mix(in srgb,var(--ac) 80%,transparent)}
 .btn.gh{background:transparent;color:inherit;border-color:currentColor}.btn.gh:hover{background:color-mix(in srgb,currentColor 8%,transparent);box-shadow:none}
 .btn svg{width:18px;height:18px}
-.sec{padding-block:clamp(84px,11vw,168px);position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
+.sec{padding-block:calc(clamp(84px,11vw,168px) * var(--sp,1));position:relative}.sec.alt{background:var(--bg2)}.sec.dk{background:var(--deep);color:var(--deepInk)}.sec.dk .mut,.sec.dk .eb{color:var(--deepMut)}.sec.dk .disp em{color:inherit}
 .rule{height:1px;background:var(--line);border:0;margin:0}
 /* nav */
 .nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,color .4s}
@@ -17717,6 +21137,72 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
 .js [data-rv]{opacity:0;transform:translateY(26px);transition:opacity 1.1s cubic-bezier(.2,.7,.1,1),transform 1.1s cubic-bezier(.2,.7,.1,1)}.js [data-rv].in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js [data-rv]{opacity:1;transform:none}html{scroll-behavior:auto}}
 `;
+    var MORE = `
+/* nav styles */
+.nav.n-cen .w{display:grid;grid-template-columns:1fr auto 1fr}.nav.n-cen ul{justify-self:start}.nav.n-cen .wm{justify-self:center}.nav.n-cen .btn{justify-self:end}
+.nav.n-min .w{height:86px}.nav.n-min .wm{font-size:calc(1.35rem * var(--ds));letter-spacing:.14em;text-transform:uppercase}
+@media(max-width:900px){.nav.n-cen .w{display:flex}}
+/* hero: centred */
+.h-cen{padding-top:clamp(130px,15vw,190px);text-align:center}.h-cen .eb{justify-content:center}.h-cen .eb::after{content:"";width:28px;height:1px;background:currentColor;opacity:.7}
+.h-cen .disp{max-width:15em;margin-inline:auto}.h-cen .lede{margin:28px auto 0}.h-cen .acts{justify-content:center;margin-top:36px}
+.h-cen .wide{margin:clamp(52px,7vw,96px) auto 0;padding-inline:clamp(20px,5vw,64px);max-width:1440px}.h-cen .wide img{width:100%;aspect-ratio:21/9;object-fit:cover;border-radius:var(--ri)}
+@media(max-width:760px){.h-cen .wide img{aspect-ratio:4/3}}
+/* hero: framed */
+.h-frm{padding:92px clamp(10px,1.6vw,22px) 0}.h-frm .ph{border-radius:max(var(--ri),2px);overflow:hidden;height:min(84svh,880px);min-height:520px}.h-frm .ph img{width:100%;height:100%;object-fit:cover}
+.h-frm .w{position:relative;z-index:2}.h-frm .panel{background:var(--bg);max-width:740px;margin-top:calc(-1 * clamp(150px,20vw,280px));padding:clamp(28px,4vw,60px) clamp(24px,4vw,60px) 0 0;border-radius:0 var(--r) 0 0;position:relative}
+.h-frm .panel::before{content:"";position:absolute;inset:0 0 0 -100vw;background:var(--bg);z-index:-1;border-radius:inherit}
+.h-frm .h1{font-size:calc(clamp(2.7rem,6vw,6rem) * var(--ds))}.h-frm .lede{margin-top:24px}.h-frm .acts{margin-top:32px}
+@media(max-width:760px){.h-frm .ph{height:62svh;min-height:380px}.h-frm .panel{margin-top:-70px;padding-top:28px}}
+/* hero: arch */
+.h-arch{padding-top:clamp(120px,13vw,160px);padding-bottom:clamp(60px,8vw,110px)}.h-arch .w{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(36px,6vw,96px);align-items:center}
+.h-arch .lede{margin-top:28px}.h-arch .acts{margin-top:40px}.h-arch .ar-w{position:relative;max-width:520px;justify-self:end;width:100%}
+.h-arch .main{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:999px 999px var(--ri) var(--ri)}
+.h-arch .sub{position:absolute;left:-14%;bottom:8%;width:38%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:8px solid var(--bg)}
+.h-arch .badge{position:absolute;right:-4%;top:12%;width:112px;height:112px;border-radius:50%;background:var(--ac);color:var(--acInk);display:grid;place-items:center;text-align:center;font:600 12px/1.25 var(--ft);letter-spacing:.06em;transform:rotate(-8deg)}
+.h-arch .badge b{display:block;font:var(--dw) 1.6rem/1 var(--fd)}
+@media(max-width:900px){.h-arch .w{grid-template-columns:1fr}.h-arch .ar-w{justify-self:center;max-width:420px}.h-arch .sub{left:-6%}}
+/* facts: tiles and one line */
+.facts.ft-tiles{border:0;padding-block:clamp(28px,4vw,56px)}.ft-tiles ul{gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.ft-tiles li,.ft-tiles li:first-child{border:0;padding:26px 24px;background:var(--bg2);border-radius:var(--r)}
+.facts.ft-inline{border-block:0;padding-block:clamp(24px,3vw,40px)}.ft-inline ul{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 0}.ft-inline li,.ft-inline li:first-child{border:0;padding:6px 22px;display:flex;align-items:baseline;gap:9px}
+.ft-inline li+li{border-left:1px solid var(--line)}.ft-inline b{display:inline;font-size:calc(1.6rem * var(--ds))}.ft-inline span{display:inline;margin:0}
+@media(max-width:700px){.ft-inline li+li{border-left:0;border-top:0}}
+/* story with a photo */
+.st-ph .w{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,110px);align-items:center}.st-ph .pic img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--ri)}.st-ph .h2{margin-bottom:28px}
+@media(max-width:900px){.st-ph .w{grid-template-columns:1fr}}
+/* highlight cards */
+.hl-cards .hd{margin-bottom:56px;max-width:720px}.hl-cards ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.hl-cards li{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}.hl-cards img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.hl-cards .bd{padding:28px 28px 30px}.hl-cards .n{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--acT);font-weight:600;display:block;margin-bottom:14px}.hl-cards h3{margin-bottom:12px}
+/* masonry gallery */
+.msn{columns:3 260px;column-gap:14px}.msn button{display:block;width:100%;padding:0;border:0;background:none;margin:0 0 14px;cursor:zoom-in;overflow:hidden;border-radius:var(--ri);break-inside:avoid}
+.msn img{width:100%;height:auto;transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}.msn button:nth-child(3n+1) img{aspect-ratio:4/5;object-fit:cover}.msn button:nth-child(3n+2) img{aspect-ratio:1;object-fit:cover}.msn button:nth-child(3n) img{aspect-ratio:3/2;object-fit:cover}.msn button:hover img{transform:scale(1.04)}
+/* amenity tiles */
+.am.am-t .w{grid-template-columns:1fr}.am.am-t .hd{margin-bottom:44px;max-width:720px}.am.am-t ul.tl{columns:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.am.am-t ul.tl li{border:1px solid var(--line);border-radius:var(--r);padding:20px 20px;background:color-mix(in srgb,var(--bg) 60%,transparent)}
+/* reviews: colour band and cards */
+.rv-band{text-align:center}.rv-band .eb{justify-content:center}.rv-band .score{justify-content:center}.rv-band blockquote{margin:0 auto;max-width:20em;font-size:calc(clamp(1.9rem,3.8vw,3.4rem) * var(--ds))}.rv-band figcaption{margin-top:28px;color:var(--deepMut)}
+.rv-band .stars{color:var(--acD)}.rv-band .more{margin:64px auto 0;max-width:1000px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:36px;text-align:left;border-top:1px solid var(--deepLine);padding-top:36px}.rv-band .more blockquote{font:400 16px/1.6 var(--ft);margin:10px 0;max-width:none}
+.rv-cards .row{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
+.rv-cards figure{flex:0 0 min(84vw,390px);scroll-snap-align:start;margin:0;padding:32px;border-radius:var(--r);background:var(--bg2);display:flex;flex-direction:column}.rv-cards blockquote{margin:16px 0 22px;flex:1}.rv-cards figcaption{font-weight:600;font-size:14px}
+/* area cards */
+.ar-c .hd{max-width:720px;margin-bottom:52px}.ar-c ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.ar-c li{padding:30px 28px;border-radius:var(--r);border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}.ar-c li .i{font:var(--dw) 2.4rem/1 var(--fd);color:var(--acT)}
+.ar-c li b{font:var(--dw) calc(1.55rem * var(--ds))/1.15 var(--fd);letter-spacing:var(--dt);text-transform:var(--dc)}.ar-c .far{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acT);font-weight:600}.ar-c li p{margin:0;color:var(--mut)}
+/* host: centred */
+.ho-c{text-align:center}.ho-c .w{display:block;max-width:880px}.ho-c .mono{margin:0 auto 30px}.ho-c .eb{justify-content:center}
+/* booking: centred on the page colour */
+.bk-c .w{display:block;max-width:900px}.bk-c .hd{text-align:center;max-width:680px;margin:0 auto 46px}.bk-c .eb{justify-content:center}.bk-c .card{border:1px solid var(--line);box-shadow:0 30px 70px -40px rgba(0,0,0,.35)}
+.bk-c .save{margin:22px auto 0;border-color:var(--line);display:inline-block}.bk-c .save b{color:var(--acT)}
+/* faq: columns and centred */
+.fq-cols .hd{max-width:720px;margin-bottom:52px}.fq-cols dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:34px 56px}.fq-cols dt{font:var(--dw) calc(1.3rem * var(--ds))/1.3 var(--fd);letter-spacing:var(--dt);margin-bottom:10px}.fq-cols dd{margin:0;color:var(--mut)}
+.fq-cols dl>div{border-top:1px solid var(--line);padding-top:22px}
+.fq-c .w{display:block;max-width:860px}.fq-c .hd{text-align:center;margin-bottom:46px}.fq-c .eb{justify-content:center}
+/* closing: split and minimal */
+.cl-split{display:grid;grid-template-columns:1fr 1fr;min-height:64vh;background:var(--deep);color:var(--deepInk)}.cl-split .pic img{width:100%;height:100%;object-fit:cover;border-radius:0}
+.cl-split .tx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(40px,7vw,110px)}.cl-split .disp{margin-bottom:34px;max-width:11em}.cl-split .disp em{color:var(--acD)}.cl-split .btn:not(.gh){background:var(--dBtn);color:var(--dBtnI);border-color:var(--dBtn)}
+@media(max-width:820px){.cl-split{grid-template-columns:1fr}.cl-split .pic img{aspect-ratio:4/3}}
+.cl-min{text-align:center;background:var(--bg2)}.cl-min .disp{max-width:13em;margin:0 auto 34px}
+`;
     function art(kind) {
       const s = 'fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"';
       if (/beach|lake|harbour|cottage/.test(kind) && kind !== "cottage") return '<svg viewBox="0 0 1440 300" preserveAspectRatio="none" aria-hidden="true"><path ' + s + ' d="M0 150 C120 130 240 170 360 150 S600 130 720 150 960 170 1080 150 1320 130 1440 150"/><path ' + s + ' opacity=".6" d="M0 195 C140 178 260 210 400 195 S660 178 800 195 1060 210 1200 195 1360 182 1440 190"/><path ' + s + ' opacity=".35" d="M0 240 C160 226 300 252 460 240 S760 226 920 240 1220 252 1440 236"/><circle ' + s + ' cx="1110" cy="70" r="34"/></svg>';
@@ -17732,6 +21218,7 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
     }
     var fmtInline = (t) => esc(t).replace(/\*([^*]{1,40})\*/, "<em>$1</em>").replace(/\*/g, "");
     var img = (ph, attrs) => ph ? '<img src="' + esc(ph.url) + '" alt="' + esc(ph.alt || ph.cap || "") + '" ' + (attrs || 'loading="lazy" decoding="async"') + ">" : "";
+    var secHd = (eb, title, cls) => '<div class="hd' + (cls ? " " + cls : "") + '"><p class="eb" data-rv>' + esc(eb) + '</p><h2 class="disp h2" data-rv>' + fmtInline(title) + "</h2></div>";
     var ctaBtn = (c, ghost) => '<a class="btn' + (ghost ? " gh" : "") + '" href="#book">' + esc(c || "Check dates") + ARROW + "</a>";
     var R = {
       hero(sec, f, c, ctx) {
@@ -17741,14 +21228,20 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
         if (v === "split" && ph[0]) return '<header class="hero h-split" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><figure class="frame fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + (ph[0].cap ? "<figcaption>" + esc(ph[0].cap) + "</figcaption>" : "") + "</figure></div></header>";
         if (v === "editorial" && ph[0]) return '<header class="hero h-ed" id="top"><div class="w"><div class="top"><div style="grid-column:1/-1">' + eb + "</div>" + headline(c.headline) + '<div class="meta fade"><p class="lede">' + esc(c.subhead) + '</p><div class="acts">' + ctaBtn(c.cta) + '</div><p class="note mut" style="margin-top:18px;font-size:14px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + '</p></div><figure class="img fade" style="margin:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + "<figcaption><span>" + esc(ph[0].cap || f.name) + "</span><span>" + esc(f.town) + "</span></figcaption></figure></div></div></header>";
         if (v === "mosaic" && ph.length >= 3) return '<header class="hero h-mos" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><div class="mos fade">' + ph.slice(0, 3).map((x, i) => img(x, i ? 'loading="lazy"' : 'fetchpriority="high"')).join("") + "</div></div></header>";
+        if (v === "centered" && ph[0]) return '<header class="hero h-cen" id="top"><div class="w">' + eb.replace('class="eb fade"', 'class="eb fade"') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><figure class="wide fade" style="margin-bottom:0">' + img(ph[0], 'fetchpriority="high" decoding="async"') + "</figure></header>";
+        if (v === "framed" && ph[0]) return '<header class="hero h-frm" id="top"><div class="ph zoom">' + img(ph[0], 'fetchpriority="high" decoding="async"') + '</div><div class="w"><div class="panel">' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + "</div></div></div></header>";
+        if (v === "arch" && ph[0]) return '<header class="hero h-arch" id="top"><div class="w"><div>' + eb + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + from + '</div></div><div class="ar-w fade">' + img(ph[0], 'class="main" fetchpriority="high" decoding="async"') + (ph[1] ? img(ph[1], 'class="sub" loading="lazy"') : "") + '<span class="badge" aria-hidden="true"><span><b class="num">' + f.maxGuests + "</b>guests</span></span></div></div></header>";
         return '<header class="hero h-type" id="top"><div class="art fade">' + art(ctx.kindHint || f.kind) + '</div><div class="w">' + eb.replace('class="eb', 'class="eb') + headline(c.headline) + '<p class="lede fade">' + esc(c.subhead) + '</p><div class="acts fade">' + ctaBtn(c.cta) + '<span class="note" style="color:var(--deepMut)">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 no booking fees</span></div></div></header>";
       },
       facts(sec, f) {
         const cells = [[f.maxGuests, "Guests"], [f.bedrooms, f.bedrooms === 1 ? "Bedroom" : "Bedrooms"], [f.baths, f.baths === 1 ? "Bathroom" : "Bathrooms"], [money(f.nightly), "From, a night"], [f.pets ? "Yes" : "No", "Dogs welcome"], [f.minNights, "Night minimum"]];
-        return '<section class="facts" aria-label="At a glance"><div class="w"><ul>' + cells.map((x) => '<li data-rv><b class="num">' + esc(x[0]) + "</b><span>" + x[1] + "</span></li>").join("") + "</ul></div></section>";
+        const cls = sec.variant === "tiles" ? " ft-tiles" : sec.variant === "inline" ? " ft-inline" : "";
+        return '<section class="facts' + cls + '" aria-label="At a glance"><div class="w"><ul>' + cells.map((x) => '<li data-rv><b class="num">' + esc(x[0]) + "</b><span>" + x[1] + "</span></li>").join("") + "</ul></div></section>";
       },
       story(sec, f, c) {
         const paras = (c.story && c.story.length ? c.story : [f.about]).filter(Boolean).map((x) => "<p>" + esc(x) + "</p>").join("");
+        const sp = f.photos[1] || f.photos[0];
+        if (sec.variant === "photo" && sp) return '<section class="sec st-ph" id="stay"><div class="w"><div class="pic" data-rv>' + img(sp) + '</div><div><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2><div class="txt" data-rv>' + paras + "</div></div></div></section>";
         if (sec.variant === "pull") return '<section class="sec st-pull" id="stay"><div class="w"><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><blockquote class="disp" data-rv>' + fmtInline(c.pull || c.storyTitle || f.headline) + '</blockquote><div class="txt' + ((c.story || []).join(" ").length > 520 ? " cols" : "") + '" data-rv>' + paras + "</div></div></section>";
         return '<section class="sec st-lede" id="stay"><div class="w"><div><p class="eb" data-rv>' + esc(c.storyEyebrow || "The stay") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.storyTitle || f.name) + '</h2></div><div class="txt lede" style="max-width:none;color:var(--ink)" data-rv>' + paras + "</div></div></section>";
       },
@@ -17759,17 +21252,24 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
           const pics = f.photos.slice(1).concat(f.photos);
           return '<section class="sec hl-pan alt"><div class="w">' + items.slice(0, 3).map((h, i) => '<div class="row"><div class="pic" data-rv>' + img(pics[i]) + '</div><div data-rv><span class="n">' + String(i + 1).padStart(2, "0") + " \u2014 " + esc(h.eyebrow || "") + '</span><h3 class="disp">' + fmtInline(h.title) + '</h3><p class="lede">' + esc(h.text) + "</p></div></div>").join("") + "</div></section>";
         }
+        if (sec.variant === "cards") {
+          const pics = f.photos.length >= 4 ? f.photos.slice(1).concat(f.photos) : [];
+          return '<section class="sec hl-cards alt"><div class="w">' + secHd(c.highlightsEyebrow || "Why guests come back", c.highlightsTitle || "What makes it") + "<ol>" + items.map((h, i) => "<li data-rv>" + (pics[i] ? img(pics[i]) : "") + '<div class="bd"><span class="n">' + String(i + 1).padStart(2, "0") + (h.eyebrow ? " \xB7 " + esc(h.eyebrow) : "") + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut" style="margin:0">' + esc(h.text) + "</p></div></li>").join("") + "</ol></div></section>";
+        }
         return '<section class="sec hl-num"><div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.highlightsEyebrow || "Why guests come back") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.highlightsTitle || "What makes it") + "</h2></div></div><ol>" + items.map((h, i) => '<li data-rv><span class="n">' + String(i + 1).padStart(2, "0") + '</span><h3 class="disp h3">' + fmtInline(h.title) + '</h3><p class="mut">' + esc(h.text) + "</p></li>").join("") + "</ol></div></section>";
       },
       gallery(sec, f, c) {
         if (f.photos.length < 4) return "";
         const hd = '<div class="w"><div class="hd"><div><p class="eb" data-rv>' + esc(c.galleryEyebrow || "Look around") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.galleryTitle || "Inside and out") + '</h2></div><span class="mut num" data-rv>' + plural(f.photos.length, "photo") + "</span></div></div>";
+        if (sec.variant === "masonry") return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="msn" data-rv>' + f.photos.slice(0, 15).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + "</button>").join("") + '</div></div><dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
         if (sec.variant === "strip") return '<section class="sec gal" id="gallery">' + hd + '<div class="strip" data-rv>' + f.photos.map((x) => "<figure>" + img(x) + (x.cap ? "<figcaption>" + esc(x.cap) + "</figcaption>" : "") + "</figure>").join("") + "</div></section>";
         return '<section class="sec gal" id="gallery">' + hd + '<div class="w"><div class="grid" data-rv>' + f.photos.slice(0, 14).map((x, i) => '<button type="button" data-lb="' + i + '" aria-label="Open photo: ' + esc(x.alt) + '">' + img(x) + "</button>").join("") + '</div></div><dialog class="lb" aria-label="Photo"><img alt=""><p></p></dialog></section>';
       },
       amenities(sec, f, c) {
         if (!f.amenities.length) return "";
         const tm = [[f.checkin, "Check-in from"], [f.checkout, "Checkout by"], [plural(f.minNights, "night"), "Minimum stay"]];
+        const rules = f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? "<li>Parking: " + esc(f.parking) + "</li>" : "") + f.rules.map((r) => "<li>" + esc(r) + "</li>").join("") + "</ul>" : "";
+        if (sec.variant === "tiles") return '<section class="sec am am-t" id="details"><div class="w">' + secHd(c.amenitiesEyebrow || "The details", c.amenitiesTitle || "Everything you need") + '<div data-rv><ul class="tl">' + f.amenities.map((a) => "<li>" + esc(a) + "</li>").join("") + '</ul><div class="tm">' + tm.map((x) => "<div><b>" + esc(x[0]) + "</b><span>" + x[1] + "</span></div>").join("") + "</div>" + rules + "</div></div></section>";
         return '<section class="sec am alt" id="details"><div class="w"><div><p class="eb" data-rv>' + esc(c.amenitiesEyebrow || "The details") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.amenitiesTitle || "Everything you need") + "</h2></div><div data-rv><ul>" + f.amenities.map((a) => "<li>" + esc(a) + "</li>").join("") + '</ul><div class="tm">' + tm.map((x) => "<div><b>" + esc(x[0]) + "</b><span>" + x[1] + "</span></div>").join("") + "</div>" + (f.rules.length || f.parking ? '<ul class="rules" aria-label="House rules and parking">' + (f.parking ? "<li>Parking: " + esc(f.parking) + "</li>" : "") + f.rules.map((r) => "<li>" + esc(r) + "</li>").join("") + "</ul>" : "") + "</div></div></section>";
       },
       reviews(sec, f, c) {
@@ -17780,32 +21280,44 @@ dialog.lb p{color:#ddd;font-size:14px;text-align:center;margin:12px 0 0}
         const fig = (r) => '<figure data-rv><span class="stars" aria-label="' + r.stars + ' out of 5">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + "</blockquote><figcaption>" + esc(r.name) + "</figcaption></figure>";
         const note = f.live && rv.length ? '<p class="mut" style="font-size:13px;margin-top:20px">Every review is from a guest who stayed and chose to share it, whatever their rating.</p>' : "";
         if (sec.variant === "feature" && rv.length) return '<section class="sec rv feat" id="reviews"><div class="w">' + hd + score + '<figure style="margin:0" data-rv><blockquote class="disp">\u201C' + esc(rv[0].text) + "\u201D</blockquote><figcaption>" + esc(rv[0].name) + ' \xB7 <span class="stars">' + "\u2605".repeat(rv[0].stars) + "</span></figcaption></figure>" + (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map((r) => '<figure style="margin:0" data-rv><span class="stars">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + '</blockquote><figcaption class="mut">' + esc(r.name) + "</figcaption></figure>").join("") + "</div>" : "") + note + "</div></section>";
+        if (sec.variant === "band") return '<section class="sec rv rv-band dk" id="reviews"><div class="w"><p class="eb" data-rv>' + esc(c.reviewsEyebrow || "Guests say") + "</p>" + score + (rv.length ? '<figure style="margin:0" data-rv><blockquote class="disp">\u201C' + esc(rv[0].text) + "\u201D</blockquote><figcaption>" + esc(rv[0].name) + ' \xB7 <span class="stars">' + "\u2605".repeat(rv[0].stars) + "</span></figcaption></figure>" : "") + (rv.length > 1 ? '<div class="more">' + rv.slice(1, 4).map((r) => '<figure style="margin:0" data-rv><span class="stars">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + '</blockquote><figcaption style="margin:0">' + esc(r.name) + "</figcaption></figure>").join("") + "</div>" : "") + note.replace('class="mut"', 'style="color:var(--deepMut);font-size:13px;margin-top:28px"').replace(' style="font-size:13px;margin-top:20px"', "") + "</div></section>";
+        if (sec.variant === "cards" && rv.length) return '<section class="sec rv rv-cards" id="reviews"><div class="w">' + hd + score + '<div class="row" data-rv>' + rv.slice(0, 9).map((r) => '<figure><span class="stars" aria-label="' + r.stars + ' out of 5">' + "\u2605".repeat(r.stars) + "</span><blockquote>" + esc(r.text) + "</blockquote><figcaption>" + esc(r.name) + "</figcaption></figure>").join("") + "</div>" + note + "</div></section>";
         return '<section class="sec rv" id="reviews"><div class="w">' + hd + score + (rv.length ? '<div class="wall">' + rv.slice(0, 9).map(fig).join("") + "</div>" : "") + note + "</div></section>";
       },
       area(sec, f, c) {
         if (!f.guide.length) return "";
+        if (sec.variant === "cards") return '<section class="sec ar-c" id="area"><div class="w"><div class="hd"><p class="eb" data-rv>' + esc(c.areaEyebrow || "Around " + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || "Days out, picked by your host") + "</h2>" + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + "</p>" : "") + "</div><ol>" + f.guide.map((g, i) => '<li data-rv><span class="i num">' + String(i + 1).padStart(2, "0") + "</span><b>" + esc(g.place) + "</b>" + (g.far ? '<span class="far">' + esc(g.far) + "</span>" : "") + (g.tip ? "<p>" + esc(g.tip) + "</p>" : "") + "</li>").join("") + "</ol></div></section>";
         return '<section class="sec ar" id="area"><div class="w"><div><p class="eb" data-rv>' + esc(c.areaEyebrow || "Around " + f.town) + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.areaTitle || "Days out, picked by your host") + "</h2>" + (c.areaIntro ? '<p class="lede" style="margin-top:24px" data-rv>' + esc(c.areaIntro) + "</p>" : "") + "</div><ol>" + f.guide.map((g) => "<li data-rv><b>" + esc(g.place) + "</b>" + (g.far ? '<span class="far">' + esc(g.far) + "</span>" : "<span></span>") + (g.tip ? "<p>" + esc(g.tip) + "</p>" : "") + "</li>").join("") + "</ol></div></section>";
       },
       host(sec, f, c) {
         const note = c.hostNote || f.hostNote;
         if (!note && !f.owner) return "";
+        if (sec.variant === "centered") return '<section class="sec ho ho-c"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || "H")[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || "Your host") + '</p><blockquote class="disp">\u201C' + esc(note || "Message me any time before or during your stay.") + '\u201D</blockquote><p class="mut">' + esc((f.owner ? f.owner + ", " : "") + f.business) + "</p></div></div></section>";
         return '<section class="sec ho alt"><div class="w"><div class="mono" aria-hidden="true" data-rv>' + esc((f.owner || f.business || "H")[0]) + '</div><div data-rv><p class="eb">' + esc(c.hostEyebrow || "Your host") + '</p><blockquote class="disp">\u201C' + esc(note || "Message me any time before or during your stay.") + '\u201D</blockquote><p class="mut">' + esc((f.owner ? f.owner + ", " : "") + f.business) + "</p></div></div></section>";
       },
       book(sec, f, c, ctx) {
         const save = Math.round((f.nightly * 3 + f.cleaning) * 0.142);
+        if (sec.variant === "centered") return '<section class="sec bk bk-c alt" id="book"><div class="w"><div class="hd"><p class="eb" data-rv>' + esc(c.bookEyebrow || "Book direct") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || "Pick your dates") + '</h2><p class="lede" style="margin:24px auto 0" data-rv>' + esc(c.bookText || "Book here with " + (f.owner || "your host") + " and pay no platform booking fee.") + '</p><div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div><div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + ".</p></noscript></div></div></section>";
         return '<section class="sec bk dk" id="book"><div class="w"><div><p class="eb" data-rv>' + esc(c.bookEyebrow || "Book direct") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.bookTitle || "Pick your dates") + '</h2><p class="lede" style="margin-top:24px;color:var(--deepMut)" data-rv>' + esc(c.bookText || "Book here with " + (f.owner || "your host") + " and pay no platform booking fee.") + '</p><div class="save" data-rv>Booking direct skips the platform guest fee. On a 3-night stay that is about <b class="num">' + money(save) + '</b> kept in your pocket.</div></div><div class="card" data-rv id="bw" aria-live="polite"><noscript><p>Turn on JavaScript to check dates, or email ' + esc(f.business) + ".</p></noscript></div></div></section>";
       },
       faq(sec, f, c) {
+        const qs = f.faqs.slice(0, 12);
+        if (sec.variant === "columns") return '<section class="sec fq-cols" id="faq"><div class="w">' + secHd(c.faqEyebrow || "Good to know", c.faqTitle || "Questions guests ask") + "<dl data-rv>" + qs.map(([q, a]) => "<div><dt>" + esc(q) + "</dt><dd>" + esc(a) + "</dd></div>").join("") + "</dl></div></section>";
+        if (sec.variant === "centered") return '<section class="sec fq fq-c" id="faq"><div class="w">' + secHd(c.faqEyebrow || "Good to know", c.faqTitle || "Questions guests ask") + "<div data-rv>" + qs.map(([q, a], i) => "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(q) + "</summary><p>" + esc(a) + "</p></details>").join("") + "</div></div></section>";
         return '<section class="sec fq" id="faq"><div class="w"><div><p class="eb" data-rv>' + esc(c.faqEyebrow || "Good to know") + '</p><h2 class="disp h2" data-rv>' + fmtInline(c.faqTitle || "Questions guests ask") + "</h2></div><div data-rv>" + f.faqs.slice(0, 12).map(([q, a], i) => "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(q) + "</summary><p>" + esc(a) + "</p></details>").join("") + "</div></div></section>";
       },
       closing(sec, f, c) {
         const ph = f.photos[f.photos.length - 1];
+        if (sec.variant === "split" && ph) return '<section class="cl-split"><div class="pic">' + img(ph) + '</div><div class="tx" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
+        if (sec.variant === "minimal" || sec.variant === "split" && !ph) return '<section class="sec cl-min"><div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
         return '<section class="cl' + (ph ? "" : " np") + '">' + (ph ? img(ph) : "") + '<div class="w" data-rv><h2 class="disp h2">' + fmtInline(c.closing || "Your dates are waiting") + "</h2>" + ctaBtn(c.cta) + "</div></section>";
       }
     };
-    function nav(f, c, types, overlay) {
+    function nav(f, c, types, overlay, kind) {
       const links = [["stay", "The stay", "story"], ["gallery", "Gallery", "gallery"], ["area", "Area", "area"], ["reviews", "Reviews", "reviews"], ["faq", "FAQ", "faq"]].filter((x) => types.includes(x[2]));
-      return '<nav class="nav' + (overlay ? " ov" : " solid") + '" id="nav" aria-label="Main"><div class="w"><a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + "</a><ul>" + links.map((x) => '<li><a href="#' + x[0] + '">' + x[1] + "</a></li>").join("") + '</ul><a class="btn" href="#book">Check dates</a></div></nav>';
+      const wm = '<a class="wm" href="#top">' + esc(c.wordmark || f.short || f.name) + "</a>", ul = "<ul>" + links.map((x) => '<li><a href="#' + x[0] + '">' + x[1] + "</a></li>").join("") + "</ul>", bt = '<a class="btn" href="#book">Check dates</a>';
+      const cls = kind === "centered" ? " n-cen" : kind === "minimal" ? " n-min" : "";
+      return '<nav class="nav' + (overlay ? " ov" : " solid") + cls + '" id="nav" aria-label="Main"><div class="w">' + (kind === "centered" ? ul + wm + bt : kind === "minimal" ? wm + bt : wm + ul + bt) + "</div></nav>";
     }
     function footer(f, c, url) {
       return '<footer class="ft"><div class="w"><p class="disp big">' + esc(f.name) + '</p><div class="cols"><span>' + esc(f.area) + "</span><span>" + esc(c.footerLine || "Book direct with your host. No platform fees.") + "</span><span>" + esc(f.business) + ' \xB7 <a href="' + esc(url.replace(/\/$/, "") + "/llms.txt") + '">llms.txt</a></span></div></div></footer><div class="mbar" id="mbar"><div><small>From</small><b class="num">' + money(f.nightly) + '</b> <small style="display:inline">night</small></div><a class="btn" href="#book">Check dates</a></div>';
@@ -17822,6 +21334,8 @@ function nights(a,b){var o=[];for(var x=a;x<b;x=add(x,1))o.push(x);return o}func
 function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 function gbp(n){return '\xA3'+Math.round(n).toLocaleString('en-GB')}var MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
 if(!st.m){st.m=K.today.slice(0,7)}
+// dates passed in the link (from an event ad or funnel) are picked for the guest when they are still free
+(function(){var ci=qs.get('checkin')||'',co=qs.get('checkout')||'';if(ci.length===10&&co.length===10&&!isNaN(P(ci))&&!isNaN(P(co))&&ci>K.today&&co>ci&&free(ci,co)){st.a=ci;st.b=co;st.m=ci.slice(0,7)}})();
 function quote(){if(!st.a||!st.b)return null;var ns=nights(st.a,st.b),n=ns.reduce(function(s,x){var w=P(x).getUTCDay();return s+K.nightly+((w===5||w===6)?K.weekend:0)},0);var g=val('ad')+val('ch'),pet=K.pets&&chk('pt')?K.petFee:0;var pc=st.promo&&K.promos[fnv(st.promo)]||0,disc=Math.round(n*pc/100);
 var pr=[];if(ns.length<K.minNights)pr.push('The minimum stay is '+K.minNights+' nights.');if(g>K.maxGuests)pr.push('This home sleeps '+K.maxGuests+'.');if(!free(st.a,st.b))pr.push('Some of those nights are taken.');
 return{n:ns.length,nightly:n,clean:K.cleaning,pet:pet,pc:pc,disc:disc,total:n+K.cleaning+pet-disc,pr:pr}}
@@ -17850,22 +21364,22 @@ if(!j.ok){st.err=j.error||'Those dates could not be booked.';draw();return}if(j.
 st.done=j.invoiceUrl?{t:'You are booked',p:'Your invoice with the bank details is on its way to '+em+'. Pay within '+K.bank.days+' days to keep the dates.',u:j.tripUrl}:j.request?{t:'Request sent',p:'Your host will confirm shortly and email you a secure payment link.',u:j.tripUrl}:{t:'You are booked',p:'Your confirmation is on its way to '+em+'.',u:j.tripUrl};draw()}).catch(function(){st.busy=false;st.err='Something went wrong. Try again.';draw()})}
 draw()})();`;
     function head(o) {
-      const d = D.DIRECTIONS[o.dir] || D.DIRECTIONS.linen;
-      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + '</title><meta name="description" content="' + esc(o.description) + '">' + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + '<meta name="theme-color" content="' + esc(o.pal.bg) + '">' + (o.extra || "") + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + d.fonts.href + '&display=swap">' + (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : "") + "<style>" + css(o.dir, o.pal) + "</style></head>";
+      const L = o.look || D.look({ direction: o.dir, accent: o.accent });
+      return '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + esc(o.title) + '</title><meta name="description" content="' + esc(o.description) + '">' + (o.robots ? '<meta name="robots" content="' + esc(o.robots) + '">' : "") + '<meta name="theme-color" content="' + esc(L.pal.bg) + '">' + (o.extra || "") + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + L.fonts.href + '&display=swap">' + (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : "") + "<style>" + css(L) + "</style></head>";
     }
     function site(s, p, spec, ctx) {
-      const f = facts(s, p, ctx), c = spec.copy || {}, pal = D.palette(spec.direction, spec.accent);
+      const f = facts(s, p, ctx), c = spec.copy || {}, L = D.look(spec);
       let secs = (spec.sections || []).filter((x) => R[x.type]);
       const heroSec = secs.find((x) => x.type === "hero");
       if (heroSec && heroSec.variant !== "type" && !f.photos.length) heroSec.variant = "type";
       if (heroSec && heroSec.variant === "mosaic" && f.photos.length < 3) heroSec.variant = f.photos.length ? "split" : "type";
-      const body = secs.map((x) => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx))).join("");
+      const body = secs.map((x) => R[x.type](x, f, c, Object.assign({ kindHint: spec.kindHint }, ctx)).replace(/^<(\w+)/, '<$1 data-sec="' + x.type + '"')).join("");
       const types = secs.map((x) => x.type);
       const overlay = heroSec && heroSec.variant === "cinematic";
       const typeHero = heroSec && heroSec.variant === "type";
       const title = c.seoTitle || seo.titleOf(p), description = c.seoDescription || seo.descOf(p);
       const boot = { book: { url: ctx.bookUrl, pid: p.id, nightly: f.nightly, weekend: f.weekend, cleaning: f.cleaning, pets: f.pets, petFee: f.petFee, minNights: f.minNights, maxGuests: f.maxGuests, today: ctx.today, blocked: ctx.blocked || [], promos: ctx.promos || {}, stripe: !!ctx.stripe, bank: ctx.bank && ctx.bank.on ? { days: ctx.bank.days || 7 } : null, business: f.business } };
-      return head({ dir: spec.direction, pal, title, description, robots: ctx.preview ? "noindex" : null, preload: overlay || heroSec && heroSec.variant !== "type" ? (f.photos[0] || {}).url : null, extra: ctx.preview ? "" : seo.head(s, p, ctx.url) }) + '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero) + "<main>" + body + "</main>" + footer(f, c, ctx.url) + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)">' + ctx.banner + "</div>" : "") + "<script>window.__ST__=" + JSON.stringify(boot).replace(/</g, "\\u003c") + "</script><script>" + CLIENT + "</script></body></html>";
+      return head({ look: L, title, description, robots: ctx.preview ? "noindex" : null, preload: overlay || heroSec && heroSec.variant !== "type" ? (f.photos[0] || {}).url : null, extra: ctx.preview ? "" : seo.head(s, p, ctx.url) }) + '<body><a class="skip" href="#book">Skip to booking</a>' + nav(f, c, types, overlay || typeHero, L.nav) + "<main>" + body + "</main>" + footer(f, c, ctx.url) + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)">' + ctx.banner + "</div>" : "") + "<script>window.__ST__=" + JSON.stringify(boot).replace(/</g, "\\u003c") + "</script><script>" + CLIENT + "</script></body></html>";
     }
     module.exports = { site, facts, head, css, R, CLIENT, ARROW, fmtInline, headline, img, money, footer };
   }
@@ -17882,6 +21396,8 @@ var require_funnels = __commonJS({
       waitlist: { name: "First dibs on dates", blurb: "Let people join a priority list for a season or event before the dates open to everyone.", steps: ["optin", "thanks"], goal: "leads" },
       offer: { name: "Special offer", blurb: "A focused sales page for one offer, with a promo code that takes guests straight to booking.", steps: ["offer"], goal: "bookings" },
       lastminute: { name: "Last-minute dates", blurb: "Shows your next free dates, live from your calendar, with a code to fill them.", steps: ["offer"], goal: "bookings" },
+      // made by Event ads (server/studio/events.js), not from the funnel picker: one event, its dates and a code
+      event: { name: "Event stay", blurb: "A page for one nearby event or course, with the free nights for it and a code.", steps: ["offer"], goal: "bookings", hidden: true },
       comeback: { name: "Welcome back", blurb: "For past guests: a returning-guest discount and first pick of next season.", steps: ["optin", "thanks"], goal: "leads" }
     };
     function gaps(s, p, today, D2) {
@@ -17948,9 +21464,9 @@ var require_funnels = __commonJS({
       return 'Write the pages for a "' + t.name + '" funnel for this UK holiday let. ' + t.blurb + "\n\nSteps: " + t.steps.join(", ") + ". optin pages have a short form (name, email); offer pages show a promo code and send guests to book; thanks pages follow an opt-in.\nFacts: " + JSON.stringify({ name: f.name, town: f.town, area: f.area, kind: f.kind, sleeps: f.maxGuests, bedrooms: f.bedrooms, dogs: f.pets, fromPerNight: "\xA3" + f.nightly, amenities: f.amenities, about: f.about, areaGuide: f.guide.map((g) => g.place) }) + "\nOffer details: " + JSON.stringify({ promoCode: o.code, discountPercent: o.pct, season: o.season || "", hostNotes: o.notes || "" }) + '\n\nRules: UK English, sentence case, specific and sensory, facts only. headline under nine words; wrap one word in *asterisks* for italic emphasis. subhead one or two sentences. points: three short benefit lines (empty array for thanks steps). button: a first-person action under five words ("Send me the guide"). fine: one reassuring line about email consent for optin steps, otherwise empty. urgency: an honest reason to act now for offer steps (never fake scarcity or countdowns), otherwise empty. text: for thanks steps, two sentences on what happens next; otherwise empty. name: a short internal name for the funnel. Banned: ' + D.CLICHES.join(", ") + ".";
     }
     function page(s, p, fn, step, ctx) {
-      const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || "linen", pal = D.palette(dir, fn.accent || ctx.accent), c = (fn.copy || {})[step] || {};
+      const f = facts(s, p, ctx), dir = fn.direction || ctx.direction || "linen", L = D.look({ direction: dir, accent: fn.accent || ctx.accent, style: fn.style || ctx.style }), c = (fn.copy || {})[step] || {};
       const ph = f.photos[0];
-      const book = ctx.siteUrl + (ctx.siteUrl.includes("?") ? "&" : "?") + (fn.code ? "promo=" + encodeURIComponent(fn.code) + "&" : "") + "utm_source=funnel&utm_campaign=" + encodeURIComponent(fn.id) + "#book";
+      const book = ctx.siteUrl + (ctx.siteUrl.includes("?") ? "&" : "?") + (fn.code ? "promo=" + encodeURIComponent(fn.code) + "&" : "") + (fn.stay ? "checkin=" + fn.stay.from + "&checkout=" + fn.stay.to + "&" : "") + "utm_source=funnel&utm_campaign=" + encodeURIComponent(fn.id) + "#book";
       const h1 = '<h1 class="disp h1" style="font-size:calc(clamp(2.6rem,6vw,5.6rem) * var(--ds))">' + fmtInline(c.headline || "") + "</h1>";
       const pts = (c.points || []).filter(Boolean).length ? '<ul class="fn-pts">' + c.points.filter(Boolean).map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
       const pic = ph ? '<figure class="frame" style="margin:0">' + img(ph, 'fetchpriority="high"') + "</figure>" : '<div class="frame" aria-hidden="true" style="aspect-ratio:4/5;background:var(--deep);border-radius:var(--ri);display:grid;place-items:center;color:var(--deepInk)"><span class="disp" style="font-size:calc(clamp(2.4rem,5vw,4.4rem) * var(--ds));text-align:center;padding:30px">' + esc(f.name) + "</span></div>";
@@ -17962,13 +21478,273 @@ var require_funnels = __commonJS({
         main = '<section class="fn-hero"><div class="w"><div>' + h1 + '<p class="lede">' + esc(c.text || c.subhead || "") + "</p>" + (fn.code && fn.template === "comeback" ? '<div class="code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px">' + fn.pct + "% off your nights when you book direct</p>" : "") + '<div class="acts" style="margin-top:34px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "See dates") + ARROW + "</a></div></div>" + pic + "</div></section>" + extra;
       } else {
         const gp = fn.template === "lastminute" ? gaps(s, p, ctx.today) : [];
-        const gapList = fn.template === "lastminute" ? gp.length ? '<ul class="fn-pts">' + gp.map((g) => "<li><b>" + fmtD(g.from) + " \u2013 " + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + " night" + (g.n === 1 ? "" : "s") + " free</span></li>").join("") + "</ul>" : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>' : "";
+        const stayLine = fn.template === "event" && fn.stay ? '<ul class="fn-pts"><li><b>Arrive ' + fmtD(fn.stay.from) + ", leave " + fmtD(fn.stay.to) + '</b>&nbsp;<span class="mut">' + fn.stay.n + " night" + (fn.stay.n === 1 ? "" : "s") + " free" + (fn.event ? " for " + esc(fn.event.name) : "") + "</span></li></ul>" : "";
+        const gapList = stayLine + (fn.template === "lastminute" ? gp.length ? '<ul class="fn-pts">' + gp.map((g) => "<li><b>" + fmtD(g.from) + " \u2013 " + fmtD(g.to) + '</b>&nbsp;<span class="mut">' + g.n + " night" + (g.n === 1 ? "" : "s") + " free</span></li>").join("") + "</ul>" : '<p class="mut" style="margin-top:24px">We are fully booked for the next few weeks. Check later dates below.</p>' : "");
         main = '<section class="fn-hero"><div class="w"><div><p class="eb">' + esc(c.eyebrow || "") + "</p>" + h1 + '<p class="lede">' + esc(c.subhead || "") + "</p>" + pts + gapList + (fn.code ? '<div class="code" aria-label="Promo code">' + esc(fn.code) + '</div><p class="mut" style="font-size:14px;margin:0">' + fn.pct + "% off your nights. Applied automatically on the next page.</p>" : "") + '<div class="acts" style="margin-top:30px"><a class="btn" href="' + esc(book) + '">' + esc(c.button || "Check dates") + ARROW + "</a>" + (c.urgency ? '<span class="urg">' + esc(c.urgency) + "</span>" : "") + '</div><p class="mut" style="font-size:14px;margin-top:22px">From <b class="num">' + money(f.nightly) + "</b> a night \xB7 sleeps " + f.maxGuests + (f.rating && f.reviewCount ? " \xB7 rated " + Number(f.rating).toFixed(2) + " by " + f.reviewCount + " guests" : "") + "</p></div>" + pic + "</div></section>";
       }
       const navb = '<nav class="nav solid" aria-label="Main"><div class="w"><a class="wm" href="' + esc(ctx.siteUrl) + '">' + esc(f.short) + '</a><a class="btn" href="' + esc(book) + '">Check dates</a></div></nav>';
-      return head({ dir, pal, title: (c.headline || fn.name || f.name).replace(/\*/g, "") + " \xB7 " + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === "thanks" ? "noindex" : null, preload: ph && ph.url }) + "<body>" + navb + "<main>" + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + " \xB7 " + esc(f.area) + "</span><span>" + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + "</div>" : "") + '<script>document.documentElement.classList.add("js")</script></body></html>';
+      return head({ look: L, title: (c.headline || fn.name || f.name).replace(/\*/g, "") + " \xB7 " + f.name, description: c.subhead || f.headline, robots: ctx.preview || step === "thanks" ? "noindex" : null, preload: ph && ph.url }) + "<body>" + navb + "<main>" + main + '</main><footer class="ft" style="padding-top:50px"><div class="w"><div class="cols"><span>' + esc(f.name) + " \xB7 " + esc(f.area) + "</span><span>" + esc(f.business) + '</span><a href="' + esc(ctx.siteUrl) + '">Visit the website</a></div></div></footer>' + (ctx.banner ? '<div style="position:fixed;left:50%;top:86px;transform:translateX(-50%);z-index:70;background:#111;color:#fff;font:600 13px/1 system-ui;padding:10px 16px;border-radius:999px">' + ctx.banner + "</div>" : "") + '<script>document.documentElement.classList.add("js")</script></body></html>';
     }
     module.exports = { TEMPLATES, rulesCopy, schema, aiPrompt, page, gaps };
+  }
+});
+
+// server/studio/events.js
+var require_events = __commonJS({
+  "server/studio/events.js"(exports, module) {
+    var crypto = __require("crypto");
+    var KINDS = { course: "Training course", conference: "Conference", expo: "Trade show", show: "Show or fair", festival: "Festival", sport: "Sports event", exam: "Exam or assessment", other: "Event" };
+    var WHO = {
+      course: { who: "people on the course", need: "a quiet room, a desk and fast Wi-Fi after a long day", meta: ["Professional development", "Vocational education", "Business travellers"] },
+      conference: { who: "delegates and speakers", need: "a calm base close to the venue", meta: ["Business travellers", "Conferences", "Professional networking"] },
+      expo: { who: "exhibitors and visitors", need: "room for the team and parking for the van", meta: ["Trade shows", "Business travellers", "Small business owners"] },
+      show: { who: "visitors, exhibitors and traders", need: "a whole house for the family or the team", meta: ["Agricultural shows", "Country life", "Family days out"] },
+      festival: { who: "festival-goers", need: "a proper bed and a shower after the day", meta: ["Music festivals", "Live events", "Weekend breaks"] },
+      sport: { who: "competitors, teams and supporters", need: "space for the whole team and kit", meta: ["Sports fans", "Amateur sport", "Travel"] },
+      exam: { who: "candidates", need: "a good night\u2019s sleep close by", meta: ["Further education", "Professional certification"] },
+      other: { who: "people travelling in for it", need: "somewhere comfortable close by", meta: ["Travel", "Weekend breaks"] }
+    };
+    var SOURCES = {
+      crawl: { name: "Our event finder", price: "Included", finds: "Events, training courses, shows and conferences from public what\u2019s-on, venue and course pages and calendar feeds that we read ourselves, about once a day." },
+      manual: { name: "Added by you", price: "Included", finds: "Any event, course or contract you know about." }
+    };
+    var ISO = /^\d{4}-\d{2}-\d{2}$/;
+    var P = (s) => /* @__PURE__ */ new Date(s + "T00:00:00Z");
+    var add = (s, n) => {
+      const x = P(s);
+      x.setUTCDate(x.getUTCDate() + n);
+      return x.toISOString().slice(0, 10);
+    };
+    var diff = (a, b) => Math.round((P(b) - P(a)) / 864e5);
+    var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var dm = (s) => P(s).getUTCDate() + " " + MON[P(s).getUTCMonth()];
+    function range(a, b) {
+      if (a === b) return dm(a);
+      const A = P(a), B = P(b);
+      return A.getUTCMonth() === B.getUTCMonth() ? A.getUTCDate() + "\u2013" + dm(b) : dm(a) + " \u2013 " + dm(b);
+    }
+    var clean = (x, n) => String(x == null ? "" : x).replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, n);
+    function norm(e, source, propertyId) {
+      e = e || {};
+      const start = String(e.start || "").slice(0, 10), end0 = String(e.end || e.start || "").slice(0, 10);
+      if (!ISO.test(start) || isNaN(P(start))) return null;
+      const end = ISO.test(end0) && end0 >= start ? end0 : start;
+      const name = clean(e.name, 120);
+      if (!name) return null;
+      const url = /^https?:\/\/[^\s]+$/i.test(String(e.url || "")) ? String(e.url).slice(0, 400) : "";
+      const att = parseInt(e.attendance, 10);
+      return {
+        id: "ev" + crypto.createHash("sha1").update(propertyId + "|" + base(name) + "|" + start).digest("hex").slice(0, 10),
+        propertyId,
+        name,
+        kind: KINDS[e.kind] ? e.kind : "other",
+        start,
+        end,
+        days: diff(start, end) + 1,
+        venue: clean(e.venue, 100),
+        town: clean(e.town, 60),
+        url,
+        audience: clean(e.audience, 160),
+        why: clean(e.why, 200),
+        attendance: att > 0 ? att : null,
+        source: SOURCES[source] || source === "sample" ? source : "manual",
+        site: clean(e.site, 80)
+      };
+    }
+    var unday = (n) => n.replace(/\s*[-–:|(]\s*(day \d+|(mon|tues|wednes|thurs|fri|satur|sun)day.*|weekend.*|\d+ day.*)\)?$/i, "").trim();
+    var base = (n) => unday(n).toLowerCase().replace(/\b(19|20)\d\d\b/g, " ").replace(/^\s*the\s+/, "").replace(/[^a-z0-9]+/g, " ").trim();
+    function merge(list) {
+      const out = [];
+      list.slice().sort((a, b) => a.start.localeCompare(b.start)).forEach((e) => {
+        const place = (x) => (x.venue || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(), town = (x) => (x.town || "").toLowerCase();
+        const same = out.find((x) => base(x.name) === base(e.name) && e.start <= add(x.end, 1) && (!place(x) || !place(e) || place(x) === place(e) || place(x).includes(place(e)) || place(e).includes(place(x)) || town(x) && town(x) === town(e)));
+        if (same) {
+          if (e.end > same.end) {
+            same.end = e.end;
+            same.days = diff(same.start, same.end) + 1;
+          }
+          same.name = [unday(same.name), unday(e.name)].filter(Boolean).sort((a, b) => a.length - b.length)[0] || same.name;
+          same.url = same.url || e.url;
+          same.attendance = same.attendance || e.attendance;
+          ["venue", "town", "audience", "site"].forEach((f) => {
+            if (!same[f] && e[f]) same[f] = e[f];
+          });
+          return;
+        }
+        out.push(Object.assign({}, e));
+      });
+      return out;
+    }
+    function fit(ev, blocked, p, today) {
+      const from = ev.start > today ? add(ev.start, -1) : add(today, 1), to = ev.end > from ? ev.end : add(from, 1);
+      const nights = [];
+      for (let x = from; x < to; x = add(x, 1)) nights.push(x);
+      const free = nights.filter((x) => !blocked.has(x));
+      let best = null, run = null;
+      nights.forEach((x) => {
+        if (!blocked.has(x)) {
+          run = run && add(run.to, 0) === x ? { from: run.from, to: add(x, 1) } : { from: x, to: add(x, 1) };
+          if (!best || diff(run.from, run.to) > diff(best.from, best.to)) best = Object.assign({}, run);
+        } else run = null;
+      });
+      const n = best ? diff(best.from, best.to) : 0, min = Math.max(1, +p.minNights || 1);
+      const status = !free.length ? "booked" : free.length === nights.length ? "free" : "part";
+      return { from, to, nights: nights.length, free: free.length, status: n && n < min ? "booked" : status, stay: best && n >= min ? best : null, value: best && n >= min ? n * (+p.nightly || 0) + (+p.cleaning || 0) : 0 };
+    }
+    function samples(p, today) {
+      const at = (n, d) => ({ start: add(today, n), end: add(today, n + d - 1) });
+      const S = {
+        laurel: [["Mountain Leader training course", "course", "Ambleside", "Ambleside", "Trainee Mountain Leaders on a six-day course", 38, 6], ["Lakeland Fell Running Championships", "sport", "Keswick", "Keswick", "Runners and their support crews", 52, 3], ["Cumbria Outdoor Trade Show", "expo", "Kendal Leisure Centre", "Kendal", "Outdoor brands and buyers", 96, 2]],
+        lakeside: [["RYA Day Skipper practical course", "course", "Falmouth Marina", "Falmouth", "Sailors on a five-day practical", 24, 5], ["St Ives Arts Week", "festival", "Around the harbour", "St Ives", "Artists, makers and visitors", 61, 7], ["Cornwall Surf Championships", "sport", "Fistral Beach", "Newquay", "Surfers, judges and families", 120, 3]],
+        loft: [["NHS clinical skills course", "course", "Royal United Hospital", "Bath", "Nurses and doctors on a three-day course", 20, 3], ["University of Bath graduation week", "other", "University of Bath", "Bath", "Graduates and their families", 228, 4], ["Bath Digital Conference", "conference", "The Assembly Rooms", "Bath", "Delegates from tech and media", 140, 2]]
+      };
+      return (S[p.id] || []).map((x) => Object.assign({ name: x[0], kind: x[1], venue: x[2], town: x[3], audience: x[4], url: "", why: "Sample event for the demo" }, at(x[5], x[6])));
+    }
+    async function find(finder, wid, loc, p, o, opts) {
+      opts = opts || {};
+      const keep = (e) => e.days >= o.minDays && e.end > o.today && e.start <= o.to;
+      if (opts.demo) {
+        const ev = merge(samples(p, o.today).map((e) => norm(e, "sample", p.id)).filter(Boolean)).filter(keep);
+        return { events: ev, loc: null, sources: [{ id: "sample", name: "Samples", n: ev.length, error: "" }] };
+      }
+      const r = await finder.near(wid, loc, o);
+      const by = /* @__PURE__ */ new Map();
+      r.events.forEach((e) => {
+        const n = norm(e, "crawl", p.id);
+        if (n) (by.get(e.sourceId) || by.set(e.sourceId, []).get(e.sourceId)).push(n);
+      });
+      const events = merge([].concat(...by.values())).filter(keep);
+      return { events, loc, sources: r.sources.map((s) => ({ id: s.id, name: s.name, n: merge(by.get(s.id) || []).filter(keep).length, error: s.error })) };
+    }
+    var fits = (n, list) => [...new Set(list.map((x) => clean(x, 200)).filter((x) => x && x.length <= n))];
+    var title = (s) => s.replace(/\b([a-z])/g, (m, c) => c.toUpperCase());
+    function shortName(ev) {
+      const n = ev.name.replace(/\s*\(.*?\)\s*/g, " ").replace(/\s+\d{4}$/, "").replace(/\s+/g, " ").trim();
+      if (n.length <= 24) return n;
+      let out = "";
+      for (const w of n.split(" ")) {
+        if ((out + " " + w).trim().length > 24) break;
+        out = (out + " " + w).trim();
+      }
+      return out || n.slice(0, 24);
+    }
+    var plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+    function rulesAds(f, ev, ft, o) {
+      const W = WHO[ev.kind] || WHO.other, st = ft.stay || { from: ft.from, to: ft.to }, n = diff(st.from, st.to), dates = range(st.from, st.to);
+      const near = ev.venue ? ev.venue : ev.town || f.town, sn0 = shortName(ev), sn = sn0 === ev.name.replace(/\s+\d{4}$/, "").trim() ? sn0 : "", code = o.code, pct = o.pct;
+      const perks = [plural(f.bedrooms, "bedroom") + ", sleeps " + f.maxGuests].concat(f.amenities.filter((a) => /wi-?fi|parking|kitchen|desk|ev charg|washer|garden/i.test(a)).slice(0, 2));
+      const primary = (ev.kind === "course" ? "On the " + ev.name + "? " : "Coming for " + ev.name + "? ") + "Stay at " + f.short + ", near " + near + ". The whole home is free " + dates + " (" + plural(n, "night") + "): " + perks.join(" \xB7 ") + ". Book direct with code " + code + " and save " + pct + "%.";
+      const headline = fits(40, ["Stay near " + near + ", " + dates, "Free " + dates + " near " + near, sn ? "Free for " + sn + ", " + dates : "", "Your base for " + ev.name, "Free " + dates + " \xB7 " + f.short])[0] || ("Free " + dates + " \xB7 " + f.short).slice(0, 40);
+      const description = fits(30, ["Book direct \xB7 " + pct + "% off", "Sleeps " + f.maxGuests + " \xB7 " + pct + "% off", pct + "% off with " + code])[0];
+      const heads = fits(30, [
+        sn ? "Stay Near " + sn : "",
+        sn ? sn + " Accommodation" : "",
+        sn ? "Rooms for " + sn : "",
+        "Near " + near,
+        "Stay Near " + near,
+        title(f.short),
+        "Whole Home, Sleeps " + f.maxGuests,
+        plural(f.bedrooms, "Bedroom") + ", Book Direct",
+        "Free " + dates,
+        n + " Nights Free " + dates,
+        "Book Direct & Save " + pct + "%",
+        "Code " + code + " for " + pct + "% Off",
+        "Places to Stay in " + f.town,
+        f.town + " Short Stay",
+        "No Booking Fees",
+        "Self Check-In",
+        /wi-?fi/i.test(f.amenities.join(" ")) ? "Fast Wi-Fi Included" : "",
+        /parking/i.test(f.amenities.join(" ")) ? "Parking Included" : "",
+        f.rating >= 4.5 ? "Rated " + Number(f.rating).toFixed(2).replace(/0$/, "") + " by Guests" : ""
+      ]).slice(0, 15);
+      const descs = fits(90, [
+        "The whole home near " + near + ", free " + dates + ". Book direct and save " + pct + "%.",
+        plural(f.bedrooms, "bedroom") + ", sleeps " + f.maxGuests + ". " + W.need[0].toUpperCase() + W.need.slice(1) + ".",
+        "Use code " + code + " for " + pct + "% off. No platform fees, and you deal with the host direct.",
+        "Ideal for " + W.who + " at " + ev.name + ". Check dates and book in two minutes.",
+        "Free " + dates + " for " + ev.name + ". Book direct, save " + pct + "%.",
+        "Free " + dates + " near " + near + ". Book direct, save " + pct + "%."
+      ]).slice(0, 4);
+      const where = ev.town || f.town, home = f.town && f.town !== where ? f.town.toLowerCase() : "", kw = fits(80, [
+        home ? home + " accommodation" : "",
+        home ? "places to stay " + home : "",
+        ev.name.toLowerCase() + " accommodation",
+        "where to stay " + ev.name.toLowerCase(),
+        "accommodation near " + near.toLowerCase(),
+        "hotels near " + near.toLowerCase(),
+        where.toLowerCase() + " accommodation",
+        "places to stay " + where.toLowerCase(),
+        where.toLowerCase() + " short let",
+        ev.kind === "course" || ev.kind === "expo" ? "contractor accommodation " + where.toLowerCase() : "holiday let " + where.toLowerCase(),
+        ev.kind === "course" ? "business accommodation " + where.toLowerCase() : "group accommodation " + where.toLowerCase()
+      ]);
+      const landing = {
+        eyebrow: (KINDS[ev.kind] + " \xB7 " + range(ev.start, ev.end)).slice(0, 60),
+        headline: sn ? "Your base for *" + sn + "*" : "Your base for the *" + KINDS[ev.kind].toLowerCase() + "*",
+        subhead: "The whole of " + f.short + " is free " + dates + ", close to " + near + ". Book direct with the code below and save " + pct + "%.",
+        points: [perks[0][0].toUpperCase() + perks[0].slice(1), W.need[0].toUpperCase() + W.need.slice(1), "Check-in from " + f.checkin + ", no platform fees"].map((x) => clean(x, 110)),
+        button: "Book these dates",
+        urgency: "Only these dates are open for " + (sn || "it")
+      };
+      return { meta: { primary: clean(primary, 600), headline, description, cta: "Book now" }, google: { headlines: heads, descriptions: descs, keywords: kw, negatives: ["jobs", "careers", "salary", "parking only", "camping", "hostel"] }, audience: { interests: W.meta.slice(), jobs: [], notes: "" }, landing };
+    }
+    var adSchema = () => {
+      const s = { type: "string" }, arr = { type: "array", items: s };
+      return { type: "object", additionalProperties: false, required: ["meta", "google", "audience", "landing"], properties: {
+        meta: { type: "object", additionalProperties: false, required: ["primary", "headline", "description"], properties: { primary: s, headline: s, description: s } },
+        google: { type: "object", additionalProperties: false, required: ["headlines", "descriptions", "keywords"], properties: { headlines: arr, descriptions: arr, keywords: arr } },
+        audience: { type: "object", additionalProperties: false, required: ["interests", "jobs", "notes"], properties: { interests: arr, jobs: arr, notes: s } },
+        landing: { type: "object", additionalProperties: false, required: ["eyebrow", "headline", "subhead", "points", "button", "urgency"], properties: { eyebrow: s, headline: s, subhead: s, points: arr, button: s, urgency: s } }
+      } };
+    };
+    function adPrompt(f, ev, ft, o) {
+      const st = ft.stay;
+      return "Write paid ads that sell a stay at this UK holiday let to people travelling for an event nearby.\n\nThe home: " + JSON.stringify({ name: f.name, short: f.short, town: f.town, area: f.area, sleeps: f.maxGuests, bedrooms: f.bedrooms, baths: f.baths, fromPerNight: "\xA3" + f.nightly, amenities: f.amenities, about: String(f.about || "").slice(0, 600), rating: f.rating || null, rules: f.rules.slice(0, 4) }) + "\nThe event: " + JSON.stringify({ name: ev.name, kind: KINDS[ev.kind], dates: ev.start + " to " + ev.end, venue: ev.venue, town: ev.town, audience: ev.audience, attendance: ev.attendance }) + "\nFree nights to sell: check in " + st.from + ", check out " + st.to + " (" + diff(st.from, st.to) + " nights). Promo code " + o.code + " gives " + o.pct + "% off when booked direct.\n\nRules: UK English, sentence case, specific, facts only, never claim distances or travel times you were not given. Never use the event organiser\u2019s logo, or say or imply the home is official or endorsed by the event. meta (Facebook and Instagram): primary up to 300 characters, lead with the event and the dates; headline up to 40 characters; description up to 30 characters. google (responsive search ad): 12 to 15 headlines of at most 30 characters each, Title Case, varied (event, dates, the home, the offer, trust); 4 descriptions of at most 90 characters; 8 to 15 keywords people would search when looking for somewhere to stay for this event. audience: 3 to 6 Facebook detailed-targeting interests these travellers are likely to have; up to 6 job titles if the event is professional (empty for leisure events); notes: one sentence of targeting advice. landing: a short landing page: eyebrow under 60 characters, headline under nine words with one word wrapped in *asterisks*, subhead one or two sentences, three short benefit points, a button under five words, urgency an honest reason to book now (no fake scarcity).";
+    }
+    function mergeAds(r, base2) {
+      const a = r || {}, m = a.meta || {}, g = a.google || {}, au = a.audience || {}, l = a.landing || {};
+      const list = (x, n, max, fb) => {
+        const v = fits(n, Array.isArray(x) ? x : []).slice(0, max);
+        return v.length ? v : fb;
+      };
+      return {
+        meta: { primary: clean(m.primary, 600) || base2.meta.primary, headline: fits(40, [m.headline])[0] || base2.meta.headline, description: fits(30, [m.description])[0] || base2.meta.description, cta: "Book now" },
+        google: { headlines: list(g.headlines, 30, 15, base2.google.headlines), descriptions: list(g.descriptions, 90, 4, base2.google.descriptions), keywords: list(g.keywords, 80, 20, base2.google.keywords), negatives: base2.google.negatives },
+        audience: { interests: list(au.interests, 60, 8, base2.audience.interests), jobs: list(au.jobs, 60, 8, []), notes: clean(au.notes, 300) },
+        landing: { eyebrow: clean(l.eyebrow, 60) || base2.landing.eyebrow, headline: clean(l.headline, 90) || base2.landing.headline, subhead: clean(l.subhead, 260) || base2.landing.subhead, points: list(l.points, 110, 4, base2.landing.points), button: clean(l.button, 32) || base2.landing.button, urgency: clean(l.urgency, 80) || base2.landing.urgency }
+      };
+    }
+    function plan(f, ev, ft, today, loc) {
+      const st = ft.stay, lead = ev.kind === "course" || ev.kind === "exam" ? 35 : ev.kind === "festival" || ev.kind === "show" ? 56 : 42;
+      const total = Math.max(30, Math.min(400, Math.round(ft.value * 0.12 / 5) * 5)), want = Math.max(7, Math.min(lead, Math.floor(total / 3)));
+      const runTo = add(st.from, -2) > today ? add(st.from, -2) : add(today, 1), runFrom = add(runTo, -(want - 1)) > today ? add(runTo, -(want - 1)) : today;
+      const days = Math.max(1, diff(runFrom, runTo) + 1);
+      const per = (x) => Math.max(1, Math.round(x / days));
+      return {
+        runFrom,
+        runTo,
+        days,
+        total,
+        value: ft.value,
+        meta: {
+          budget: Math.round(total * 0.6),
+          daily: per(total * 0.6),
+          objective: "Sales (or Traffic if the Meta pixel is not on your site yet)",
+          placements: "Advantage+ placements: Facebook and Instagram feeds, Stories and Reels",
+          location: "People living in the United Kingdom, excluding " + (ev.town || f.town) + " and 20 miles around it (locals do not need a bed)",
+          age: ev.kind === "course" || ev.kind === "conference" || ev.kind === "expo" ? "23 to 60" : "25 to 65"
+        },
+        google: {
+          budget: total - Math.round(total * 0.6),
+          daily: per(total - Math.round(total * 0.6)),
+          bidding: "Maximise clicks with a \xA31.50 maximum CPC, then Maximise conversions once you have 15 bookings",
+          network: "Search only. Turn off the Display network",
+          location: 'United Kingdom, set to "Presence or interest", so people searching for ' + (ev.town || f.town) + " from anywhere see it",
+          radius: loc ? { lat: loc.lat, lng: loc.lng } : null
+        }
+      };
+    }
+    module.exports = { KINDS, WHO, SOURCES, find, fit, merge, norm, rulesAds, adPrompt, adSchema, mergeAds, plan, range, add, diff, samples, base };
   }
 });
 
@@ -17977,17 +21753,56 @@ var require_generate = __commonJS({
   "server/studio/generate.js"(exports, module) {
     var D = require_design();
     var { facts } = require_render();
-    var VIBES = { calm: "calm and restful", luxe: "luxurious and design-led", family: "warm, joyful and family-friendly", rustic: "rustic, honest and cosy", coastal: "bright and coastal", urban: "elegant and urban", adventurous: "outdoorsy and adventurous", romantic: "romantic, for couples" };
-    var VIBE_DIR = { calm: "linen", luxe: "nocturne", family: "sunlit", rustic: "meadow", coastal: "harbour", urban: "georgian", adventurous: "fell", romantic: "linen" };
+    var VIBES = {
+      calm: "calm and restful",
+      luxe: "luxurious and design-led",
+      family: "warm, joyful and family-friendly",
+      rustic: "rustic, honest and cosy",
+      coastal: "bright and coastal",
+      urban: "elegant and urban",
+      adventurous: "outdoorsy and adventurous",
+      romantic: "romantic, for couples",
+      cosy: "dark, cosy and wintry",
+      minimal: "minimal and Scandinavian",
+      playful: "playful and contemporary",
+      grand: "grand and traditional",
+      wellness: "soft, restorative, spa-like",
+      glamorous: "glamorous and sunny"
+    };
+    var VIBE_DIR = { calm: "linen", luxe: "nocturne", family: "sunlit", rustic: "meadow", coastal: "harbour", urban: "georgian", adventurous: "fell", romantic: "ember", cosy: "ember", minimal: "nordic", playful: "atelier", grand: "manor", wellness: "saltmarsh", glamorous: "riviera" };
+    var DIR_TEMPLATES = {
+      linen: ["magazine", "classic", "minimal"],
+      fell: ["classic", "bold", "cosy"],
+      harbour: ["classic", "showcase", "cosy"],
+      georgian: ["magazine", "boutique", "classic"],
+      nocturne: ["bold", "magazine", "showcase"],
+      modernist: ["showcase", "bold", "minimal"],
+      meadow: ["cosy", "classic", "showcase"],
+      sunlit: ["cosy", "showcase", "classic"],
+      nordic: ["minimal", "showcase", "classic"],
+      riviera: ["boutique", "magazine", "bold"],
+      atelier: ["showcase", "cosy", "bold"],
+      manor: ["magazine", "boutique", "classic"],
+      saltmarsh: ["boutique", "minimal", "cosy"],
+      ember: ["bold", "cosy", "boutique"]
+    };
     function guessDirection(f, brief) {
       if (brief && D.DIRECTIONS[brief.direction]) return brief.direction;
       if (brief && VIBE_DIR[brief.vibe]) return VIBE_DIR[brief.vibe];
       const t = (f.name + " " + f.about + " " + f.area + " " + f.amenities.join(" ")).toLowerCase();
+      if (/manor|rectory|grange|hall\b|estate|country house/.test(t)) return "manor";
       if (/barn|farm|shepherd|hut|meadow|orchard/.test(t)) return "meadow";
       if (/sea|beach|harbour|coast|bay|cove|surf/.test(t)) return "harbour";
       if (/contemporary|modern|architect|glass|concrete/.test(t)) return "modernist";
-      if (/spa|sauna|luxury|boutique/.test(t)) return "nocturne";
+      if (/wellness|yoga|retreat|\bspa\b/.test(t)) return "saltmarsh";
+      if (/scandi|nordic|minimalist/.test(t)) return "nordic";
+      if (/sauna|luxury|boutique/.test(t)) return "nocturne";
       return { cabin: "fell", lake: "harbour", city: "georgian" }[f.theme] || "linen";
+    }
+    function pickHero(dir, n, key, tries) {
+      if (!n) return "type";
+      const ok = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes.filter((h) => (h !== "mosaic" || n >= 3) && (h !== "arch" || n >= 2));
+      return ok.length ? ok[(D.seed(key) + (tries || 0)) % ok.length] : "split";
     }
     function heroFor(dir, n) {
       const order = (D.DIRECTIONS[dir] || D.DIRECTIONS.linen).heroes;
@@ -18056,6 +21871,30 @@ var require_generate = __commonJS({
         seoDescription: trunc((f.headline ? f.headline + " " : "") + "Sleeps " + f.maxGuests + " in " + f.town + ". Book direct from \xA3" + f.nightly + " a night with no platform fees.", 160)
       };
     }
+    function usedLooks(s, pid) {
+      return Object.entries((s && s.studio || {}).sites || {}).filter(([k]) => k !== pid).map(([, x]) => x.published || x.draft).filter(Boolean).map((x) => ({ direction: x.direction, style: x.style || {}, template: x.template || "" }));
+    }
+    function fromTemplate(f, tpl, hero) {
+      const T = D.TEMPLATES[tpl] || D.TEMPLATES.classic, n = f.photos.length, v = Object.assign({}, T.v);
+      if (hero) v.hero = hero;
+      if (!n) v.hero = "type";
+      else if (v.hero === "mosaic" && n < 3) v.hero = "split";
+      if (v.highlights === "panels" && n < 4) v.highlights = "numbered";
+      const secs = [{ type: "hero", variant: v.hero }, { type: "facts", variant: v.facts }, { type: "story", variant: v.story }, { type: "highlights", variant: v.highlights }];
+      if (n >= 6) secs.splice(T.gallery || secs.length, 0, { type: "gallery", variant: v.gallery });
+      if (f.amenities.length) secs.push({ type: "amenities", variant: v.amenities });
+      if (f.reviews.length || f.rating && f.reviewCount) secs.push({ type: "reviews", variant: v.reviews === "cards" && f.reviews.length < 3 ? "feature" : v.reviews });
+      if (f.guide.length) secs.push({ type: "area", variant: v.area });
+      secs.push({ type: "host", variant: v.host }, { type: "book", variant: v.book }, { type: "faq", variant: v.faq }, { type: "closing", variant: v.closing });
+      return secs;
+    }
+    function templateFor(dir, key, used, n) {
+      const prefs = (DIR_TEMPLATES[dir] || ["classic"]).concat(Object.keys(D.TEMPLATES));
+      const taken = new Set((used || []).map((u) => u.template));
+      const free = prefs.filter((t, i) => prefs.indexOf(t) === i && !taken.has(t));
+      const list = free.length ? free : prefs;
+      return list[(D.seed(key) + (n || 0)) % Math.min(list.length, 3)];
+    }
     function layoutFor(f, dir, hero) {
       const n = f.photos.length;
       const secs = [{ type: "hero", variant: hero }, { type: "facts", variant: "ruled" }, { type: "story", variant: dir === "linen" || dir === "georgian" ? "pull" : "lede" }, { type: "highlights", variant: n >= 4 ? "panels" : "numbered" }];
@@ -18072,6 +21911,8 @@ var require_generate = __commonJS({
       const out = { v: 1 };
       out.direction = D.DIRECTIONS[r.direction] ? r.direction : fallback.direction;
       out.accent = D.hexOk(r.accent) ? r.accent.toUpperCase() : null;
+      out.style = D.cleanStyle(r.style !== void 0 ? r.style : fallback.style);
+      out.template = D.TEMPLATES[r.template] ? r.template : fallback.template || null;
       const seen = /* @__PURE__ */ new Set();
       let secs = [];
       for (const s of Array.isArray(r.sections) ? r.sections : []) {
@@ -18175,21 +22016,24 @@ var require_generate = __commonJS({
         story: { type: "array", items: s },
         highlights: { type: "array", items: { type: "object", additionalProperties: false, required: ["eyebrow", "title", "text"], properties: { eyebrow: s, title: s, text: s } } }
       }) };
-      return { type: "object", additionalProperties: false, required: ["rationale", "direction", "accent", "heroVariant", "sections", "copy"], properties: {
+      const opt = (keys) => ({ type: "string", enum: [""].concat(keys) });
+      const style = { type: "object", additionalProperties: false, required: D.STYLE_KEYS, properties: Object.assign({ font: opt(Object.keys(D.FONTS)), palette: opt(Object.keys(D.PALETTES)) }, Object.fromEntries(Object.keys(D.STYLE).map((k) => [k, opt(Object.keys(D.STYLE[k]))]))) };
+      return { type: "object", additionalProperties: false, required: ["rationale", "direction", "accent", "style", "heroVariant", "sections", "copy"], properties: {
         rationale: s,
         direction: { type: "string", enum: Object.keys(D.DIRECTIONS) },
         accent: s,
+        style,
         heroVariant: { type: "string", enum: D.SECTIONS.hero },
         sections: { type: "array", items: { type: "object", additionalProperties: false, required: ["type", "variant"], properties: { type: { type: "string", enum: Object.keys(D.SECTIONS) }, variant: s } } },
         copy
       } };
     }
-    var SYSTEM = () => "You are the art director and copywriter at a small, award-winning studio that builds direct-booking websites for UK holiday lets. Clients pay \xA310,000 for a site from you, and every page must look and read like it. You do not write code. You choose from a tested design system and write the words; the studio's renderer builds the page.\n\nDesign principles you work to:\n" + D.PRINCIPLES.map((x, i) => i + 1 + ". " + x).join("\n") + "\n\nArt directions (pick exactly one, the one that fits this home and the host's brief best; do not default to the first):\n" + Object.entries(D.DIRECTIONS).map(([k, d]) => "- " + k + ": " + d.name + " \u2014 " + d.mood + " Fonts: " + d.fonts.display + " with " + d.fonts.text + ". Default accent " + d.pal.accent + " on " + d.pal.bg + ".").join("\n") + "\n\nSections and their layouts (type: variants): " + Object.entries(D.SECTIONS).map(([k, v]) => k + ": " + v.join("/")).join("; ") + `. hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".
+    var SYSTEM = () => "You are the art director and copywriter at a small, award-winning studio that builds direct-booking websites for UK holiday lets. Clients pay \xA310,000 for a site from you, and every page must look and read like it. You do not write code. You choose from a tested design system and write the words; the studio's renderer builds the page.\n\nDesign principles you work to:\n" + D.PRINCIPLES.map((x, i) => i + 1 + ". " + x).join("\n") + "\n\nArt directions (pick exactly one, the one that fits this home and the host's brief best; do not default to the first):\n" + Object.entries(D.DIRECTIONS).map(([k, d]) => "- " + k + ": " + d.name + " \u2014 " + d.mood + " Fonts: " + d.fonts.display + " with " + d.fonts.text + ". Default accent " + d.pal.accent + " on " + d.pal.bg + ".").join("\n") + "\n\nstyle: optional overrides on top of the direction, so no two sites look alike. Use an empty string to keep what the direction does. font (pairings): " + Object.entries(D.FONTS).map(([k, x]) => k + " = " + x.display + " & " + x.text + " (" + x.feel + ")").join("; ") + ". palette: " + Object.entries(D.PALETTES).map(([k, x]) => k + " = " + x.name + (x.dark ? " (dark)" : "")).join("; ") + ". " + Object.entries(D.STYLE).map(([k, v]) => k + ": " + Object.keys(v).join("/")).join("; ") + ". (corners: shape of cards, buttons and photos; buttons: solid, outline or underlined link; spacing: space between sections; scale: headline size; headings: case or italic; texture: background texture; nav: the top bar layout; images: photo treatment; bands: how alternate sections are coloured.) Choose a combination that suits the home and is clearly different from the host's other sites when they are listed. Keep it coherent: change two to five things, not everything.\n\nSections and their layouts (type: variants): " + Object.entries(D.SECTIONS).map(([k, v]) => k + ": " + v.join("/")).join("; ") + `. hero must be first. Include book and faq. Use 8 to 12 sections. Vary rhythm: mix layouts (for example a band of reviews, cards for the area, a split closing) rather than the first layout of every section. Only include gallery with 6+ photos, panels highlights with 4+ photos, mosaic hero with 3+ photos, arch hero looks best with 2+ photos, area only if the host gave an area guide, reviews only if there are reviews or a rating. With no photos the hero must be "type".
 
 accent: a hex colour (#RRGGBB) that suits the photos and the place, or an empty string to keep the direction's accent. It must read on the direction's background.
 
 Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only. Never invent prices, distances, awards, ratings, reviews, amenities or features that are not in the facts. headline: under nine words, one promise; you may put a line break as \\n (max 3 lines) and wrap one word in *asterisks* to set it in italic accent. Titles may also use *one* emphasised word. subhead: one or two sentences. story: two or three short paragraphs about the stay. pull: one line worth quoting. highlights: exactly three, each a real feature from the facts. hostNote: only polish the host's own note if one is given, otherwise empty. seoTitle under 60 characters including the home name and town; seoDescription 140 to 155 characters with a reason to book direct. Banned words and phrases: ` + D.CLICHES.join(", ") + ".\n\nrationale: two sentences on why this direction and layout suit this home.";
-    function userPrompt(f, brief, previous, avoid) {
+    function userPrompt(f, brief, previous, avoid, used) {
       const fx = {
         name: f.name,
         area: f.area,
@@ -18217,7 +22061,7 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
         host: f.owner + " at " + f.business
       };
       const b = brief || {};
-      return "The home:\n" + JSON.stringify(fx, null, 1) + "\n\nThe host's brief:\n- Feel: " + (VIBES[b.vibe] || "your call") + "\n- Guests they want: " + (str(b.audience, 200) || "not said") + "\n" + (b.direction && D.DIRECTIONS[b.direction] ? "- They chose the direction: " + b.direction + "\n" : "") + (b.notes ? "- Notes from the host: " + str(b.notes, 600) + "\n" : "") + (avoid && avoid.length ? "- Try a different direction from: " + avoid.join(", ") + "\n" : "") + (previous ? "\nTheir current site spec (revise it; keep what works):\n" + JSON.stringify({ direction: previous.direction, accent: previous.accent, sections: previous.sections, copy: previous.copy }) + "\n" : "") + (b.instruction ? "\nWhat the host asked you to change: " + str(b.instruction, 600) + "\n" : "") + "\nReturn the site spec.";
+      return "The home:\n" + JSON.stringify(fx, null, 1) + "\n\nThe host's brief:\n- Feel: " + (VIBES[b.vibe] || "your call") + "\n- Guests they want: " + (str(b.audience, 200) || "not said") + "\n" + (b.direction && D.DIRECTIONS[b.direction] ? "- They chose the direction: " + b.direction + "\n" : "") + (b.notes ? "- Notes from the host: " + str(b.notes, 600) + "\n" : "") + (avoid && avoid.length ? "- Try a different direction from: " + avoid.join(", ") + "\n" : "") + (used && used.length ? "- The host's other homes already use these looks, so make this one clearly different (another direction, or at least another font, palette and layout): " + JSON.stringify(used.slice(0, 8)) + "\n" : "") + (previous ? "\nTheir current site spec (revise it; keep what works):\n" + JSON.stringify({ direction: previous.direction, accent: previous.accent, style: previous.style || {}, sections: previous.sections, copy: previous.copy }) + "\n" : "") + (b.instruction ? "\nWhat the host asked you to change: " + str(b.instruction, 600) + "\n" : "") + "\nReturn the site spec.";
     }
     module.exports = function(cfg) {
       const key = cfg.ai.anthropic, base = cfg.ai.anthropicBase || "https://api.anthropic.com", model = cfg.ai.studioModel || "claude-opus-5-5";
@@ -18247,27 +22091,32 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
       async function design(s, p, brief, opts) {
         opts = opts || {};
         const f = facts(s, p, opts);
-        const dir = guessDirection(f, brief && !brief.instruction ? brief : null);
-        const fallback = { direction: dir, sections: layoutFor(f, dir, heroFor(dir, f.photos.length)), copy: rulesCopy(f, dir) };
+        const used = usedLooks(s, p.id), tries = (opts.avoid || []).length;
+        let dir = guessDirection(f, brief && !brief.instruction ? brief : null);
+        if (opts.avoid && opts.avoid.length) {
+          const keys = Object.keys(D.DIRECTIONS).filter((k) => !opts.avoid.includes(k));
+          dir = keys[(D.seed(p.id) + tries * 5) % keys.length];
+        }
+        const build = (d) => {
+          const tpl = templateFor(d, p.id, used, tries);
+          return { direction: d, template: tpl, style: D.varyStyle(d, p.id, used, tries), sections: fromTemplate(f, tpl, pickHero(d, f.photos.length, p.id, tries)), copy: rulesCopy(f, d) };
+        };
+        const fallback = build(dir);
         if (!enabled) {
-          const spec2 = normalize(Object.assign({}, fallback, opts.previous && brief && brief.instruction ? { direction: opts.previous.direction } : {}), f, fallback);
-          if (opts.avoid && opts.avoid.length) {
-            const keys = Object.keys(D.DIRECTIONS).filter((k) => !opts.avoid.includes(k));
-            spec2.direction = keys[opts.avoid.length * 3 % keys.length];
-            spec2.sections = layoutFor(f, spec2.direction, heroFor(spec2.direction, f.photos.length));
-          }
+          const keep = opts.previous && brief && brief.instruction;
+          const spec2 = normalize(keep ? Object.assign({}, fallback, { direction: opts.previous.direction, style: opts.previous.style || {}, sections: opts.previous.sections, template: opts.previous.template }) : fallback, f, fallback);
           spec2.by = "rules";
           spec2.qa = D.qa(spec2, f);
           return spec2;
         }
         const content = [];
         f.photos.filter((x) => /^https:\/\//.test(x.url)).slice(0, 4).forEach((x) => content.push({ type: "image", source: { type: "url", url: x.url } }));
-        content.push({ type: "text", text: userPrompt(f, brief, opts.previous, opts.avoid) });
+        content.push({ type: "text", text: userPrompt(f, brief, opts.previous, opts.avoid, used) });
         let spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
         let checks = D.qa(spec, f);
         const fixable = checks.filter((x) => !x.ok && x.fix && !/photo/i.test(x.label));
         if (fixable.length) {
-          content[content.length - 1] = { type: "text", text: userPrompt(f, brief, spec, opts.avoid) + "\n\nYour last version failed these design checks. Fix them and keep everything else: " + fixable.map((x) => x.label + " (" + x.fix + ")").join("; ") };
+          content[content.length - 1] = { type: "text", text: userPrompt(f, brief, spec, opts.avoid, used) + "\n\nYour last version failed these design checks. Fix them and keep everything else: " + fixable.map((x) => x.label + " (" + x.fix + ")").join("; ") };
           try {
             spec = normalize(await ask(SYSTEM(), content, null, opts.onUsage), f, fallback);
             checks = D.qa(spec, f);
@@ -18285,6 +22134,10 @@ Copy rules: UK English. Sentence case. Concrete and sensory, from the facts only
     module.exports.layoutFor = layoutFor;
     module.exports.guessDirection = guessDirection;
     module.exports.heroFor = heroFor;
+    module.exports.fromTemplate = fromTemplate;
+    module.exports.pickHero = pickHero;
+    module.exports.usedLooks = usedLooks;
+    module.exports.DIR_TEMPLATES = DIR_TEMPLATES;
   }
 });
 
@@ -18295,12 +22148,18 @@ var require_studio = __commonJS({
     var D = require_design();
     var render = require_render();
     var FN = require_funnels();
+    var EV = require_events();
+    var G = require_geo();
     var Gen = require_generate();
     module.exports = function(o) {
       const { cfg, ws, auth, pub, urls, stripeReady, log, json, jsonBody, send, err, ip } = o;
       const gen = Gen(cfg);
       const credits = o.credits || { check: async () => {
       }, meter: () => null };
+      const finder = o.finder || { near: async () => ({ events: [], sources: [] }), forHost: async () => [], warm: async () => 0, watch: async () => {
+        throw err(400, "The event finder is not running here.");
+      }, unwatch: async () => {
+      } };
       const HTML = "text/html; charset=utf-8";
       const st = (s) => s.studio = s.studio || { sites: {}, funnels: [] };
       const today = (s) => s.today;
@@ -18350,7 +22209,20 @@ var require_studio = __commonJS({
       async function host(req, res, p, m, w, headers) {
         const api = p.replace(/^\/api\/demo\//, "/api/");
         const s = w.state;
-        if (api === "/api/studio/meta" && m === "GET") return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + " & " + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES }, 200, headers), true;
+        if (api === "/api/studio/meta" && m === "GET") return json(res, {
+          ai: gen.enabled,
+          principles: D.PRINCIPLES,
+          directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + " & " + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark, font: d.font, palette: d.palette }])),
+          sections: D.SECTIONS,
+          vibes: Gen.VIBES,
+          templates: FN.TEMPLATES,
+          fonts: Object.fromEntries(Object.entries(D.FONTS).map(([k, x]) => [k, { name: x.name, display: x.display, text: x.text, feel: x.feel, href: x.href }])),
+          palettes: D.PALETTES,
+          style: D.STYLE,
+          pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])),
+          variantNames: D.VARIANT_NAMES,
+          events: eventsMeta(w)
+        }, 200, headers), true;
         if (api === "/api/studio/generate" && m === "POST") {
           limited(w, "gen", w.kind === "demo" ? 12 : 40);
           const j = await jsonBody(req, 2e4);
@@ -18392,10 +22264,52 @@ var require_studio = __commonJS({
           if (!cur || !cur.draft) throw err(400, "Design a site first.");
           const f = render.facts(s, prop);
           const x = j.patch || {};
-          const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === "" ? null : x.accent || cur.draft.accent, heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}) };
+          const merged = {
+            direction: x.direction || cur.draft.direction,
+            accent: x.accent === "" ? null : x.accent || cur.draft.accent,
+            heroVariant: x.heroVariant,
+            sections: x.sections || cur.draft.sections,
+            copy: Object.assign({}, cur.draft.copy, x.copy || {}),
+            style: Object.assign({}, cur.draft.style || {}),
+            template: x.template || cur.draft.template || null
+          };
+          if (x.direction && x.direction !== cur.draft.direction) {
+            delete merged.style.font;
+            delete merged.style.palette;
+          }
+          if (x.style && typeof x.style === "object") for (const [k, v] of Object.entries(x.style)) {
+            if (!D.STYLE_KEYS.includes(k)) continue;
+            if (v === "" || v == null) delete merged.style[k];
+            else merged.style[k] = String(v);
+          }
+          if (x.style === null) merged.style = {};
+          if (x.template && D.TEMPLATES[x.template]) {
+            const have = new Set(merged.sections.map((q) => q.type)), T = D.TEMPLATES[x.template];
+            const laid = Gen.fromTemplate(f, x.template).filter((q) => have.has(q.type));
+            merged.sections.forEach((q) => {
+              if (!laid.some((r) => r.type === q.type)) laid.splice(Math.max(1, laid.findIndex((r) => r.type === "book")), 0, { type: q.type, variant: T.v[q.type] || q.variant });
+            });
+            merged.sections = laid;
+          }
+          if (x.shuffle) {
+            const n = (cur.shuffles || 0) + 1 + Math.floor(Math.random() * 1e3);
+            merged.style = D.varyStyle(merged.direction, prop.id, [{ direction: merged.direction, style: cur.draft.style || {} }], n);
+            if (n % 3) {
+              const opts = D.DIRECTIONS[merged.direction].alts.fonts.concat([D.DIRECTIONS[merged.direction].font]);
+              merged.style.font = opts[n % opts.length];
+            }
+            merged.style.corners = Object.keys(D.STYLE.corners)[n % 4];
+            const tpls = Object.keys(D.TEMPLATES).filter((t) => t !== cur.draft.template);
+            const tpl = tpls[n % tpls.length];
+            const have = new Set(merged.sections.map((q) => q.type));
+            merged.sections = Gen.fromTemplate(f, tpl, Gen.pickHero(merged.direction, f.photos.length, prop.id, n)).filter((q) => have.has(q.type));
+            merged.template = tpl;
+            merged.style = D.cleanStyle(merged.style);
+          }
           if (x.heroVariant) merged.sections = merged.sections.map((q) => q.type === "hero" ? { type: "hero", variant: x.heroVariant } : q);
-          const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy };
+          const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy, style: {} };
           const spec = Object.assign(gen.normalize(merged, f, fallback), { by: cur.draft.by, at: (/* @__PURE__ */ new Date()).toISOString(), rationale: cur.draft.rationale });
+          if (x.template || x.shuffle) spec.template = merged.template;
           if (x.heroVariant && x.heroVariant !== "type" && !f.photos.length) spec.note = "Add photos in Website & SEO to use an image-led hero.";
           spec.qa = D.qa(spec, f);
           await save(w.id, (S) => {
@@ -18480,6 +22394,7 @@ var require_studio = __commonJS({
             by,
             direction: look.direction || gen.guessDirection(f, null),
             accent: look.accent || null,
+            style: look.style || null,
             createdAt: s.today,
             stats: { views: {}, leads: 0 }
           };
@@ -18519,6 +22434,239 @@ var require_studio = __commonJS({
           await save(w.id, (S) => {
             const sx = st(S);
             sx.funnels = sx.funnels.filter((q) => q.id !== j.id);
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api.startsWith("/api/eventads/")) return eventAds(req, res, api, m, w, headers);
+        return false;
+      }
+      const evs = (s) => {
+        const x = st(s);
+        x.events = x.events || { found: [], ads: [], scans: {}, prefs: {} };
+        return x.events;
+      };
+      function eventsMeta(w) {
+        const demo = w.kind === "demo";
+        return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: true }, x)) };
+      }
+      async function pagesFor(w) {
+        if (w.kind === "demo") return [];
+        const seen2 = /* @__PURE__ */ new Map();
+        for (const p of w.state.properties) {
+          const loc = G.locate(p);
+          (await finder.forHost(w.id, loc, 50)).forEach((x) => seen2.set(x.id, x));
+        }
+        if (!w.state.properties.length) (await finder.forHost(w.id, null)).forEach((x) => seen2.set(x.id, x));
+        return [...seen2.values()].sort((a, b) => b.mine - a.mine || a.name.localeCompare(b.name));
+      }
+      function withFit(s, list) {
+        return list.map((e) => {
+          const p = s.properties.find((x) => x.id === e.propertyId);
+          if (!p) return null;
+          return Object.assign({}, e, { fit: EV.fit(e, new Set(blockedNights(s, p.id)), p, s.today) });
+        }).filter(Boolean);
+      }
+      async function eventAds(req, res, api, m, w, headers) {
+        const s = w.state, E = s.studio && s.studio.events;
+        const home = (id) => {
+          const p = s.properties.find((x) => x.id === id) || s.properties[0];
+          if (!p) throw err(400, "Add a home first.");
+          return p;
+        };
+        if (api === "/api/eventads/list" && m === "GET") {
+          const x = E || { found: [], ads: [], scans: {}, prefs: {} };
+          return json(res, { events: withFit(s, x.found.filter((e) => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w), pages: await pagesFor(w), located: Object.fromEntries(s.properties.map((p) => [p.id, !!G.locate(p)])) }, 200, headers), true;
+        }
+        if (api === "/api/eventads/find" && m === "POST") {
+          limited(w, "events", w.kind === "demo" ? 12 : 20);
+          const j = await jsonBody(req, 2e3), p = home(j.propertyId), demo = w.kind === "demo";
+          const o2 = { today: s.today, radius: [10, 25, 50].includes(+j.radius) ? +j.radius : 25, minDays: [2, 3, 5].includes(+j.minDays) ? +j.minDays : 2, months: [3, 6, 12].includes(+j.months) ? +j.months : 6 };
+          o2.from = EV.add(s.today, 1);
+          o2.to = EV.add(s.today, Math.round(o2.months * 30.5));
+          const loc = demo ? null : G.locate(p);
+          if (!demo && !loc && !(await finder.forHost(w.id, null)).some((x) => x.mine)) throw err(400, "Add your home\u2019s postcode in its details so we know where to look, or add an events page for us to read below. You can always add an event yourself.");
+          if (loc) await finder.warm(loc, o2.radius, 2);
+          const r = await EV.find(finder, w.id, loc, p, o2, { demo });
+          let added = 0;
+          await save(w.id, (S, BB) => {
+            const x = evs(S);
+            r.events.forEach((e) => {
+              const old = x.found.find((q) => q.id === e.id);
+              if (old) {
+                if (!old.url && e.url) old.url = e.url;
+                return;
+              }
+              x.found.push(e);
+              added++;
+            });
+            x.found = x.found.filter((e) => e.end >= S.today || x.ads.some((a) => a.eventId === e.id)).sort((a, b) => a.start.localeCompare(b.start));
+            S.properties.forEach((q) => {
+              const mine = x.found.filter((e) => e.propertyId === q.id);
+              if (mine.length > 80) {
+                const drop = new Set(mine.slice(80).map((e) => e.id));
+                x.found = x.found.filter((e) => !drop.has(e.id));
+              }
+            });
+            x.prefs = { radius: o2.radius, minDays: o2.minDays, months: o2.months };
+            x.scans[p.id] = { at: (/* @__PURE__ */ new Date()).toISOString(), place: r.loc && (r.loc.place || r.loc.postcode) || "", sources: r.sources };
+            BB.log("campaign", "Event ads", "Looked for events near " + p.name + ": " + r.events.length + " found, " + added + " new.", p.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          const w2 = await ws.open(w.id), x2 = w2.state.studio.events;
+          return json(res, { events: withFit(w2.state, x2.found.filter((e) => !e.hidden)), ads: x2.ads, scans: x2.scans, prefs: x2.prefs, added, sources: r.sources, state: w2.state, version: await ws.version(w.id) }, 200, headers), true;
+        }
+        if (api === "/api/eventads/watch" && m === "POST") {
+          if (w.kind === "demo") throw err(400, "In the demo we only use sample events. Sign up to have us read pages near your home.");
+          limited(w, "evwatch", 20);
+          const j = await jsonBody(req, 4e3), p = home(j.propertyId), near = G.point(j.postcode) || G.locate(p);
+          if (near && !near.place) near.place = String(p.area || "").split(",")[0].trim() || near.postcode;
+          let r;
+          try {
+            r = await finder.watch(w.id, j.url, near, j.name);
+          } catch (e) {
+            throw err(e.status || 400, e.message);
+          }
+          await save(w.id, (S, BB) => {
+            BB.log("campaign", "Event ads", "Added a page for the event finder to read: " + String(j.url).slice(0, 120) + " (" + r.n + " event" + (r.n === 1 ? "" : "s") + " so far).", p.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, { page: r, pages: await pagesFor(await ws.open(w.id)) }, headers), true;
+        }
+        if (api === "/api/eventads/unwatch" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await finder.unwatch(w.id, String(j.id || ""));
+          return json(res, { pages: await pagesFor(w) }, 200, headers), true;
+        }
+        if (api === "/api/eventads/add" && m === "POST") {
+          const j = await jsonBody(req, 4e3), p = home(j.propertyId);
+          const e = EV.norm(Object.assign({}, j, { kind: j.kind }), "manual", p.id);
+          if (!e) throw err(400, "Add the event\u2019s name and its first day.");
+          if (e.end <= s.today) throw err(400, "That event is already over.");
+          await save(w.id, (S) => {
+            const x = evs(S);
+            x.found = x.found.filter((q) => q.id !== e.id);
+            x.found.push(e);
+            x.found.sort((a, b) => a.start.localeCompare(b.start));
+          });
+          return reply(res, w.id, { event: e }, headers), true;
+        }
+        if (api === "/api/eventads/hide" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await save(w.id, (S) => {
+            const e = evs(S).found.find((q) => q.id === j.id);
+            if (e) e.hidden = !j.show;
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/eventads/create" && m === "POST") {
+          limited(w, "evad", w.kind === "demo" ? 12 : 40);
+          const j = await jsonBody(req, 2e3), ev = E && E.found.find((q) => q.id === j.eventId);
+          if (!ev) throw err(404, "Event not found");
+          const p = home(ev.propertyId), ft = EV.fit(ev, new Set(blockedNights(s, p.id)), p, s.today);
+          if (!ft.stay) throw err(400, "Those nights are already booked, so there is nothing to advertise.");
+          const pct = Math.max(0, Math.min(30, parseInt(j.pct, 10) >= 0 ? parseInt(j.pct, 10) : 10));
+          const code = pct ? String(j.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14) || (ev.name.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6) || "EVENT") + pct : "";
+          const f = render.facts(s, p), o2 = { code, pct };
+          let copy = EV.rulesAds(f, ev, ft, o2), by = "rules";
+          if (gen.enabled) {
+            await credits.check(w.id);
+            try {
+              copy = EV.mergeAds(await gen.ask("You write honest, high-performing paid social and search ads for UK holiday lets.", [{ type: "text", text: EV.adPrompt(f, ev, ft, o2) }], EV.adSchema(), credits.meter(w.id, "eventads")), copy);
+              by = "ai";
+            } catch (e) {
+              log("event ads", e.message);
+            }
+          }
+          const scan = (E.scans || {})[p.id] || {};
+          const plan = EV.plan(f, ev, ft, s.today, null);
+          const site = ((s.studio || {}).sites || {})[p.id] || {}, look = site.published || site.draft || {};
+          const stay = Object.assign({}, ft.stay, { n: EV.diff(ft.stay.from, ft.stay.to) });
+          let fnl = null;
+          if (j.landing !== false) {
+            fnl = {
+              id: "fn" + crypto.randomBytes(4).toString("hex"),
+              name: ("Event \xB7 " + ev.name).slice(0, 60),
+              template: "event",
+              propertyId: p.id,
+              status: "draft",
+              code,
+              pct,
+              season: "",
+              steps: ["offer"],
+              copy: { offer: Object.assign({ fine: "", text: "" }, copy.landing) },
+              by,
+              stay,
+              event: { id: ev.id, name: ev.name, start: ev.start, end: ev.end },
+              direction: look.direction || gen.guessDirection(f, null),
+              accent: look.accent || null,
+              style: look.style || null,
+              createdAt: s.today,
+              stats: { views: {}, leads: 0 }
+            };
+          }
+          const ad = {
+            id: "ea" + crypto.randomBytes(4).toString("hex"),
+            eventId: ev.id,
+            propertyId: p.id,
+            event: { name: ev.name, kind: ev.kind, start: ev.start, end: ev.end, venue: ev.venue, town: ev.town, url: ev.url },
+            stay,
+            code,
+            pct,
+            by,
+            meta: copy.meta,
+            google: copy.google,
+            audience: copy.audience,
+            plan,
+            funnelId: fnl && fnl.id,
+            place: scan.place || "",
+            status: "draft",
+            createdAt: s.today
+          };
+          delete ad.landing;
+          await save(w.id, (S, BB) => {
+            const x = evs(S);
+            x.ads = x.ads.filter((a) => a.eventId !== ev.id || a.status === "running");
+            x.ads.unshift(ad);
+            if (fnl) st(S).funnels.unshift(fnl);
+            if (code) S.promos[code] = S.promos[code] || pct;
+            BB.log("campaign", "Event ads", "Wrote ads for " + ev.name + " (" + EV.range(stay.from, stay.to) + ", " + stay.n + " nights at " + p.name + ")" + (code ? " with code " + code : "") + ".", ad.id);
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, { ad }, headers), true;
+        }
+        if (api === "/api/eventads/edit" && m === "POST") {
+          const j = await jsonBody(req, 2e4);
+          await save(w.id, (S, BB) => {
+            const a = evs(S).ads.find((q) => q.id === j.id);
+            if (!a) throw err(404, "Ads not found");
+            const pt = j.patch || {};
+            const t = (x, n) => String(x || "").replace(/[<>]/g, "").trim().slice(0, n);
+            if (pt.meta) {
+              if (typeof pt.meta.primary === "string") a.meta.primary = t(pt.meta.primary, 600);
+              if (typeof pt.meta.headline === "string") a.meta.headline = t(pt.meta.headline, 40);
+              if (typeof pt.meta.description === "string") a.meta.description = t(pt.meta.description, 30);
+            }
+            if (pt.google) {
+              const L = (v, n, max) => (Array.isArray(v) ? v : String(v || "").split("\n")).map((x) => t(x, n)).filter(Boolean).slice(0, max);
+              if (pt.google.headlines != null) a.google.headlines = L(pt.google.headlines, 30, 15);
+              if (pt.google.descriptions != null) a.google.descriptions = L(pt.google.descriptions, 90, 4);
+              if (pt.google.keywords != null) a.google.keywords = L(pt.google.keywords, 80, 30);
+            }
+            if (pt.status === "running" || pt.status === "draft" || pt.status === "done") {
+              a.status = pt.status;
+              if (pt.status === "running") BB.log("campaign", "Event ads", "Ads for " + a.event.name + " are marked as running.", a.id);
+            }
+            BB.store.commit({ type: "campaign", quiet: true });
+          });
+          return reply(res, w.id, {}, headers), true;
+        }
+        if (api === "/api/eventads/delete" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          await save(w.id, (S) => {
+            const x = evs(S);
+            const a = x.ads.find((q) => q.id === j.id);
+            x.ads = x.ads.filter((q) => q.id !== j.id);
+            if (a && a.funnelId && j.landing) st(S).funnels = st(S).funnels.filter((q) => q.id !== a.funnelId);
           });
           return reply(res, w.id, {}, headers), true;
         }
@@ -18701,7 +22849,7 @@ var require_legal = __commonJS({
         `If you are unhappy with how we handle your data, you can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.`
       ) + sec(
         "Cookies",
-        "We set two cookies, both strictly necessary, so we do not ask before setting them: <code>bb_s</code> keeps hosts signed in, and <code>bb_demo</code> keeps your own copy of the demo for 7 days if you try it. Booking sites and our marketing pages set no cookies. The host app can keep an offline copy of the console on a host's phone; signing out clears it."
+        "Two cookies are strictly necessary, so we do not ask before setting them: <code>bb_s</code> keeps hosts signed in, and <code>bb_demo</code> keeps your own copy of the demo for 7 days if you try it. If you arrive through a partner's referral link, <code>bb_ref</code> remembers that partner's code for " + cfg.affiliate.cookieDays + " days so they are credited if you sign up, and partners have <code>bb_aff</code> to stay signed in. Booking sites set no cookies. The host app can keep an offline copy of the console on a host's phone; signing out clears it."
       ) + sec("Changes", "We will update this notice when what we do changes, and tell hosts by email about anything significant.") + draft;
       const terms = "<h1>Terms of service</h1><p>These terms are between you, the host, and " + co + " (\u201Cwe\u201D). " + reg + "</p>" + sec(
         "The service",
@@ -18809,6 +22957,7 @@ var require_server = __commonJS({
     var pages = require_pages();
     var seo = require_seo();
     var mkt = require_marketing();
+    var answers = require_answers();
     var pub = require_public();
     var invoice = require_invoice();
     var ical = require_ical();
@@ -18860,6 +23009,8 @@ var require_server = __commonJS({
     var secrets = require_secrets()(db, cfg);
     var visits = require_visits()(cfg.secret);
     var assist = require_assist()(cfg);
+    var seoTools = require_seo_tools()(cfg);
+    var google = require_google_search()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
@@ -18867,6 +23018,10 @@ var require_server = __commonJS({
     var hostMail = require_host_emails()({ db, cfg, msg, auth, ws, urls, leads, log });
     var campaigns = require_campaigns()({ db, cfg, msg, auth, leads, hostMail, log });
     var campaignsAdmin = require_campaigns_admin();
+    var adminUi = require_admin_shell();
+    var social = require_social()({ db });
+    var adminContent = require_admin_content();
+    var adminUsers = require_admin_users();
     var stripeAuto = require_stripe_auto().auto({ cfg, stripe, db, log });
     var effects = require_effects()({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
     ws.onEffects((w, fx) => effects(w, fx).catch((e) => log("effects", e.message)));
@@ -18937,7 +23092,9 @@ var require_server = __commonJS({
       return ws.subscribe(wid, res);
     }
     var err = (status, message) => Object.assign(new Error(message), { status });
-    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, credits, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
+    var eventFinder = require_crawler()({ cfg, kv: { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, log: (...a) => log(...a) });
+    var aff = require_affiliates()({ db, cfg, auth, msg, stripe, log, h: { ui: adminUi, esc: (s) => pages.esc(s), send: (...a) => send(...a), redirect: (...a) => redirect(...a), notFound: (r) => notFound(r), cookies: (r) => cookies(r), cookie: (...a) => cookie(...a), formBody: (r) => formBody(r), ip: (r) => ip(r), authPage: (...a) => authPage(...a) } });
+    var studio = require_studio()({ cfg, ws, auth, pub, urls, stripeReady, credits, finder: eventFinder, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
     var MIME = { ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".html": "text/html; charset=utf-8", ".pdf": "application/pdf", ".txt": "text/plain; charset=utf-8" };
     function file(res, base, rel, cache, extra) {
       const f = path.normalize(path.join(base, rel));
@@ -18979,6 +23136,7 @@ var require_server = __commonJS({
         soon: SOON,
         aiDrafts: assist.enabled,
         guestFromDomain: cfg.email.guestFromDomain,
+        support: cfg.company.support,
         ...hostLinks(w),
         aiEngines: ai.available(),
         test: testNotes()
@@ -19013,16 +23171,114 @@ var require_server = __commonJS({
     function comingSoon(res, w) {
       return send(res, 503, pages.plain({ title: "Coming soon", body: "<h1>" + E(w.state.account.business) + " is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>" }), "text/html; charset=utf-8", { "retry-after": "86400", "x-robots-tag": "noindex", "cache-control": "no-store" });
     }
-    function sitePage(res, w, p, canonical, host, req) {
+    function sitemapOf(w, site) {
+      return site.includes("/s/" + w.slug + "/") ? cfg.baseUrl + "/s/" + w.slug + "/sitemap.xml" : new URL(site).origin + "/sitemap.xml";
+    }
+    async function autoIndex(w, o) {
+      const s = w.state, out = [], now = (/* @__PURE__ */ new Date()).toISOString();
+      for (const prop of s.properties.filter((x) => x.published !== false)) {
+        const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
+        if (google.enabled) {
+          try {
+            await google.submit(origin, sm);
+            patch.google = { state: "submitted", sitemap: sm, at: now, account: google.account };
+            try {
+              patch.perf = await google.performance(origin, site.includes("/s/") ? site : origin + "/");
+            } catch (e) {
+              if (e.status !== 403) log("gsc perf", e.message);
+            }
+            out.push({ ok: true, message: prop.name + ": sitemap submitted to Google." });
+          } catch (e) {
+            patch.google = { state: "error", sitemap: sm, at: now, error: String(e.message).slice(0, 200) };
+            out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' });
+          }
+        }
+        const sig = crypto.createHash("sha1").update(seo.llms(s, prop, site)).digest("hex").slice(0, 16);
+        if (o && o.force || (cur.indexnow || {}).sig !== sig) {
+          const key = seo.indexNowKey(cfg.secret, w.id), onPath = site.includes("/s/" + w.slug + "/");
+          const r = await seoTools.ping(new URL(site).host, key, onPath ? cfg.baseUrl + "/s/" + w.slug + "/" + key + ".txt" : origin + "/" + key + ".txt", [site, onPath ? site + "/llms.txt" : origin + "/llms.txt"]);
+          patch.indexnow = { state: r.ok ? "sent" : "error", at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
+          out.push({ ok: r.ok, message: prop.name + ": " + r.message });
+        }
+        if (Object.keys(patch).length) await ws.withWs(w.id, (BB) => BB.act.setIndexing(prop.id, patch), { quiet: true });
+      }
+      return out;
+    }
+    async function seoApi(req, res, p, m, w, live, headers) {
+      const s = w.state;
+      const j = m === "POST" ? await jsonBody(req, 2e4) : {};
+      const u = new URL(req.url, "http://x");
+      const pid = j.propertyId || u.searchParams.get("propertyId");
+      const prop = s.properties.find((x) => x.id === pid) || s.properties[0];
+      if (!prop) throw err(404, "Add a home first.");
+      const site = live ? urls.site(w, prop) : "https://" + prop.domain + "/";
+      const root = site.replace(/^(https?:\/\/[^/]+).*$/, "$1") + "/", onPath = site.includes("/s/" + w.slug + "/");
+      const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + "/s/" + w.slug + "/" + key + ".txt" : root + key + ".txt";
+      if (p === "/api/seo/files" && m === "GET") {
+        return json(res, {
+          site,
+          sitemap: onPath ? cfg.baseUrl + "/s/" + w.slug + "/sitemap.xml" : root + "sitemap.xml",
+          robots: root + "robots.txt",
+          llmsUrl: onPath ? site + "/llms.txt" : root + "llms.txt",
+          keyUrl,
+          jsonld: seo.jsonLd(s, prop, site),
+          llms: seo.llms(s, prop, site),
+          title: seo.titleOf(prop),
+          description: seo.descOf(prop),
+          writer: live && seoTools.enabled,
+          indexNow: live,
+          google: live && google.enabled
+        }, 200, headers);
+      }
+      if (p === "/api/seo/write" && m === "POST") {
+        const what = String(j.what || "");
+        if (!["summary", "area", "meta", "faqs"].includes(what)) throw err(400, "Unknown draft");
+        if (!live || !seoTools.enabled) return json(res, { draft: null, by: "rules" }, 200, headers);
+        if (!auth.limit("seo-write:" + w.id, 60, 36e5)) throw err(429, "Too many drafts this hour. Try again later.");
+        try {
+          await credits.check(w.id);
+        } catch (e) {
+          if (e.code === "ai_credit") return json(res, { draft: null, by: "rules", credit: { empty: true, message: e.message, url: e.topupUrl } });
+          throw e;
+        }
+        try {
+          return json(res, { draft: await seoTools.write(s, prop, what, credits.meter(w.id, "seo"), Array.isArray(j.questions) ? j.questions : []), by: "claude" });
+        } catch (e) {
+          log("seo write", e.message);
+          return json(res, { draft: null, by: "rules", error: "Claude could not write this just now, so here is a draft from your facts." });
+        }
+      }
+      if (p === "/api/seo/submit" && m === "POST") {
+        if (!live) return json(res, { ok: true, message: "In the demo nothing is sent. In your account we submit every site to Google and Bing for you, every day." }, 200, headers);
+        if (!auth.limit("seo-submit:" + w.id, 6, 864e5)) throw err(429, "Already submitted several times today. We also resubmit every day by ourselves.");
+        const out = await autoIndex(w, { force: true });
+        return json(res, Object.assign({ ok: out.every((x) => x.ok), message: out.map((x) => x.message).join(" ") }, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+      }
+      if (p === "/api/seo/ping" && m === "POST") {
+        if (!live) return json(res, { ok: true, message: "In the demo nothing is sent. In your account this asks Bing and the other IndexNow engines to recrawl now." }, 200, headers);
+        if (!auth.limit("seo-ping:" + w.id, 10, 864e5)) throw err(429, "You have asked 10 times today. Search engines will pick up changes from your sitemap too.");
+        const host = new URL(site).host;
+        const list = onPath ? s.properties.map((x) => cfg.baseUrl + "/s/" + w.slug + "/" + x.id) : [site, root + "llms.txt"];
+        const r = await seoTools.ping(host, key, keyUrl, list);
+        await ws.withWs(w.id, (BB) => {
+          BB.log("site", "Search health", (r.ok ? "Asked Bing and other IndexNow engines to recrawl " : "Could not ask IndexNow to recrawl ") + prop.domain + ". " + r.message, prop.id, ["Search health", "IndexNow"]);
+          BB.store.commit({});
+        });
+        return json(res, Object.assign(r, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+      }
+      return false;
+    }
+    async function sitePage(res, w, p, canonical, host, req) {
       const s = w.state;
       if (req && w.kind === "live") visits.count(req, w.id, p.id, s.today);
+      const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : "";
       const built = studio.publishedSite(w, p, canonical);
-      if (built) return send(res, 200, built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
+      if (built) return send(res, 200, gsv ? built.replace("<head>", "<head>" + gsv) : built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
       const st = pub.siteState(s, p.id);
       send(res, 200, pages.page({
         title: seo.titleOf(p),
         description: seo.descOf(p),
-        head: seo.head(s, p, canonical),
+        head: gsv + seo.head(s, p, canonical),
         content: seo.content(s, p, canonical),
         boot: publicBoot(w, "site", { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
         banner: stripeReady(w) ? null : w.kind === "live" ? null : "<b>Demo</b> No real bookings are taken here."
@@ -19071,7 +23327,9 @@ var require_server = __commonJS({
       x.source = ["google", "ai", "campaign", "referral"].includes(input.source) ? input.source : input.source === "guest-app" ? "guest-app" : "website";
       x.channel = "direct";
       await effects.freshen(w, p.id);
-      const ready = stripeReady(w);
+      const ready = stripeReady(w), how = pub.guestPay(w.state);
+      if (kind === "transfer" && how === "card") return json(res, { ok: false, error: "This home takes card payments only. Pay by card or send a booking request." });
+      if (kind !== "transfer" && kind !== "request" && how === "transfer") return json(res, { ok: false, error: "This home takes payment by bank transfer. Choose bank transfer to book.", transfer: true });
       let r;
       if (kind === "transfer") {
         r = (await ws.act(w.id, "bookByTransfer", [x])).result;
@@ -19187,6 +23445,10 @@ var require_server = __commonJS({
             await hostMail.paymentFailed(r.id, o, card);
           }
         }
+        if (["invoice.paid", "charge.refunded", "charge.dispute.closed"].includes(ev.type)) await aff.stripeEvent(ev, async (c) => {
+          const r = await db.prepare("SELECT id FROM workspaces WHERE stripe_customer = ?").get(c);
+          return r && r.id;
+        });
         if (ev.type === "customer.subscription.deleted") {
           const r = await db.prepare("SELECT id FROM workspaces WHERE stripe_customer = ?").get(o.customer);
           if (r) await ws.setMeta(r.id, { billing_status: "cancelled" });
@@ -19217,6 +23479,7 @@ var require_server = __commonJS({
       if (name.length < 2) throw err(400, "Enter your name.");
       if (pw.length < 10) throw err(400, "Use a password of at least 10 characters.");
       if (await auth.userByEmail(email)) throw err(409, "There is already an account for that email. Sign in instead.");
+      const ref = await aff.forSignup(req, b.ref, email);
       const plan = "Growth";
       const business = String(a.business || "").trim().slice(0, 80) || name.split(" ")[0] + "'s holiday lets";
       const wid = await ws.createLive({ business, owner: name, email, plan });
@@ -19241,6 +23504,7 @@ var require_server = __commonJS({
         });
       }
       await ws.setMeta(wid, { plan, billing_status: "trial" });
+      await aff.attach(wid, ref);
       const token = await auth.startSession(uid), set = { "set-cookie": cookie("bb_s", token, 30 * 86400) };
       if (stripe.enabled) {
         let to = "/app/pay";
@@ -19268,7 +23532,10 @@ var require_server = __commonJS({
         a.billing = "active";
         BB.store.commit({});
       });
-      if (first) ws.defer(welcome(wid), "welcome");
+      if (first) {
+        ws.defer(welcome(wid), "welcome");
+        ws.defer(effects.siteLive(wid), "site-live");
+      }
     }
     var PAY_OPEN = ["/app/pay", "/app/pay/done", "/app/billing", "/app/billing/start", "/app/billing/portal", "/app/account"];
     async function mustPay(req, w) {
@@ -19337,6 +23604,16 @@ var require_server = __commonJS({
       if (p.startsWith("/email-img/brand/")) return file(res, path.join(__dirname, "emails", "brand"), p.slice("/email-img/brand/".length), "public, max-age=86400");
       if (p.startsWith("/email-img/")) return file(res, path.join(__dirname, "emails", "guest-img"), p.slice("/email-img/".length), "public, max-age=86400");
       if (p === "/healthz") return json(res, { ok: true });
+      if (p === "/bot") return send(res, 200, `BookingboosterEvents is the event finder for Bookingbooster, a direct-booking tool for UK holiday lets.
+
+It reads public what's-on, venue and training course pages, and calendar feeds, to find events near our hosts' homes, so they can tell people travelling for those events that they have a room free. It keeps only the facts (name, dates, venue) and a link back to your page.
+
+It asks robots.txt first and follows it, for "BookingboosterEvents" or for "*". It keeps to Crawl-delay, waits at least 1.5 seconds between pages, reads at most 25 pages of a site a day, skips noindex pages and does not follow nofollow links.
+
+To stop it, add to your robots.txt:
+User-agent: BookingboosterEvents
+Disallow: /
+`, "text/plain; charset=utf-8");
       if (p === "/test/sql" && m === "POST" && process.env.TEST_SQL === "1" && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host)) {
         const j = await jsonBody(req, 1e5);
         return json(res, { rows: await db.prepare(String(j.q)).all(...j.args || []) });
@@ -19552,8 +23829,9 @@ var require_server = __commonJS({
         if (await hiddenFrom(req, w)) return comingSoon(res, w);
         const canonical = "https://" + host.replace(/:\d+$/, "") + "/";
         if (p === "/robots.txt") return send(res, 200, seo.robots(canonical + "sitemap.xml"), "text/plain; charset=utf-8");
-        if (p === "/sitemap.xml") return send(res, 200, seo.sitemap([{ loc: canonical, lastmod: w.state.today }, { loc: canonical + "llms.txt" }]), "application/xml");
+        if (p === "/sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, [[prop, canonical]], [canonical + "llms.txt"]), "application/xml");
         if (p === "/llms.txt") return send(res, 200, seo.llms(w.state, prop, canonical), "text/plain; charset=utf-8");
+        if (p === "/" + seo.indexNowKey(cfg.secret, w.id) + ".txt") return send(res, 200, seo.indexNowKey(cfg.secret, w.id), "text/plain; charset=utf-8");
         if (p === "/" || p === "/book") return await sitePage(res, w, prop, canonical, host.replace(/:\d+$/, ""), req);
         return notFound(res);
       }
@@ -19562,15 +23840,17 @@ var require_server = __commonJS({
         if (!r) return notFound(res);
         const w = await ws.open(r.id);
         w.catchUp();
+        if (mm[2] === seo.indexNowKey(cfg.secret, w.id) + ".txt" && !mm[3]) return send(res, 200, seo.indexNowKey(cfg.secret, w.id), "text/plain; charset=utf-8");
         const prop = mm[2] && mm[2] !== "sitemap.xml" && mm[2] !== "llms.txt" ? w.state.properties.find((x) => x.id === decodeURIComponent(mm[2])) : w.state.properties[0];
         if (!prop) return notFound(res);
         if (await hiddenFrom(req, w)) return comingSoon(res, w);
         const canonical = cfg.baseUrl + "/s/" + w.slug + "/" + prop.id;
         if (mm[3] === "/llms.txt" || mm[2] === "llms.txt") return send(res, 200, seo.llms(w.state, prop, canonical), "text/plain; charset=utf-8");
-        if (mm[3] === "/sitemap.xml" || mm[2] === "sitemap.xml") return send(res, 200, seo.sitemap(w.state.properties.map((x) => ({ loc: cfg.baseUrl + "/s/" + w.slug + "/" + x.id, lastmod: w.state.today }))), "application/xml");
+        if (mm[3] === "/sitemap.xml" || mm[2] === "sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, w.state.properties.map((x) => [x, cfg.baseUrl + "/s/" + w.slug + "/" + x.id])), "application/xml");
         if (!mm[2]) return redirect(res, canonical);
         return await sitePage(res, w, prop, canonical, null, req);
       }
+      if (await aff.route(req, res, u, p, m)) return;
       if (p === "/signup" || p === "/register" || p === "/join") return redirect(res, "/start" + u.search);
       if (p === "/" || p === "/pricing" || p === "/start") {
         const view = p === "/start" ? "onboard" : "home";
@@ -19579,6 +23859,7 @@ var require_server = __commonJS({
           plan: ["starter", "growth", "portfolio"].includes(q("plan").toLowerCase()) ? q("plan").toLowerCase() : void 0,
           annual: q("annual") === "1",
           addon: q("addon") === "1",
+          ref: aff.cookieCode(req),
           email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q("email")) ? q("email") : "",
           name: q("name"),
           business: q("business")
@@ -19587,30 +23868,65 @@ var require_server = __commonJS({
         return send(res, 200, pages.page({
           title: p === "/start" ? "Start your booking site \xB7 Bookingbooster" : mkt.TITLE,
           description: mkt.DESCRIPTION,
-          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) : ""),
+          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
-          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", payFirst: stripe.enabled, loggedIn: !!await me(req) }
+          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
+      }
+      if (m === "GET" && Object.hasOwn(answers.PAGES, p)) {
+        const a = answers.render(cfg.baseUrl, p);
+        return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: "read", index: true }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
       }
       if (p === "/robots.txt") return send(res, 200, seo.robots(cfg.baseUrl + "/sitemap.xml"), "text/plain; charset=utf-8");
       if (p === "/sitemap.xml") {
-        const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/help" }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + "/privacy" }, { loc: cfg.baseUrl + "/terms" }] : []);
+        const list = [{ loc: cfg.baseUrl + "/" }, { loc: cfg.baseUrl + "/help" }].concat(answers.list().map((x) => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + "/privacy" }, { loc: cfg.baseUrl + "/terms" }] : []);
         for (const id of await ws.liveIds()) {
           const w = await ws.open(id);
+          if (unpaid(w)) continue;
           for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today });
         }
         return send(res, 200, seo.sitemap(list.filter((x) => x.loc.startsWith(cfg.baseUrl))), "application/xml");
       }
       if (p === "/llms.txt") return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), "text/plain; charset=utf-8");
+      if (p === "/llms-full.txt") return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()) + "\n---\n\n" + answers.fullText(cfg.baseUrl), "text/plain; charset=utf-8");
+      if (p === "/" + ownIndexKey() + ".txt") return send(res, 200, ownIndexKey(), "text/plain; charset=utf-8");
       if (p === "/api/signup" && m === "POST") return await signup(req, res);
       if (p === "/admin") return await adminPage(req, res);
+      if (p === "/admin/affiliates" || p.startsWith("/admin/affiliates/")) {
+        if (!await isAdmin(req)) return notFound(res);
+        if (await aff.admin(req, res, p, m, (await me(req) || {}).email)) return;
+        return notFound(res);
+      }
+      if (m === "GET" && (p === "/admin/leads" || p === "/admin/settings")) return await adminPage(req, res, "", p.slice(7));
+      if (p === "/admin/hosts" || p.startsWith("/admin/hosts/")) {
+        if (!await isAdmin(req)) return notFound(res);
+        const U = usersAdmin(req), hm = p.match(/^\/admin\/hosts\/([A-Za-z0-9_-]+)(\/reset)?$/);
+        if (p === "/admin/hosts" && m === "GET") return await U.listPage(res, u.searchParams);
+        if (p === "/admin/hosts/export.csv" && m === "GET") return await U.csv(res);
+        if (hm && !hm[2] && m === "GET") return await U.detailPage(res, hm[1]);
+        if (hm && hm[2] && m === "POST") {
+          const r0 = await db.prepare("SELECT email FROM users WHERE workspace_id = ? ORDER BY created_at LIMIT 1").get(hm[1]);
+          const r = r0 && await auth.startReset(r0.email);
+          if (r) {
+            const link = cfg.baseUrl + "/reset?t=" + r.token;
+            await msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: "Reset your Bookingbooster password", text: "The Bookingbooster team sent you a link to set a new password. It works for one hour: " + link + "\n\nIf you did not ask for this, ignore this email.", meta: { template: "reset", team: true } });
+            log("admin", "password reset sent for", hm[1]);
+          }
+          return await U.detailPage(res, hm[1], r ? "Password reset link sent to " + r.user.email + ". It works for one hour." : "", r ? "" : "This account has no sign-in email.");
+        }
+        return notFound(res);
+      }
       if (p === "/admin/campaigns/run" && m === "POST" && cfg.testClock && await isAdmin(req)) {
         const b = await jsonBody(req, 1e3);
         return json(res, { sent: await campaigns.run(+b.at || Date.now()) });
       }
       if (p === "/admin/campaigns" || p.startsWith("/admin/campaigns/")) {
         if (!await isAdmin(req)) return notFound(res);
-        return await campaignsAdmin({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me })(req, res, p, m, u);
+        return await campaignsAdmin({ campaigns, leads, cfg, E, ui: adminUi, email: async () => (await me(req) || {}).email, send, redirect, formBody, me })(req, res, p, m, u);
+      }
+      if (p === "/admin/emails" || p.startsWith("/admin/emails/") || p === "/admin/social") {
+        if (!await isAdmin(req)) return notFound(res);
+        return await adminContent({ cfg, msg, leads, campaigns, social, ui: adminUi, E, send, email: async () => (await me(req) || {}).email })(req, res, p, m, u);
       }
       if (p === "/admin/backup") {
         if (!await isAdmin(req)) return notFound(res);
@@ -19650,7 +23966,11 @@ var require_server = __commonJS({
           const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []);
           return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers);
         }
-        if (p.startsWith("/api/demo/studio/") || p.startsWith("/api/demo/funnels/")) {
+        if (p.startsWith("/api/demo/seo/")) {
+          const w = await ws.open(wid);
+          if (await seoApi(req, res, p.replace("/api/demo/", "/api/"), m, w, false, headers)) return;
+        }
+        if (p.startsWith("/api/demo/studio/") || p.startsWith("/api/demo/funnels/") || p.startsWith("/api/demo/eventads/")) {
           const w = await ws.open(wid);
           if (await studio.host(req, res, p, m, w, headers)) return;
         }
@@ -19780,12 +24100,12 @@ var require_server = __commonJS({
         }
         if (p === "/api/state") return json(res, Object.assign({ state: w.state, version: await ws.version(w.id) }, hostLinks(w)));
         if (p === "/api/stream") return await stream(res, u, w.id);
-        if ((p.startsWith("/api/studio/") || p.startsWith("/api/funnels/")) && await studio.host(req, res, p, m, w)) return;
+        if ((p.startsWith("/api/studio/") || p.startsWith("/api/funnels/") || p.startsWith("/api/eventads/")) && await studio.host(req, res, p, m, w)) return;
         if ((p.startsWith("/app/studio/") || p.startsWith("/app/funnel/")) && studio.preview(res, w, p, u.searchParams)) return;
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);
           const name = String(j.name || "");
-          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending"].includes(name)) throw err(403, "That action is not available in a live account.");
+          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
           if (name === "toggleIntegration" && j.args) {
             const iid = j.args[0], cur = w.state.integrations.find((i) => i.id === iid);
             if (!cur) throw err(404, "Unknown connection");
@@ -19858,6 +24178,7 @@ var require_server = __commonJS({
           }
           c.live = !!(await ws.domain(h) || {}).verified && (await ws.domain(h)).workspace_id === w.id;
           c.elsewhere = !c.live && !!row && row.workspace_id !== w.id;
+          c.https = c.live ? await domains.https(h) : false;
           return json(res, Object.assign({ state: (await ws.open(w.id)).state, version: await ws.version(w.id), domain: c }, hostLinks(await ws.open(w.id))));
         }
         if (p === "/app/nuki" && m === "POST") {
@@ -19905,6 +24226,7 @@ var require_server = __commonJS({
             return json(res, { text: null });
           }
         }
+        if (p.startsWith("/api/seo/") && await seoApi(req, res, p, m, w, true)) return;
         if (p === "/api/credits") return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
         if (p === "/api/trip-link" && m === "POST") {
           const j = await jsonBody(req);
@@ -19950,43 +24272,112 @@ var require_server = __commonJS({
       const u = await me(req);
       return isAdminEmail(u && u.email);
     };
-    var stripeKeyForm = (st) => st.canSave ? '<details class="card"' + (st.on ? "" : " open") + "><summary><b>" + (st.on ? "Change the Stripe key" : "Connect Stripe") + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off"><p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p><label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : "";
-    var stripeLine = (st) => stripeKeyForm(st) + "<p><small>Stripe: " + (!st.on ? "off" : st.mode + " mode (key ending " + E(st.last4) + ", from " + E(st.keyName) + ") \xB7 plan prices " + (st.prices ? "ready" : "not yet") + " \xB7 webhooks " + (st.webhooks ? "ready" : "not yet") + (st.error ? " \xB7 last setup error: " + E(st.error) : "")) + "</small></p>";
-    async function adminPage(req, res, note) {
+    var usersAdmin = (req) => adminUsers({
+      db,
+      ws,
+      cfg,
+      credits,
+      urls,
+      ui: adminUi,
+      E,
+      send,
+      email: async () => (await me(req) || {}).email,
+      admins: async () => {
+        const r = await db.prepare("SELECT v FROM kv WHERE k = ?").get("config:admins");
+        return [...new Set(cfg.admins.concat(r ? String(r.v).toLowerCase().split(/[\s,]+/).filter(Boolean) : []))];
+      }
+    });
+    async function adminPage(req, res, note, section, err2) {
       if (!await isAdmin(req)) return notFound(res);
+      section = section || "overview";
+      const A = adminUi, who = (await me(req)).email;
+      const d = (t) => new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const leadRows = await db.prepare("SELECT * FROM leads ORDER BY created_at DESC LIMIT 300").all();
+      const info = new Map(await Promise.all(leadRows.map(async (l) => [l.id, await leads.info(l.id)])));
+      const waiting = leadRows.filter((l) => {
+        const f = info.get(l.id);
+        return f && f.status === "waiting";
+      });
       const accts = await db.prepare("SELECT w.id, w.slug, w.plan, w.billing_status, w.created_at, c.allowance_left, c.topup_left, (SELECT coalesce(sum(l.amount), 0) FROM ai_ledger l WHERE l.workspace_id = w.id AND l.kind = 'use' AND l.created_at > ?) AS ai_used FROM workspaces w LEFT JOIN ai_credit c ON c.workspace_id = w.id WHERE w.kind = 'live' ORDER BY w.created_at DESC LIMIT 300").all(Date.now() - 30 * 864e5);
       const aiTotal = accts.reduce((a, x) => a + Number(x.ai_used || 0), 0) / credits.UNIT;
-      const d = (t) => new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const st = await leads.loadSettings();
-      const wd = st.webinar_at ? new Date(st.webinar_at) : null;
-      const ukParts = (ms) => {
-        const f = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date(ms));
-        const g = (k) => (f.find((x) => x.type === k) || {}).value;
-        return [g("year") + "-" + g("month") + "-" + g("day"), g("hour") + ":" + g("minute")];
-      };
-      const [wDay, wTime] = wd ? ukParts(st.webinar_at) : ["", "12:30"];
-      const inp = (n, v, ph, type) => '<input name="' + n + '" value="' + E(v || "") + '" placeholder="' + E(ph || "") + '"' + (type ? ' type="' + type + '"' : "") + ' style="width:100%">';
+      const field = (n, v, ph, type, label) => A.field(n, v, label || ph, { ph: label ? ph : "", type });
       const status = { active: "Sending", waiting: "Waiting for you", done: "Finished", stopped: "Stopped", unsubscribed: "Unsubscribed", converted: "Signed up" };
-      const rows = (await Promise.all(leadRows.map(async (l) => {
+      const statusPill = { active: "info", waiting: "warn", done: "muted", stopped: "muted", unsubscribed: "bad", converted: "good" };
+      const billing = { trial: ["warn", "Not paid yet"], active: ["good", "Paying"], past_due: ["bad", "Payment failed"], cancelled: ["muted", "Cancelled"] };
+      const leadActions = (l) => {
+        const f = info.get(l.id);
+        let act = "";
+        if (f && f.status === "waiting" && f.seq === "audit" && f.next === "E2") act = '<details class="adm-x"><summary>Audit is ready</summary><form class="adm-form" method="post" action="/admin/leads/' + l.id + '/audit">' + field("audit_url", "", "Link to the audit report") + field("score", "", "Score out of 100", "number") + field("mentions", "", "Mentioned in how many of 8 questions", "number") + field("top_fix", "", "Top fix, e.g. add a dog policy page") + '<small class="adm-help">Optional, for the follow-up a week later:</small>' + field("top_question", "", "Top question you re-ran on ChatGPT") + field("competitor_count", "", "How many places the answer named", "number") + '<button class="btn primary sm">Send the audit email</button></form></details>';
+        if (f && f.seq === "call" && f.next === "E4A") act = '<details class="adm-x"><summary>Call done, send proposal</summary><form class="adm-form" method="post" action="/admin/leads/' + l.id + '/proposal">' + field("proposal_url", "", "Link to the proposal") + '<button class="btn primary sm">Send the proposal email</button></form></details>';
+        if (f && ["active", "waiting"].includes(f.status)) act += '<form method="post" action="/admin/leads/' + l.id + '/stop" style="margin-top:6px"><button class="btn sm ghost">Stop emails</button></form>';
+        return act;
+      };
+      const leadRow = (l) => {
         let x = {};
         try {
           x = JSON.parse(l.data || "{}");
         } catch (_) {
         }
-        const f = await leads.info(l.id);
-        let act = "";
-        if (f && f.status === "waiting" && f.seq === "audit" && f.next === "E2") act = '<details><summary>Audit is ready</summary><form method="post" action="/admin/leads/' + l.id + '/audit">' + inp("audit_url", "", "Link to the audit report") + inp("score", "", "Score out of 100", "number") + inp("mentions", "", "Mentioned in how many of 8 questions", "number") + inp("top_fix", "", "Top fix, e.g. add a dog policy page") + "<small>Optional, for the follow-up a week later:</small>" + inp("top_question", "", "Top question you re-ran on ChatGPT") + inp("competitor_count", "", "How many places the answer named", "number") + "<button>Send the audit email</button></form></details>";
-        if (f && f.seq === "call" && f.next === "E4A") act = '<details><summary>Call done, send proposal</summary><form method="post" action="/admin/leads/' + l.id + '/proposal">' + inp("proposal_url", "", "Link to the proposal") + "<button>Send the proposal email</button></form></details>";
-        if (f && ["active", "waiting"].includes(f.status)) act += '<form method="post" action="/admin/leads/' + l.id + '/stop" style="margin-top:4px"><button class="sec">Stop emails</button></form>';
-        const prog = f ? "<b>" + E(f.name) + "</b><br>" + E(status[f.status] || f.status) + " \xB7 " + f.sent.length + " of " + f.total + " sent" + (f.status === "active" && f.next_at ? "<br><small>Next " + d(f.next_at) + "</small>" : "") + (f.status === "waiting" && f.next ? "<br><small>Next: " + E(f.next) + "</small>" : "") : "<small>No emails</small>";
-        return '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td>' + d(l.created_at) + "</td><td>" + E(l.kind) + "</td><td>" + E(l.email) + "<br><small>" + E(l.name || "") + "</small></td><td><small>" + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</small></td><td>" + prog + '</td><td class="act">' + act + "</td></tr>";
-      }))).join("");
-      const settingsForm = '<details class="card"' + (st.webinar_at ? "" : " open") + '><summary><b>Live demo, call and report links</b></summary><form method="post" action="/admin/settings" style="margin-top:12px"><p style="margin:0 0 8px"><small>The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small></p><label>Next live demo date (UK)' + inp("webinar_day", wDay, "", "date") + "</label><label>Start time (UK)" + inp("webinar_time", wTime, "12:30", "time") + "</label><label>Joining link" + inp("join_url", st.join_url, "https://meet.google.com/\u2026") + "</label><label>Replay link (sent after the session)" + inp("replay_url", st.replay_url, "https://\u2026") + "</label><label>Walkthrough call joining link" + inp("meeting_url", st.meeting_url, "https://meet.google.com/\u2026") + "</label><label>Page where people book a walkthrough" + inp("book_call_url", st.book_call_url, "https://\u2026/book-call") + "</label><label>Sample audit report page" + inp("sample_report_url", st.sample_report_url, "https://\u2026/sample-report") + "</label><button>Save</button></form></details>";
-      send(res, 200, authPage("Team", "<h1>Leads and accounts</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + "<p>" + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.</p>" + stripeLine(await stripeAuto.status()) + '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> \xB7 write, schedule and track emails to leads and hosts</p><p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm + '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div><div class="card" style="overflow:auto"><b>Host accounts</b><p style="margin:4px 0 0"><small>AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + " a month" + (cfg.credits.markup !== 1 ? ", usage charged at " + cfg.credits.markup + "\xD7 cost" : ", usage charged at cost") + ". AI used by all hosts in the last 30 days: " + credits.money(aiTotal) + '.</small></p><table style="width:100%;font-size:13px"><tr><th align="left">Joined</th><th align="left">Site</th><th align="left">Plan</th><th align="left">Billing</th><th align="left">AI credit left</th><th align="left">AI used, 30 days</th><th align="left"></th></tr>' + accts.map((a) => {
-        const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT;
-        return '<tr style="vertical-align:top"><td>' + d(a.created_at) + "</td><td>" + E(a.slug) + "</td><td>" + E(a.plan || "") + "</td><td>" + E(a.billing_status || "") + "</td><td>" + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + "</td><td>" + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td><td class="act"><details><summary>Add credit</summary><form method="post" action="/admin/credits/' + E(a.id) + '">' + inp("pounds", "", "Pounds to add, e.g. 20", "number") + "<button>Add AI credit</button></form></details></td></tr>";
-      }).join("") + "</table></div>", true), "text/html; charset=utf-8");
+        const f = info.get(l.id);
+        const prog = f ? "<b>" + E(f.name) + '</b><div style="margin:4px 0">' + A.pill(statusPill[f.status] || "muted", status[f.status] || f.status) + "</div><small>" + f.sent.length + " of " + f.total + " sent" + (f.status === "active" && f.next_at ? " \xB7 next " + d(f.next_at) : "") + (f.status === "waiting" && f.next ? " \xB7 next: " + E(f.next) : "") + "</small>" : "<small>No emails</small>";
+        return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + "</td><td>" + A.pill("muted", l.kind) + "</td><td><b>" + E(l.email) + "</b><small>" + E(l.name || "") + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</td><td>" + prog + '</td><td style="min-width:240px">' + leadActions(l) + "</td></tr>";
+      };
+      const LEAD_HEADS = ["When", "Form", "Who", "Answers", "Emails", ""];
+      const hostRow = (a) => {
+        const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT, b = billing[a.billing_status] || ["muted", a.billing_status || "Not paid yet"];
+        return '<tr><td class="num" style="white-space:nowrap">' + d(a.created_at) + "</td><td><b>" + E(a.slug) + "</b></td><td>" + E(a.plan || "") + "</td><td>" + A.pill(b[0], b[1]) + '</td><td class="num">' + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + '</td><td class="num">' + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td><td><details class="adm-x"><summary>' + adminUi.icon("plus") + 'Add credit</summary><form class="adm-form" method="post" action="/admin/credits/' + E(a.id) + '">' + field("pounds", "", "Pounds to add, e.g. 20", "number") + '<button class="btn primary sm">Add AI credit</button></form></details></td></tr>';
+      };
+      const HOST_HEADS = ["Joined", "Site", "Plan", "Billing", "AI credit left", "AI used, 30 days", ""];
+      const sp = await stripeAuto.status();
+      const stripeCard = A.card(
+        "Stripe",
+        sp.on ? A.pill("good", sp.mode + " mode") : A.pill("warn", "Off"),
+        '<div class="adm-list"><div><span><b>Key</b><small>' + (sp.on ? "Ending " + E(sp.last4) + ", from " + E(sp.keyName) : "Not connected") + "</small></span></div><div><span><b>Plan prices</b></span>" + A.pill(sp.prices ? "good" : "muted", sp.prices ? "Ready" : "Not yet") + "</div><div><span><b>Webhooks</b></span>" + A.pill(sp.webhooks ? "good" : "muted", sp.webhooks ? "Ready" : "Not yet") + "</div>" + (sp.error ? "<div><span><b>Last setup error</b><small>" + E(sp.error) + "</small></span></div>" : "") + "</div>" + (sp.canSave ? '<details class="adm-x" style="margin-top:12px"' + (sp.on ? "" : " open") + "><summary>" + (sp.on ? "Change the Stripe key" : "Connect Stripe") + '</summary><form class="adm-form" method="post" action="/admin/stripe/key" autocomplete="off"><small class="adm-help">Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small>' + A.field("key", "", "Stripe secret key", { type: "password", ph: "sk_live_...", req: true, extra: ' autocomplete="off" spellcheck="false"' }) + '<div class="row"><button class="btn primary sm">Save and connect</button></div></form></details>' : "")
+      );
+      const shell = (o) => send(res, 200, A.shell(Object.assign({ email: who, waiting: waiting.length, note, err: err2 }, o)), "text/html; charset=utf-8", { "cache-control": "no-store" });
+      if (section === "leads") return shell({
+        title: "Leads",
+        active: "leads",
+        sub: leadRows.length + " leads from the website forms. Their follow-up emails go out by themselves; anything marked \u201CWaiting for you\u201D needs a person.",
+        body: '<section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), "No leads yet. They arrive here from the forms on the website.") + "</section>"
+      });
+      if (section === "hosts") return shell({
+        title: "Host accounts",
+        active: "hosts",
+        sub: accts.length + " host accounts \xB7 AI credit: each plan includes " + credits.money(cfg.credits.monthly) + " a month" + (cfg.credits.markup !== 1 ? ", usage charged at " + cfg.credits.markup + "\xD7 cost" : ", usage charged at cost") + ".",
+        body: '<div class="adm-kpis">' + A.kpi("Host accounts", accts.length) + A.kpi("Paying", accts.filter((a) => a.billing_status === "active").length) + A.kpi("Not paid yet", accts.filter((a) => !a.billing_status || a.billing_status === "trial").length) + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + '</div><section class="a-card a-flush">' + A.table(HOST_HEADS, accts.map(hostRow), "No host accounts yet.") + "</section>"
+      });
+      if (section === "settings") {
+        const wd = st.webinar_at ? new Date(st.webinar_at) : null;
+        const ukParts = (ms) => {
+          const f = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date(ms));
+          const g = (k) => (f.find((x) => x.type === k) || {}).value;
+          return [g("year") + "-" + g("month") + "-" + g("day"), g("hour") + ":" + g("minute")];
+        };
+        const [wDay, wTime] = wd ? ukParts(st.webinar_at) : ["", "12:30"];
+        const links = A.card("Live demo, call and report links", st.webinar_at ? "Next demo " + E(d(st.webinar_at)) : "No demo date set", '<form class="adm-form" method="post" action="/admin/settings"><small class="adm-help">The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small><div class="adm-two">' + A.field("webinar_day", wDay, "Next live demo date (UK)", { type: "date" }) + A.field("webinar_time", wTime, "Start time (UK)", { type: "time" }) + '</div><div class="adm-two">' + field("join_url", st.join_url, "https://meet.google.com/\u2026", "", "Joining link") + field("replay_url", st.replay_url, "https://\u2026", "", "Replay link (sent after the session)") + '</div><div class="adm-two">' + field("meeting_url", st.meeting_url, "https://meet.google.com/\u2026", "", "Walkthrough call joining link") + field("book_call_url", st.book_call_url, "https://\u2026/book-call", "", "Page where people book a walkthrough") + "</div>" + field("sample_report_url", st.sample_report_url, "https://\u2026/sample-report", "", "Sample audit report page") + '<div class="row"><button class="btn primary">Save</button></div></form>');
+        const bk = A.card("Backups", backup.list().length + " kept", '<p class="adm-help" style="margin:0 0 12px">' + backup.list().length + ' daily database backups kept on the server.</p><a class="btn sm" href="/admin/backup">' + A.icon("down") + "Download the latest</a>");
+        return shell({ title: "Settings", heading: "Stripe, links and backups", active: "settings", sub: "Payments, the links the lead emails use, and backups.", body: '<div class="adm-cols"><div class="adm-stack">' + stripeCard + bk + "</div>" + links + "</div>" });
+      }
+      const since = Date.now() - 30 * 864e5;
+      const hour = +(/* @__PURE__ */ new Date()).toLocaleString("en-GB", { timeZone: "Europe/London", hour: "2-digit", hour12: false });
+      const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + "</section>" : '<div class="a-empty">' + A.icon("check") + "<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>";
+      return shell({
+        title: "Overview",
+        heading: (hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening") + ", team",
+        active: "overview",
+        sub: "Leads and accounts \xB7 " + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.",
+        actions: '<a class="btn sm" href="/admin/leads">' + A.icon("users") + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon("mail") + "Email campaigns</a>",
+        body: '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email) + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
+      });
+    }
+    async function marketingRow(A) {
+      const sp = await social.posts().catch(() => ({ posts: [] })), now = Date.now(), at = (x) => Date.parse(x.at + "Z");
+      const soon = sp.posts.filter((x) => at(x) >= now && x.kind !== "story"), week = sp.posts.filter((x) => at(x) >= now && at(x) < now + 7 * 864e5).length, failed = sp.posts.filter((x) => x.nets.some((n) => n[1] === "error")).length;
+      const when = (t) => new Date(t).toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      const camps = await campaigns.overview(), sentC = camps.filter((o) => o.s.status === "sent").length, drafts = camps.filter((o) => o.s.kind === "custom" && o.s.status === "draft").length;
+      return '<div class="a-grid adm-top" style="margin-bottom:16px"><div class="a-s4">' + A.card("Write a marketing email", drafts ? drafts + " draft" + (drafts === 1 ? "" : "s") : "", '<p class="adm-help" style="margin:0 0 14px">To leads, hosts or both. Write it, send yourself a test, then send it now or schedule it. ' + sentC + " campaign" + (sentC === 1 ? "" : "s") + ' sent so far.</p><div class="adm-inline"><a class="btn primary" href="/admin/campaigns/write">' + A.icon("pen") + 'Write an email</a><a class="btn ghost" href="/admin/campaigns">All campaigns</a></div>') + '</div><div class="a-s4">' + A.card("Social this week", '<a href="/admin/social">Calendar</a>', '<p class="adm-help" style="margin:0 0 8px"><b>' + week + "</b> posts and stories scheduled in the next 7 days" + (failed ? ' \xB7 <a href="/admin/social?show=problems#list">' + failed + " failed on a network</a>" : "") + '.</p><div class="adm-list">' + (soon.slice(0, 3).map((x) => "<div><span><b>" + E((x.text || x.title || x.kind).split("\n")[0].slice(0, 70)) + "</b><small>" + when(at(x)) + " \xB7 " + E(x.kind) + " \xB7 " + E(x.nets.map((n) => n[0]).join(", ")) + "</small></span></div>").join("") || "<div><span><small>Nothing scheduled.</small></span></div>") + "</div>") + '</div><div class="a-s4">' + A.card("Email templates", '<a href="/admin/emails">See them all</a>', '<p class="adm-help" style="margin:0 0 8px">Every email the system sends, as it goes out: lead follow-ups, host onboarding and reports, guest booking emails and the designed campaigns.</p><a class="btn" href="/admin/emails">' + A.icon("doc") + "Open the email templates</a>") + "</div></div>";
     }
     async function adminPost(req, res, p) {
       if (!await isAdmin(req)) return notFound(res);
@@ -19998,27 +24389,28 @@ var require_server = __commonJS({
       };
       if (p === "/admin/stripe/key") {
         const r = await stripeAuto.saveKey(f.key);
-        return await adminPage(req, res, r.error || "Stripe is connected in " + r.mode + " mode." + (r.setup && r.setup.error ? " Prices and webhooks could not be set up yet: " + r.setup.error : " Plan prices and webhooks are ready."));
+        return r.error ? await adminPage(req, res, "", "settings", r.error) : await adminPage(req, res, "Stripe is connected in " + r.mode + " mode." + (r.setup && r.setup.error ? " Prices and webhooks could not be set up yet: " + r.setup.error : " Plan prices and webhooks are ready."), "settings");
       }
       if (p === "/admin/settings") {
         const at = f.webinar_day ? leads.ukAt(f.webinar_day, f.webinar_time || "12:30") : 0;
         await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });
         await leads.run();
-        return await adminPage(req, res, "Saved.");
+        return await adminPage(req, res, "Saved.", "settings");
       }
       if (mm = p.match(/^\/admin\/credits\/([A-Za-z0-9_-]+)$/)) {
         const pounds = Math.round(Number(f.pounds) * 100) / 100;
         const r = await ws.row(mm[1]);
-        if (!r || !(pounds > 0) || pounds > 2e4) return await adminPage(req, res, "Enter an amount between \xA30.01 and \xA320,000.");
+        if (!r || !(pounds > 0) || pounds > 2e4) return await adminPage(req, res, "", "hosts", "Enter an amount between \xA30.01 and \xA320,000.");
         await credits.topup(mm[1], pounds, null, "grant");
         log("credits", mm[1], "team added \xA3" + pounds);
-        return await adminPage(req, res, "Added " + credits.money(pounds) + " of AI credit to " + (r.slug || mm[1]) + ".");
+        if (f.back === "detail") return await usersAdmin(req).detailPage(res, mm[1], "Added " + credits.money(pounds) + " of AI credit.");
+        return await adminPage(req, res, "Added " + credits.money(pounds) + " of AI credit to " + (r.slug || mm[1]) + ".", "hosts");
       }
       if (mm = p.match(/^\/admin\/leads\/(\d+)\/(audit|proposal|stop)$/)) {
         const id = +mm[1];
         if (mm[2] === "stop") await leads.stop(id);
         if (mm[2] === "audit") {
-          if (!url(f.audit_url) || f.score === "" || f.mentions === "" || !String(f.top_fix || "").trim()) return await adminPage(req, res, "Add the audit link, score, mentions and top fix.");
+          if (!url(f.audit_url) || f.score === "" || f.mentions === "" || !String(f.top_fix || "").trim()) return await adminPage(req, res, "", "leads", "Add the audit link, score, mentions and top fix.");
           await leads.setVars(id, {
             audit_url: url(f.audit_url),
             score: Math.max(0, Math.min(100, Math.round(+f.score || 0))),
@@ -20030,11 +24422,11 @@ var require_server = __commonJS({
           });
         }
         if (mm[2] === "proposal") {
-          if (!url(f.proposal_url)) return await adminPage(req, res, "Add the proposal link.");
+          if (!url(f.proposal_url)) return await adminPage(req, res, "", "leads", "Add the proposal link.");
           await leads.setVars(id, { proposal_url: url(f.proposal_url), proposal_ready_at: Date.now() });
         }
         await leads.advance(id);
-        return await adminPage(req, res, mm[2] === "stop" ? "Emails stopped." : "Sent.");
+        return await adminPage(req, res, mm[2] === "stop" ? "Emails stopped." : "Sent.", "leads");
       }
       return notFound(res);
     }
@@ -20061,7 +24453,7 @@ var require_server = __commonJS({
       const inp = (label, name, val, type, extra) => "<label>" + label + '<input name="' + name + '" value="' + E(val || "") + '" type="' + (type || "text") + '"' + (extra || "") + "></label>";
       const msgs = { saved: "Saved.", password: "Password changed. Other devices have been signed out.", emails: "Email choices saved." };
       const pr = await hostMail.prefs(w.id), box = (name, on, label) => '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="' + name + '"' + (on ? " checked" : "") + ' style="margin-top:4px">' + label + "</label>";
-      return authPage("Account", "<h1>Your account</h1><p>" + E(a.business) + "</p>" + (err2 ? '<p class="err" role="alert">' + E(err2) + "</p>" : "") + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + "</p>" : "") + '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp("Your name", "owner", a.owner, "text", ' required autocomplete="name"') + inp("Business name", "business", a.business, "text", " required") + inp("Email you sign in with", "email", sess.email, "email", ' required autocomplete="email"') + '<button>Save details</button></form><form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp("Current password", "current", "", "password", ' required autocomplete="current-password"') + inp("New password (at least 10 characters)", "next", "", "password", ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form><form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box("report", pr.report, "The Monday report: last week\u2019s bookings, direct revenue and site visits") + box("setup", pr.setup, "Setup tips in your first month") + box("news", pr.news, "News and offers from Bookingbooster, now and then") + '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form><div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div><form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' + inp("Type DELETE to confirm", "confirm", "", "text", ' required autocomplete="off"') + inp("Your password", "password", "", "password", ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form><div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
+      return authPage("Account", "<h1>Your account</h1><p>" + E(a.business) + "</p>" + (err2 ? '<p class="err" role="alert">' + E(err2) + "</p>" : "") + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + "</p>" : "") + '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp("Your name", "owner", a.owner, "text", ' required autocomplete="name"') + inp("Business name", "business", a.business, "text", " required") + inp("Email you sign in with", "email", sess.email, "email", ' required autocomplete="email"') + '<button>Save details</button></form><form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp("Current password", "current", "", "password", ' required autocomplete="current-password"') + inp("New password (at least 10 characters)", "next", "", "password", ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form><form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box("report", pr.report, "The Monday report: last week\u2019s bookings, direct revenue and site visits") + box("setup", pr.setup, "Setup tips in your first month") + box("news", pr.news, "News and offers from Bookingbooster, now and then") + '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form><div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div><form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' + inp("Type DELETE to confirm", "confirm", "", "text", ' required autocomplete="off"') + inp("Your password", "password", "", "password", ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form><div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn ' + cfg.affiliate.rate + '% of everything hosts you refer pay us, for as long as they stay. <a href="/partners">Get your partner link</a></p></div><div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
     }
     async function accountPost(req, res, p, w, sess) {
       const f = await formBody(req);
@@ -20166,10 +24558,11 @@ var require_server = __commonJS({
     }
     async function runTick(t) {
       const row = await kvGet.get("jobs:last");
-      const last = Object.assign({ ical: 0, daily: 0, domains: 0 }, row ? JSON.parse(row.v) : {});
+      const last = Object.assign({ ical: 0, daily: 0, domains: 0, events: 0 }, row ? JSON.parse(row.v) : {});
       const jobs = [], bg = (name, pr) => jobs.push(Promise.resolve(pr).catch((e) => log(name, e.message)));
       const ical2 = t - last.ical > cfg.icalEveryMin * 6e4, daily = t - last.daily > 864e5;
       if (t - last.domains > 10 * 6e4) last.domains = t;
+      if (t - last.events > 20 * 6e4) last.events = t;
       if (ical2) last.ical = t;
       if (daily) last.daily = t;
       await kvSet.run("jobs:last", JSON.stringify(last));
@@ -20190,6 +24583,7 @@ var require_server = __commonJS({
           const exp = w.state.bookings.filter((b) => b.status === "pending" && b.holdUntil && b.holdUntil < t).map((b) => b.id);
           if (rolled || exp.length) await ws.withWs(id, (BB) => exp.forEach((bid) => BB.act.expirePending(bid)), { scheduler: true });
           if (ical2) bg("ical", effects.calendars(w));
+          if (daily && w.kind === "live") bg("index", autoIndex(w).catch((e) => log("index", id, e.message)));
           if (daily && ai.available().length) {
             const c = w.state.ai.checkedAt;
             if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg("ai", effects.aiCheck(w));
@@ -20199,9 +24593,11 @@ var require_server = __commonJS({
         }
       }
       if (last.domains === t) bg("domains", checkDomains());
+      if (last.events === t && cfg.events.crawl) bg("events", eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 1e5 : 24e4));
       if (daily) {
         bg("demos", ws.cleanupDemos(7));
         bg("ids", purgeIds());
+        bg("indexnow", pingOwnPages());
       }
       if (!cfg.serverless) bg("backup", backup.run(t));
       await Promise.all(jobs);
@@ -20211,6 +24607,20 @@ var require_server = __commonJS({
     if (__require.main === module) setInterval(() => {
       tick().catch((e) => log("tick", e.message));
     }, 6e4).unref();
+    function ownIndexKey() {
+      return crypto.createHmac("sha256", String(cfg.secret)).update("indexnow:own").digest("hex").slice(0, 32);
+    }
+    async function pingOwnPages() {
+      const u = new URL(cfg.baseUrl);
+      if (u.protocol !== "https:" || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+      const urls2 = [cfg.baseUrl + "/", cfg.baseUrl + "/help", cfg.baseUrl + "/llms.txt", cfg.baseUrl + "/llms-full.txt"].concat(answers.list().map((x) => cfg.baseUrl + x.path));
+      const sig = crypto.createHash("sha1").update(mkt.llms(cfg.baseUrl, publicCompany()) + answers.fullText(cfg.baseUrl)).digest("hex");
+      const row = await kvGet.get("indexnow:own");
+      if (row && row.v === sig) return;
+      const r = await fetch("https://api.indexnow.org/indexnow", { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/json; charset=utf-8" }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + "/" + ownIndexKey() + ".txt", urlList: urls2 }) });
+      log("indexnow", "own pages", r.status);
+      if (r.status === 200 || r.status === 202) await kvSet.run("indexnow:own", sig);
+    }
     async function purgeIds() {
       const cut = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
       for (const wid of await ws.liveIds()) {

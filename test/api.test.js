@@ -45,6 +45,21 @@ test('marketing pages, robots and llms.txt', async () => {
   const help = await call('/help'); assert.doesNotMatch(help.body, /noindex/);
 });
 
+test('answer pages for AI search are crawlable, structured and listed', async () => {
+  for (const path of ['/direct-booking-website', '/ai-search-for-holiday-lets', '/guides']) {
+    const r = await call(path); assert.equal(r.status, 200, path);
+    assert.doesNotMatch(r.body, /noindex/); assert.match(r.body, /<h1>/); assert.match(r.body, /rel="canonical"/);
+    const ld = JSON.parse(r.body.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
+    assert.ok(ld['@graph'].some(x => x['@type'] === 'WebPage'), path);
+    assert.doesNotMatch(r.body, /997|setup fee of/);
+  }
+  const map = await call('/sitemap.xml'); assert.match(map.body, /\/direct-booking-website</); assert.match(map.body, /\/guides</);
+  const llms = await call('/llms.txt'); assert.match(llms.body, /ai-search-for-holiday-lets/); assert.match(llms.body, /£2,000 a year/); assert.match(llms.body, /£50 a month included/);
+  const robots = await call('/robots.txt'); assert.match(robots.body, /Perplexity-User/);
+  const guide = await call('/guides'); for (const f of require('../server/answers').GUIDES) assert.ok(fs.existsSync(path.join(__dirname, '..', 'web', 'guides', f[0])), f[0]);
+  assert.match(guide.body, /get-found-in-ai-search\.pdf/);
+});
+
 test('marketing FAQ for crawlers matches the FAQ on the page', () => {
   const site = fs.readFileSync(path.join(__dirname, '..', 'web', 'src', 'site.js'), 'utf8');
   for (const [q, a] of require('../server/marketing').FAQ) { assert.ok(site.includes(q), q); assert.ok(site.includes(a), a.slice(0, 40)); }

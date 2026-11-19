@@ -20,7 +20,7 @@ const PRICES = {
 const DEAREST = [10, 50, 1];
 const priceOf = model => PRICES[String(model || '').replace(/-\d{8}$/, '')] || DEAREST;
 
-const FEATURES = { reply: 'Reply drafts', studio: 'Site builder', funnel: 'Funnels', other: 'AI' };
+const FEATURES = { reply: 'Reply drafts', studio: 'Site builder', funnel: 'Funnels', seo: 'Search writer', eventads: 'Event ads', other: 'AI' };
 
 module.exports = function ({ cfg, db, log }) {
   const C = cfg.credits;
@@ -118,7 +118,9 @@ module.exports = function ({ cfg, db, log }) {
   // What an API call cost, in units. usage is the Messages API usage object.
   function cost(model, usage) {
     const u = usage || {}, [pin, pout, pread] = priceOf(model);
-    const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6;
+    // web searches are billed per search ($10 per 1,000) on top of the tokens
+    const searches = num((u.server_tool_use || {}).web_search_requests);
+    const dollars = (num(u.input_tokens) * pin + num(u.cache_creation_input_tokens) * pin * 1.25 + num(u.cache_read_input_tokens) * pread + num(u.output_tokens) * pout) / 1e6 + searches * 0.01;
     return Math.max(0, Math.ceil(dollars * C.usdToGbp * C.markup * UNIT - 1e-6));
   }
 

@@ -49,7 +49,7 @@ module.exports = function (cfg, E) {
       'You can ask for a copy of your data, ask us to correct or delete it, object to how we use it or ask us to limit it, and ask for it in a portable format. Hosts can download all their data and delete their account from the account page. To do any of this, email ' + mail + '. We reply within one month.',
       'If you are unhappy with how we handle your data, you can complain to the Information Commissioner\'s Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.') +
     sec('Cookies',
-      'We set two cookies, both strictly necessary, so we do not ask before setting them: <code>bb_s</code> keeps hosts signed in, and <code>bb_demo</code> keeps your own copy of the demo for 7 days if you try it. Booking sites and our marketing pages set no cookies. The host app can keep an offline copy of the console on a host\'s phone; signing out clears it.') +
+      'Two cookies are strictly necessary, so we do not ask before setting them: <code>bb_s</code> keeps hosts signed in, and <code>bb_demo</code> keeps your own copy of the demo for 7 days if you try it. If you arrive through a partner\'s referral link, <code>bb_ref</code> remembers that partner\'s code for ' + cfg.affiliate.cookieDays + ' days so they are credited if you sign up, and partners have <code>bb_aff</code> to stay signed in. Booking sites set no cookies. The host app can keep an offline copy of the console on a host\'s phone; signing out clears it.') +
     sec('Changes', 'We will update this notice when what we do changes, and tell hosts by email about anything significant.') +
     draft;
 

@@ -21,7 +21,9 @@
     if (!metaP) metaP = BB.api.call(API() + 'studio/meta', null, 'GET').then(j => {
       META = j;
       const l = document.createElement('link'); l.rel = 'stylesheet';
-      l.href = 'https://fonts.googleapis.com/css2?' + Object.values(j.directions).map(d => d.href).join('&') + '&display=swap'; document.head.appendChild(l);
+      // only the display faces, so the font picker can show each pairing without loading every weight of every family
+      const fams = [...new Set(Object.values(j.fonts || {}).map(f => f.display).concat(Object.values(j.directions).map(d => d.fonts.split(' & ')[0])))];
+      l.href = 'https://fonts.googleapis.com/css2?' + fams.map(f => 'family=' + f.replace(/ /g, '+')).join('&') + '&display=swap&text=' + encodeURIComponent('AaBbGg Ccdefghiklmnoprstuvwy'); document.head.appendChild(l);
       inst.render();
     }).catch(() => { metaP = null; });
     return null;
@@ -52,9 +54,24 @@
      SITE BUILDER
      ===================================================================== */
   const STEPS = ['Reading your home’s details', 'Looking at your photos', 'Choosing an art direction', 'Pairing the typefaces', 'Laying out the sections', 'Writing the words', 'Running the design checks'];
-  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['type', 'Type-led', 'No photo needed']];
+  const HERO = [['cinematic', 'Cinematic', 'Full-bleed photo'], ['split', 'Split', 'Words and a framed photo'], ['editorial', 'Editorial', 'Huge type, wide photo'], ['mosaic', 'Mosaic', 'Three photos'], ['centered', 'Centred', 'Centred words, wide photo'], ['framed', 'Framed', 'Inset photo, overlapping words'], ['arch', 'Arch', 'Arched photo and a round inset'], ['type', 'Type-led', 'No photo needed']];
+  const STYLE_LABEL = { corners: 'Corners', buttons: 'Buttons', spacing: 'Spacing', scale: 'Headline size', headings: 'Headlines', texture: 'Texture', nav: 'Top bar', images: 'Photos', bands: 'Section colours' };
   const SEC_NAME = { hero: 'Hero', facts: 'At a glance', story: 'The stay', highlights: 'Highlights', gallery: 'Gallery', amenities: 'Details and rules', reviews: 'Reviews', area: 'Area guide', host: 'Your host', book: 'Booking', faq: 'Questions', closing: 'Closing banner' };
-  const WORDS = [['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.'], ['subhead', 'Subheading', '', 1], ['tagline', 'Small line above the headline'], ['storyTitle', 'Story title'], ['pull', 'Pull quote', '', 1], ['bookTitle', 'Booking title'], ['bookText', 'Booking text', '', 1], ['closing', 'Closing line'], ['seoTitle', 'Google title', 'Up to 62 characters'], ['seoDescription', 'Google description', 'Up to 160 characters', 1]];
+  // Words, grouped by the section they belong to. [key, label, hint, textarea, max length]
+  const WORD_GROUPS = [
+    ['Top of the page', null, [['wordmark', 'Name in the top bar', '', 0, 40], ['tagline', 'Small line above the headline', '', 0, 60], ['headline', 'Headline', 'Under nine words. Wrap one word in *stars* for the italic accent.', 0, 90], ['subhead', 'Subheading', '', 1, 240], ['cta', 'Button text', '', 0, 28]]],
+    ['The stay', 'story', [['storyEyebrow', 'Small heading', '', 0, 40], ['storyTitle', 'Story title', '', 0, 90], ['pull', 'Pull quote', '', 1, 220]]],
+    ['Highlights', 'highlights', [['highlightsEyebrow', 'Small heading', '', 0, 40], ['highlightsTitle', 'Title', '', 0, 80]]],
+    ['Gallery', 'gallery', [['galleryEyebrow', 'Small heading', '', 0, 40], ['galleryTitle', 'Title', '', 0, 80]]],
+    ['Details', 'amenities', [['amenitiesEyebrow', 'Small heading', '', 0, 40], ['amenitiesTitle', 'Title', '', 0, 80]]],
+    ['Reviews', 'reviews', [['reviewsEyebrow', 'Small heading', '', 0, 40], ['reviewsTitle', 'Title', '', 0, 80]]],
+    ['Area guide', 'area', [['areaEyebrow', 'Small heading', '', 0, 50], ['areaTitle', 'Title', '', 0, 80], ['areaIntro', 'Introduction', '', 1, 300]]],
+    ['Your host', 'host', [['hostEyebrow', 'Small heading', '', 0, 40], ['hostNote', 'Your note to guests', '', 1, 260]]],
+    ['Booking', 'book', [['bookEyebrow', 'Small heading', '', 0, 40], ['bookTitle', 'Title', '', 0, 80], ['bookText', 'Text', '', 1, 300]]],
+    ['Questions', 'faq', [['faqEyebrow', 'Small heading', '', 0, 40], ['faqTitle', 'Title', '', 0, 80]]],
+    ['Closing and footer', null, [['closing', 'Closing line', '', 0, 90], ['footerLine', 'Footer line', '', 0, 120]]],
+    ['Google and AI search', null, [['seoTitle', 'Google title', 'Up to 62 characters', 0, 62], ['seoDescription', 'Google description', 'Up to 160 characters', 1, 160]]],
+  ];
 
   function siteOf(pid) { return (((S().studio || {}).sites) || {})[pid] || null; }
   function busy(inst) {
@@ -92,6 +109,13 @@
   H['sb-dev'] = (inst, v) => inst.set({ sb_dev: v });
   H['sb-dir'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { direction: v, accent: '' } });
   H['sb-hero'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { heroVariant: v } });
+  H['sb-tpl'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { template: v } }, 'Page re-laid in the ' + META.pageTemplates[v].name + ' template');
+  H['sb-font'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { font: v === META.directions[siteOf(pidOf(inst)).draft.direction].font ? '' : v } } });
+  H['sb-pal'] = (inst, v) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { palette: v === META.directions[siteOf(pidOf(inst)).draft.direction].palette ? '' : v }, accent: '' } });
+  H['sb-style'] = (inst, v, a) => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: { [a.dataset.k]: v } } });
+  H['sb-style-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { style: null, accent: '' } }, 'Back to the direction’s own style');
+  H['sb-shuffle'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { shuffle: true } }, 'New mix of fonts, colours and layouts. Undo if you preferred the last one.');
+  H['sb-sec'] = (inst, v) => { const fr = PV.frame && PV.frame.contentDocument; const el = fr && fr.querySelector('[data-sec="' + v + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   H['sb-accent-reset'] = inst => call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: '' } });
   H['sb-undo'] = inst => call(inst, 'studio/undo', { propertyId: pidOf(inst) }, 'Went back one step');
   H['sb-publish'] = inst => call(inst, 'studio/publish', { propertyId: pidOf(inst) }, 'Published. Guests see the new site now.');
@@ -111,7 +135,7 @@
     const n = (p.photos || []).length;
     return '<section class="a-card ag-card sb-brief"><div class="a-card-h"><h3>' + (again ? 'Start a new design' : 'Brief your designer') + '</h3>' + (again ? '<button class="btn sm ghost" data-ag="sb-cancel-brief">' + I('x') + 'Cancel</button>' : '<span class="ag-meta">' + (M.ai ? 'Claude art-directs it' : 'Design rules') + '</span>') + '</div>' +
       '<div class="sb-q"><span class="eyebrow">How should it feel?</span><div class="sb-chips">' + Object.entries(M.vibes).map(([k, v]) => '<button type="button" class="chip" aria-pressed="' + (b.vibe === k) + '" data-ag="sb-vibe" data-v="' + k + '">' + esc(v.split(',')[0].replace(/^./, c => c.toUpperCase())) + '</button>').join('') + '</div></div>' +
-      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
+      '<div class="sb-q"><span class="eyebrow">Art direction <em class="muted">optional, or let Claude choose</em></span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, b.direction === k, 'sb-bdir')).join('') + '</div></div>' +
       '<label class="field"><span>Who are your guests?</span><input data-agf="sb.audience" id="sb-aud" placeholder="Couples from London, walkers with dogs, families at half-term" value="' + esc(b.audience || '') + '"></label>' +
       '<label class="field"><span>Anything Claude should know?</span><textarea data-agf="sb.notes" id="sb-notes" rows="3" placeholder="The view from the bath is the thing everyone talks about. Avoid anything too twee.">' + esc(b.notes || '') + '</textarea></label>' +
       '<p class="ag-note sb-ph">' + I('camera') + '<span>' + (n ? n + ' photo' + (n === 1 ? '' : 's') + ' on this home.' + (n < 6 ? ' Add ' + (6 - n) + ' more for a gallery.' : '') : 'No photos yet, so Claude will design a type-led site. Add photos for image-led layouts.') + (S().live ? ' <a href="#" data-ag-nav="website">Add photos</a>' : '') + '</span></p>' +
@@ -121,23 +145,38 @@
   function panel(inst, p, site) {
     const st = inst.st, M = META, sp = site.draft, tab = st.sb_tab || 'design';
     const qaBad = (sp.qa || []).filter(x => !x.ok).length;
-    const tabs = [['design', 'Design'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' · ' + qaBad : ' ✓')]];
+    const tabs = [['design', 'Layout'], ['style', 'Style'], ['words', 'Words'], ['sections', 'Sections'], ['checks', 'Checks' + (qaBad ? ' · ' + qaBad : ' ✓')]];
+    const sty = sp.style || {}, dirM = M.directions[sp.direction] || {};
     let body = '';
     if (tab === 'design') {
       body = (sp.rationale ? '<blockquote class="sb-why"><span class="eyebrow">Why this design</span>' + esc(sp.rationale) + '</blockquote>' : '') +
-        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Page template <em class="muted">re-lays every section in one click</em></span><div class="sb-tpls">' + Object.entries(M.pageTemplates).map(([k, t]) => '<button type="button" class="sb-tpl' + (sp.template === k ? ' on' : '') + '" data-ag="sb-tpl" data-v="' + k + '"><i class="sb-ti t-' + k + '"></i><b>' + esc(t.name) + '</b><small>' + esc(t.note) + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Art direction</span><div class="sb-dirs sm">' + Object.entries(M.directions).map(([k, d]) => dirCard(k, d, sp.direction === k, 'sb-dir')).join('') + '</div></div>' +
         '<div class="sb-q"><span class="eyebrow">Hero layout</span><div class="sb-heroes">' + HERO.map(([k, t, d]) => '<button type="button" class="sb-hero' + ((sp.sections[0] || {}).variant === k ? ' on' : '') + '" data-ag="sb-hero" data-v="' + k + '"><i class="sb-hi h-' + k + '"></i><b>' + t + '</b><small>' + d + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-shuf"><button class="btn" data-ag="sb-shuffle">' + I('sync') + 'Shuffle the style</button><small class="muted">A fresh mix of fonts, colours, shapes and layouts in the same direction. Works without AI.</small></div>' +
+        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('spark') + 'Ask Claude for a different direction</button>' : '');
+    } else if (tab === 'style') {
+      const seg = (k, opts) => '<div class="sb-srow"><span>' + STYLE_LABEL[k] + '</span><div class="seg sm" role="group" aria-label="' + STYLE_LABEL[k] + '">' + [['', 'Auto']].concat(Object.entries(opts).map(([v, x]) => [v, typeof x === 'string' ? x : x.name])).map(([v, l]) => '<button type="button" aria-pressed="' + ((sty[k] || '') === v) + '" data-ag="sb-style" data-k="' + k + '" data-v="' + v + '">' + esc(l) + '</button>').join('') + '</div></div>';
+      const fontNow = sty.font || dirM.font, palNow = sty.palette || dirM.palette;
+      body = '<div class="sb-q"><span class="eyebrow">Fonts <em class="muted">headline face shown</em></span><div class="sb-fonts">' + Object.entries(M.fonts).map(([k, f]) => '<button type="button" class="sb-font' + (fontNow === k ? ' on' : '') + '" data-ag="sb-font" data-v="' + k + '"><span class="sb-aa" style="font-family:\'' + esc(f.display) + '\',serif">Ag</span><b>' + esc(f.name) + '</b><small>' + esc(f.feel) + (k === dirM.font ? ' · direction' : '') + '</small></button>').join('') + '</div></div>' +
+        '<div class="sb-q"><span class="eyebrow">Colour palette</span><div class="sb-pals">' + Object.entries(M.palettes).map(([k, x]) => { const q = x.pal; return '<button type="button" class="sb-pal' + (palNow === k ? ' on' : '') + '" data-ag="sb-pal" data-v="' + k + '" title="' + esc(x.name) + '"><span class="sw" style="background:' + q.bg + '"><i style="background:' + q.ink + '"></i><i style="background:' + q.accent + '"></i><i style="background:' + q.deep + ';outline:1px solid ' + q.line + '"></i></span><small>' + esc(x.name) + '</small></button>'; }).join('') + '</div></div>' +
         '<div class="sb-q sb-acc"><span class="eyebrow">Accent colour</span><div class="sb-accrow"><input type="color" data-sbacc value="' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '" aria-label="Accent colour"><span class="mono">' + esc(sp.accent || M.directions[sp.direction].pal.accent) + '</span>' + (sp.accent ? '<button class="btn sm ghost" data-ag="sb-accent-reset">Reset</button>' : '<small class="muted">Direction default</small>') + '</div><small class="muted">Colours that fail contrast checks are refused, so buttons always stay readable.</small></div>' +
-        (M.ai ? '<button class="btn" data-ag="sb-another">' + I('sync') + 'Try a different direction</button>' : '');
+        '<div class="sb-q"><span class="eyebrow">Shape and detail</span>' + Object.entries(M.style).map(([k, o]) => seg(k, o)).join('') + '</div>' +
+        '<button class="btn sm ghost" data-ag="sb-style-reset">' + I('back') + 'Reset to the direction’s style</button>';
     } else if (tab === 'words') {
       const d = st.sb_wd = st.sb_wd || {}; const val = k => d[k] != null ? d[k] : (sp.copy[k] || '');
-      body = WORDS.map(([k, l, hint, area]) => '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>').join('') +
-        '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\n\n')) + '</textarea></label>' +
-        (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') +
+      const have = sp.sections.map(x => x.type);
+      const fld = ([k, l, hint, area, max]) => { const n = String(val(k)).length; return '<label class="field"><span>' + l + (hint ? ' <em class="muted">' + hint + '</em>' : '') + (max ? ' <em class="sb-cnt' + (n > max ? ' over' : '') + '" data-cnt="' + k + '">' + n + '/' + max + '</em>' : '') + '</span>' + (area ? '<textarea rows="2" maxlength="' + max + '" data-agf="sbw.' + k + '" id="sbw-' + k + '">' + esc(val(k)) + '</textarea>' : '<input maxlength="' + max + '" data-agf="sbw.' + k + '" id="sbw-' + k + '" value="' + esc(val(k)) + '">') + '</label>'; };
+      const open = st.sb_wopen || 'Top of the page';
+      body = WORD_GROUPS.filter(g => !g[1] || have.includes(g[1])).map(([name, , fields], gi) => '<details class="sb-wg" data-wg="' + esc(name) + '"' + (name === open ? ' open' : '') + '><summary>' + esc(name) + '</summary>' + fields.map(fld).join('') +
+        (name === 'The stay' ? '<label class="field"><span>The stay <em class="muted">Paragraphs, separated by a blank line</em></span><textarea rows="6" data-agf="sbw.story" id="sbw-story">' + esc(d.story != null ? d.story : (sp.copy.story || []).join('\n\n')) + '</textarea></label>' : '') +
+        (name === 'Highlights' ? (sp.copy.highlights || []).map((h, i) => '<div class="sb-hl"><span class="eyebrow">Highlight ' + (i + 1) + '</span><input data-agf="sbw.h' + i + 't" id="sbw-h' + i + 't" value="' + esc(d['h' + i + 't'] != null ? d['h' + i + 't'] : h.title) + '" aria-label="Highlight ' + (i + 1) + ' title"><textarea rows="2" data-agf="sbw.h' + i + 'x" id="sbw-h' + i + 'x" aria-label="Highlight ' + (i + 1) + ' text">' + esc(d['h' + i + 'x'] != null ? d['h' + i + 'x'] : h.text) + '</textarea></div>').join('') : '') +
+        (name === 'Google and AI search' ? '<div class="sb-serp" aria-label="How it looks on Google"><small class="mono">' + esc(p.domain || 'your-site') + '</small><b>' + esc(val('seoTitle')) + '</b><p>' + esc(val('seoDescription')) + '</p></div>' : '') + '</details>').join('') +
         '<div class="sb-sticky"><button class="btn primary" data-ag="sb-words"' + (Object.keys(d).length ? '' : ' disabled') + '>' + I('check') + 'Save words</button><small class="muted">Facts like prices, photos, amenities and reviews come from Website & SEO and stay up to date by themselves.</small></div>';
     } else if (tab === 'sections') {
       const have = sp.sections.map(x => x.type);
-      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><b>' + SEC_NAME[x.type] + '</b><small>' + esc(x.variant) + '</small></div>' +
+      body = '<ol class="sb-secs">' + sp.sections.map((x, i) => '<li><span class="sb-sn">' + String(i + 1).padStart(2, '0') + '</span><div><button type="button" class="sb-sname" data-ag="sb-sec" data-v="' + x.type + '" title="Show in the preview">' + SEC_NAME[x.type] + '</button>' +
+        '<select class="sb-var" data-sbvar="' + i + '" aria-label="' + SEC_NAME[x.type] + ' layout">' + (M.sections[x.type] || []).map(v => '<option value="' + v + '"' + (x.variant === v ? ' selected' : '') + '>' + esc((M.variantNames || {})[v] || v) + '</option>').join('') + '</select></div>' +
         (i ? '<span class="sb-sa"><button class="iconbtn" data-ag="sb-up" data-v="' + i + '" aria-label="Move up"' + (i < 2 ? ' disabled' : '') + '>↑</button><button class="iconbtn" data-ag="sb-down" data-v="' + i + '" aria-label="Move down"' + (i === sp.sections.length - 1 ? ' disabled' : '') + '>↓</button>' + (['book', 'faq'].includes(x.type) ? '' : '<button class="iconbtn" data-ag="sb-del" data-v="' + i + '" aria-label="Remove">' + I('x') + '</button>') + '</span>' : '<span class="sb-sa muted"><small>Always first</small></span>') + '</li>').join('') + '</ol>' +
         (Object.keys(SEC_NAME).filter(k => !have.includes(k)).length ? '<div class="sb-q"><span class="eyebrow">Add a section</span><div class="sb-chips">' + Object.keys(SEC_NAME).filter(k => !have.includes(k)).map(k => '<button type="button" class="chip" data-ag="sb-add" data-v="' + k + '">+ ' + SEC_NAME[k] + '</button>').join('') + '</div><small class="muted">Sections with nothing to show (a gallery without photos, an area guide you have not written) stay hidden.</small></div>' : '');
     } else {
@@ -159,7 +198,7 @@
       if (!live()) return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium booking site for each home.') + '<p class="muted">Available in the live console and the demo.</p></div>';
       if (!M) return '<div class="ag sb">' + vh('Site builder', 'Loading the design system…') + '<div class="a-card ag-card sb-load"></div></div>';
       const site = siteOf(p.id), sp = site && site.draft, pubd = site && site.published;
-      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.sections, pubd.copy]);
+      const dirty = sp && pubd && JSON.stringify([sp.direction, sp.accent, sp.style || {}, sp.sections, sp.copy]) !== JSON.stringify([pubd.direction, pubd.accent, pubd.style || {}, pubd.sections, pubd.copy]);
       const dev = st.sb_dev || 'desk';
       const status = !sp ? '' : pubd ? (dirty ? BB.pill('warn', 'Unpublished changes') : BB.pill('good', 'Live')) : BB.pill('muted', 'Draft');
       const acts = sp ? (pubd ? '<button class="btn" data-ag="sb-unpublish">Use standard site</button>' : '') + '<a class="btn" href="' + PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=" target="_blank" rel="noopener">' + I('out') + 'Open preview</a>' +
@@ -168,33 +207,33 @@
       const showBrief = !sp || st.sb_rebrief;
       const left = st.sb_busy ? busy(inst) : showBrief ? briefCard(inst, p, !!sp) : panel(inst, p, site);
       const src = sp ? PRE() + 'studio/' + encodeURIComponent(p.id) + '?bare=1&t=' + encodeURIComponent(sp.at || '') + (sp.direction + (sp.accent || '')) : '';
-      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
-          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + ' · ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
+      const right = sp ? '<div class="sb-stage"><div class="sb-bar"><div class="seg" role="group" aria-label="Device">' + [['desk', 'Desktop'], ['tablet', 'Tablet'], ['phone', 'Phone']].map(([k, l]) => '<button type="button" aria-pressed="' + (dev === k) + '" data-ag="sb-dev" data-v="' + k + '">' + l + '</button>').join('') + '</div>' +
+          '<span class="sb-meta">' + status + '<small class="muted">' + esc((M.directions[sp.direction] || {}).name || '') + (sp.template && M.pageTemplates[sp.template] ? ' · ' + esc(M.pageTemplates[sp.template].name) : '') + ' · ' + (sp.by === 'ai' ? 'designed by Claude' : 'laid out by the design rules') + ' ' + ago(sp.at) + '</small></span>' +
           '<span class="sb-tools">' + ((site.history || []).length ? '<button class="btn sm ghost" data-ag="sb-undo">' + I('back') + 'Undo</button>' : '') + (!st.sb_rebrief ? '<button class="btn sm ghost" data-ag="sb-new">' + I('plus') + 'New design</button>' : '') + '</span></div>' +
           (sp.note ? '<div class="ag-banner warn">' + I('bolt') + '<p>' + esc(sp.note) + '</p></div>' : '') +
-          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : 1360) + '"></div></div></div>'
-        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>Eight art directions, each with a tested type pairing and palette. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
+          '<div class="sb-dev ' + dev + '"><div class="sb-chrome"><i></i><i></i><i></i><span class="mono">' + esc(p.domain || 'your-site') + '</span></div><div class="sb-slot" data-sb-slot data-src="' + esc(src) + '" data-w="' + (dev === 'phone' ? 390 : dev === 'tablet' ? 820 : 1360) + '"></div></div></div>'
+        : '<div class="sb-stage sb-empty"><div class="sb-hero-ill"><span class="disp">Designed for <em>' + esc(p.short || p.name) + '</em></span><p>' + Object.keys(M.directions).length + ' art directions, ' + Object.keys(M.fonts || {}).length + ' font pairings, ' + Object.keys(M.palettes || {}).length + ' palettes and ' + Object.keys(M.pageTemplates || {}).length + ' page templates, so no two sites look alike. Claude reads your home, looks at your photos, chooses the direction, lays out the page and writes every word. Then it checks the design against the rules below before you see it.</p>' +
           '<ul>' + M.principles.slice(0, 4).map(x => '<li>' + I('check') + esc(x.split('. ')[0]) + '</li>').join('') + '</ul></div></div>';
       return '<div class="ag sb">' + vh('Site builder', 'Claude designs a premium, direct-booking website for each home. Every page follows a tested design system, so it never looks like a template or like AI.', acts) + tabsH +
         (pubd && !dirty ? '<div class="ag-banner good">' + I('check') + '<p>Live on <b class="mono">' + esc(p.domain || '') + '</b> since ' + ago(site.publishedAt) + '. Search engines see the same structured data as before.</p></div>' : '') +
         '<div class="sb-cols">' + left + right + '</div></div>';
     },
     after: previewAfter,
-    click(ev, inst) { const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
+    click(ev, inst) { const sm = ev.target.closest('.sb-wg > summary'); if (sm) { const g = sm.parentNode; inst.st.sb_wopen = g.open ? '-' : g.dataset.wg; return; } const a = ev.target.closest('[data-ag]'); if (a && H[a.dataset.ag]) { ev.preventDefault(); H[a.dataset.ag](inst, a.dataset.v, a); return; } const n = ev.target.closest('[data-ag-nav]'); if (n) { ev.preventDefault(); inst.nav ? inst.nav(n.dataset.agNav) : BB.go('app', { view: n.dataset.agNav }); } },
     input(ev, inst) {
       const el = ev.target, f = el.dataset && el.dataset.agf; if (!f) return; const [sc, k] = f.split('.');
       if (sc === 'sb' && k === 'ask') inst.st.sb_ask = el.value;
       else if (sc === 'sb') { (inst.st.sb_brief = inst.st.sb_brief || {})[k] = el.value; }
-      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; if (!was) inst.render(); }
+      else if (sc === 'sbw') { const was = Object.keys(inst.st.sb_wd || {}).length; (inst.st.sb_wd = inst.st.sb_wd || {})[k] = el.value; const c = inst.root.querySelector('[data-cnt="' + k + '"]'); if (c) { const mx = +c.textContent.split('/')[1]; c.textContent = el.value.length + '/' + mx; c.classList.toggle('over', el.value.length > mx); } if (!was) inst.render(); }
     },
-    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
+    change(ev, inst) { const el = ev.target; if (el.dataset && el.dataset.sbvar != null) { const i = +el.dataset.sbvar; secEdit(inst, a => { a[i].variant = el.value; }); return; } if (el.dataset && el.dataset.sbacc != null) call(inst, 'studio/edit', { propertyId: pidOf(inst), patch: { accent: el.value } }).then(j => { if (j && j.spec && j.spec.accent !== el.value.toUpperCase()) BB.toast('That colour fails the contrast check on this background, so we kept a readable one.', 'bad'); }); },
     submit(ev, inst) { if (ev.target.dataset.agform === 'sb-ask') { ev.preventDefault(); H['sb-revise'](inst); } },
   };
 
   /* =====================================================================
      FUNNELS
      ===================================================================== */
-  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart' };
+  const TPL_ICON = { guide: 'pin', waitlist: 'bell', offer: 'tag', lastminute: 'cal', comeback: 'heart', event: 'cal' };
   const STEP_NAME = { optin: 'Sign-up page', offer: 'Offer page', thanks: 'Thank-you page' };
   const FH = {};
   const fns = () => ((S().studio || {}).funnels) || [];
@@ -230,7 +269,7 @@
       if (st.fn_new) {
         const t = st.fn_tpl, f = st.fn_form || {};
         main = '<section class="a-card ag-card"><div class="a-card-h"><h3>' + (t ? M.templates[t].name : 'What should this funnel do?') + '</h3><button class="btn sm ghost" data-ag="fn-cancel">' + I('x') + 'Cancel</button></div>' +
-          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' · ' + x.steps.map(z => STEP_NAME[z]).join(' → ') + '</em></button>').join('') + '</div>'
+          (!t ? '<div class="sb-tpls">' + Object.entries(M.templates).filter(([, x]) => !x.hidden).map(([k, x]) => '<button type="button" class="sb-tpl" data-ag="fn-tpl" data-v="' + k + '"><span class="sb-tpl-i">' + I(TPL_ICON[k]) + '</span><b>' + esc(x.name) + '</b><small>' + esc(x.blurb) + '</small><em>' + (x.goal === 'leads' ? 'Grows your list' : 'Brings bookings') + ' · ' + x.steps.map(z => STEP_NAME[z]).join(' → ') + '</em></button>').join('') + '</div>'
             : '<p class="muted" style="margin:0 0 14px">' + esc(M.templates[t].blurb) + '</p><div class="sb-fform">' +
               (s.properties.length > 1 ? '<label class="field"><span>Home</span><select data-agf="fn.propertyId">' + s.properties.map(p => '<option value="' + p.id + '"' + (f.propertyId === p.id ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></label>' : '') +
               '<label class="field"><span>Discount for guests who book</span><select data-agf="fn.pct">' + [5, 10, 15, 20, 25].map(x => '<option' + (+f.pct === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></label>' +

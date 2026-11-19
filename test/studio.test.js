@@ -19,6 +19,37 @@ test('every art direction passes its own contrast checks', () => {
   assert.equal(D.palette('linen', '#F5F0E0').accent, D.DIRECTIONS.linen.pal.accent);
 });
 
+test('every palette passes contrast checks, on the page, alternate and deep colours', () => {
+  for (const k of Object.keys(D.PALETTES)) {
+    const p = D.palette('linen', null, k);
+    assert.ok(D.contrast(p.ink, p.bg) >= 7, k + ' body text'); assert.ok(D.contrast(p.ink, p.bg2) >= 7, k + ' body text on tint');
+    assert.ok(D.contrast(p.muted, p.bg) >= 4.5, k + ' muted text'); assert.ok(D.contrast(p.muted, p.bg2) >= 4.5, k + ' muted text on tint');
+    assert.ok(D.contrast(p.accentInk, p.accent) >= 4.5, k + ' buttons'); assert.ok(D.contrast(p.accentText, p.bg) >= 4.5, k + ' accent text');
+    assert.ok(D.contrast(p.deepInk, p.deep) >= 7, k + ' deep bands'); assert.ok(D.contrast(p.accentDeep, p.deep) >= 4.5, k + ' accent on deep');
+  }
+  for (const [k, d] of Object.entries(D.DIRECTIONS)) { assert.ok(D.FONTS[d.font] && D.PALETTES[d.palette], k); d.alts.fonts.concat(d.alts.palettes).forEach(x => assert.ok(D.FONTS[x] || D.PALETTES[x], k + ' alt ' + x)); }
+  for (const t of Object.values(D.TEMPLATES)) for (const [type, v] of Object.entries(t.v)) assert.ok(D.SECTIONS[type].includes(v), t.name + ' ' + type + ' ' + v);
+});
+
+test('style choices change the page, and every layout renders', () => {
+  const render = require('../server/studio/render');
+  const photos = [1, 2, 3, 4, 5, 6, 7].map(i => ({ url: 'https://example.com/' + i + '.jpg', cap: 'Photo ' + i }));
+  const s = { account: { business: 'Stays', owner: 'Sam Carter' }, live: false, website: { faqs: {} }, integrations: [], guests: [{ id: 'g', name: 'Ann Lee' }],
+    bookings: [1, 2, 3].map(i => ({ propertyId: 'h', guestId: 'g', review: { text: 'Lovely ' + i, stars: 5, at: '2026-0' + i + '-01' } })) };
+  const p = { id: 'h', name: 'Test House', area: 'Keswick, Cumbria', nightly: 150, maxGuests: 4, bedrooms: 2, baths: 1, checkinTime: '4pm', checkoutTime: '10am', photos, amenities: ['Hot tub'], guide: ['Pub | 5 min | Good'], hostNote: 'Hello', rating: 4.9, reviews: 20 };
+  const ctx = { url: 'https://x.test/', bookUrl: '#', today: '2026-11-17', preview: true };
+  for (const [type, vs] of Object.entries(D.SECTIONS)) for (const v of vs) {
+    const html = render.site(s, p, { direction: 'nordic', sections: [{ type: 'hero', variant: type === 'hero' ? v : 'split' }].concat(type === 'hero' ? [] : [{ type, variant: v }]), copy: { headline: 'Hi', highlights: [{ title: 'A', text: 'B' }, { title: 'C', text: 'D' }, { title: 'E', text: 'F' }] } }, ctx);
+    assert.match(html, new RegExp('data-sec="' + type + '"'), type + ' ' + v);
+  }
+  const base = { direction: 'linen', sections: [{ type: 'hero', variant: 'split' }, { type: 'book', variant: 'panel' }], copy: { headline: 'Hi' } };
+  const plain = render.site(s, p, base, ctx);
+  const styled = render.site(s, p, Object.assign({}, base, { style: { font: 'unbounded', palette: 'ember', corners: 'pebble', buttons: 'outline', bands: 'bold', nav: 'centered', images: 'framed', spacing: 'airy', bogus: 'x' } }), ctx);
+  assert.match(plain, /Cormorant\+Garamond/); assert.match(styled, /Unbounded/); assert.doesNotMatch(styled, /Cormorant/);
+  assert.match(styled, /--bg:#17120F/); assert.match(styled, /color-scheme:dark/); assert.match(styled, /--rb:999px/); assert.match(styled, /n-cen/); assert.match(styled, /--sp:1.3/);
+  assert.deepEqual(D.cleanStyle({ font: 'nope', palette: 'sage', nav: 'minimal', x: 1 }), { palette: 'sage', nav: 'minimal' });
+});
+
 let t;
 test.before(async () => { t = await start(); await t.signup(); });
 test.after(() => t.stop());
@@ -51,6 +82,28 @@ test('designs, previews and publishes a site without an AI key, then serves it t
   // switching it off brings the standard site back
   await t.call('/api/studio/publish', { body: { propertyId: p.id, off: true } });
   assert.doesNotMatch(await fetch(url).then(r => r.text()), /Italiana/);
+});
+
+test('homes in the same account get different looks, and hosts can restyle with templates, style switches and shuffle', async () => {
+  const a = await t.home(); await t.act('addProperty', { name: 'Second Home', area: 'Keswick, Cumbria' });
+  const b = { p: (await t.call('/api/state')).body.state.properties.find(x => x.name === 'Second Home') }; assert.ok(b.p, 'second home added');
+  const g1 = (await t.call('/api/studio/generate', { body: { propertyId: a.p.id, brief: { vibe: 'calm' } } })).body.spec;
+  const g2 = (await t.call('/api/studio/generate', { body: { propertyId: b.p.id, brief: { vibe: 'calm' } } })).body.spec;
+  assert.equal(g1.direction, g2.direction, 'same brief, same direction');
+  const sig = x => JSON.stringify([x.style.font || '', x.style.palette || '', x.template, x.sections.map(q => q.variant)]);
+  assert.notEqual(sig(g1), sig(g2), 'but not the same site');
+  let e = await t.call('/api/studio/edit', { body: { propertyId: a.p.id, patch: { template: 'minimal' } } });
+  assert.equal(e.status, 200); assert.equal(e.body.spec.template, 'minimal'); assert.equal(e.body.spec.sections.find(q => q.type === 'faq').variant, 'centered');
+  e = await t.call('/api/studio/edit', { body: { propertyId: a.p.id, patch: { style: { font: 'abril', palette: 'midnight', corners: 'pebble', nav: 'nonsense' } } } });
+  assert.deepEqual(e.body.spec.style.font, 'abril'); assert.equal(e.body.spec.style.palette, 'midnight'); assert.equal(e.body.spec.style.nav, undefined, 'unknown values are dropped');
+  let pv = await t.call('/app/studio/' + a.p.id); assert.match(pv.body, /Abril\+Fatface/); assert.match(pv.body, /--bg:#0F1724/);
+  e = await t.call('/api/studio/edit', { body: { propertyId: a.p.id, patch: { style: { font: '' } } } }); assert.equal(e.body.spec.style.font, undefined);
+  e = await t.call('/api/studio/edit', { body: { propertyId: a.p.id, patch: { direction: 'riviera' } } }); assert.equal(e.body.spec.style.palette, undefined, 'a new direction brings its own colours');
+  assert.equal(e.body.spec.style.corners, 'pebble', 'other choices stay');
+  const before = sig(e.body.spec);
+  e = await t.call('/api/studio/edit', { body: { propertyId: a.p.id, patch: { shuffle: true } } }); assert.equal(e.status, 200); assert.notEqual(sig(e.body.spec), before);
+  assert.equal(e.body.spec.direction, 'riviera');
+  const meta = (await t.call('/api/studio/meta')).body; assert.ok(Object.keys(meta.fonts).length >= 16 && Object.keys(meta.palettes).length >= 18 && Object.keys(meta.pageTemplates).length >= 6);
 });
 
 test('a live funnel takes a sign-up into the guest list and its code works', async () => {

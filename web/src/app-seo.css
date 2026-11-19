@@ -1,0 +1,121 @@
+/* Search health view (web/src/app-seo.js) */
+.ag.sh { display: grid; gap: 18px; }
+.sh .t-good { color: var(--good); } .sh .t-warn { color: var(--warn); } .sh .t-bad { color: var(--bad); }
+.sh .sh-card { min-width: 0; }
+.sh .sh-card > .sh-help, .sh .sh-card > .sh-ta, .sh .sh-card > .sh-row, .sh .sh-card > ul, .sh .sh-card > form, .sh .sh-card > .tblwrap, .sh .sh-card > p, .sh .sh-card > .field, .sh .sh-card > .sh-serp, .sh .sh-card > details, .sh .sh-card > .btn, .sh .sh-card > .sh-ping, .sh .sh-card > .sh-types, .sh .sh-card > pre, .sh .sh-card > .eyebrow { margin-top: 12px; }
+.sh .sh-help { color: var(--muted); font-size: 13.5px; line-height: 1.5; margin: 0; }
+.sh .sh-ta { width: 100%; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical; min-width: 0; }
+.sh .sh-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sh .sh-sp { flex: 1; }
+.sh .sh-by { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.sh .sh-by.ai { color: var(--info); }
+.sh .sh-by .ic { width: 14px; height: 14px; }
+.sh .sh-link { background: none; border: 0; padding: 0; color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; margin-left: 6px; }
+.sh .ag-ptabs .sh-pscore { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 700 17px var(--mono); background: var(--surface-2); }
+.sh .sh-pscore.t-good { background: var(--good-soft); } .sh .sh-pscore.t-warn { background: var(--warn-soft); } .sh .sh-pscore.t-bad { background: var(--bad-soft); }
+
+/* score and category tiles */
+.sh .sh-top { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 18px; align-items: stretch; }
+.sh .sh-score-in { display: flex; align-items: center; gap: 18px; height: 100%; }
+.sh .sh-score-in .disp { display: block; font-size: 28px; margin: 6px 0 4px; }
+.sh .sh-score-in p { margin: 0; font-size: 13.5px; line-height: 1.45; }
+.sh .sh-g-good .fg { stroke: var(--good); } .sh .sh-g-warn .fg { stroke: var(--warn); } .sh .sh-g-bad .fg { stroke: var(--bad); }
+.sh .sh-cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.sh .sh-cat { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-content: start; text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; min-width: 0; }
+.sh .sh-cat:hover { border-color: var(--line-2); }
+.sh .sh-cat.on { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent); }
+.sh .sh-cat span { font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+.sh .sh-cat b { font-size: 18px; }
+.sh .sh-cat i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.sh .sh-cat i em { display: block; height: 100%; border-radius: 3px; background: currentColor; }
+.sh .sh-cat small { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px; }
+
+/* checks */
+.sh .sh-checks { list-style: none; padding: 0; margin: 12px 0 0; display: grid; }
+.sh .sh-ck { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 10px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.sh .sh-ck:first-child { border-top: 0; }
+.sh .sh-ck b { display: block; font-size: 14.5px; }
+.sh .sh-ck small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.sh .sh-ck p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }
+.sh .sh-st { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; align-self: start; }
+.sh .sh-st .ic { width: 16px; height: 16px; }
+.sh .s-ok .sh-st { background: var(--good-soft); color: var(--good); }
+.sh .s-auto .sh-st { background: var(--info-soft); color: var(--info); }
+.sh .s-warn .sh-st { background: var(--warn-soft); color: var(--warn); }
+.sh .s-fail .sh-st { background: var(--bad-soft); color: var(--bad); }
+.sh .sh-gain { font: 600 12.5px var(--mono); color: var(--good); white-space: nowrap; }
+
+.sh .sh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.sh .field > span em { font-style: normal; font-size: 12px; margin-left: 6px; }
+.sh .sh-serp { margin-top: 12px; }
+
+/* faq ideas, keywords */
+.sh .sh-ideas { list-style: none; padding: 0; display: grid; gap: 14px; }
+.sh .sh-ideas li { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sh .sh-ideas li:first-child { border-top: 0; padding-top: 0; }
+.sh .sh-ideas b { font-size: 14px; }
+.sh .sh-kw td { padding: 9px 8px; }
+.sh .sh-kw td small { display: block; font-size: 12px; margin-top: 2px; }
+.sh .sh-kw .ic { width: 16px; height: 16px; }
+.sh .sh-kwa { white-space: nowrap; text-align: right; }
+.sh .sh-kwa .btn + .btn { margin-left: 6px; }
+
+/* listings, gbp, sources, files */
+.sh .sh-links { list-style: none; padding: 0; display: grid; gap: 6px; }
+.sh .sh-links li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sh .sh-links a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--fg); }
+.sh .sh-inl { display: flex; gap: 8px; }
+.sh .sh-inl input { flex: 1; min-width: 0; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; }
+.sh .sh-card > form + form { margin-top: 8px; }
+.sh .sh-tip { display: flex; gap: 8px; font-size: 12.5px; color: var(--muted); align-items: flex-start; }
+.sh .sh-tip .ic { width: 15px; height: 15px; flex: none; margin-top: 1px; }
+.sh .sh-gbp { list-style: none; padding: 0; display: grid; gap: 10px; }
+.sh .sh-gbp li { display: flex; gap: 12px; align-items: flex-start; }
+.sh .sh-gbp b { display: block; font-size: 14px; }
+.sh .sh-gbp small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
+.sh .sh-tick { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--line-2); background: var(--surface); display: grid; place-items: center; color: transparent; padding: 0; cursor: pointer; }
+.sh .sh-tick .ic { width: 15px; height: 15px; }
+.sh .sh-tick.on { background: var(--good); border-color: var(--good); color: #fff; }
+.sh .sh-src { list-style: none; padding: 0; display: grid; gap: 8px; }
+.sh .sh-src li { display: grid; grid-template-columns: minmax(0, 1.4fr) auto minmax(40px, 1fr) 24px auto; gap: 10px; align-items: center; font-size: 13px; }
+.sh .sh-src li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh .sh-src i { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.sh .sh-src i em { display: block; height: 100%; background: var(--info); border-radius: 3px; }
+.sh .sh-src li.own i em { background: var(--good); }
+.sh .sh-src .pill { font-size: 11px; }
+.sh .sh-logos .ai-logo, .sh .sh-logos svg, .sh .sh-logos img { width: 16px; height: 16px; }
+.sh .sh-files { list-style: none; padding: 0; display: grid; gap: 6px; }
+.sh .sh-files li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; min-width: 0; }
+.sh .sh-files a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--primary); font-size: 12px; }
+.sh .sh-ping { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--surface-2); }
+.sh .sh-ping b { display: block; font-size: 14px; }
+.sh .sh-ping small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
+.sh .sh-steps summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+.sh .sh-steps ol { margin: 8px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+.sh .sh-steps a { color: var(--primary); }
+.sh .sh-types { display: flex; flex-wrap: wrap; gap: 6px; }
+.sh .sh-pre { max-height: 300px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 11.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; margin: 6px 0 0; }
+.sh .sh-cover td { padding: 10px 8px; font-size: 13.5px; vertical-align: top; }
+.sh .sh-cover td:first-child { white-space: nowrap; }
+.sh .sh-cover td:nth-child(2) { white-space: nowrap; }
+
+.sh .sh-ixl .sh-ix { grid-template-columns: 28px 1fr; padding: 8px 0; }
+.sh .sh-perf { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); display: grid; gap: 10px; }
+.sh .sh-perf-k { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.sh .sh-perf-k small { display: block; color: var(--muted); font-size: 11.5px; }
+.sh .sh-perf-k b { font-size: 18px; }
+.sh .sh-q td, .sh .sh-q th { padding: 6px 8px; font-size: 13px; }
+@media (max-width: 1180px) { .sh .sh-cats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 980px) { .sh .sh-top, .sh .sh-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .sh .sh-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sh .sh-ck { grid-template-columns: 28px 1fr; }
+  .sh .sh-ck .sh-gain { grid-column: 2; justify-self: start; }
+  .sh .sh-ck .btn, .sh .sh-ck .pill { grid-column: 2; justify-self: start; }
+  .sh .sh-score-in { flex-direction: column; align-items: flex-start; }
+  .sh .sh-cover td:first-child { white-space: normal; }
+  .sh .sh-cover tr { display: grid; grid-template-columns: 1fr auto; } .sh .sh-cover td:nth-child(3) { grid-column: 1 / -1; padding-top: 0; }
+  .sh .sh-kw thead { display: none; } .sh .sh-kw tr { display: grid; grid-template-columns: 1fr auto auto; } .sh .sh-kw td.sh-kwa { grid-column: 1 / -1; text-align: left; padding-top: 0; }
+  .sh .sh-src li { grid-template-columns: minmax(0, 1fr) auto 24px; } .sh .sh-src i, .sh .sh-src .sh-eng { display: none; }
+  .sh .sh-ping { flex-direction: column; align-items: flex-start; }
+}

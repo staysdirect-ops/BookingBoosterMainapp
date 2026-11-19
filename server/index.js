@@ -15,6 +15,7 @@ const auth = require('./auth')(db, cfg);
 const pages = require('./pages');
 const seo = require('./seo');
 const mkt = require('./marketing');
+const answers = require('./answers');
 const pub = require('./public');
 const invoice = require('./invoice');
 const ical = require('./ical');
@@ -56,6 +57,8 @@ async function payUrl(w, b, back) {
 const secrets = require('./secrets')(db, cfg);
 const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
+const seoTools = require('./seo-tools')(cfg);
+const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
@@ -63,6 +66,10 @@ const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
 const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
 const campaignsAdmin = require('./campaigns-admin');
+const adminUi = require('./admin-shell');
+const social = require('./social')({ db });
+const adminContent = require('./admin-content');
+const adminUsers = require('./admin-users');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
@@ -100,7 +107,11 @@ async function stream(res, u, wid, headers) {
 }
 const err = (status, message) => Object.assign(new Error(message), { status });
 // The AI site builder and funnel creator (server/studio)
-const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, credits, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
+// Our own event finder for Event ads (server/studio/crawler.js): reads public what's-on and course pages, no event APIs
+const eventFinder = require('./studio/crawler')({ cfg, kv: { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, log: (...a) => log(...a) });
+// The partner (affiliate) programme: /partners, /r/<code> and /admin/affiliates (server/affiliates.js)
+const aff = require('./affiliates')({ db, cfg, auth, msg, stripe, log, h: { ui: adminUi, esc: s => pages.esc(s), send: (...a) => send(...a), redirect: (...a) => redirect(...a), notFound: r => notFound(r), cookies: r => cookies(r), cookie: (...a) => cookie(...a), formBody: r => formBody(r), ip: r => ip(r), authPage: (...a) => authPage(...a) } });
+const studio = require('./studio')({ cfg, ws, auth, pub, urls, stripeReady, credits, finder: eventFinder, log: (...a) => log(...a), json, jsonBody, send: (...a) => send(...a), err, ip, hidden: (req, w) => hiddenFrom(req, w) });
 
 /* ---------------- static assets ---------------- */
 const MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.html': 'text/html; charset=utf-8', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8' };
@@ -119,7 +130,7 @@ let marketingState = null;
 const marketing = () => marketingState || (marketingState = seedDemo());
 async function hostBoot(w, surface) {
   const s = w.state;
-  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain,
+  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain, support: cfg.company.support,
     ...hostLinks(w), aiEngines: ai.available(), test: testNotes() };
 }
 const SOON = ['cleaner', 'google', 'gsc', 'analytics', 'pricelabs']; // shown in live accounts as coming soon
@@ -136,13 +147,79 @@ function publicBoot(w, mode, extra) {
 function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
-function sitePage(res, w, p, canonical, host, req) {
+// Search engines, with no sign-in for the host: every live home's site is submitted to Google Search Console through our
+// service account (verified with a meta tag we serve), and Bing, Yandex, Seznam and Naver hear about changes via IndexNow.
+// Runs daily from the scheduler and when the host presses Submit now. Results are saved on the home (p.indexing).
+function sitemapOf(w, site) { return site.includes('/s/' + w.slug + '/') ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : new URL(site).origin + '/sitemap.xml'; }
+async function autoIndex(w, o) {
+  const s = w.state, out = [], now = new Date().toISOString();
+  for (const prop of s.properties.filter(x => x.published !== false)) {
+    const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
+    if (google.enabled) {
+      try { await google.submit(origin, sm); patch.google = { state: 'submitted', sitemap: sm, at: now, account: google.account };
+        try { patch.perf = await google.performance(origin, site.includes('/s/') ? site : origin + '/'); } catch (e) { if (e.status !== 403) log('gsc perf', e.message); }
+        out.push({ ok: true, message: prop.name + ': sitemap submitted to Google.' }); }
+      catch (e) { patch.google = { state: 'error', sitemap: sm, at: now, error: String(e.message).slice(0, 200) }; out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' }); }
+    }
+    // IndexNow only when the page's words changed, as the protocol asks.
+    const sig = crypto.createHash('sha1').update(seo.llms(s, prop, site)).digest('hex').slice(0, 16);
+    if ((o && o.force) || (cur.indexnow || {}).sig !== sig) {
+      const key = seo.indexNowKey(cfg.secret, w.id), onPath = site.includes('/s/' + w.slug + '/');
+      const r = await seoTools.ping(new URL(site).host, key, onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : origin + '/' + key + '.txt', [site, onPath ? site + '/llms.txt' : origin + '/llms.txt']);
+      patch.indexnow = { state: r.ok ? 'sent' : 'error', at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
+      out.push({ ok: r.ok, message: prop.name + ': ' + r.message });
+    }
+    if (Object.keys(patch).length) await ws.withWs(w.id, BB => BB.act.setIndexing(prop.id, patch), { quiet: true });
+  }
+  return out;
+}
+
+// Search health tools in the console: what the site sends crawlers, AI-written drafts and IndexNow pings.
+// Live accounts only call Claude and IndexNow; the demo gets the same files and rule-based drafts.
+async function seoApi(req, res, p, m, w, live, headers) {
+  const s = w.state; const j = m === 'POST' ? await jsonBody(req, 2e4) : {};
+  const u = new URL(req.url, 'http://x'); const pid = j.propertyId || u.searchParams.get('propertyId');
+  const prop = s.properties.find(x => x.id === pid) || s.properties[0]; if (!prop) throw err(404, 'Add a home first.');
+  const site = live ? urls.site(w, prop) : 'https://' + prop.domain + '/';
+  const root = site.replace(/^(https?:\/\/[^/]+).*$/, '$1') + '/', onPath = site.includes('/s/' + w.slug + '/');
+  const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : root + key + '.txt';
+  if (p === '/api/seo/files' && m === 'GET') {
+    return json(res, { site, sitemap: onPath ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : root + 'sitemap.xml', robots: root + 'robots.txt', llmsUrl: onPath ? site + '/llms.txt' : root + 'llms.txt', keyUrl,
+      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled }, 200, headers);
+  }
+  if (p === '/api/seo/write' && m === 'POST') {
+    const what = String(j.what || ''); if (!['summary', 'area', 'meta', 'faqs'].includes(what)) throw err(400, 'Unknown draft');
+    if (!live || !seoTools.enabled) return json(res, { draft: null, by: 'rules' }, 200, headers);
+    if (!auth.limit('seo-write:' + w.id, 60, 3600e3)) throw err(429, 'Too many drafts this hour. Try again later.');
+    try { await credits.check(w.id); } catch (e) { if (e.code === 'ai_credit') return json(res, { draft: null, by: 'rules', credit: { empty: true, message: e.message, url: e.topupUrl } }); throw e; }
+    try { return json(res, { draft: await seoTools.write(s, prop, what, credits.meter(w.id, 'seo'), Array.isArray(j.questions) ? j.questions : []), by: 'claude' }); }
+    catch (e) { log('seo write', e.message); return json(res, { draft: null, by: 'rules', error: 'Claude could not write this just now, so here is a draft from your facts.' }); }
+  }
+  if (p === '/api/seo/submit' && m === 'POST') {
+    if (!live) return json(res, { ok: true, message: 'In the demo nothing is sent. In your account we submit every site to Google and Bing for you, every day.' }, 200, headers);
+    if (!auth.limit('seo-submit:' + w.id, 6, 86400e3)) throw err(429, 'Already submitted several times today. We also resubmit every day by ourselves.');
+    const out = await autoIndex(w, { force: true });
+    return json(res, Object.assign({ ok: out.every(x => x.ok), message: out.map(x => x.message).join(' ') }, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+  }
+  if (p === '/api/seo/ping' && m === 'POST') {
+    if (!live) return json(res, { ok: true, message: 'In the demo nothing is sent. In your account this asks Bing and the other IndexNow engines to recrawl now.' }, 200, headers);
+    if (!auth.limit('seo-ping:' + w.id, 10, 86400e3)) throw err(429, 'You have asked 10 times today. Search engines will pick up changes from your sitemap too.');
+    const host = new URL(site).host; const list = onPath ? s.properties.map(x => cfg.baseUrl + '/s/' + w.slug + '/' + x.id) : [site, root + 'llms.txt'];
+    const r = await seoTools.ping(host, key, keyUrl, list);
+    await ws.withWs(w.id, BB => { BB.log('site', 'Search health', (r.ok ? 'Asked Bing and other IndexNow engines to recrawl ' : 'Could not ask IndexNow to recrawl ') + prop.domain + '. ' + r.message, prop.id, ['Search health', 'IndexNow']); BB.store.commit({}); });
+    return json(res, Object.assign(r, { state: (await ws.open(w.id)).state, version: await ws.version(w.id) }));
+  }
+  return false;
+}
+async function sitePage(res, w, p, canonical, host, req) {
   const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today);
+  // A site on its own address carries our Google verification tag on its home page, so we can submit it to Search Console.
+  const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : '';
   const built = studio.publishedSite(w, p, canonical); // a site designed and published in the Site builder
-  if (built) return send(res, 200, built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+  if (built) return send(res, 200, gsv ? built.replace('<head>', '<head>' + gsv) : built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   const st = pub.siteState(s, p.id);
   send(res, 200, pages.page({
-    title: seo.titleOf(p), description: seo.descOf(p), head: seo.head(s, p, canonical), content: seo.content(s, p, canonical),
+    title: seo.titleOf(p), description: seo.descOf(p), head: gsv + seo.head(s, p, canonical), content: seo.content(s, p, canonical),
     boot: publicBoot(w, 'site', { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
     banner: stripeReady(w) ? null : (w.kind === 'live' ? null : '<b>Demo</b> No real bookings are taken here.'),
   }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
@@ -176,7 +253,10 @@ async function publicBook(req, res, w) {
   x.source = ['google', 'ai', 'campaign', 'referral'].includes(input.source) ? input.source : (input.source === 'guest-app' ? 'guest-app' : 'website');
   x.channel = 'direct';
   await effects.freshen(w, p.id); // re-read Airbnb and the rest first if they were not checked in the last few minutes
-  const ready = stripeReady(w);
+  const ready = stripeReady(w), how = pub.guestPay(w.state);
+  // The host chose how guests pay. A bank-transfer-only home turns away card checkouts, and the other way round.
+  if (kind === 'transfer' && how === 'card') return json(res, { ok: false, error: 'This home takes card payments only. Pay by card or send a booking request.' });
+  if (kind !== 'transfer' && kind !== 'request' && how === 'transfer') return json(res, { ok: false, error: 'This home takes payment by bank transfer. Choose bank transfer to book.', transfer: true });
   let r;
   if (kind === 'transfer') { r = (await ws.act(w.id, 'bookByTransfer', [x])).result; }
   else if (kind === 'request' || (w.kind === 'live' && !ready)) { r = (await ws.act(w.id, x.source === 'guest-app' ? 'requestGuestBooking' : 'requestPropertyBooking', [x])).result; r && (r.request = true); }
@@ -237,6 +317,7 @@ async function stripeWebhook(req, res) {
         await hostMail.paymentFailed(r.id, o, card);
       }
     }
+    if (['invoice.paid', 'charge.refunded', 'charge.dispute.closed'].includes(ev.type)) await aff.stripeEvent(ev, async c => { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(c); return r && r.id; });
     if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
   } catch (e) { log('webhook', ev.type, e.message); }
   json(res, { received: true });
@@ -256,6 +337,7 @@ async function signup(req, res) {
   if (name.length < 2) throw err(400, 'Enter your name.');
   if (pw.length < 10) throw err(400, 'Use a password of at least 10 characters.');
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
+  const ref = await aff.forSignup(req, b.ref, email); // the partner who referred them, if any
   const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
@@ -269,6 +351,7 @@ async function signup(req, res) {
     if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
   }
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
+  await aff.attach(wid, ref);
   const token = await auth.startSession(uid), set = { 'set-cookie': cookie('bb_s', token, 30 * 86400) };
   // Pay first: with card billing on, the new host goes straight to Stripe Checkout and gets into setup once it is paid.
   if (stripe.enabled) {
@@ -289,7 +372,7 @@ async function planPaid(wid, customer, plan) {
   const r = await ws.row(wid); const first = !r || !r.billing_status || r.billing_status === 'trial';
   await ws.setMeta(wid, { billing_status: 'active', stripe_customer: customer, plan });
   await ws.withWs(wid, BB => { const a = BB.store.get().account; if (plan) a.plan = plan; a.billing = 'active'; BB.store.commit({}); });
-  if (first) ws.defer(welcome(wid), 'welcome');
+  if (first) { ws.defer(welcome(wid), 'welcome'); ws.defer(effects.siteLive(wid), 'site-live'); } // the "site is live" email waits for payment too
 }
 // Hosts who have not paid yet only see the payment page, their billing and their account. Team members are let through.
 const PAY_OPEN = ['/app/pay', '/app/pay/done', '/app/billing', '/app/billing/start', '/app/billing/portal', '/app/account'];
@@ -362,6 +445,7 @@ async function route(req, res) {
   if (p.startsWith('/email-img/brand/')) return file(res, path.join(__dirname, 'emails', 'brand'), p.slice('/email-img/brand/'.length), 'public, max-age=86400');
   if (p.startsWith('/email-img/')) return file(res, path.join(__dirname, 'emails', 'guest-img'), p.slice('/email-img/'.length), 'public, max-age=86400');
   if (p === '/healthz') return json(res, { ok: true });
+  if (p === '/bot') return send(res, 200, 'BookingboosterEvents is the event finder for Bookingbooster, a direct-booking tool for UK holiday lets.\n\nIt reads public what\'s-on, venue and training course pages, and calendar feeds, to find events near our hosts\' homes, so they can tell people travelling for those events that they have a room free. It keeps only the facts (name, dates, venue) and a link back to your page.\n\nIt asks robots.txt first and follows it, for "BookingboosterEvents" or for "*". It keeps to Crawl-delay, waits at least 1.5 seconds between pages, reads at most 25 pages of a site a day, skips noindex pages and does not follow nofollow links.\n\nTo stop it, add to your robots.txt:\nUser-agent: BookingboosterEvents\nDisallow: /\n', 'text/plain; charset=utf-8');
   /* test servers only (TEST_SQL=1, set by test/harness.js): lets tests read and change the database directly */
   if (p === '/test/sql' && m === 'POST' && process.env.TEST_SQL === '1' && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host)) { const j = await jsonBody(req, 1e5); return json(res, { rows: await db.prepare(String(j.q)).all(...(j.args || [])) }); }
   /* background jobs on Supabase: pg_cron posts here every few minutes with the jobs key */
@@ -518,8 +602,9 @@ async function route(req, res) {
     if (await hiddenFrom(req, w)) return comingSoon(res, w);
     const canonical = 'https://' + host.replace(/:\d+$/, '') + '/';
     if (p === '/robots.txt') return send(res, 200, seo.robots(canonical + 'sitemap.xml'), 'text/plain; charset=utf-8');
-    if (p === '/sitemap.xml') return send(res, 200, seo.sitemap([{ loc: canonical, lastmod: w.state.today }, { loc: canonical + 'llms.txt' }]), 'application/xml');
+    if (p === '/sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, [[prop, canonical]], [canonical + 'llms.txt']), 'application/xml');
     if (p === '/llms.txt') return send(res, 200, seo.llms(w.state, prop, canonical), 'text/plain; charset=utf-8');
+    if (p === '/' + seo.indexNowKey(cfg.secret, w.id) + '.txt') return send(res, 200, seo.indexNowKey(cfg.secret, w.id), 'text/plain; charset=utf-8');
     if (p === '/' || p === '/book') return await sitePage(res, w, prop, canonical, host.replace(/:\d+$/, ''), req);
     return notFound(res);
   }
@@ -528,15 +613,19 @@ async function route(req, res) {
   if ((mm = p.match(/^\/s\/([a-z0-9-]+)(?:\/([^/]+))?(\/llms\.txt|\/sitemap\.xml)?\/?$/))) {
     const r = await ws.bySlug(mm[1]); if (!r) return notFound(res);
     const w = await ws.open(r.id); w.catchUp();
+    if (mm[2] === seo.indexNowKey(cfg.secret, w.id) + '.txt' && !mm[3]) return send(res, 200, seo.indexNowKey(cfg.secret, w.id), 'text/plain; charset=utf-8');
     const prop = mm[2] && mm[2] !== 'sitemap.xml' && mm[2] !== 'llms.txt' ? w.state.properties.find(x => x.id === decodeURIComponent(mm[2])) : w.state.properties[0];
     if (!prop) return notFound(res);
     if (await hiddenFrom(req, w)) return comingSoon(res, w);
     const canonical = cfg.baseUrl + '/s/' + w.slug + '/' + prop.id;
     if (mm[3] === '/llms.txt' || mm[2] === 'llms.txt') return send(res, 200, seo.llms(w.state, prop, canonical), 'text/plain; charset=utf-8');
-    if (mm[3] === '/sitemap.xml' || mm[2] === 'sitemap.xml') return send(res, 200, seo.sitemap(w.state.properties.map(x => ({ loc: cfg.baseUrl + '/s/' + w.slug + '/' + x.id, lastmod: w.state.today }))), 'application/xml');
+    if (mm[3] === '/sitemap.xml' || mm[2] === 'sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, w.state.properties.map(x => [x, cfg.baseUrl + '/s/' + w.slug + '/' + x.id])), 'application/xml');
     if (!mm[2]) return redirect(res, canonical);
     return await sitePage(res, w, prop, canonical, null, req);
   }
+
+  /* partner programme: referral links, /partners pages */
+  if (await aff.route(req, res, u, p, m)) return;
 
   /* marketing site */
   if (p === '/signup' || p === '/register' || p === '/join') return redirect(res, '/start' + u.search);
@@ -545,24 +634,43 @@ async function route(req, res) {
     // Funnel checkouts hand off to /start?plan=Growth&annual=1&addon=1&email=…&name=…&business=… to prefill the sign-up.
     const q = k => String(u.searchParams.get(k) || '').trim().slice(0, 120);
     const pre = p === '/start' ? { plan: ['starter', 'growth', 'portfolio'].includes(q('plan').toLowerCase()) ? q('plan').toLowerCase() : undefined,
-      annual: q('annual') === '1', addon: q('addon') === '1', email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
+      annual: q('annual') === '1', addon: q('addon') === '1', ref: aff.cookieCode(req), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
-      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
-      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
+      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
+  if (m === 'GET' && Object.hasOwn(answers.PAGES, p)) { const a = answers.render(cfg.baseUrl, p); return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: 'read', index: true }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' }); }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
   if (p === '/sitemap.xml') {
     // Privacy and terms join the sitemap once a solicitor has reviewed them (LEGAL_REVIEWED); until then they say Draft and stay out of search.
-    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }].concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
-    for (const id of await ws.liveIds()) { const w = await ws.open(id); for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
+    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }].concat(answers.list().map(x => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
+    for (const id of await ws.liveIds()) { const w = await ws.open(id); if (unpaid(w)) continue; for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
+  if (p === '/llms-full.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()) + '\n---\n\n' + answers.fullText(cfg.baseUrl), 'text/plain; charset=utf-8');
+  if (p === '/' + ownIndexKey() + '.txt') return send(res, 200, ownIndexKey(), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
   if (p === '/admin') return await adminPage(req, res);
+  if (p === '/admin/affiliates' || p.startsWith('/admin/affiliates/')) { if (!await isAdmin(req)) return notFound(res); if (await aff.admin(req, res, p, m, ((await me(req)) || {}).email)) return; return notFound(res); }
+  if (m === 'GET' && (p === '/admin/leads' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
+  if (p === '/admin/hosts' || p.startsWith('/admin/hosts/')) {
+    if (!await isAdmin(req)) return notFound(res);
+    const U = usersAdmin(req), hm = p.match(/^\/admin\/hosts\/([A-Za-z0-9_-]+)(\/reset)?$/);
+    if (p === '/admin/hosts' && m === 'GET') return await U.listPage(res, u.searchParams);
+    if (p === '/admin/hosts/export.csv' && m === 'GET') return await U.csv(res);
+    if (hm && !hm[2] && m === 'GET') return await U.detailPage(res, hm[1]);
+    if (hm && hm[2] && m === 'POST') { // the team sends the host the same reset link as /forgot
+      const r0 = await db.prepare('SELECT email FROM users WHERE workspace_id = ? ORDER BY created_at LIMIT 1').get(hm[1]); const r = r0 && await auth.startReset(r0.email);
+      if (r) { const link = cfg.baseUrl + '/reset?t=' + r.token; await msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: 'Reset your Bookingbooster password', text: 'The Bookingbooster team sent you a link to set a new password. It works for one hour: ' + link + '\n\nIf you did not ask for this, ignore this email.', meta: { template: 'reset', team: true } }); log('admin', 'password reset sent for', hm[1]); }
+      return await U.detailPage(res, hm[1], r ? 'Password reset link sent to ' + r.user.email + '. It works for one hour.' : '', r ? '' : 'This account has no sign-in email.');
+    }
+    return notFound(res);
+  }
   if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
-  if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) { if (!await isAdmin(req)) return notFound(res); return await campaignsAdmin({ campaigns, leads, cfg, E, authPage, send, redirect, formBody, me })(req, res, p, m, u); }
+  if (p === '/admin/campaigns' || p.startsWith('/admin/campaigns/')) { if (!await isAdmin(req)) return notFound(res); return await campaignsAdmin({ campaigns, leads, cfg, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody, me })(req, res, p, m, u); }
+  if (p === '/admin/emails' || p.startsWith('/admin/emails/') || p === '/admin/social') { if (!await isAdmin(req)) return notFound(res); return await adminContent({ cfg, msg, leads, campaigns, social, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email })(req, res, p, m, u); }
   if (p === '/admin/backup') {
     if (!await isAdmin(req)) return notFound(res);
     const name = 'bookingbooster-' + new Date().toISOString().slice(0, 10) + '.json';
@@ -585,7 +693,8 @@ async function route(req, res) {
     if (p === '/api/demo/state') return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers);
     if (p === '/api/demo/stream') return await stream(res, u, wid, headers);
     if (p === '/api/demo/act' && m === 'POST') { const j = await jsonBody(req, 2e6); const r2 = await ws.act(wid, String(j.name), Array.isArray(j.args) ? j.args : []); return json(res, { state: r2.w.state, version: r2.version, result: r2.result }, 200, headers); }
-    if (p.startsWith('/api/demo/studio/') || p.startsWith('/api/demo/funnels/')) { const w = await ws.open(wid); if (await studio.host(req, res, p, m, w, headers)) return; }
+    if (p.startsWith('/api/demo/seo/')) { const w = await ws.open(wid); if (await seoApi(req, res, p.replace('/api/demo/', '/api/'), m, w, false, headers)) return; }
+    if (p.startsWith('/api/demo/studio/') || p.startsWith('/api/demo/funnels/') || p.startsWith('/api/demo/eventads/')) { const w = await ws.open(wid); if (await studio.host(req, res, p, m, w, headers)) return; }
     if (p.startsWith('/demo/studio/') || p.startsWith('/demo/funnel/')) { const w = await ws.open(wid); if (studio.preview(res, w, p, u.searchParams, true)) return; }
     if (p === '/api/demo/reset' && m === 'POST') { await ws.resetDemo(wid); return json(res, { state: (await ws.open(wid)).state, version: await ws.version(wid) }, 200, headers); }
     return notFound(res);
@@ -670,11 +779,11 @@ async function route(req, res) {
     if (p === '/app/stripe/return') { const r = await ws.row(w.id); if (r.stripe_account) { const a = await stripe.account(r.stripe_account); await markStripe(w.id, a.charges, a.bank); } return redirect(res, '/app#connections'); }
     if (p === '/api/state') return json(res, Object.assign({ state: w.state, version: await ws.version(w.id) }, hostLinks(w)));
     if (p === '/api/stream') return await stream(res, u, w.id);
-    if ((p.startsWith('/api/studio/') || p.startsWith('/api/funnels/')) && await studio.host(req, res, p, m, w)) return;
+    if ((p.startsWith('/api/studio/') || p.startsWith('/api/funnels/') || p.startsWith('/api/eventads/')) && await studio.host(req, res, p, m, w)) return;
     if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');
-      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyAiResults', 'paymentConfirmed', 'expirePending'].includes(name)) throw err(403, 'That action is not available in a live account.');
+      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing'].includes(name)) throw err(403, 'That action is not available in a live account.');
       if (name === 'toggleIntegration' && j.args) {
         const iid = j.args[0], cur = w.state.integrations.find(i => i.id === iid);
         if (!cur) throw err(404, 'Unknown connection');
@@ -720,6 +829,7 @@ async function route(req, res) {
       if (c.live && !(row && row.workspace_id === w.id && row.verified)) { await ws.claimDomain(h, w.id, prop.id); domains.certify(h); log('domain live', w.id, h); }
       c.live = !!(await ws.domain(h) || {}).verified && (await ws.domain(h)).workspace_id === w.id;
       c.elsewhere = !c.live && !!row && row.workspace_id !== w.id;
+      c.https = c.live ? await domains.https(h) : false;
       return json(res, Object.assign({ state: (await ws.open(w.id)).state, version: await ws.version(w.id), domain: c }, hostLinks(await ws.open(w.id))));
     }
     if (p === '/app/nuki' && m === 'POST') {
@@ -744,6 +854,7 @@ async function route(req, res) {
       try { await credits.check(w.id); } catch (e) { if (e.code === 'ai_credit') return json(res, { text: null, credit: { empty: true, message: e.message, url: e.topupUrl } }); throw e; }
       try { return json(res, { text: await assist.draft(w.state, t, credits.meter(w.id, 'reply')) }); } catch (e) { log('assist', e.message); return json(res, { text: null }); }
     }
+    if (p.startsWith('/api/seo/') && await seoApi(req, res, p, m, w, true)) return;
     if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
@@ -770,74 +881,124 @@ const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_
 const isAdminEmail = async email => { email = String(email || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
   const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email); };
 const isAdmin = async req => { const u = await me(req); return isAdminEmail(u && u.email); };
-const stripeKeyForm = st => st.canSave ? '<details class="card"' + (st.on ? '' : ' open') + '><summary><b>' + (st.on ? 'Change the Stripe key' : 'Connect Stripe') + '</b></summary><form method="post" action="/admin/stripe/key" style="margin-top:12px" autocomplete="off">' +
-  '<p><small>Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small></p>' +
-  '<label>Stripe secret key<input name="key" type="password" autocomplete="off" spellcheck="false" required placeholder="sk_live_..."></label><button>Save and connect</button></form></details>' : '';
-const stripeLine = st => stripeKeyForm(st) + '<p><small>Stripe: ' + (!st.on ? 'off' : st.mode + ' mode (key ending ' + E(st.last4) + ', from ' + E(st.keyName) + ') · plan prices ' + (st.prices ? 'ready' : 'not yet') + ' · webhooks ' + (st.webhooks ? 'ready' : 'not yet') + (st.error ? ' · last setup error: ' + E(st.error) : '')) + '</small></p>';
-async function adminPage(req, res, note) {
+const usersAdmin = req => adminUsers({ db, ws, cfg, credits, urls, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email,
+  admins: async () => { const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return [...new Set(cfg.admins.concat(r ? String(r.v).toLowerCase().split(/[\s,]+/).filter(Boolean) : []))]; } });
+async function adminPage(req, res, note, section, err) {
   if (!await isAdmin(req)) return notFound(res);
+  section = section || 'overview';
+  const A = adminUi, who = (await me(req)).email;
+  const d = t => new Date(t).toLocaleString('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const leadRows = await db.prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT 300').all();
+  const info = new Map(await Promise.all(leadRows.map(async l => [l.id, await leads.info(l.id)])));
+  const waiting = leadRows.filter(l => { const f = info.get(l.id); return f && f.status === 'waiting'; });
   const accts = await db.prepare("SELECT w.id, w.slug, w.plan, w.billing_status, w.created_at, c.allowance_left, c.topup_left, (SELECT coalesce(sum(l.amount), 0) FROM ai_ledger l WHERE l.workspace_id = w.id AND l.kind = 'use' AND l.created_at > ?) AS ai_used FROM workspaces w LEFT JOIN ai_credit c ON c.workspace_id = w.id WHERE w.kind = 'live' ORDER BY w.created_at DESC LIMIT 300").all(Date.now() - 30 * 864e5);
   const aiTotal = accts.reduce((a, x) => a + Number(x.ai_used || 0), 0) / credits.UNIT;
-  const d = t => new Date(t).toLocaleString('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  const st = await leads.loadSettings(); const wd = st.webinar_at ? new Date(st.webinar_at) : null;
-  const ukParts = ms => { const f = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(ms)); const g = k => (f.find(x => x.type === k) || {}).value; return [g('year') + '-' + g('month') + '-' + g('day'), g('hour') + ':' + g('minute')]; };
-  const [wDay, wTime] = wd ? ukParts(st.webinar_at) : ['', '12:30'];
-  const inp = (n, v, ph, type) => '<input name="' + n + '" value="' + E(v || '') + '" placeholder="' + E(ph || '') + '"' + (type ? ' type="' + type + '"' : '') + ' style="width:100%">';
+  const st = await leads.loadSettings();
+  const field = (n, v, ph, type, label) => A.field(n, v, label || ph, { ph: label ? ph : '', type });
   const status = { active: 'Sending', waiting: 'Waiting for you', done: 'Finished', stopped: 'Stopped', unsubscribed: 'Unsubscribed', converted: 'Signed up' };
-  const rows = (await Promise.all(leadRows.map(async l => {
+  const statusPill = { active: 'info', waiting: 'warn', done: 'muted', stopped: 'muted', unsubscribed: 'bad', converted: 'good' };
+  const billing = { trial: ['warn', 'Not paid yet'], active: ['good', 'Paying'], past_due: ['bad', 'Payment failed'], cancelled: ['muted', 'Cancelled'] };
+  const leadActions = l => {
+    const f = info.get(l.id); let act = '';
+    if (f && f.status === 'waiting' && f.seq === 'audit' && f.next === 'E2') act = '<details class="adm-x"><summary>Audit is ready</summary><form class="adm-form" method="post" action="/admin/leads/' + l.id + '/audit">' +
+      field('audit_url', '', 'Link to the audit report') + field('score', '', 'Score out of 100', 'number') + field('mentions', '', 'Mentioned in how many of 8 questions', 'number') + field('top_fix', '', 'Top fix, e.g. add a dog policy page') +
+      '<small class="adm-help">Optional, for the follow-up a week later:</small>' + field('top_question', '', 'Top question you re-ran on ChatGPT') + field('competitor_count', '', 'How many places the answer named', 'number') + '<button class="btn primary sm">Send the audit email</button></form></details>';
+    if (f && f.seq === 'call' && f.next === 'E4A') act = '<details class="adm-x"><summary>Call done, send proposal</summary><form class="adm-form" method="post" action="/admin/leads/' + l.id + '/proposal">' + field('proposal_url', '', 'Link to the proposal') + '<button class="btn primary sm">Send the proposal email</button></form></details>';
+    if (f && ['active', 'waiting'].includes(f.status)) act += '<form method="post" action="/admin/leads/' + l.id + '/stop" style="margin-top:6px"><button class="btn sm ghost">Stop emails</button></form>';
+    return act;
+  };
+  const leadRow = l => {
     let x = {}; try { x = JSON.parse(l.data || '{}'); } catch (_) {}
-    const f = await leads.info(l.id); let act = '';
-    if (f && f.status === 'waiting' && f.seq === 'audit' && f.next === 'E2') act = '<details><summary>Audit is ready</summary><form method="post" action="/admin/leads/' + l.id + '/audit">' +
-      inp('audit_url', '', 'Link to the audit report') + inp('score', '', 'Score out of 100', 'number') + inp('mentions', '', 'Mentioned in how many of 8 questions', 'number') + inp('top_fix', '', 'Top fix, e.g. add a dog policy page') +
-      '<small>Optional, for the follow-up a week later:</small>' + inp('top_question', '', 'Top question you re-ran on ChatGPT') + inp('competitor_count', '', 'How many places the answer named', 'number') + '<button>Send the audit email</button></form></details>';
-    if (f && f.seq === 'call' && f.next === 'E4A') act = '<details><summary>Call done, send proposal</summary><form method="post" action="/admin/leads/' + l.id + '/proposal">' + inp('proposal_url', '', 'Link to the proposal') + '<button>Send the proposal email</button></form></details>';
-    if (f && ['active', 'waiting'].includes(f.status)) act += '<form method="post" action="/admin/leads/' + l.id + '/stop" style="margin-top:4px"><button class="sec">Stop emails</button></form>';
-    const prog = f ? '<b>' + E(f.name) + '</b><br>' + E(status[f.status] || f.status) + ' · ' + f.sent.length + ' of ' + f.total + ' sent' + (f.status === 'active' && f.next_at ? '<br><small>Next ' + d(f.next_at) + '</small>' : '') + (f.status === 'waiting' && f.next ? '<br><small>Next: ' + E(f.next) + '</small>' : '') : '<small>No emails</small>';
-    return '<tr style="border-top:1px solid #E4E7F0;vertical-align:top"><td>' + d(l.created_at) + '</td><td>' + E(l.kind) + '</td><td>' + E(l.email) + '<br><small>' + E(l.name || '') + '</small></td><td><small>' + E(Object.entries(x).filter(([k]) => !['referrer'].includes(k)).map(([k, v]) => k + ': ' + v).join(' · ')) + '</small></td><td>' + prog + '</td><td class="act">' + act + '</td></tr>';
-  }))).join('');
-  const settingsForm = '<details class="card"' + (st.webinar_at ? '' : ' open') + '><summary><b>Live demo, call and report links</b></summary><form method="post" action="/admin/settings" style="margin-top:12px">' +
-    '<p style="margin:0 0 8px"><small>The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small></p>' +
-    '<label>Next live demo date (UK)' + inp('webinar_day', wDay, '', 'date') + '</label><label>Start time (UK)' + inp('webinar_time', wTime, '12:30', 'time') + '</label>' +
-    '<label>Joining link' + inp('join_url', st.join_url, 'https://meet.google.com/…') + '</label><label>Replay link (sent after the session)' + inp('replay_url', st.replay_url, 'https://…') + '</label>' +
-    '<label>Walkthrough call joining link' + inp('meeting_url', st.meeting_url, 'https://meet.google.com/…') + '</label><label>Page where people book a walkthrough' + inp('book_call_url', st.book_call_url, 'https://…/book-call') + '</label>' +
-    '<label>Sample audit report page' + inp('sample_report_url', st.sample_report_url, 'https://…/sample-report') + '</label><button>Save</button></form></details>';
-  send(res, 200, authPage('Team', '<h1>Leads and accounts</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + '<p>' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.</p>' +
-    stripeLine(await stripeAuto.status()) + '<p><a href="/admin/campaigns"><b>Email campaigns</b></a> · write, schedule and track emails to leads and hosts</p>' + '<p><small>' + backup.list().length + ' daily database backups kept on the server. <a href="/admin/backup">Download the latest</a></small></p>' + settingsForm +
-    '<div class="card" style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th align="left">When</th><th align="left">Form</th><th align="left">Who</th><th align="left">Answers</th><th align="left">Emails</th><th align="left"></th></tr>' + rows + '</table></div>' +
-    '<div class="card" style="overflow:auto"><b>Host accounts</b><p style="margin:4px 0 0"><small>AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + ' a month' + (cfg.credits.markup !== 1 ? ', usage charged at ' + cfg.credits.markup + '× cost' : ', usage charged at cost') + '. AI used by all hosts in the last 30 days: ' + credits.money(aiTotal) + '.</small></p>' +
-    '<table style="width:100%;font-size:13px"><tr><th align="left">Joined</th><th align="left">Site</th><th align="left">Plan</th><th align="left">Billing</th><th align="left">AI credit left</th><th align="left">AI used, 30 days</th><th align="left"></th></tr>' + accts.map(a => {
-      const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT;
-      return '<tr style="vertical-align:top"><td>' + d(a.created_at) + '</td><td>' + E(a.slug) + '</td><td>' + E(a.plan || '') + '</td><td>' + E(a.billing_status || '') + '</td><td>' + (left == null ? '<small>Not used yet</small>' : credits.money(left)) + '</td><td>' + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td>' +
-        '<td class="act"><details><summary>Add credit</summary><form method="post" action="/admin/credits/' + E(a.id) + '">' + inp('pounds', '', 'Pounds to add, e.g. 20', 'number') + '<button>Add AI credit</button></form></details></td></tr>';
-    }).join('') + '</table></div>', true), 'text/html; charset=utf-8');
+    const f = info.get(l.id);
+    const prog = f ? '<b>' + E(f.name) + '</b><div style="margin:4px 0">' + A.pill(statusPill[f.status] || 'muted', status[f.status] || f.status) + '</div><small>' + f.sent.length + ' of ' + f.total + ' sent' + (f.status === 'active' && f.next_at ? ' · next ' + d(f.next_at) : '') + (f.status === 'waiting' && f.next ? ' · next: ' + E(f.next) : '') + '</small>' : '<small>No emails</small>';
+    return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + '</td><td>' + A.pill('muted', l.kind) + '</td><td><b>' + E(l.email) + '</b><small>' + E(l.name || '') + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !['referrer'].includes(k)).map(([k, v]) => k + ': ' + v).join(' · ')) + '</td><td>' + prog + '</td><td style="min-width:240px">' + leadActions(l) + '</td></tr>';
+  };
+  const LEAD_HEADS = ['When', 'Form', 'Who', 'Answers', 'Emails', ''];
+  const hostRow = a => {
+    const left = a.allowance_left == null ? null : (Math.max(0, Number(a.allowance_left)) + Number(a.topup_left || 0)) / credits.UNIT, b = billing[a.billing_status] || ['muted', a.billing_status || 'Not paid yet'];
+    return '<tr><td class="num" style="white-space:nowrap">' + d(a.created_at) + '</td><td><b>' + E(a.slug) + '</b></td><td>' + E(a.plan || '') + '</td><td>' + A.pill(b[0], b[1]) + '</td><td class="num">' + (left == null ? '<small>Not used yet</small>' : credits.money(left)) + '</td><td class="num">' + credits.money(Number(a.ai_used || 0) / credits.UNIT) + '</td>' +
+      '<td><details class="adm-x"><summary>' + adminUi.icon('plus') + 'Add credit</summary><form class="adm-form" method="post" action="/admin/credits/' + E(a.id) + '">' + field('pounds', '', 'Pounds to add, e.g. 20', 'number') + '<button class="btn primary sm">Add AI credit</button></form></details></td></tr>';
+  };
+  const HOST_HEADS = ['Joined', 'Site', 'Plan', 'Billing', 'AI credit left', 'AI used, 30 days', ''];
+  const sp = await stripeAuto.status();
+  const stripeCard = A.card('Stripe', sp.on ? A.pill('good', sp.mode + ' mode') : A.pill('warn', 'Off'),
+    '<div class="adm-list"><div><span><b>Key</b><small>' + (sp.on ? 'Ending ' + E(sp.last4) + ', from ' + E(sp.keyName) : 'Not connected') + '</small></span></div>' +
+    '<div><span><b>Plan prices</b></span>' + A.pill(sp.prices ? 'good' : 'muted', sp.prices ? 'Ready' : 'Not yet') + '</div><div><span><b>Webhooks</b></span>' + A.pill(sp.webhooks ? 'good' : 'muted', sp.webhooks ? 'Ready' : 'Not yet') + '</div>' +
+    (sp.error ? '<div><span><b>Last setup error</b><small>' + E(sp.error) + '</small></span></div>' : '') + '</div>' +
+    (sp.canSave ? '<details class="adm-x" style="margin-top:12px"' + (sp.on ? '' : ' open') + '><summary>' + (sp.on ? 'Change the Stripe key' : 'Connect Stripe') + '</summary><form class="adm-form" method="post" action="/admin/stripe/key" autocomplete="off">' +
+      '<small class="adm-help">Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small>' +
+      A.field('key', '', 'Stripe secret key', { type: 'password', ph: 'sk_live_...', req: true, extra: ' autocomplete="off" spellcheck="false"' }) + '<div class="row"><button class="btn primary sm">Save and connect</button></div></form></details>' : ''));
+  const shell = o => send(res, 200, A.shell(Object.assign({ email: who, waiting: waiting.length, note, err }, o)), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
+
+  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms. Their follow-up emails go out by themselves; anything marked “Waiting for you” needs a person.',
+    body: '<section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), 'No leads yet. They arrive here from the forms on the website.') + '</section>' });
+  if (section === 'hosts') return shell({ title: 'Host accounts', active: 'hosts', sub: accts.length + ' host accounts · AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + ' a month' + (cfg.credits.markup !== 1 ? ', usage charged at ' + cfg.credits.markup + '× cost' : ', usage charged at cost') + '.',
+    body: '<div class="adm-kpis">' + A.kpi('Host accounts', accts.length) + A.kpi('Paying', accts.filter(a => a.billing_status === 'active').length) + A.kpi('Not paid yet', accts.filter(a => !a.billing_status || a.billing_status === 'trial').length) + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' +
+      '<section class="a-card a-flush">' + A.table(HOST_HEADS, accts.map(hostRow), 'No host accounts yet.') + '</section>' });
+  if (section === 'settings') {
+    const wd = st.webinar_at ? new Date(st.webinar_at) : null;
+    const ukParts = ms => { const f = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(ms)); const g = k => (f.find(x => x.type === k) || {}).value; return [g('year') + '-' + g('month') + '-' + g('day'), g('hour') + ':' + g('minute')]; };
+    const [wDay, wTime] = wd ? ukParts(st.webinar_at) : ['', '12:30'];
+    const links = A.card('Live demo, call and report links', st.webinar_at ? 'Next demo ' + E(d(st.webinar_at)) : 'No demo date set', '<form class="adm-form" method="post" action="/admin/settings">' +
+      '<small class="adm-help">The live demo emails (reminders, replay, follow-ups) are timed from the next session. People who register before you set a date get the details once you add it.</small>' +
+      '<div class="adm-two">' + A.field('webinar_day', wDay, 'Next live demo date (UK)', { type: 'date' }) + A.field('webinar_time', wTime, 'Start time (UK)', { type: 'time' }) + '</div>' +
+      '<div class="adm-two">' + field('join_url', st.join_url, 'https://meet.google.com/…', '', 'Joining link') + field('replay_url', st.replay_url, 'https://…', '', 'Replay link (sent after the session)') + '</div>' +
+      '<div class="adm-two">' + field('meeting_url', st.meeting_url, 'https://meet.google.com/…', '', 'Walkthrough call joining link') + field('book_call_url', st.book_call_url, 'https://…/book-call', '', 'Page where people book a walkthrough') + '</div>' +
+      field('sample_report_url', st.sample_report_url, 'https://…/sample-report', '', 'Sample audit report page') + '<div class="row"><button class="btn primary">Save</button></div></form>');
+    const bk = A.card('Backups', backup.list().length + ' kept', '<p class="adm-help" style="margin:0 0 12px">' + backup.list().length + ' daily database backups kept on the server.</p><a class="btn sm" href="/admin/backup">' + A.icon('down') + 'Download the latest</a>');
+    return shell({ title: 'Settings', heading: 'Stripe, links and backups', active: 'settings', sub: 'Payments, the links the lead emails use, and backups.', body: '<div class="adm-cols"><div class="adm-stack">' + stripeCard + bk + '</div>' + links + '</div>' });
+  }
+  // overview
+  const since = Date.now() - 30 * 864e5;
+  const hour = +new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hour12: false });
+  const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + '</section>' : '<div class="a-empty">' + A.icon('check') + '<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>';
+  return shell({ title: 'Overview', heading: (hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening') + ', team', active: 'overview',
+    sub: 'Leads and accounts · ' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.',
+    actions: '<a class="btn sm" href="/admin/leads">' + A.icon('users') + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon('mail') + 'Email campaigns</a>',
+    body: '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
+      A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' + await marketingRow(A) +
+      '<div class="a-grid adm-top"><div class="a-s8">' + A.card('Waiting for you', waiting.length + ' lead' + (waiting.length === 1 ? '' : 's'), needs, waiting.length ? 'a-flush' : '').replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div>' +
+      '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email) + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
+}
+// the overview's marketing row: write an email, what is going out on social, and the email library
+async function marketingRow(A) {
+  const sp = await social.posts().catch(() => ({ posts: [] })), now = Date.now(), at = x => Date.parse(x.at + 'Z');
+  const soon = sp.posts.filter(x => at(x) >= now && x.kind !== 'story'), week = sp.posts.filter(x => at(x) >= now && at(x) < now + 7 * 864e5).length, failed = sp.posts.filter(x => x.nets.some(n => n[1] === 'error')).length;
+  const when = t => new Date(t).toLocaleString('en-GB', { timeZone: 'Europe/London', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const camps = await campaigns.overview(), sentC = camps.filter(o => o.s.status === 'sent').length, drafts = camps.filter(o => o.s.kind === 'custom' && o.s.status === 'draft').length;
+  return '<div class="a-grid adm-top" style="margin-bottom:16px">' +
+    '<div class="a-s4">' + A.card('Write a marketing email', drafts ? drafts + ' draft' + (drafts === 1 ? '' : 's') : '', '<p class="adm-help" style="margin:0 0 14px">To leads, hosts or both. Write it, send yourself a test, then send it now or schedule it. ' + sentC + ' campaign' + (sentC === 1 ? '' : 's') + ' sent so far.</p><div class="adm-inline"><a class="btn primary" href="/admin/campaigns/write">' + A.icon('pen') + 'Write an email</a><a class="btn ghost" href="/admin/campaigns">All campaigns</a></div>') + '</div>' +
+    '<div class="a-s4">' + A.card('Social this week', '<a href="/admin/social">Calendar</a>', '<p class="adm-help" style="margin:0 0 8px"><b>' + week + '</b> posts and stories scheduled in the next 7 days' + (failed ? ' · <a href="/admin/social?show=problems#list">' + failed + ' failed on a network</a>' : '') + '.</p><div class="adm-list">' +
+      (soon.slice(0, 3).map(x => '<div><span><b>' + E((x.text || x.title || x.kind).split('\n')[0].slice(0, 70)) + '</b><small>' + when(at(x)) + ' · ' + E(x.kind) + ' · ' + E(x.nets.map(n => n[0]).join(', ')) + '</small></span></div>').join('') || '<div><span><small>Nothing scheduled.</small></span></div>') + '</div>') + '</div>' +
+    '<div class="a-s4">' + A.card('Email templates', '<a href="/admin/emails">See them all</a>', '<p class="adm-help" style="margin:0 0 8px">Every email the system sends, as it goes out: lead follow-ups, host onboarding and reports, guest booking emails and the designed campaigns.</p><a class="btn" href="/admin/emails">' + A.icon('doc') + 'Open the email templates</a>') + '</div></div>';
 }
 async function adminPost(req, res, p) {
   if (!await isAdmin(req)) return notFound(res);
   const f = await formBody(req); let mm;
   const url = v => { v = String(v || '').trim(); return /^https?:\/\/[^\s"<>]+$/i.test(v) ? v.slice(0, 500) : ''; };
-  if (p === '/admin/stripe/key') { const r = await stripeAuto.saveKey(f.key); return await adminPage(req, res, r.error || ('Stripe is connected in ' + r.mode + ' mode.' + (r.setup && r.setup.error ? ' Prices and webhooks could not be set up yet: ' + r.setup.error : ' Plan prices and webhooks are ready.'))); }
+  if (p === '/admin/stripe/key') { const r = await stripeAuto.saveKey(f.key); return r.error ? await adminPage(req, res, '', 'settings', r.error) : await adminPage(req, res, 'Stripe is connected in ' + r.mode + ' mode.' + (r.setup && r.setup.error ? ' Prices and webhooks could not be set up yet: ' + r.setup.error : ' Plan prices and webhooks are ready.'), 'settings'); }
   if (p === '/admin/settings') {
     const at = f.webinar_day ? leads.ukAt(f.webinar_day, f.webinar_time || '12:30') : 0;
     await leads.saveSettings({ webinar_at: at, join_url: url(f.join_url), replay_url: url(f.replay_url), meeting_url: url(f.meeting_url), book_call_url: url(f.book_call_url), sample_report_url: url(f.sample_report_url) });
-    await leads.run(); return await adminPage(req, res, 'Saved.');
+    await leads.run(); return await adminPage(req, res, 'Saved.', 'settings');
   }
   if ((mm = p.match(/^\/admin\/credits\/([A-Za-z0-9_-]+)$/))) { // goodwill credit from the team, e.g. after a support issue
     const pounds = Math.round(Number(f.pounds) * 100) / 100; const r = await ws.row(mm[1]);
-    if (!r || !(pounds > 0) || pounds > 20000) return await adminPage(req, res, 'Enter an amount between £0.01 and £20,000.');
+    if (!r || !(pounds > 0) || pounds > 20000) return await adminPage(req, res, '', 'hosts', 'Enter an amount between £0.01 and £20,000.');
     await credits.topup(mm[1], pounds, null, 'grant'); log('credits', mm[1], 'team added £' + pounds);
-    return await adminPage(req, res, 'Added ' + credits.money(pounds) + ' of AI credit to ' + (r.slug || mm[1]) + '.');
+    if (f.back === 'detail') return await usersAdmin(req).detailPage(res, mm[1], 'Added ' + credits.money(pounds) + ' of AI credit.');
+    return await adminPage(req, res, 'Added ' + credits.money(pounds) + ' of AI credit to ' + (r.slug || mm[1]) + '.', 'hosts');
   }
   if ((mm = p.match(/^\/admin\/leads\/(\d+)\/(audit|proposal|stop)$/))) {
     const id = +mm[1];
     if (mm[2] === 'stop') await leads.stop(id);
     if (mm[2] === 'audit') {
-      if (!url(f.audit_url) || f.score === '' || f.mentions === '' || !String(f.top_fix || '').trim()) return await adminPage(req, res, 'Add the audit link, score, mentions and top fix.');
+      if (!url(f.audit_url) || f.score === '' || f.mentions === '' || !String(f.top_fix || '').trim()) return await adminPage(req, res, '', 'leads', 'Add the audit link, score, mentions and top fix.');
       await leads.setVars(id, { audit_url: url(f.audit_url), score: Math.max(0, Math.min(100, Math.round(+f.score || 0))), mentions: Math.max(0, Math.min(8, Math.round(+f.mentions || 0))), top_fix: String(f.top_fix).trim().slice(0, 200),
         top_question: String(f.top_question || '').trim().slice(0, 200), competitor_count: f.competitor_count ? Math.round(+f.competitor_count) : '', audit_ready_at: Date.now() });
     }
-    if (mm[2] === 'proposal') { if (!url(f.proposal_url)) return await adminPage(req, res, 'Add the proposal link.'); await leads.setVars(id, { proposal_url: url(f.proposal_url), proposal_ready_at: Date.now() }); }
-    await leads.advance(id); return await adminPage(req, res, mm[2] === 'stop' ? 'Emails stopped.' : 'Sent.');
+    if (mm[2] === 'proposal') { if (!url(f.proposal_url)) return await adminPage(req, res, '', 'leads', 'Add the proposal link.'); await leads.setVars(id, { proposal_url: url(f.proposal_url), proposal_ready_at: Date.now() }); }
+    await leads.advance(id); return await adminPage(req, res, mm[2] === 'stop' ? 'Emails stopped.' : 'Sent.', 'leads');
   }
   return notFound(res);
 }
@@ -871,6 +1032,7 @@ async function accountPage(w, sess, note, err) {
     '<div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div>' +
     '<form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' +
     inp('Type DELETE to confirm', 'confirm', '', 'text', ' required autocomplete="off"') + inp('Your password', 'password', '', 'password', ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form>' +
+    '<div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn ' + cfg.affiliate.rate + '% of everything hosts you refer pay us, for as long as they stay. <a href="/partners">Get your partner link</a></p></div>' +
     '<div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
 }
 async function accountPost(req, res, p, w, sess) {
@@ -960,10 +1122,11 @@ const kvGet = db.prepare('SELECT v FROM kv WHERE k = ?'), kvSet = db.prepare('IN
 let ticking = null;
 function tick(t) { if (!ticking) ticking = runTick(t || Date.now()).finally(() => { ticking = null; }); return ticking; }
 async function runTick(t) {
-  const row = await kvGet.get('jobs:last'); const last = Object.assign({ ical: 0, daily: 0, domains: 0 }, row ? JSON.parse(row.v) : {});
+  const row = await kvGet.get('jobs:last'); const last = Object.assign({ ical: 0, daily: 0, domains: 0, events: 0 }, row ? JSON.parse(row.v) : {});
   const jobs = [], bg = (name, pr) => jobs.push(Promise.resolve(pr).catch(e => log(name, e.message)));
   const ical = t - last.ical > cfg.icalEveryMin * 60e3, daily = t - last.daily > 864e5;
   if (t - last.domains > 10 * 60e3) last.domains = t;
+  if (t - last.events > 20 * 60e3) last.events = t; // the event finder reads a few due pages every 20 minutes
   if (ical) last.ical = t;
   if (daily) last.daily = t;
   await kvSet.run('jobs:last', JSON.stringify(last)); // claim this run first, so a second caller does not repeat it
@@ -979,16 +1142,30 @@ async function runTick(t) {
       const exp = w.state.bookings.filter(b => b.status === 'pending' && b.holdUntil && b.holdUntil < t).map(b => b.id);
       if (rolled || exp.length) await ws.withWs(id, BB => exp.forEach(bid => BB.act.expirePending(bid)), { scheduler: true });
       if (ical) bg('ical', effects.calendars(w));
+      if (daily && w.kind === 'live') bg('index', autoIndex(w).catch(e => log('index', id, e.message)));
       if (daily && ai.available().length) { const c = w.state.ai.checkedAt; if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg('ai', effects.aiCheck(w)); }
     } catch (e) { log('job', id, e.message); }
   }
   if (last.domains === t) bg('domains', checkDomains());
-  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); }
+  if (last.events === t && cfg.events.crawl) bg('events', eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 100e3 : 240e3));
+  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists
   await Promise.all(jobs); await ws.settle();
   return { ok: true, ical, daily };
 }
 if (require.main === module) setInterval(() => { tick().catch(e => log('tick', e.message)); }, 60e3).unref();
+
+// IndexNow for our own site: when the marketing and answer pages change, tell Bing (and Yandex, Seznam, Naver) to recrawl them.
+// Bing results feed ChatGPT search and Copilot. The key file is served at /<key>.txt. Skipped for local and test addresses.
+function ownIndexKey() { return crypto.createHmac('sha256', String(cfg.secret)).update('indexnow:own').digest('hex').slice(0, 32); }
+async function pingOwnPages() {
+  const u = new URL(cfg.baseUrl); if (u.protocol !== 'https:' || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+  const urls = [cfg.baseUrl + '/', cfg.baseUrl + '/help', cfg.baseUrl + '/llms.txt', cfg.baseUrl + '/llms-full.txt'].concat(answers.list().map(x => cfg.baseUrl + x.path));
+  const sig = crypto.createHash('sha1').update(mkt.llms(cfg.baseUrl, publicCompany()) + answers.fullText(cfg.baseUrl)).digest('hex');
+  const row = await kvGet.get('indexnow:own'); if (row && row.v === sig) return;
+  const r = await fetch('https://api.indexnow.org/indexnow', { method: 'POST', signal: AbortSignal.timeout(15000), headers: { 'content-type': 'application/json; charset=utf-8' }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + '/' + ownIndexKey() + '.txt', urlList: urls }) });
+  log('indexnow', 'own pages', r.status); if (r.status === 200 || r.status === 202) await kvSet.run('indexnow:own', sig);
+}
 
 // ID photos are deleted 30 days after checkout (or when the booking is cancelled).
 async function purgeIds() {

@@ -81,6 +81,21 @@
   BB.transferDays = function (s) { const k = (s || S()).account.bank; return Math.max(1, Math.min(30, (k && +k.days) || 3)); };
   // Due in the host's number of days, but never later than the day before arrival (or today, for a last-minute stay).
   BB.transferDue = function (b) { const t = S().today, due = D.add(t, BB.transferDays()), last = D.add(b.checkIn, -1); return due < last ? due : (last > t ? last : t); };
+  // How guests pay on the host's own sites: 'card' (Stripe), 'transfer' (bank transfer) or 'both' (the default).
+  // Bank transfer only counts once the bank details are complete, so a host can never be left with no way to get paid.
+  BB.GUEST_PAY = ['both', 'card', 'transfer'];
+  BB.guestPay = function (s) {
+    s = s || S(); const want = BB.GUEST_PAY.includes(s.account.guestPay) ? s.account.guestPay : 'both';
+    const transfer = want !== 'card' && BB.bankReady(s), card = want !== 'transfer' || !transfer;
+    return { want, card, transfer, mode: card && transfer ? 'both' : card ? 'card' : 'transfer' };
+  };
+  BB.act.setGuestPay = function (mode) {
+    if (!BB.GUEST_PAY.includes(mode)) return { ok: false, error: 'Choose card, bank transfer, or both.' };
+    if (mode !== 'card' && !BB.bankReady()) return { ok: false, error: 'Add your bank details and turn on bank transfer first.' };
+    S().account.guestPay = mode;
+    BB.log('payment', 'Payments', mode === 'card' ? 'Guests now pay by card through Stripe only.' : mode === 'transfer' ? 'Guests now book and pay by bank transfer only.' : 'Guests can now choose to pay by card or by bank transfer.', null, ['Payments']);
+    BB.store.commit({ type: 'account' }); return { ok: true };
+  };
   BB.act.saveBankTransfer = function (patch) {
     const a = S().account, k = Object.assign({}, a.bank || {});
     patch = patch || {};
@@ -98,7 +113,7 @@
   };
   // A guest books on the site and pays by bank transfer: the stay is booked, unpaid, with an invoice due in a few days.
   BB.act.bookByTransfer = function (input) {
-    if (!BB.bankReady()) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
+    if (!BB.guestPay().transfer) return { ok: false, error: 'Bank transfer is not available for this home. Pay by card or send a booking request.' };
     return BB.act.createBooking(Object.assign({}, input, { pay: 'manual', channel: 'direct', payBy: 'transfer', pending: false, request: false }));
   };
   // Host sends an invoice with bank details for any unpaid direct booking (a phone booking, or an accepted request).
@@ -225,7 +240,7 @@
   // Results from real AI checks, run by the server against the answer engines the platform has keys for.
   BB.act.applyAiResults = function (results) {
     const s = S(); let changed = 0;
-    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; });
+    results.forEach(r => { const q = s.ai.questions[r.i]; if (!q) return; Object.keys(r.engines).forEach(k => { if (q.engines[k] !== r.engines[k]) changed++; q.engines[k] = r.engines[k]; }); q.pending = false; if (r.answers) q.answers = r.answers; if (r.cited) q.cited = r.cited; if (r.sources) q.sources = r.sources; });
     s.ai.checkedAt = s.today; s.ai.live = true;
     const sc = BB.aiScore();
     BB.log('ai', 'AI visibility', 'Checked ' + s.ai.questions.length + ' traveller questions in ChatGPT, Gemini, Perplexity and Google. Your homes came up in ' + sc.score + '% of answers' + (changed ? ', ' + changed + ' changed since last time.' : '.'), null, ['AI visibility', 'Answer engines']);

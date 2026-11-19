@@ -237,6 +237,10 @@
       ],
     };
 
+    // Sites the answer engines cited for each question (what a live check records), and whether they linked to the home's own site.
+    const SRC = { laurel: ['airbnb.co.uk', 'visitlakedistrict.com', 'sykescottages.co.uk', 'tripadvisor.co.uk', 'larchfellcabin.co.uk'], lakeside: ['visitcornwall.com', 'classic.co.uk', 'airbnb.co.uk', 'tidewatercottage.co.uk'], loft: ['visitbath.co.uk', 'booking.com', 'airbnb.co.uk', 'theguardian.com'] };
+    ai.questions.forEach((q, i) => { q.sources = {}; q.cited = {}; Object.keys(q.engines).forEach((k, j) => { q.sources[k] = SRC[q.propertyId].filter((d, n) => (n + i + j) % 3 !== 0 && (q.engines[k] || !/cabin|cottage|pulteney/.test(d))); q.cited[k] = q.sources[k].some(d => /larchfell|tidewater|pulteney/.test(d)); }); });
+
     const website = { visitors: { laurel: 1840, lakeside: 1036, loft: 328 }, fromSearch: 0.64, conversion: 0.029, faqs: { laurel: ['Is the cabin dog friendly?|Yes. One well-behaved dog is welcome for a £35 fee. The garden is fully fenced.', 'How does check-in work?|Complete the 3-minute online check-in and your door code arrives on arrival day.', 'Why book direct?|You skip the platform service fee and talk to us directly.'] } };
 
     return {

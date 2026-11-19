@@ -7,6 +7,8 @@ const crypto = require('crypto');
 const D = require('./design');
 const render = require('./render');
 const FN = require('./funnels');
+const EV = require('./events');
+const G = require('./geo');
 const Gen = require('./generate');
 
 module.exports = function (o) {
@@ -14,6 +16,8 @@ module.exports = function (o) {
   const gen = Gen(cfg);
   // AI credit (server/credits.js): checked before each AI design or funnel, and charged for what Claude used.
   const credits = o.credits || { check: async () => {}, meter: () => null };
+  // Our own event finder (crawler.js), shared by every host. Without one (some tests), only events added by hand.
+  const finder = o.finder || { near: async () => ({ events: [], sources: [] }), forHost: async () => [], warm: async () => 0, watch: async () => { throw err(400, 'The event finder is not running here.'); }, unwatch: async () => {} };
   const HTML = 'text/html; charset=utf-8';
   const st = s => (s.studio = s.studio || { sites: {}, funnels: [] });
   const today = s => s.today;
@@ -51,7 +55,8 @@ module.exports = function (o) {
   async function host(req, res, p, m, w, headers) {
     const api = p.replace(/^\/api\/demo\//, '/api/');
     const s = w.state;
-    if (api === '/api/studio/meta' && m === 'GET') return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + ' & ' + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES }, 200, headers), true;
+    if (api === '/api/studio/meta' && m === 'GET') return json(res, { ai: gen.enabled, principles: D.PRINCIPLES, directions: Object.fromEntries(Object.entries(D.DIRECTIONS).map(([k, d]) => [k, { name: d.name, mood: d.mood, fonts: d.fonts.display + ' & ' + d.fonts.text, href: d.fonts.href, pal: d.pal, dark: !!d.dark, font: d.font, palette: d.palette }])), sections: D.SECTIONS, vibes: Gen.VIBES, templates: FN.TEMPLATES,
+      fonts: Object.fromEntries(Object.entries(D.FONTS).map(([k, x]) => [k, { name: x.name, display: x.display, text: x.text, feel: x.feel, href: x.href }])), palettes: D.PALETTES, style: D.STYLE, pageTemplates: Object.fromEntries(Object.entries(D.TEMPLATES).map(([k, x]) => [k, { name: x.name, note: x.note }])), variantNames: D.VARIANT_NAMES, events: eventsMeta(w) }, 200, headers), true;
 
     if (api === '/api/studio/generate' && m === 'POST') {
       limited(w, 'gen', w.kind === 'demo' ? 12 : 40);
@@ -75,10 +80,34 @@ module.exports = function (o) {
       const j = await jsonBody(req, 6e4); const prop = s.properties.find(x => x.id === j.propertyId); if (!prop) throw err(404, 'Home not found');
       const cur = ((s.studio || {}).sites || {})[prop.id]; if (!cur || !cur.draft) throw err(400, 'Design a site first.');
       const f = render.facts(s, prop); const x = j.patch || {};
-      const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === '' ? null : (x.accent || cur.draft.accent), heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}) };
+      const merged = { direction: x.direction || cur.draft.direction, accent: x.accent === '' ? null : (x.accent || cur.draft.accent), heroVariant: x.heroVariant, sections: x.sections || cur.draft.sections, copy: Object.assign({}, cur.draft.copy, x.copy || {}),
+        style: Object.assign({}, cur.draft.style || {}), template: x.template || cur.draft.template || null };
+      // a new direction brings its own fonts and colours; the host's other style choices stay
+      if (x.direction && x.direction !== cur.draft.direction) { delete merged.style.font; delete merged.style.palette; }
+      if (x.style && typeof x.style === 'object') for (const [k, v] of Object.entries(x.style)) { if (!D.STYLE_KEYS.includes(k)) continue; if (v === '' || v == null) delete merged.style[k]; else merged.style[k] = String(v); }
+      if (x.style === null) merged.style = {};
+      // a page template re-lays every section (keeping which sections the host has), and can move the gallery up
+      if (x.template && D.TEMPLATES[x.template]) {
+        const have = new Set(merged.sections.map(q => q.type)), T = D.TEMPLATES[x.template];
+        const laid = Gen.fromTemplate(f, x.template).filter(q => have.has(q.type));
+        merged.sections.forEach(q => { if (!laid.some(r => r.type === q.type)) laid.splice(Math.max(1, laid.findIndex(r => r.type === 'book')), 0, { type: q.type, variant: T.v[q.type] || q.variant }); });
+        merged.sections = laid;
+      }
+      // "Shuffle the style": a fresh, coherent mix of fonts, colours, shapes and layouts within the same direction
+      if (x.shuffle) {
+        const n = (cur.shuffles || 0) + 1 + Math.floor(Math.random() * 1000);
+        merged.style = D.varyStyle(merged.direction, prop.id, [{ direction: merged.direction, style: cur.draft.style || {} }], n);
+        if (n % 3) { const opts = (D.DIRECTIONS[merged.direction].alts.fonts).concat([D.DIRECTIONS[merged.direction].font]); merged.style.font = opts[n % opts.length]; }
+        merged.style.corners = Object.keys(D.STYLE.corners)[n % 4];
+        const tpls = Object.keys(D.TEMPLATES).filter(t => t !== cur.draft.template); const tpl = tpls[n % tpls.length];
+        const have = new Set(merged.sections.map(q => q.type));
+        merged.sections = Gen.fromTemplate(f, tpl, Gen.pickHero(merged.direction, f.photos.length, prop.id, n)).filter(q => have.has(q.type)); merged.template = tpl;
+        merged.style = D.cleanStyle(merged.style);
+      }
       if (x.heroVariant) merged.sections = merged.sections.map(q => q.type === 'hero' ? { type: 'hero', variant: x.heroVariant } : q);
-      const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy };
+      const fallback = { direction: merged.direction, sections: cur.draft.sections, copy: cur.draft.copy, style: {} };
       const spec = Object.assign(gen.normalize(merged, f, fallback), { by: cur.draft.by, at: new Date().toISOString(), rationale: cur.draft.rationale });
+      if (x.template || x.shuffle) spec.template = merged.template;
       if (x.heroVariant && x.heroVariant !== 'type' && !f.photos.length) spec.note = 'Add photos in Website & SEO to use an image-led hero.';
       spec.qa = D.qa(spec, f);
       await save(w.id, S => { const x = st(S).sites[prop.id]; x.history = [x.draft].concat(x.history || []).slice(0, 12); x.draft = spec; });
@@ -118,7 +147,7 @@ module.exports = function (o) {
       }
       const site = ((s.studio || {}).sites || {})[prop.id] || {}; const look = site.published || site.draft || {};
       const fnl = { id: 'fn' + crypto.randomBytes(4).toString('hex'), name, template: tpl, propertyId: prop.id, status: 'draft', code, pct, season: opt.season, steps, copy, by,
-        direction: look.direction || gen.guessDirection(f, null), accent: look.accent || null, createdAt: s.today, stats: { views: {}, leads: 0 } };
+        direction: look.direction || gen.guessDirection(f, null), accent: look.accent || null, style: look.style || null, createdAt: s.today, stats: { views: {}, leads: 0 } };
       await save(w.id, (S, BB) => { st(S).funnels.unshift(fnl); if (code) S.promos[code] = S.promos[code] || pct; BB.log('campaign', 'Funnels', 'Created the "' + name + '" funnel' + (code ? ' with code ' + code + ' (' + pct + '% off)' : '') + '. Preview it, then make it live.', fnl.id); BB.store.commit({ type: 'campaign', quiet: true }); });
       return reply(res, w.id, { funnel: fnl }, headers), true;
     }
@@ -136,6 +165,136 @@ module.exports = function (o) {
     if (api === '/api/funnels/delete' && m === 'POST') {
       const j = await jsonBody(req, 2e3);
       await save(w.id, S => { const sx = st(S); sx.funnels = sx.funnels.filter(q => q.id !== j.id); });
+      return reply(res, w.id, {}, headers), true;
+    }
+
+    /* event ads (server/studio/events.js) */
+    if (api.startsWith('/api/eventads/')) return eventAds(req, res, api, m, w, headers);
+    return false;
+  }
+
+  /* ---------- Event ads ---------- */
+  // state.studio.events: { found: [event], ads: [adset], scans: { [homeId]: { at, sources, place } }, prefs: { radius, minDays, months } }
+  const evs = s => { const x = st(s); x.events = x.events || { found: [], ads: [], scans: {}, prefs: {} }; return x.events; };
+  function eventsMeta(w) {
+    const demo = w.kind === 'demo';
+    return { kinds: EV.KINDS, demo, sources: Object.entries(EV.SOURCES).map(([id, x]) => Object.assign({ id, on: true }, x)) };
+  }
+  // the pages our finder reads for this host: ones they added, and starter or shared pages near their homes
+  async function pagesFor(w) {
+    if (w.kind === 'demo') return [];
+    const seen = new Map();
+    for (const p of w.state.properties) { const loc = G.locate(p); (await finder.forHost(w.id, loc, 50)).forEach(x => seen.set(x.id, x)); }
+    if (!w.state.properties.length) (await finder.forHost(w.id, null)).forEach(x => seen.set(x.id, x));
+    return [...seen.values()].sort((a, b) => (b.mine - a.mine) || a.name.localeCompare(b.name));
+  }
+  // what the host sees for each event: how it sits against the calendar today
+  function withFit(s, list) {
+    return list.map(e => { const p = s.properties.find(x => x.id === e.propertyId); if (!p) return null; return Object.assign({}, e, { fit: EV.fit(e, new Set(blockedNights(s, p.id)), p, s.today) }); }).filter(Boolean);
+  }
+  async function eventAds(req, res, api, m, w, headers) {
+    const s = w.state, E = s.studio && s.studio.events;
+    const home = id => { const p = s.properties.find(x => x.id === id) || s.properties[0]; if (!p) throw err(400, 'Add a home first.'); return p; };
+    if (api === '/api/eventads/list' && m === 'GET') {
+      const x = E || { found: [], ads: [], scans: {}, prefs: {} };
+      return json(res, { events: withFit(s, x.found.filter(e => !e.hidden)), ads: x.ads, scans: x.scans, prefs: x.prefs, meta: eventsMeta(w), pages: await pagesFor(w), located: Object.fromEntries(s.properties.map(p => [p.id, !!G.locate(p)])) }, 200, headers), true;
+    }
+    if (api === '/api/eventads/find' && m === 'POST') {
+      limited(w, 'events', w.kind === 'demo' ? 12 : 20);
+      const j = await jsonBody(req, 2e3), p = home(j.propertyId), demo = w.kind === 'demo';
+      const o = { today: s.today, radius: [10, 25, 50].includes(+j.radius) ? +j.radius : 25, minDays: [2, 3, 5].includes(+j.minDays) ? +j.minDays : 2, months: [3, 6, 12].includes(+j.months) ? +j.months : 6 };
+      o.from = EV.add(s.today, 1); o.to = EV.add(s.today, Math.round(o.months * 30.5));
+      const loc = demo ? null : G.locate(p);
+      if (!demo && !loc && !(await finder.forHost(w.id, null)).some(x => x.mine)) throw err(400, 'Add your home’s postcode in its details so we know where to look, or add an events page for us to read below. You can always add an event yourself.');
+      if (loc) await finder.warm(loc, o.radius, 2); // starter pages near a new host that have never been read
+      const r = await EV.find(finder, w.id, loc, p, o, { demo });
+      let added = 0;
+      await save(w.id, (S, BB) => { const x = evs(S);
+        r.events.forEach(e => { const old = x.found.find(q => q.id === e.id); if (old) { if (!old.url && e.url) old.url = e.url; return; } x.found.push(e); added++; });
+        // keep the list tidy: drop events that are over, and keep at most 80 a home
+        x.found = x.found.filter(e => e.end >= S.today || x.ads.some(a => a.eventId === e.id)).sort((a, b) => a.start.localeCompare(b.start));
+        S.properties.forEach(q => { const mine = x.found.filter(e => e.propertyId === q.id); if (mine.length > 80) { const drop = new Set(mine.slice(80).map(e => e.id)); x.found = x.found.filter(e => !drop.has(e.id)); } });
+        x.prefs = { radius: o.radius, minDays: o.minDays, months: o.months };
+        x.scans[p.id] = { at: new Date().toISOString(), place: (r.loc && (r.loc.place || r.loc.postcode)) || '', sources: r.sources };
+        BB.log('campaign', 'Event ads', 'Looked for events near ' + p.name + ': ' + r.events.length + ' found, ' + added + ' new.', p.id);
+        BB.store.commit({ type: 'campaign', quiet: true }); });
+      const w2 = await ws.open(w.id), x2 = w2.state.studio.events;
+      return json(res, { events: withFit(w2.state, x2.found.filter(e => !e.hidden)), ads: x2.ads, scans: x2.scans, prefs: x2.prefs, added, sources: r.sources, state: w2.state, version: await ws.version(w.id) }, 200, headers), true;
+    }
+    // pages for our finder to read: a venue's or council's what's-on page, a training provider's course dates, a calendar feed
+    if (api === '/api/eventads/watch' && m === 'POST') {
+      if (w.kind === 'demo') throw err(400, 'In the demo we only use sample events. Sign up to have us read pages near your home.');
+      limited(w, 'evwatch', 20);
+      const j = await jsonBody(req, 4e3), p = home(j.propertyId), near = G.point(j.postcode) || G.locate(p);
+      if (near && !near.place) near.place = String(p.area || '').split(',')[0].trim() || near.postcode;
+      let r; try { r = await finder.watch(w.id, j.url, near, j.name); } catch (e) { throw err(e.status || 400, e.message); }
+      await save(w.id, (S, BB) => { BB.log('campaign', 'Event ads', 'Added a page for the event finder to read: ' + String(j.url).slice(0, 120) + ' (' + r.n + ' event' + (r.n === 1 ? '' : 's') + ' so far).', p.id); BB.store.commit({ type: 'campaign', quiet: true }); });
+      return reply(res, w.id, { page: r, pages: await pagesFor(await ws.open(w.id)) }, headers), true;
+    }
+    if (api === '/api/eventads/unwatch' && m === 'POST') {
+      const j = await jsonBody(req, 2e3); await finder.unwatch(w.id, String(j.id || ''));
+      return json(res, { pages: await pagesFor(w) }, 200, headers), true;
+    }
+    if (api === '/api/eventads/add' && m === 'POST') {
+      const j = await jsonBody(req, 4e3), p = home(j.propertyId);
+      const e = EV.norm(Object.assign({}, j, { kind: j.kind }), 'manual', p.id);
+      if (!e) throw err(400, 'Add the event’s name and its first day.');
+      if (e.end <= s.today) throw err(400, 'That event is already over.');
+      await save(w.id, S => { const x = evs(S); x.found = x.found.filter(q => q.id !== e.id); x.found.push(e); x.found.sort((a, b) => a.start.localeCompare(b.start)); });
+      return reply(res, w.id, { event: e }, headers), true;
+    }
+    if (api === '/api/eventads/hide' && m === 'POST') {
+      const j = await jsonBody(req, 2e3);
+      await save(w.id, S => { const e = evs(S).found.find(q => q.id === j.id); if (e) e.hidden = !j.show; });
+      return reply(res, w.id, {}, headers), true;
+    }
+    if (api === '/api/eventads/create' && m === 'POST') {
+      limited(w, 'evad', w.kind === 'demo' ? 12 : 40);
+      const j = await jsonBody(req, 2e3), ev = E && E.found.find(q => q.id === j.eventId); if (!ev) throw err(404, 'Event not found');
+      const p = home(ev.propertyId), ft = EV.fit(ev, new Set(blockedNights(s, p.id)), p, s.today);
+      if (!ft.stay) throw err(400, 'Those nights are already booked, so there is nothing to advertise.');
+      const pct = Math.max(0, Math.min(30, parseInt(j.pct, 10) >= 0 ? parseInt(j.pct, 10) : 10));
+      const code = pct ? ((String(j.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 14)) || (ev.name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6) || 'EVENT') + pct) : '';
+      const f = render.facts(s, p), o = { code, pct };
+      let copy = EV.rulesAds(f, ev, ft, o), by = 'rules';
+      if (gen.enabled) {
+        await credits.check(w.id);
+        try { copy = EV.mergeAds(await gen.ask('You write honest, high-performing paid social and search ads for UK holiday lets.', [{ type: 'text', text: EV.adPrompt(f, ev, ft, o) }], EV.adSchema(), credits.meter(w.id, 'eventads')), copy); by = 'ai'; }
+        catch (e) { log('event ads', e.message); }
+      }
+      const scan = (E.scans || {})[p.id] || {};
+      const plan = EV.plan(f, ev, ft, s.today, null);
+      const site = ((s.studio || {}).sites || {})[p.id] || {}, look = site.published || site.draft || {};
+      const stay = Object.assign({}, ft.stay, { n: EV.diff(ft.stay.from, ft.stay.to) });
+      let fnl = null;
+      if (j.landing !== false) {
+        fnl = { id: 'fn' + crypto.randomBytes(4).toString('hex'), name: ('Event · ' + ev.name).slice(0, 60), template: 'event', propertyId: p.id, status: 'draft', code, pct, season: '', steps: ['offer'],
+          copy: { offer: Object.assign({ fine: '', text: '' }, copy.landing) }, by, stay, event: { id: ev.id, name: ev.name, start: ev.start, end: ev.end },
+          direction: look.direction || gen.guessDirection(f, null), accent: look.accent || null, style: look.style || null, createdAt: s.today, stats: { views: {}, leads: 0 } };
+      }
+      const ad = { id: 'ea' + crypto.randomBytes(4).toString('hex'), eventId: ev.id, propertyId: p.id, event: { name: ev.name, kind: ev.kind, start: ev.start, end: ev.end, venue: ev.venue, town: ev.town, url: ev.url },
+        stay, code, pct, by, meta: copy.meta, google: copy.google, audience: copy.audience, plan, funnelId: fnl && fnl.id, place: scan.place || '', status: 'draft', createdAt: s.today };
+      delete ad.landing;
+      await save(w.id, (S, BB) => { const x = evs(S); x.ads = x.ads.filter(a => a.eventId !== ev.id || a.status === 'running'); x.ads.unshift(ad);
+        if (fnl) st(S).funnels.unshift(fnl); if (code) S.promos[code] = S.promos[code] || pct;
+        BB.log('campaign', 'Event ads', 'Wrote ads for ' + ev.name + ' (' + EV.range(stay.from, stay.to) + ', ' + stay.n + ' nights at ' + p.name + ')' + (code ? ' with code ' + code : '') + '.', ad.id);
+        BB.store.commit({ type: 'campaign', quiet: true }); });
+      return reply(res, w.id, { ad }, headers), true;
+    }
+    if (api === '/api/eventads/edit' && m === 'POST') {
+      const j = await jsonBody(req, 2e4);
+      await save(w.id, (S, BB) => { const a = evs(S).ads.find(q => q.id === j.id); if (!a) throw err(404, 'Ads not found'); const pt = j.patch || {};
+        const t = (x, n) => String(x || '').replace(/[<>]/g, '').trim().slice(0, n);
+        if (pt.meta) { if (typeof pt.meta.primary === 'string') a.meta.primary = t(pt.meta.primary, 600); if (typeof pt.meta.headline === 'string') a.meta.headline = t(pt.meta.headline, 40); if (typeof pt.meta.description === 'string') a.meta.description = t(pt.meta.description, 30); }
+        if (pt.google) { const L = (v, n, max) => (Array.isArray(v) ? v : String(v || '').split('\n')).map(x => t(x, n)).filter(Boolean).slice(0, max);
+          if (pt.google.headlines != null) a.google.headlines = L(pt.google.headlines, 30, 15); if (pt.google.descriptions != null) a.google.descriptions = L(pt.google.descriptions, 90, 4); if (pt.google.keywords != null) a.google.keywords = L(pt.google.keywords, 80, 30); }
+        if (pt.status === 'running' || pt.status === 'draft' || pt.status === 'done') { a.status = pt.status; if (pt.status === 'running') BB.log('campaign', 'Event ads', 'Ads for ' + a.event.name + ' are marked as running.', a.id); }
+        BB.store.commit({ type: 'campaign', quiet: true }); });
+      return reply(res, w.id, {}, headers), true;
+    }
+    if (api === '/api/eventads/delete' && m === 'POST') {
+      const j = await jsonBody(req, 2e3);
+      await save(w.id, S => { const x = evs(S); const a = x.ads.find(q => q.id === j.id); x.ads = x.ads.filter(q => q.id !== j.id); if (a && a.funnelId && j.landing) st(S).funnels = st(S).funnels.filter(q => q.id !== a.funnelId); });
       return reply(res, w.id, {}, headers), true;
     }
     return false;

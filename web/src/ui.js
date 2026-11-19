@@ -50,6 +50,23 @@
   };
 
   /* Copy with fallback to selecting the text */
+  /* A host's own domain: where to add DNS records at the common registrars. Shared by sign-up and the console.
+     BB.dnsGuide(pick, domain) returns the registrar chips and the steps for the one picked ('' shows the chips only). */
+  BB.REGISTRARS = [
+    ['godaddy', 'GoDaddy', ['Sign in at godaddy.com and open <b>My Products</b>.', 'Next to your domain, choose <b>DNS</b> (or <b>Manage DNS</b>).', 'Choose <b>Add New Record</b> for each record above. GoDaddy usually already has an A record for <b>@</b> marked “Parked” and a CNAME for <b>www</b>. Edit those two instead of adding new ones.'], 'Type <b>@</b> in Name for your main address.'],
+    ['123reg', '123-reg', ['Sign in at 123-reg.co.uk and open your <b>Control Panel</b>.', 'Pick your domain, then <b>Manage DNS</b>, then the <b>Advanced DNS</b> tab.', 'Add each record above. If there is already an A record for <b>@</b> or <b>www</b> pointing at a 123-reg holding page, delete it first.'], 'Type <b>@</b> in Hostname for your main address.'],
+    ['ionos', 'IONOS', ['Sign in at ionos.co.uk and open <b>Domains &amp; SSL</b>.', 'Click your domain, then the <b>DNS</b> tab.', 'Choose <b>Add record</b> for each record above. If IONOS says a record conflicts with an existing one, choose to replace it.'], 'Type <b>@</b> in Host name for your main address.'],
+    ['namecheap', 'Namecheap', ['Sign in at namecheap.com and open <b>Domain List</b>.', 'Choose <b>Manage</b> next to your domain, then the <b>Advanced DNS</b> tab.', 'Delete the default <b>URL Redirect</b> record and the <b>www</b> parking page record, then use <b>Add New Record</b> for each record above.'], 'Type <b>@</b> in Host for your main address. Nameservers must be set to Namecheap BasicDNS.'],
+    ['cloudflare', 'Cloudflare', ['Sign in at dash.cloudflare.com and pick your domain.', 'Open <b>DNS</b>, then <b>Records</b>, then <b>Add record</b> for each record above.', 'Set <b>Proxy status</b> to <b>DNS only</b> (grey cloud) on the <b>@</b> and <b>www</b> records. With the orange cloud on we cannot see them and cannot set up your padlock.'], 'Type <b>@</b> in Name for your main address.'],
+    ['other', 'Somewhere else', ['Sign in where you bought the domain and look for <b>DNS</b>, <b>DNS settings</b>, <b>Zone editor</b> or <b>Advanced DNS</b>.', 'If your domain uses another company’s nameservers (for example Cloudflare, Wix or Squarespace), add the records there instead.', 'Add each record above, and remove any old A record for <b>@</b> or CNAME for <b>www</b> that points somewhere else.'], 'Most registrars use <b>@</b> for your main address. If the Name box already shows your domain after it, type only the first part, like <b>www</b>.'],
+  ];
+  BB.dnsGuide = function (pick, domain) {
+    const r = BB.REGISTRARS.find(x => x[0] === pick);
+    return '<div class="dg"><p class="dg-q">Where did you buy ' + (domain ? '<b class="mono">' + BB.esc(domain) + '</b>' : 'your domain') + '?</p>' +
+      '<div class="dg-chips" role="radiogroup" aria-label="Where you bought your domain">' + BB.REGISTRARS.map(x => '<button type="button" class="dg-chip' + (x[0] === pick ? ' on' : '') + '" role="radio" aria-checked="' + (x[0] === pick) + '" data-dns-reg="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>' +
+      (r ? '<ol class="dg-steps">' + r[2].map(t => '<li>' + t + '</li>').join('') + '</ol><p class="dg-tip">' + BB.icon('spark') + '<span>' + r[3] + ' Changes usually show within an hour, and can take up to a day.</span></p>' : '') + '</div>';
+  };
+
   BB.copy = async function (text, el) { try { await navigator.clipboard.writeText(text); BB.toast('Copied'); } catch (_) { if (el) { const r = document.createRange(); r.selectNodeContents(el); getSelection().removeAllRanges(); getSelection().addRange(r); } } };
 
   /* Icons: 24px stroke icons */
