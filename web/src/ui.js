@@ -117,6 +117,7 @@
     chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
     out: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
+    upload: '<path d="M12 15V4M7 9l5-5 5 5M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     play: '<path d="M7 4l13 8-13 8z"/>',
     reset: '<path d="M4 12a8 8 0 108-8H8M4 4v4h4"/>',
