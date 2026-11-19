@@ -13761,6 +13761,15 @@ create table if not exists commissions (
 create table if not exists aff_payouts (id bigserial primary key, affiliate_id text not null references affiliates(id), amount integer not null, reference text, created_at bigint not null);
 create index if not exists comm_aff on commissions(affiliate_id, created_at);
 create index if not exists ref_aff on referrals(affiliate_id);
+-- bulk imports (server/lead-import.js): phone, the list it came from, when the person consented, and whether we hold an email
+alter table leads add column if not exists phone text;
+alter table leads add column if not exists source text;
+alter table leads add column if not exists consent_at text;
+alter table leads add column if not exists has_email integer;
+alter table leads add column if not exists import_batch text;
+create index if not exists leads_email_lower on leads (lower(email));
+create index if not exists leads_phone on leads (phone);
+update leads set has_email = case when coalesce(email, '') = '' then 0 else 1 end where has_email is null;
 create index if not exists lead_seq_due on lead_seq(status, next_at);
 create index if not exists outbox_ws on outbox(workspace_id, created_at);
 create index if not exists pay_ws on payments(workspace_id, booking_id);
@@ -22233,6 +22242,215 @@ var require_studio = __commonJS({
   }
 });
 
+// server/lead-import.js
+var require_lead_import = __commonJS({
+  "server/lead-import.js"(exports, module) {
+    var SOURCES = ["scraped", "stays-direct", "contractor-stop"];
+    var MAX_ROWS = 2e4;
+    var REASONS = {
+      no_contact: "No email or phone",
+      invalid_email: "Email address is not valid",
+      invalid_phone: "Phone number is not a valid UK number",
+      invalid_consent_date: "Consent date is not a real past date",
+      duplicate_email: "Email already imported or already a lead",
+      duplicate_phone: "Phone already imported or already a lead",
+      opted_out: "Email has unsubscribed before"
+    };
+    function parseCsv(text) {
+      const s = String(text || "").replace(/^﻿/, "");
+      const rows = [];
+      let row = [], f = "", q = false, i = 0;
+      while (i < s.length) {
+        const c = s[i];
+        if (q) {
+          if (c === '"') {
+            if (s[i + 1] === '"') {
+              f += '"';
+              i += 2;
+              continue;
+            }
+            q = false;
+            i++;
+            continue;
+          }
+          f += c;
+          i++;
+          continue;
+        }
+        if (c === '"' && f === "") {
+          q = true;
+          i++;
+          continue;
+        }
+        if (c === ",") {
+          row.push(f);
+          f = "";
+          i++;
+          continue;
+        }
+        if (c === "\r" || c === "\n") {
+          row.push(f);
+          rows.push(row);
+          row = [];
+          f = "";
+          i += c === "\r" && s[i + 1] === "\n" ? 2 : 1;
+          continue;
+        }
+        f += c;
+        i++;
+      }
+      if (f !== "" || row.length) {
+        row.push(f);
+        rows.push(row);
+      }
+      return rows.filter((r) => r.some((x) => String(x).trim() !== ""));
+    }
+    var norm = (h) => String(h || "").toLowerCase().replace(/\([^)]*\)/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+    function columns(headers) {
+      const H = headers.map(norm), find = (...tests) => {
+        for (const t of tests) {
+          const i = H.findIndex(t);
+          if (i >= 0) return i;
+        }
+        return -1;
+      };
+      return {
+        email: find((h) => /^(e ?mail|email address|business email|contact email)$/.test(h), (h) => /\be ?mail\b/.test(h)),
+        phone: find((h) => /^(phone|telephone|tel|mobile|phone number|public phone)$/.test(h), (h) => /\b(phone|telephone|tel|mobile)\b/.test(h)),
+        name: find((h) => /^(name|contact name|contact|full name|host name|owner)$/.test(h), (h) => /\bcontact name\b/.test(h)),
+        business: find((h) => /^(business|business name|company|property|property name|business property name)$/.test(h), (h) => /\b(business|property)\b/.test(h) && /\bname\b/.test(h)),
+        consent: find((h) => /\bconsent\b/.test(h) || /\bopt ?in\b/.test(h))
+      };
+    }
+    var EMAIL = /^[^@\s,;<>"]+@[^@\s,;<>"]+\.[a-z]{2,}$/i;
+    function cleanEmail(v) {
+      const e = String(v || "").trim().replace(/^mailto:/i, "").toLowerCase();
+      return e ? EMAIL.test(e) && e.length <= 160 ? e : false : "";
+    }
+    function cleanPhone(v) {
+      let d = String(v || "").trim();
+      if (!d) return "";
+      d = d.replace(/\s*(ext|x)\.?\s*\d+$/i, "").replace(/\(0\)/g, "").replace(/[^\d+]/g, "");
+      if (d.startsWith("+")) d = d.slice(1);
+      else if (d.startsWith("00")) d = d.slice(2);
+      else if (d.startsWith("0")) d = "44" + d.slice(1);
+      if (!/^44[1-37-9]\d{8,9}$/.test(d)) return false;
+      return "+" + d;
+    }
+    function cleanConsent(v, now) {
+      const s = String(v || "").trim();
+      if (!s) return "";
+      let y, m, d, x;
+      if (x = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ].*)?$/)) [y, m, d] = [+x[1], +x[2], +x[3]];
+      else if (x = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/)) [d, m, y] = [+x[1], +x[2], +x[3]];
+      else return false;
+      const t = Date.UTC(y, m - 1, d), dt = new Date(t);
+      if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d || y < 2e3 || t > (now || Date.now())) return false;
+      return dt.toISOString().slice(0, 10);
+    }
+    module.exports = function({ db }) {
+      const INS = "INSERT INTO leads (kind, email, name, data, created_at, phone, source, consent_at, has_email, import_batch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      const q = {
+        email: db.prepare("SELECT 1 FROM leads WHERE lower(email) = lower(?) LIMIT 1"),
+        phone: db.prepare("SELECT 1 FROM leads WHERE phone = ? LIMIT 1"),
+        optedOut: db.prepare("SELECT 1 FROM lead_optout WHERE email = lower(?)")
+      };
+      async function importCsv(text, opts = {}) {
+        const source = String(opts.source || "").trim().toLowerCase();
+        if (!SOURCES.includes(source)) return { error: "Choose a source: " + SOURCES.join(", ") + "." };
+        const rows = parseCsv(text);
+        if (rows.length < 2) return { error: "The file has no rows under the header line." };
+        if (rows.length - 1 > MAX_ROWS) return { error: "The file has more than " + MAX_ROWS + " rows. Split it and import each part." };
+        const headers = rows[0].map((h) => String(h).trim()), col = columns(headers);
+        if (col.email < 0 && col.phone < 0) return { error: "The header line needs an email or phone column." };
+        const now = opts.now || Date.now(), batch = opts.batch || "imp_" + now.toString(36) + Math.random().toString(36).slice(2, 6);
+        const seenEmail = /* @__PURE__ */ new Set(), seenPhone = /* @__PURE__ */ new Set(), good = [], rejects = [];
+        const reject = (row, reason, detail) => rejects.push({ row, reason, detail: detail || "" });
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i], cell = (k) => col[k] >= 0 ? String(r[col[k]] == null ? "" : r[col[k]]).trim() : "", line = i + 1;
+          const email = cleanEmail(cell("email")), phone = cleanPhone(cell("phone")), consent = cleanConsent(cell("consent"), now);
+          if (email === false) {
+            reject(line, "invalid_email", cell("email"));
+            continue;
+          }
+          if (!email && phone === false) {
+            reject(line, "invalid_phone", cell("phone"));
+            continue;
+          }
+          if (!email && !phone) {
+            reject(line, "no_contact");
+            continue;
+          }
+          if (consent === false) {
+            reject(line, "invalid_consent_date", cell("consent"));
+            continue;
+          }
+          if (email) {
+            if (seenEmail.has(email) || await q.email.get(email)) {
+              reject(line, "duplicate_email", email);
+              continue;
+            }
+            if (await q.optedOut.get(email)) {
+              reject(line, "opted_out", email);
+              continue;
+            }
+          } else if (seenPhone.has(phone) || await q.phone.get(phone)) {
+            reject(line, "duplicate_phone", phone);
+            continue;
+          }
+          if (email) seenEmail.add(email);
+          if (phone) seenPhone.add(phone);
+          const data = { import_row: line };
+          headers.forEach((h, j) => {
+            if (!h || [col.email, col.phone, col.name, col.consent].includes(j)) return;
+            const v = String(r[j] == null ? "" : r[j]).trim();
+            if (v) data[h.slice(0, 80)] = v.slice(0, 2e3);
+          });
+          if (phone === false) data.phone_as_given = cell("phone");
+          const name = (cell("name") || cell("business")).slice(0, 120);
+          good.push(["import", email || null, name, JSON.stringify(data), now, phone || null, source, consent || null, email ? 1 : 0, batch]);
+        }
+        if (!opts.dryRun && good.length) await db.tx(async (t) => {
+          const ins = t.prepare(INS);
+          for (const g of good) await ins.run(...g);
+        });
+        const reasons = {};
+        rejects.forEach((x) => reasons[x.reason] = (reasons[x.reason] || 0) + 1);
+        return {
+          batch,
+          source,
+          dryRun: !!opts.dryRun,
+          total: rows.length - 1,
+          loaded: good.length,
+          rejected: rejects.length,
+          reasons,
+          has_email: good.filter((g) => g[8]).length,
+          no_email: good.filter((g) => !g[8]).length,
+          with_consent: good.filter((g) => g[7]).length,
+          columns: Object.fromEntries(Object.entries(col).map(([k, v]) => [k, v >= 0 ? headers[v] : null])),
+          rejects
+        };
+      }
+      return { importCsv, SOURCES, REASONS };
+    };
+    Object.assign(module.exports, { parseCsv, columns, cleanEmail, cleanPhone, cleanConsent, SOURCES, REASONS });
+    module.exports.multipart = function(buf, contentType) {
+      const m = String(contentType || "").match(/boundary=(?:"([^"]+)"|([^;]+))/i);
+      if (!m) return null;
+      const sep = "--" + (m[1] || m[2]).trim(), s = buf.toString("latin1"), out = {};
+      for (const part of s.split(sep).slice(1)) {
+        if (part.startsWith("--")) break;
+        const end = part.indexOf("\r\n\r\n");
+        if (end < 0) continue;
+        const head = part.slice(0, end), name = (head.match(/name="([^"]*)"/i) || [])[1];
+        if (!name) continue;
+        out[name] = Buffer.from(part.slice(end + 4).replace(/\r\n$/, ""), "latin1").toString("utf8");
+      }
+      return out;
+    };
+  }
+});
+
 // server/legal.js
 var require_legal = __commonJS({
   "server/legal.js"(exports, module) {
@@ -23381,6 +23599,7 @@ Disallow: /
           const b = await jsonBody(req, 1e3);
           return json(res, { sent: await leads.run(+b.at || Date.now()) });
         }
+        if (p === "/admin/leads/import") return await leadImportPost(req, res);
         return await adminPost(req, res, p);
       }
       if (p === "/api/leads" && (m === "POST" || m === "OPTIONS")) return lead(req, res);
@@ -23677,7 +23896,27 @@ Disallow: /
       }
       return notFound(res);
     }
-    var leadIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)");
+    var leadIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at, source, has_email) VALUES (?, ?, ?, ?, ?, 'website', 1)");
+    var leadImport = require_lead_import()({ db });
+    async function leadImportPost(req, res) {
+      if (!await isAdmin(req)) return notFound(res);
+      const ct = String(req.headers["content-type"] || "");
+      let f;
+      try {
+        if (ct.includes("multipart/form-data")) f = require_lead_import().multipart(Buffer.from(await body(req, 8e6), "utf8"), ct) || {};
+        else if (ct.includes("json")) f = await jsonBody(req, 8e6);
+        else f = Object.fromEntries(new URLSearchParams(await body(req, 8e6)));
+      } catch (e) {
+        return ct.includes("json") ? json(res, { error: e.message }, e.status || 400) : await adminPage(req, res, "", "leads", e.status === 413 ? "That file is over 8 MB. Split it and import each part." : "Could not read the upload.");
+      }
+      const dryRun = ["1", "true", "on", "yes"].includes(String(f.dry_run || "").toLowerCase()) || f.dry_run === true;
+      const r = await leadImport.importCsv(f.csv || f.file || "", { source: f.source, dryRun });
+      if (!r.error) log("leads", "import", r.batch, r.source, (dryRun ? "dry run " : "") + r.loaded + " loaded, " + r.rejected + " rejected");
+      if (ct.includes("json")) return json(res, r, r.error ? 400 : 200);
+      if (r.error) return await adminPage(req, res, "", "leads", r.error);
+      const why = Object.entries(r.reasons).map(([k, n]) => n + " " + leadImport.REASONS[k].toLowerCase()).join(", ");
+      return await adminPage(req, res, (r.dryRun ? "Check only, nothing saved: " + r.loaded + " of " + r.total + " rows would load" : "Imported " + r.loaded + " of " + r.total + " rows as " + r.source) + " (" + r.has_email + " with email, " + r.no_email + " phone only)." + (r.rejected ? " Rejected " + r.rejected + ": " + why + "." : "") + (r.dryRun ? "" : " None of them get emails."), "leads");
+    }
     var isAdminEmail = async (email) => {
       email = String(email || "").toLowerCase();
       if (!email) return false;
@@ -23738,7 +23977,7 @@ Disallow: /
         }
         const f = info.get(l.id);
         const prog = f ? "<b>" + E(f.name) + '</b><div style="margin:4px 0">' + A.pill(statusPill[f.status] || "muted", status[f.status] || f.status) + "</div><small>" + f.sent.length + " of " + f.total + " sent" + (f.status === "active" && f.next_at ? " \xB7 next " + d(f.next_at) : "") + (f.status === "waiting" && f.next ? " \xB7 next: " + E(f.next) : "") + "</small>" : "<small>No emails</small>";
-        return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + "</td><td>" + A.pill("muted", l.kind) + "</td><td><b>" + E(l.email) + "</b><small>" + E(l.name || "") + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</td><td>" + prog + '</td><td style="min-width:240px">' + leadActions(l) + "</td></tr>";
+        return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + "</td><td>" + A.pill("muted", l.kind) + (l.source && l.source !== "website" ? "<small>" + E(l.source) + "</small>" : "") + "</td><td><b>" + E(l.email || l.phone || "") + "</b><small>" + E(l.name || "") + (l.email && l.phone ? " \xB7 " + E(l.phone) : "") + (l.consent_at ? " \xB7 consent " + E(l.consent_at) : "") + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !["referrer"].includes(k)).map(([k, v]) => k + ": " + v).join(" \xB7 ")) + "</td><td>" + prog + '</td><td style="min-width:240px">' + leadActions(l) + "</td></tr>";
       };
       const LEAD_HEADS = ["When", "Form", "Who", "Answers", "Emails", ""];
       const hostRow = (a) => {
@@ -23753,11 +23992,12 @@ Disallow: /
         '<div class="adm-list"><div><span><b>Key</b><small>' + (sp.on ? "Ending " + E(sp.last4) + ", from " + E(sp.keyName) : "Not connected") + "</small></span></div><div><span><b>Plan prices</b></span>" + A.pill(sp.prices ? "good" : "muted", sp.prices ? "Ready" : "Not yet") + "</div><div><span><b>Webhooks</b></span>" + A.pill(sp.webhooks ? "good" : "muted", sp.webhooks ? "Ready" : "Not yet") + "</div>" + (sp.error ? "<div><span><b>Last setup error</b><small>" + E(sp.error) + "</small></span></div>" : "") + "</div>" + (sp.canSave ? '<details class="adm-x" style="margin-top:12px"' + (sp.on ? "" : " open") + "><summary>" + (sp.on ? "Change the Stripe key" : "Connect Stripe") + '</summary><form class="adm-form" method="post" action="/admin/stripe/key" autocomplete="off"><small class="adm-help">Paste the secret key from dashboard.stripe.com/apikeys (live mode, it starts sk_live_). It is checked with Stripe, kept encrypted, and never shown again. Plan prices and webhooks are then set up automatically.</small>' + A.field("key", "", "Stripe secret key", { type: "password", ph: "sk_live_...", req: true, extra: ' autocomplete="off" spellcheck="false"' }) + '<div class="row"><button class="btn primary sm">Save and connect</button></div></form></details>' : "")
       );
       const shell = (o) => send(res, 200, A.shell(Object.assign({ email: who, waiting: waiting.length, note, err: err2 }, o)), "text/html; charset=utf-8", { "cache-control": "no-store" });
+      const importCard = A.card("Import leads from a CSV", "Stored only, no emails", '<form class="adm-form" method="post" action="/admin/leads/import" enctype="multipart/form-data"><small class="adm-help">One row per lead with an email or phone column (an optional consent date column too, e.g. 14/03/2026). Duplicates are skipped by email, then by phone. Imported leads are not started on any email series and campaigns do not reach them.</small><label>CSV file<input type="file" name="file" accept=".csv,text/csv" required></label><label>Source<select name="source" required><option value="">Choose\u2026</option>' + leadImport.SOURCES.map((x) => '<option value="' + x + '">' + x + "</option>").join("") + '</select></label><label class="row"><input type="checkbox" name="dry_run" value="1" checked> Check only, do not save</label><div class="row"><button class="btn primary sm">Import</button></div></form>');
       if (section === "leads") return shell({
         title: "Leads",
         active: "leads",
-        sub: leadRows.length + " leads from the website forms. Their follow-up emails go out by themselves; anything marked \u201CWaiting for you\u201D needs a person.",
-        body: '<section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), "No leads yet. They arrive here from the forms on the website.") + "</section>"
+        sub: leadRows.length + " leads from the website forms and imports. Website leads get their follow-up emails by themselves; imported leads get none; anything marked \u201CWaiting for you\u201D needs a person.",
+        body: '<details class="adm-x" style="margin-bottom:16px"><summary>' + A.icon("plus") + "Import leads from a CSV</summary>" + importCard + '</details><section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), "No leads yet. They arrive here from the forms on the website.") + "</section>"
       });
       if (section === "hosts") return shell({
         title: "Host accounts",
@@ -23786,7 +24026,7 @@ Disallow: /
         active: "overview",
         sub: "Leads and accounts \xB7 " + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.",
         actions: '<a class="btn sm" href="/admin/leads">' + A.icon("users") + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon("mail") + "Email campaigns</a>",
-        body: '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email) + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
+        body: '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email || l.phone || "") + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
       });
     }
     async function marketingRow(A) {
