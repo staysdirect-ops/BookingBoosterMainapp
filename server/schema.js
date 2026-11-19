@@ -13,6 +13,10 @@ create table if not exists sessions (
   token text primary key, user_id text not null references users(id) on delete cascade, created_at bigint not null, expires_at bigint not null);
 create table if not exists domains (
   host text primary key, workspace_id text not null references workspaces(id) on delete cascade, property_id text not null, verified integer not null default 0);
+create table if not exists registrations (
+  host text primary key, workspace_id text not null, property_id text not null, status text not null, years integer not null default 1,
+  contact text, error text, attempts integer not null default 0, registered_at bigint, expires_at bigint, renewed_at bigint,
+  created_at bigint not null, updated_at bigint not null);
 create table if not exists outbox (
   id bigserial primary key, workspace_id text, channel text not null, recipient text not null, subject text, body text,
   html text, status text not null, provider text, provider_id text, error text, meta text, created_at bigint not null);

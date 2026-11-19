@@ -9642,14 +9642,30 @@ body.p-lock { overflow: hidden; }
     if (qd && !qd.includes('.')) qd += '.co.uk';
     if (!/^[a-z0-9][a-z0-9-]{1,40}\\.[a-z]{2,10}(\\.[a-z]{2,4})?$/.test(qd)) return { err: 'Enter a domain like ' + slug(ob.d.name || 'yourhome') + '.co.uk' };
     const base = slug(ob.d.name) || qd.split('.')[0], tn = slug(town(ob.d.area));
-    const sugg = [base + '.co.uk', 'stay' + base + '.co.uk', base + tn + '.co.uk', base + '.uk', base + '.com'].filter((x, i, a) => x !== qd && a.indexOf(x) === i).slice(0, 4);
+    const tlds = buyLive() ? BB.BOOT.domainOffer.tlds : null, offered = x => !tlds || tlds.some(t => x.endsWith('.' + t) && x.split('.').length === t.split('.').length + 1);
+    const sugg = [base + '.co.uk', 'stay' + base + '.co.uk', base + tn + '.co.uk', base + '.uk', base + '.com'].filter((x, i, a) => x !== qd && a.indexOf(x) === i && offered(x)).slice(0, 4);
+    if (tlds && !offered(qd)) return { err: 'We can register ' + tlds.map(t => '.' + t).join(', ') + ' domains for you. Already own another? Use \u201CI already have a domain\u201D.' };
     return { list: [{ d: qd, ok: hash(qd) % 3 !== 0, main: true }].concat(sugg.map(x => ({ d: x, ok: hash(x) % 3 !== 0 }))) };
+  }
+  // On the real sign-up page with domain buying switched on, availability comes from the registrar. Otherwise (demo) it is pretend.
+  const buyLive = () => !!(REAL() && BB.BOOT.domainOffer && BB.BOOT.domainOffer.live);
+  const buying = ob => buyLive() && ob.dMode === 'new' && !!ob.domain && !/bookingbooster\\.site$/.test(ob.domain);
+  function domainNote() {
+    const o = (BB.BOOT && BB.BOOT.domainOffer) || {};
+    if (!buyLive()) return 'Free first year';
+    return o.renewal === 'charge' && o.renewalPrice > 0 ? 'Free first year, then \xA3' + o.renewalPrice + ' a year' : 'Included in your plan';
   }
   function checkDomain(inst) {
     const ob = inst.st.ob, r = obDomainResults(ob);
     if (r.err) { ob.dErr2 = r.err; ob.dState = 'idle'; inst.render(); return; }
     ob.dErr2 = ''; ob.dState = 'checking'; inst.render();
-    later(inst, 750, () => { ob.dState = 'done'; ob.dRes = r.list; if (!ob.domain) { const first = r.list.find(x => x.ok); if (first) ob.domain = first.d; } inst.render(); });
+    const show = list => { ob.dState = 'done'; ob.dRes = list; if (!ob.domain || (!/bookingbooster\\.site$/.test(ob.domain) && !list.some(x => x.d === ob.domain && x.ok))) { const first = list.find(x => x.ok); ob.domain = first ? first.d : ''; } inst.render(); };
+    if (!buyLive()) return later(inst, 750, () => show(r.list));
+    BB.api.call(BB.BOOT.domainSearchUrl + '?names=' + encodeURIComponent(r.list.map(x => x.d).join(',')), null, 'GET').then(j => {
+      if (!j.live) { show(r.list); return; }
+      const ok = {}; (j.results || []).forEach(x => { ok[x.d] = x.ok; });
+      show(r.list.map(x => Object.assign({}, x, { ok: !!ok[x.d] })));
+    }, e => { ob.dState = 'idle'; ob.dErr2 = e.message; inst.render(); });
   }
   // "I already have a domain": tidy what they typed into a bare address, the same way the server does.
   function cleanOwn(v) { return String(v || '').trim().toLowerCase().replace(/^[a-z]+:\\/\\//, '').replace(/[/?#].*$/, '').replace(/:\\d+$/, '').replace(/^www\\./, '').replace(/\\.$/, ''); }
@@ -9722,7 +9738,8 @@ body.p-lock { overflow: hidden; }
     let signup = null;
     if (REAL()) {
       const a = ob.acct || {};
-      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url })
+      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url,
+        domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     }
     const t = () => later(inst, 480, () => {
@@ -9800,12 +9817,12 @@ body.p-lock { overflow: hidden; }
             (ok ? ownDomain(ob, sub) : '<p class="s-fine">Type it without www, like <b>larchcabin.co.uk</b>. Next we show you exactly what to change, step by step.</p>') +
             '<form data-form="next" class="s-ob-form">' + navRow(ok ? 'Use ' + ob.domain : 'Type your domain to continue', !ok) + '</form>';
         }
-        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' + tabs +
+        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. ' + (buyLive() ? 'We register it in your name, point it at your site and add the padlock (HTTPS) for you.' : 'A .co.uk domain is included free for the first year on every plan.') + '</p>' + tabs +
           '<form data-form="domain" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Search for a domain</span><span class="s-inwrap">' + icon('search') + '<input id="s-ob-dq-' + u + '" data-ob="dq" value="' + esc(ob.dq) + '" autocomplete="off" spellcheck="false"></span></label><button class="btn ink lg" type="submit"' + (ob.dState === 'checking' ? ' disabled' : '') + '>' + (ob.dState === 'checking' ? 'Checking\u2026' : 'Check') + '</button></form>' +
           (ob.dErr2 ? '<p class="s-err" role="alert">' + esc(ob.dErr2) + '</p>' : '') +
           '<div class="s-doms" aria-live="polite">' + (ob.dState === 'checking' ? '<p class="s-dom-wait"><i class="s-spin"></i>Checking availability\u2026</p>' : (ob.dRes || []).map(r =>
             '<div class="s-dom' + (ob.domain === r.d ? ' on' : '') + (r.ok ? '' : ' taken') + '"><span class="s-dom-n">' + esc(r.d) + (r.main ? '<em>Your search</em>' : '') + '</span>' +
-            (r.ok ? '<span class="s-dom-p">' + BB.pill('good', 'Available') + '<span class="muted">Free first year</span></span>' : '<span class="s-dom-p">' + BB.pill('muted', 'Taken') + '</span>') +
+            (r.ok ? '<span class="s-dom-p">' + BB.pill('good', 'Available') + '<span class="muted">' + domainNote() + '</span></span>' : '<span class="s-dom-p">' + BB.pill('muted', 'Taken') + '</span>') +
             (r.ok ? '<button class="btn sm ' + (ob.domain === r.d ? 'primary' : '') + '" data-dom="' + esc(r.d) + '" aria-pressed="' + (ob.domain === r.d) + '">' + (ob.domain === r.d ? icon('check') + 'Selected' : 'Choose') + '</button>' : '<span></span>') + '</div>').join('')) +
           '<div class="s-dom s-dom-free' + (ob.domain === sub ? ' on' : '') + '"><span class="s-dom-n">' + esc(sub) + '<em>Free address, add a domain later</em></span><span class="s-dom-p">' + BB.pill('info', 'Always free') + '</span>' +
             '<button class="btn sm ' + (ob.domain === sub ? 'primary' : '') + '" data-dom="' + esc(sub) + '" aria-pressed="' + (ob.domain === sub) + '">' + (ob.domain === sub ? icon('check') + 'Selected' : 'Choose') + '</button></div></div>' +
@@ -9847,7 +9864,7 @@ body.p-lock { overflow: hidden; }
           '<dl class="s-review">' +
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' \xB7 ' + $(+d.nightly) + ' a night \xB7 sleeps ' + esc(d.sleeps) + ' \xB7 ' + esc(d.bedrooms) + ' bedrooms \xB7 ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
-            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
+            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : buying(ob) ? 'We register it in your name once your first payment goes through. ' + domainNote() : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
@@ -9862,7 +9879,23 @@ body.p-lock { overflow: hidden; }
     return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
       '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + f('ref', 'Referral code (optional)', 'text', 'off', 'If someone recommended us') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
+      (buying(inst.st.ob) ? regFields(inst) : '') +
       (inst.st.ob.acctErr ? '<p class="s-err" role="alert">' + esc(inst.st.ob.acctErr) + '</p>' : '') + '</div>';
+  }
+  // The domain is registered in the host's own name, and Nominet needs a postal address and phone number for that.
+  function regFields(inst) {
+    const r = inst.st.ob.reg2 || (inst.st.ob.reg2 = { address: '', city: '', postcode: '', phone: '' }), u = inst.uid;
+    const f = (k, label, ac, ph, type) => '<label class="s-f"><span>' + label + '</span><input id="s-rg-' + k + '-' + u + '" data-rg="' + k + '" type="' + (type || 'text') + '" autocomplete="' + ac + '" value="' + esc(r[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
+    return '<h2 class="s-acct-h">Who owns ' + esc(inst.st.ob.domain) + '</h2><p class="s-ob-sub">We register the domain in your name, so it is yours to keep. The domain registry asks for an address and phone number. They are not shown publicly.</p>' +
+      '<div class="s-grid2">' + f('address', 'Address', 'address-line1', '1 Fell Lane') + f('city', 'Town or city', 'address-level2', 'Ambleside') + f('postcode', 'Postcode', 'postal-code', 'LA22 9AA') + f('phone', 'Phone', 'tel', '07700 900123', 'tel') + '</div>';
+  }
+  function regError(r) {
+    r = r || {};
+    if (String(r.address || '').trim().length < 3) return 'Enter the first line of your address. The domain is registered in your name.';
+    if (String(r.city || '').trim().length < 2) return 'Enter your town or city.';
+    if (!/^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$/i.test(String(r.postcode || '').trim())) return 'Enter a UK postcode, like LA22 9AA.';
+    if (String(r.phone || '').replace(/\\D/g, '').length < 10) return 'Enter a phone number, like 07700 900123.';
+    return '';
   }
   function navRow(label, disabled) {
     return '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg" type="submit"' + (disabled ? ' disabled' : '') + '>' + esc(label) + icon('arrow') + '</button></div>';
@@ -9980,6 +10013,7 @@ body.p-lock { overflow: hidden; }
       });
       BB.on(root, 'input', '[data-ai]', el => { inst.st.ai[el.dataset.ai] = el.value; });
       BB.on(root, 'change', '[data-ai]', el => { inst.st.ai[el.dataset.ai] = el.value; });
+      BB.on(root, 'input', '[data-rg]', el => { const ob = inst.st.ob; (ob.reg2 || (ob.reg2 = {}))[el.dataset.rg] = el.value; if (ob.acctErr) { ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'input', '[data-ac]', el => { const a = inst.st.ob.acct; a[el.dataset.ac] = el.type === 'checkbox' ? el.checked : el.value; if (inst.st.ob.acctErr) { inst.st.ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'change', '[data-ac="terms"]', el => { inst.st.ob.acct.terms = el.checked; });
       BB.on(root, 'input', '[data-ob]', el => { inst.st.ob[el.dataset.ob] = el.value; if (el.dataset.ob === 'url' && inst.st.ob.urlErr) { inst.st.ob.urlErr = ''; inst.render(); } });
@@ -10004,7 +10038,7 @@ body.p-lock { overflow: hidden; }
           ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
-        if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
+        if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct) || (buying(ob) ? regError(ob.reg2) : ''); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
       });
       function scrollTopOb() { window.scrollTo({ top: 0 }); }
       function mapConn(c) { const o = {}; Object.keys(c).forEach(k => o[k] = c[k] === 'on' ? 'on' : 'off'); return o; }
@@ -13681,6 +13715,17 @@ var require_config = __commonJS({
           }
         }
       },
+      // Buying new domains for hosts through our 20i reseller account (server/registrar.js). Off until TWENTYI_API_KEY is set.
+      registrar: {
+        key: (E.TWENTYI_API_KEY || "").trim(),
+        apiBase: E.TWENTYI_API_BASE,
+        packageId: (E.TWENTYI_PACKAGE_ID || "").trim(),
+        tlds: (E.DOMAIN_TLDS || "co.uk,uk,com").split(",").map((x) => x.trim().replace(/^\./, "").toLowerCase()).filter(Boolean),
+        perAccount: Math.max(1, +(E.DOMAINS_PER_ACCOUNT || 1)),
+        privacy: E.DOMAIN_PRIVACY === "1",
+        renewal: E.DOMAIN_RENEWAL === "charge" ? "charge" : "included",
+        renewalPrice: num(E.DOMAIN_RENEWAL_PRICE, 0)
+      },
       legalReviewed: /^\d{4}-\d{2}-\d{2}$/.test(E.LEGAL_REVIEWED || "") ? E.LEGAL_REVIEWED : "",
       // the date a solicitor signed off /privacy and /terms
       backupKeep: Math.max(1, +(E.BACKUP_KEEP || 14)),
@@ -13728,6 +13773,10 @@ create table if not exists sessions (
   token text primary key, user_id text not null references users(id) on delete cascade, created_at bigint not null, expires_at bigint not null);
 create table if not exists domains (
   host text primary key, workspace_id text not null references workspaces(id) on delete cascade, property_id text not null, verified integer not null default 0);
+create table if not exists registrations (
+  host text primary key, workspace_id text not null, property_id text not null, status text not null, years integer not null default 1,
+  contact text, error text, attempts integer not null default 0, registered_at bigint, expires_at bigint, renewed_at bigint,
+  created_at bigint not null, updated_at bigint not null);
 create table if not exists outbox (
   id bigserial primary key, workspace_id text, channel text not null, recipient text not null, subject text, body text,
   html text, status text not null, provider text, provider_id text, error text, meta text, created_at bigint not null);
@@ -16763,6 +16812,230 @@ var require_domains = __commonJS({
         return { target, ips };
       }
       return { clean, problem, check, certify, https, targets, target, txtName, txtValue };
+    };
+  }
+});
+
+// server/registrar.js
+var require_registrar = __commonJS({
+  "server/registrar.js"(exports, module) {
+    var DAY = 864e5;
+    module.exports = function({ cfg, db, ws, stripe, domains, log }) {
+      const R = cfg.registrar;
+      const enabled = () => !!R.key;
+      const q = {
+        get: db.prepare("SELECT * FROM registrations WHERE host = ?"),
+        forWs: db.prepare("SELECT * FROM registrations WHERE workspace_id = ?"),
+        add: db.prepare("INSERT INTO registrations (host, workspace_id, property_id, status, years, contact, attempts, created_at, updated_at) VALUES (?, ?, ?, ?, 1, ?, 0, ?, ?)"),
+        waiting: db.prepare("SELECT * FROM registrations WHERE status = 'waiting' AND attempts < 6"),
+        renewDue: db.prepare("SELECT * FROM registrations WHERE status = 'active' AND expires_at < ?"),
+        claim: db.prepare("UPDATE registrations SET status = 'registering', attempts = attempts + 1, updated_at = ? WHERE host = ? AND status = 'waiting'"),
+        set: db.prepare("UPDATE registrations SET status = ?, error = ?, updated_at = ? WHERE host = ?"),
+        done: db.prepare("UPDATE registrations SET status = 'active', error = NULL, registered_at = ?, expires_at = ?, updated_at = ? WHERE host = ?"),
+        renewed: db.prepare("UPDATE registrations SET expires_at = ?, renewed_at = ?, error = NULL, updated_at = ? WHERE host = ?"),
+        del: db.prepare("DELETE FROM registrations WHERE host = ?")
+      };
+      async function api(method, path, body) {
+        const r = await fetch((R.apiBase || "https://api.20i.com") + path, {
+          method,
+          signal: AbortSignal.timeout(3e4),
+          headers: Object.assign({ authorization: "Bearer " + btoa(R.key), accept: "application/json" }, body ? { "content-type": "application/json" } : {}),
+          body: body ? JSON.stringify(body) : void 0
+        });
+        const text = await r.text();
+        let j;
+        try {
+          j = JSON.parse(text);
+        } catch (_) {
+          j = text.split(/\r?\n/).filter((l) => l.trim()).map((l) => {
+            try {
+              return JSON.parse(l);
+            } catch (e) {
+              return null;
+            }
+          }).filter(Boolean);
+        }
+        if (!r.ok) {
+          const e = new Error("20i " + r.status + ": " + String(j && (j.error || j.message) || text).slice(0, 200));
+          e.status = r.status;
+          throw e;
+        }
+        return j;
+      }
+      const tldOf = (h) => (h.match(/\.(co\.uk|org\.uk|me\.uk|[a-z]{2,})$/) || [])[1] || "";
+      function problem(h) {
+        if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/.test(h) || h.length > 80) return "That does not look like a domain. Type it like larchcabin.co.uk.";
+        if (h.split(".").length > (/\.(co|org|me)\.uk$/.test(h) ? 3 : 2)) return "Pick a main domain, without anything before it.";
+        if (!R.tlds.includes(tldOf(h))) return "We can register " + R.tlds.map((t) => "." + t).join(", ") + " domains for you. For another ending, buy it yourself and use \u201CI already have a domain\u201D.";
+        if (domains.problem(h)) return domains.problem(h);
+        return "";
+      }
+      async function search(names) {
+        names = [...new Set(names.map((n) => String(n || "").toLowerCase().trim()).filter((n) => n && !problem(n)))].slice(0, 8);
+        if (!names.length) return [];
+        if (!enabled()) return null;
+        const res = await api("GET", "/domain-search/" + encodeURIComponent(names.join(",")));
+        const seen = {};
+        (function walk(v, depth) {
+          if (!v || depth > 6) return;
+          if (Array.isArray(v)) return v.forEach((x) => walk(x, depth + 1));
+          if (typeof v !== "object") return;
+          const n = String(v.name || v.domain || "").toLowerCase();
+          if (n && names.includes(n) && v.can !== void 0) seen[n] = v.can === "register" && !v.premium;
+          Object.values(v).forEach((x) => typeof x === "object" && walk(x, depth + 1));
+        })(res, 0);
+        return names.map((d) => ({ d, ok: seen[d] === true }));
+      }
+      function phone(v) {
+        let d = String(v || "").replace(/[^\d+]/g, "");
+        if (d.startsWith("+")) {
+          d = d.slice(1);
+          return d.length >= 9 ? "+" + d.slice(0, 2) + "." + d.slice(2) : "";
+        }
+        if (d.startsWith("0")) d = d.slice(1);
+        return d.length >= 9 && d.length <= 11 ? "+44." + d : "";
+      }
+      function contact(acct, reg) {
+        const c = {
+          name: String(acct.name || "").trim().slice(0, 80),
+          organisation: String(reg.organisation || "").trim().slice(0, 80),
+          email: String(acct.email || "").trim().toLowerCase(),
+          address: String(reg.address || "").trim().slice(0, 120),
+          city: String(reg.city || "").trim().slice(0, 60),
+          sp: String(reg.county || "").trim().slice(0, 60),
+          pc: String(reg.postcode || "").trim().toUpperCase().slice(0, 10),
+          cc: "GB",
+          telephone: phone(reg.phone)
+        };
+        if (c.name.length < 2) return { err: "Enter your name." };
+        if (c.address.length < 3) return { err: "Enter the first line of your address. The domain is registered in your name." };
+        if (c.city.length < 2) return { err: "Enter your town or city." };
+        if (!/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/.test(c.pc)) return { err: "Enter a UK postcode, like LA22 9AA." };
+        if (!c.telephone) return { err: "Enter a phone number, like 07700 900123. The domain registry asks for one." };
+        return { contact: c };
+      }
+      async function order(wid, pid, h, acct, reg) {
+        if (!enabled()) return { err: "Buying domains is not switched on yet." };
+        const bad = problem(h);
+        if (bad) return { err: bad };
+        const c = contact(acct, reg || {});
+        if (c.err) return c;
+        const mine = (await q.forWs.all(wid)).filter((r) => r.status !== "failed");
+        if (mine.length >= R.perAccount) return { err: "Your plan includes " + R.perAccount + " new domain. Use \u201CI already have a domain\u201D for more." };
+        const ex = await q.get.get(h);
+        if (ex && ex.workspace_id !== wid && ex.status !== "failed") return { err: "Someone has just taken " + h + ". Pick another." };
+        if (ex) await q.del.run(h);
+        const t = Date.now();
+        await q.add.run(h, wid, pid, "waiting", JSON.stringify(c.contact), t, t);
+        return { ok: true };
+      }
+      async function note(wid, pid, title, text) {
+        try {
+          await ws.withWs(wid, (BB) => {
+            BB.log("site", title, text, pid, ["Website", "Domain"]);
+            BB.store.commit({});
+          });
+        } catch (e) {
+          log("registrar", "note", e.message);
+        }
+      }
+      async function paying(wid) {
+        const r = await ws.row(wid);
+        if (!r) return false;
+        if (!stripe.enabled) return r.billing_status !== "cancelled";
+        return r.billing_status === "active";
+      }
+      async function connect(h) {
+        if (R.packageId) {
+          await api("POST", "/package/" + encodeURIComponent(R.packageId) + "/names", { add: [h] });
+          try {
+            await api("POST", "/package/" + encodeURIComponent(R.packageId) + "/web/freeSSL", { name: h, enabled: true });
+          } catch (e) {
+            log("registrar", "free SSL", h, e.message);
+          }
+          return;
+        }
+        const t = await domains.targets(), recs = { CNAME: [{ host: "www", target: t.target }] };
+        if (t.ips.length) recs.A = t.ips.map((ip) => ({ host: "@", ip }));
+        await api("POST", "/package/" + encodeURIComponent(h) + "/domain/" + encodeURIComponent(h) + "/dns", { new: recs });
+        domains.certify(h);
+      }
+      async function register(row) {
+        const h = row.host, wid = row.workspace_id, pid = row.property_id;
+        const claimed = await q.claim.run(Date.now(), h);
+        if (!claimed.changes) return;
+        try {
+          const s = await search([h]);
+          if (!s || !s[0] || !s[0].ok) {
+            await q.set.run("failed", "No longer available", Date.now(), h);
+            await ws.act(wid, "updateProperty", [pid, { domain: "" }, true]).catch(() => {
+            });
+            await note(wid, pid, "Domain", "Someone else registered " + h + " before we could. Your site stays on its free address. Pick another domain in Website & SEO, and we will set it up for you.");
+            return log("registrar", h, "taken before we could register it");
+          }
+          const c = JSON.parse(row.contact);
+          const ok = await api("POST", "/reseller/*/addDomain", {
+            name: h,
+            years: 1,
+            contact: Object.assign({}, c, /\.uk$/.test(h) ? { extension: { type: "IND" } } : {}),
+            privacyService: R.privacy && !/\.uk$/.test(h),
+            caRegistryAgreement: true
+          });
+          if (ok === false || ok && ok.error) throw new Error("20i would not register it" + (ok && ok.error ? ": " + JSON.stringify(ok.error).slice(0, 160) : ""));
+          const t = Date.now();
+          await q.done.run(t, t + 365 * DAY, t, h);
+          log("registrar", wid, "registered", h);
+          await ws.claimDomain(h, wid, pid);
+          try {
+            await connect(h);
+          } catch (e) {
+            log("registrar", "connect", h, e.message);
+            await q.set.run("active", "Registered, but pointing it failed: " + e.message.slice(0, 200), Date.now(), h);
+          }
+          await note(wid, pid, "Domain", "We registered " + h + " in your name and pointed it at your booking site. The padlock (HTTPS) is added automatically, usually within the hour.");
+        } catch (e) {
+          log("registrar", h, e.message);
+          const again = row.attempts + 1 < 6;
+          await q.set.run(again ? "waiting" : "failed", e.message.slice(0, 300), Date.now(), h);
+          if (!again) await note(wid, pid, "Domain", "We could not register " + h + " for you. Our team has been told and will sort it out. Your site keeps working on its free address.");
+        }
+      }
+      async function due(onlyWs) {
+        if (!enabled()) return;
+        for (const r of await q.waiting.all()) {
+          if (onlyWs && r.workspace_id !== onlyWs) continue;
+          if (await paying(r.workspace_id)) await register(r);
+        }
+      }
+      async function renewals(t = Date.now()) {
+        if (!enabled()) return;
+        for (const r of await q.renewDue.all(t + 30 * DAY)) {
+          if (!await paying(r.workspace_id)) {
+            if (r.expires_at < t) {
+              await q.set.run("lapsed", "Plan ended, so it was not renewed", t, r.host);
+              log("registrar", r.host, "lapsed");
+            }
+            continue;
+          }
+          try {
+            const ok = await api("POST", "/reseller/*/renewDomain", { name: r.host, years: 1, renewPrivacy: R.privacy && !/\.uk$/.test(r.host) });
+            if (ok === false) throw new Error("20i would not renew it");
+            await q.renewed.run(r.expires_at + 365 * DAY, t, t, r.host);
+            log("registrar", r.workspace_id, "renewed", r.host);
+            if (R.renewal === "charge" && R.renewalPrice > 0 && stripe.enabled) {
+              const w = await ws.row(r.workspace_id);
+              if (w && w.stripe_customer) await stripe.api("POST", "/invoiceitems", { customer: w.stripe_customer, amount: Math.round(R.renewalPrice * 100), currency: "gbp", description: "Domain renewal: " + r.host + " for one year" }, { idem: "renew-" + r.host + "-" + r.expires_at });
+            }
+            await note(r.workspace_id, r.property_id, "Domain", "We renewed " + r.host + " for another year" + (R.renewal === "charge" && R.renewalPrice > 0 ? " (\xA3" + R.renewalPrice + ", added to your next invoice)." : ", included in your plan."));
+          } catch (e) {
+            log("registrar", "renew", r.host, e.message);
+            await q.set.run("active", "Renewal failed: " + e.message.slice(0, 200), t, r.host);
+          }
+        }
+      }
+      const offer = () => ({ live: enabled(), tlds: R.tlds, renewal: R.renewal, renewalPrice: R.renewalPrice });
+      const status = (wid) => q.forWs.all(wid);
+      return { enabled, search, problem, contact, order, due, renewals, offer, status, phone };
     };
   }
 });
@@ -22454,6 +22727,7 @@ var require_server = __commonJS({
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
+    var registrar = require_registrar()({ cfg, db, ws, stripe, domains, log });
     var backup = require_backup()({ db, cfg, log });
     var hostMail = require_host_emails()({ db, cfg, msg, auth, ws, urls, leads, log });
     var campaigns = require_campaigns()({ db, cfg, msg, auth, leads, hostMail, log });
@@ -22920,6 +23194,21 @@ var require_server = __commonJS({
       if (await auth.userByEmail(email)) throw err(409, "There is already an account for that email. Sign in instead.");
       const ref = await aff.forSignup(req, b.ref, email);
       const plan = "Growth";
+      const buyDomain = registrar.enabled() && b.domainMode === "new" && b.property && String(b.property.domain || "").toLowerCase().trim();
+      const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith("." + cfg.sitesDomain)) && !ws.isOurs(buyDomain);
+      if (wantsBuy) {
+        const bad = registrar.problem(buyDomain);
+        if (bad) throw err(400, bad);
+        const c = registrar.contact({ name, email }, b.registrant || {});
+        if (c.err) throw err(400, c.err);
+        let s = null;
+        try {
+          s = await registrar.search([buyDomain]);
+        } catch (e) {
+          log("signup domain search", e.message);
+        }
+        if (s && s[0] && !s[0].ok) throw err(409, buyDomain + " has just been taken. Go back to the domain step and pick another.");
+      }
       const business = String(a.business || "").trim().slice(0, 80) || name.split(" ")[0] + "'s holiday lets";
       const wid = await ws.createLive({ business, owner: name, email, plan });
       const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
@@ -22935,6 +23224,11 @@ var require_server = __commonJS({
         p.rating = 0;
         p.domain = String(p.domain || "").toLowerCase().replace(/[^a-z0-9.-]/g, "").slice(0, 80);
         await ws.act(wid, "addProperty", [p]);
+        if (wantsBuy) {
+          const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
+          const o = await registrar.order(wid, pid, buyDomain, { name, email }, Object.assign({ organisation: a.business }, b.registrant || {}));
+          if (o.err) log("signup domain", wid, buyDomain, o.err);
+        }
         if (b.addon || b.annual) await ws.withWs(wid, (BB) => {
           const a2 = BB.store.get().account;
           if (b.addon) a2.addon = true;
@@ -22955,6 +23249,7 @@ var require_server = __commonJS({
         return json(res, { ok: true, redirect: to }, 200, set);
       }
       ws.defer(welcome(wid), "welcome");
+      if (wantsBuy) ws.defer(registrar.due(wid), "domain");
       json(res, { ok: true, redirect: "/app?welcome=1" }, 200, set);
     }
     async function planCheckout(w) {
@@ -22975,6 +23270,7 @@ var require_server = __commonJS({
         ws.defer(welcome(wid), "welcome");
         ws.defer(effects.siteLive(wid), "site-live");
       }
+      ws.defer(registrar.due(wid), "domain");
     }
     var PAY_OPEN = ["/app/pay", "/app/pay/done", "/app/billing", "/app/billing/start", "/app/billing/portal", "/app/account"];
     async function mustPay(req, w) {
@@ -23309,7 +23605,7 @@ Disallow: /
           description: mkt.DESCRIPTION,
           head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
-          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) }
+          boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: "/api/domains/search", payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
       }
       if (m === "GET" && Object.hasOwn(answers.PAGES, p)) {
@@ -23330,6 +23626,17 @@ Disallow: /
       if (p === "/llms-full.txt") return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()) + "\n---\n\n" + answers.fullText(cfg.baseUrl), "text/plain; charset=utf-8");
       if (p === "/" + ownIndexKey() + ".txt") return send(res, 200, ownIndexKey(), "text/plain; charset=utf-8");
       if (p === "/api/signup" && m === "POST") return await signup(req, res);
+      if (p === "/api/domains/search" && m === "GET") {
+        if (!auth.limit("dsearch:" + ip(req), 60, 36e5)) throw err(429, "Too many searches. Try again in a few minutes.");
+        if (!registrar.enabled()) return json(res, { live: false });
+        const names = String(u.searchParams.get("names") || "").split(",").slice(0, 8);
+        try {
+          return json(res, { live: true, results: await registrar.search(names) });
+        } catch (e) {
+          log("domain search", e.message);
+          throw err(502, "We could not check domains just now. Try again in a minute.");
+        }
+      }
       if (p === "/admin") return await adminPage(req, res);
       if (p === "/admin/affiliates" || p.startsWith("/admin/affiliates/")) {
         if (!await isAdmin(req)) return notFound(res);
@@ -24009,7 +24316,11 @@ Disallow: /
           log("job", id, e.message);
         }
       }
-      if (last.domains === t) bg("domains", checkDomains());
+      if (last.domains === t) {
+        bg("domains", checkDomains());
+        bg("registrar", registrar.due());
+      }
+      if (daily) bg("renewals", registrar.renewals(t));
       if (last.events === t && cfg.events.crawl) bg("events", eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 1e5 : 24e4));
       if (daily) {
         bg("demos", ws.cleanupDemos(7));
