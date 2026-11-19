@@ -530,7 +530,7 @@
     let signup = null;
     if (REAL()) {
       const a = ob.acct || {};
-      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url })
+      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url })
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     }
     const t = () => later(inst, 480, () => {
@@ -665,10 +665,10 @@
     return '';
   }
   function acctFields(inst) {
-    const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', terms: false }), u = inst.uid;
+    const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', ref: inst.ref || '', terms: false }), u = inst.uid;
     const f = (k, label, type, ac, ph) => '<label class="s-f"><span>' + label + '</span><input id="s-ac-' + k + '-' + u + '" data-ac="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(a[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
     return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
-      '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + '</div>' +
+      '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + f('ref', 'Referral code (optional)', 'text', 'off', 'If someone recommended us') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
       (inst.st.ob.acctErr ? '<p class="s-err" role="alert">' + esc(inst.st.ob.acctErr) + '</p>' : '') + '</div>';
   }
@@ -733,10 +733,10 @@
 
   BB.define('site', {
     create(root, opts, inst) {
-      inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = [];
+      inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = []; inst.ref = opts.ref || '';
       Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
         ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
-          opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', terms: false } } : {}) });
+          opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', ref: opts.ref || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
       root.classList.add('x-site');
 
