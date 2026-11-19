@@ -75,5 +75,5 @@ module.exports = {
   // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
   // is held for refunds, and the smallest payout (pence).
   affiliate: { rate: Math.max(0, Math.min(100, +(E.AFFILIATE_RATE || 25))), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
-  icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15),
+  icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
 };

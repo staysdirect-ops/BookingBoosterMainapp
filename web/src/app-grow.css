@@ -622,6 +622,12 @@
 .ag .ag-dns-w { grid-column: 2 / -1; grid-row: 3; }
 .ag .ag-dns-t { align-self: start; }
 @media (max-width: 480px) { .ag .ag-dns-r { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px 8px; padding: 10px; } .ag .ag-dns-v > b { font-size: 12px; } }
+/* calendar sync: per-home status and the channel manager API section */
+.ag .ag-calf-s { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+.ag .ag-calf-s.bad { color: var(--bad, #B42318); }
+.ag .ag-calf-s svg { width: 14px; height: 14px; flex: none; }
+.ag .ag-addon-sub { margin-top: 20px; }
+.ag .ag-calf select.input { width: 100%; }
 
 /* Own domain: progress, notes and registrar steps */
 .ag .ag-dsteps { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }

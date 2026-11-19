@@ -890,6 +890,12 @@ var require_bb_embedded_files = __commonJS({
 .ag .ag-dns-w { grid-column: 2 / -1; grid-row: 3; }
 .ag .ag-dns-t { align-self: start; }
 @media (max-width: 480px) { .ag .ag-dns-r { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px 8px; padding: 10px; } .ag .ag-dns-v > b { font-size: 12px; } }
+/* calendar sync: per-home status and the channel manager API section */
+.ag .ag-calf-s { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+.ag .ag-calf-s.bad { color: var(--bad, #B42318); }
+.ag .ag-calf-s svg { width: 14px; height: 14px; flex: none; }
+.ag .ag-addon-sub { margin-top: 20px; }
+.ag .ag-calf select.input { width: 100%; }
 
 /* Own domain: progress, notes and registrar steps */
 .ag .ag-dsteps { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
@@ -1003,6 +1009,7 @@ var require_bb_embedded_files = __commonJS({
     if (el.dataset.agimpfile !== undefined) { const f = el.files && el.files[0]; if (f) { const r = new FileReader(); r.onload = () => { inst.st.gu_csv = String(r.result).slice(0, 2e6); inst.st.gu_rows = parseCsv(inst.st.gu_csv); inst.render(); }; r.readAsText(f); } el.value = ''; return; }
     if (el.dataset.agphotos) { if (el.files && el.files.length && BB.api) uploadPhotos(inst, el.dataset.agphotos, el.files); el.value = ''; return; }
     if (el.dataset.agcap != null) { const p = BB.q.property(inst.st.ws_pid); const ph = (p.photos || []).map(x => Object.assign({}, x)); const i = +el.dataset.agcap; if (ph[i] && ph[i].cap !== el.value.trim()) { ph[i].cap = el.value.trim().slice(0, 80); BB.act.updateProperty(p.id, { photos: ph }, true); BB.toast('Caption saved'); } return; }
+    if (el.dataset.agmap) { HANDLERS['cn-map'](inst, el.dataset.agmap, el); return; }
     if (el.dataset.agNotes) { inst.st.gu_nd = null; const g = BB.q.guest(el.dataset.agNotes); if (g && g.notes !== el.value) { BB.act.updateGuest(g.id, { notes: el.value }); BB.toast('Note saved'); } return; }
     if (el.tagName === 'SELECT') onInput(ev, inst);
   }
@@ -1113,6 +1120,16 @@ var require_bb_embedded_files = __commonJS({
       BB.act.setCalendarLink(v, el.dataset.pid, url.replace(/^webcal:/i, 'https:')); inst.st.cn_open = null;
       BB.toast(url ? 'Saved. We will check it every few minutes.' : 'Calendar link removed', url ? 'good' : '');
     },
+    'cn-api': async (inst, v) => {
+      const info = CN[v] || {}; const creds = {}; let missing = null;
+      (info.fields || []).forEach(([k, label]) => { const inp = document.getElementById(ID(inst, 'api-' + v + '-' + k)); creds[k] = inp ? inp.value.trim() : ''; if (!creds[k] && !missing) missing = label; });
+      if (missing) { BB.toast('Add your ' + missing.toLowerCase() + ' first', 'bad'); return; }
+      inst.set({ cn_busy: v });
+      try { const j = await BB.api.call('/app/channel/connect', { id: v, creds }); BB.api.accept(j); inst.st.cn_open = null; BB.toast(BB.q.integration(v).name + ' connected. Found ' + j.listings.length + (j.listings.length === 1 ? ' listing' : ' listings'), 'good'); }
+      catch (e) { BB.toast(e.message, 'bad'); }
+      inst.set({ cn_busy: false });
+    },
+    'cn-map': (inst, v, el) => { const r = BB.act.mapChannelListing(v, el.dataset.pid, el.value); if (r && r.ok === false && r.error) BB.toast(r.error, 'bad'); else BB.toast(el.value ? 'Linked. Syncing now.' : 'Unlinked', el.value ? 'good' : ''); },
     'cn-copy': (inst, v, el) => BB.copy(v, document.getElementById(el.dataset.el)),
     'cn-sync': (inst, v) => {
       const k = BB.act.syncChannel(v); const i = BB.q.integration(v);
@@ -1662,6 +1679,12 @@ var require_bb_embedded_files = __commonJS({
     airbnb: { on: 'Dates booked on Airbnb show on your calendar as "Booked on Airbnb" and close on your own sites. We read dates only, never guests, prices or messages.', stop: 'Dates booked on Airbnb will no longer block your own sites.', ical: 'airbnb.co.uk/calendar/ical/48213907.ics' },
     vrbo: { on: 'Dates booked on Vrbo show on your calendar as "Booked on Vrbo" and close on your own sites. We read dates only.', stop: 'Dates booked on Vrbo will no longer block your own sites.', ical: 'vrbo.com/icalendar/3812240.ics' },
     booking: { on: 'Dates booked on Booking.com show on your calendar as "Booked on Booking.com" and close on your own sites. We read dates only.', stop: 'Dates booked on Booking.com will no longer block your own sites.', ical: 'admin.booking.com/hotel/ical/9021774.ics' },
+    other: { on: 'Dates booked on that site show on your calendar as blocked and close on your own sites. We read dates only.', stop: 'Dates booked on that site will no longer block your own sites.', ical: 'plumguide.com/ical/88213.ics' },
+    beds24: { on: 'Two-way: dates taken in Beds24 close on your sites, and your direct bookings close the same nights in Beds24.', stop: 'We reopen the nights we closed in Beds24 and stop syncing.', how: 'In Beds24 open Settings, Apps & Integrations, API. Make an invite code with read and write access to bookings and read access to properties, then paste it here.', fields: [['inviteCode', 'Invite code', 1]] },
+    smoobu: { on: 'Two-way: dates taken in Smoobu close on your sites, and your direct bookings close the same nights in Smoobu.', stop: 'We remove the blocks we made in Smoobu and stop syncing.', how: 'In Smoobu open Settings, Advanced, API Keys. Click Create API Key, then Generate Secret, and paste both here (Smoobu only shows the secret once).', fields: [['apiKey', 'API key'], ['apiSecret', 'API secret', 1]] },
+    hostaway: { on: 'Two-way: dates taken in Hostaway close on your sites, and your direct bookings close the same nights in Hostaway.', stop: 'We reopen the nights we closed in Hostaway and stop syncing.', how: 'In Hostaway open Settings, Hostaway API, and create an API key. Paste your account ID and the key here.', fields: [['accountId', 'Account ID'], ['apiKey', 'API key', 1]] },
+    guesty: { on: 'Two-way: dates taken in Guesty close on your sites, and your direct bookings close the same nights in Guesty.', stop: 'We reopen the nights we closed in Guesty and stop syncing.', how: 'In Guesty open Integrations, API (Open API), and create a new application. Paste its client ID and client secret here.', fields: [['clientId', 'Client ID'], ['clientSecret', 'Client secret', 1]] },
+    lodgify: { on: 'Dates booked in Lodgify close on your sites. Lodgify reads your direct bookings from your Bookingbooster calendar link.', stop: 'Dates booked in Lodgify will no longer block your own sites.', how: 'In Lodgify open Settings, Public API, and copy your API key. Then add your Bookingbooster calendar link to each Lodgify property (Calendar, Sync) so direct bookings close there too.', fields: [['apiKey', 'API key', 1]] },
   };
   const GICON = { Payments: 'card', Operations: 'key', Messaging: 'sms', 'Get found': 'globe', Pricing: 'chart', 'Add-ons': 'cal' };
   V.connections = Object.assign({
@@ -1689,11 +1712,28 @@ var require_bb_embedded_files = __commonJS({
         '<div class="ag-darr" aria-hidden="true"><span>' + I('arrow') + '</span><small>Runs the stay</small></div>' +
         '<div class="ag-dcol"><span class="eyebrow">Then for every guest</span>' + node('Payment', c('stripe') ? 'Instant booking with Stripe' : 'Request-to-book only', c('stripe'), 'card') + node('Guest app', c('stripe') ? 'Check-in, deposit, guidebook' : 'Check-in without deposit hold', c('stripe'), 'phone') + node('Smart locks', c('lock') ? 'A code for every stay' : 'Codes set by hand', c('lock'), 'lock') + node('Messages', c('email') && c('sms') ? 'Email and text' : c('email') ? 'Email only' : c('sms') ? 'Text only' : 'Paused', c('email') || c('sms'), 'inbox') + '</div></div>' +
         (issues.length ? '<div class="ag-issues">' + issues.map(i => '<p>' + I('plug') + '<span><b>' + esc(i.name) + ' is off.</b> ' + esc(CN[i.id].off) + '</span><button class="btn sm" data-ag="cn-toggle" data-v="' + i.id + '">Reconnect</button></p>').join('') + '</div>' : '') + '</section>';
-      const calForm = (inst, i) => '<div class="ag-calf">' + S().properties.map(p => { const fid = ID(inst, 'cal-' + i.id + '-' + p.id); const feed = (BB.BOOT && BB.BOOT.icalFeeds || {})[p.id];
-          return '<div class="ag-calf-r"><label class="field"><span>' + esc(p.short) + ': calendar link from your ' + esc(i.name) + '</span><input id="' + fid + '" type="url" inputmode="url" placeholder="https://\u2026 .ics" value="' + esc((i.links || {})[p.id] || '') + '"></label>' +
-            '<button class="btn sm" data-ag="cn-cal-save" data-v="' + i.id + '" data-pid="' + p.id + '" data-el="' + fid + '">Save</button>' +
-            (feed ? '<p class="ag-calf-x"><small>Paste this into your ' + esc(i.name) + ' so it blocks dates booked on your site:</small><code class="mono" id="' + fid + '-x">' + esc(feed) + '</code><button type="button" class="btn sm ghost" data-ag="cn-copy" data-v="' + esc(feed) + '" data-el="' + fid + '-x">Copy</button></p>' : '') + '</div>'; }).join('') +
+      // One row per home: the link we read, how the last check went, and the link to paste back into that site.
+      const linkStatus = (i, pid) => { const st2 = (i.status || {})[pid]; if (!st2) return ''; return '<small class="ag-calf-s ' + (st2.error ? 'bad' : 'good') + '">' + (st2.error ? I('x') + esc(st2.error) : I('check') + 'Checked ' + esc(BB.ago(new Date(st2.ok || st2.checked).toLocaleString('sv-SE', { timeZone: 'Europe/London' }).replace(' ', 'T').slice(0, 16))) + ' \xB7 ' + (st2.count || 0) + (st2.count === 1 ? ' stay or block' : ' stays and blocks') + (st2.empty ? ' (link came back empty, confirming on the next check)' : '')) + '</small>'; };
+      const calForm = (inst, i) => '<div class="ag-calf">' + S().properties.map(p => { const fid = ID(inst, 'cal-' + i.id + '-' + p.id); const base = (BB.BOOT && BB.BOOT.icalFeeds || {})[p.id]; const feed = base && base.replace(/\\.ics$/, '.' + i.id + '.ics');
+          return '<div class="ag-calf-r"><label class="field"><span>' + esc(p.short) + ': calendar link from ' + (i.id === 'other' ? 'the other site' : 'your ' + esc(i.name)) + '</span><input id="' + fid + '" type="url" inputmode="url" placeholder="https://\u2026 .ics" value="' + esc((i.links || {})[p.id] || '') + '"></label>' +
+            '<button class="btn sm" data-ag="cn-cal-save" data-v="' + i.id + '" data-pid="' + p.id + '" data-el="' + fid + '">Save</button>' + linkStatus(i, p.id) +
+            (feed ? '<p class="ag-calf-x"><small>Paste this into ' + (i.id === 'other' ? 'that site' : 'your ' + esc(i.name)) + ' (import calendar) so it closes dates booked on your site' + (i.id === 'cm' ? '' : ' and on your other synced calendars') + ':</small><code class="mono" id="' + fid + '-x">' + esc(feed) + '</code><button type="button" class="btn sm ghost" data-ag="cn-copy" data-v="' + esc(feed) + '" data-el="' + fid + '-x">Copy</button></p>' : '') + '</div>'; }).join('') +
+          (i.id === 'cm' ? '<p class="ag-note">' + I('bolt') + '<span>If your channel manager already connects to Airbnb, Vrbo or Booking.com, add only its link here, not theirs as well. If it is Beds24, Smoobu, Hostaway, Guesty or Lodgify, connect it directly below instead: it is faster.</span></p>' : '') +
           (S().account.addon ? '' : '<p class="ag-note">' + I('bolt') + '<span>Saving a link adds the calendar sync add-on, \xA315 a month, to your plan.</span></p>') + '</div>';
+      // Channel manager API: the key form, then which listing is which home.
+      const apiForm = (inst, i) => {
+        const info = CN[i.id] || {};
+        if (!i.connected) return st.cn_open === i.id ? '<div class="ag-calf">' + (info.fields || []).map(([k, label, secret]) => '<div class="ag-calf-r"><label class="field"><span>' + esc(i.name) + ' ' + esc(label.toLowerCase()) + '</span><input id="' + ID(inst, 'api-' + i.id + '-' + k) + '" type="' + (secret ? 'password' : 'text') + '" autocomplete="off" placeholder="Paste your ' + esc(label.toLowerCase()) + '"></label></div>').join('') +
+          '<div class="ag-acts-row"><button class="btn sm primary" data-ag="cn-api" data-v="' + i.id + '">' + (st.cn_busy === i.id ? 'Checking\u2026' : 'Connect ' + esc(i.name)) + '</button></div>' +
+          '<p class="ag-note">' + I('key') + '<span>' + esc(info.how || '') + ' The key is checked with ' + esc(i.name) + ', kept encrypted, and never shown again. We only read and close dates: no guest details, prices or messages.</span></p>' +
+          (S().account.addon ? '' : '<p class="ag-note">' + I('bolt') + '<span>Connecting adds the calendar sync add-on, \xA315 a month, to your plan.</span></p>') + '</div>' : '';
+        const ls = i.listings || [];
+        const base = (BB.BOOT && BB.BOOT.icalFeeds) || {};
+        return '<div class="ag-calf">' + S().properties.map(p => { const cur = (i.map || {})[p.id] || '';
+          return '<div class="ag-calf-r"><label class="field"><span>' + esc(p.short) + ' in ' + esc(i.name) + '</span><select class="input" data-agmap="' + i.id + '" data-pid="' + p.id + '"><option value="">Not linked</option>' + ls.map(l => '<option value="' + esc(l.id) + '"' + (String(cur) === String(l.id) ? ' selected' : '') + '>' + esc(l.name) + '</option>').join('') + '</select></label>' + (cur ? linkStatus(i, p.id) : '') +
+            (i.readOnly && base[p.id] ? '<p class="ag-calf-x"><small>Add this link to the property in ' + esc(i.name) + ' (Calendar, Sync) so your direct bookings close dates there too:</small><code class="mono" id="' + ID(inst, 'apix-' + p.id) + '">' + esc(base[p.id].replace(/\\.ics$/, '.cm.ics')) + '</code><button type="button" class="btn sm ghost" data-ag="cn-copy" data-v="' + esc(base[p.id].replace(/\\.ics$/, '.cm.ics')) + '" data-el="' + ID(inst, 'apix-' + p.id) + '">Copy</button></p>' : '') + '</div>'; }).join('') +
+          (ls.length ? '' : '<p class="ag-note">' + I('x') + '<span>We found no listings in your ' + esc(i.name) + ' account.</span></p>') + '</div>';
+      };
       const lockForm = (inst, i) => i.connected
         ? '<div class="ag-calf">' + ((i.locks || []).length ? '<p class="ag-note">' + I('key') + '<span>' + esc(i.locks.map(l => l.name).join(', ')) + '. Pick the lock for each home in Website & SEO, under Guest details.</span></p>' : '<p class="ag-note">' + I('key') + '<span>No locks found in your Nuki account yet.</span></p>') + '</div>'
         : (st.cn_open === 'lock' ? '<div class="ag-calf"><div class="ag-calf-r"><label class="field"><span>Nuki API token</span><input id="' + ID(inst, 'nuki') + '" type="password" autocomplete="off" placeholder="Paste your token"></label><button class="btn sm primary" data-ag="cn-nuki" data-el="' + ID(inst, 'nuki') + '">' + (st.cn_busy ? 'Checking\u2026' : 'Connect') + '</button></div>' +
@@ -1701,25 +1741,27 @@ var require_bb_embedded_files = __commonJS({
       const icard = i => {
         const info = CN[i.id] || {}; const conf = st.cn_conf === i.id; const r = res && res.id === i.id ? res : null; const ad = i.addon;
         if (soon(i.id)) return '<article class="ag-icard off"><div class="ag-ic-h"><span class="ag-logo l-' + i.id + '">' + esc(i.name.replace(/[^A-Za-z]/g, '').slice(0, 2)) + '</span><div><b>' + esc(i.name) + '</b><small>' + esc(i.detail || '') + '</small></div>' + BB.pill('muted', 'Coming soon') + '</div><p class="ag-ic-d">' + esc(info.does || info.on || '') + '</p></article>';
-        const pillH = i.connected ? BB.pill('good', ad ? 'Syncing' : 'Connected') : ad ? BB.pill('muted', 'Not added') : BB.pill(info.off && (!S().live || i.lastSync) ? 'warn' : 'muted', 'Off');
+        const pillH = i.connected && ad && i.error ? BB.pill('warn', 'Needs a look') : i.connected ? BB.pill('good', ad ? 'Syncing' : 'Connected') : ad ? BB.pill('muted', 'Not added') : BB.pill(info.off && (!S().live || i.lastSync) ? 'warn' : 'muted', 'Off');
         const desc = ad ? (i.connected ? info.on : i.detail) : (i.connected ? (info.on || info.does || '') : (info.off || info.does || ''));
-        return '<article class="ag-icard' + (i.connected ? '' : ' off') + (ad ? ' addon' : '') + '"><div class="ag-ic-h"><span class="ag-logo l-' + i.id + '">' + esc(i.name.replace(/[^A-Za-z]/g, '').slice(0, 2)) + '</span><div><b>' + esc(i.name) + '</b><small>' + esc(ad ? (i.connected ? 'Calendar link (iCal) \xB7 read only' : 'Included in the Calendar sync add-on') : i.detail) + '</small></div>' + pillH + '</div>' +
+        return '<article class="ag-icard' + (i.connected ? '' : ' off') + (ad ? ' addon' : '') + '"><div class="ag-ic-h"><span class="ag-logo l-' + i.id + '">' + esc(i.name.replace(/[^A-Za-z]/g, '').slice(0, 2)) + '</span><div><b>' + esc(i.name) + '</b><small>' + esc(ad ? (i.api ? (i.readOnly ? 'Channel manager API \xB7 reads bookings' : 'Channel manager API \xB7 two-way') : i.connected ? 'Calendar link (iCal)' : 'Included in the Calendar sync add-on') : i.detail) + '</small></div>' + pillH + '</div>' +
           '<p class="ag-ic-d">' + esc(desc || '') + '</p>' +
           (conf ? '<div class="ag-ic-conf"><p><b>' + (ad ? 'Stop calendar sync for your ' + esc(i.name) + '?' : 'Disconnect ' + esc(i.name) + '?') + '</b> ' + esc(info.off || info.stop) + '</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cn-toggle" data-v="' + i.id + '">' + (ad ? 'Stop sync' : 'Disconnect') + '</button><button class="btn sm ghost" data-ag="cn-keep">' + (ad ? 'Keep sync on' : 'Keep connected') + '</button></div></div>' : '') +
-          (ad && S().live && (i.connected || st.cn_open === i.id) ? calForm(inst, i) : '') +
+          (ad && !i.api && S().live && (i.connected || st.cn_open === i.id) ? calForm(inst, i) : '') +
+          (i.api && S().live ? apiForm(inst, i) : '') +
           (i.id === 'lock' && S().live ? lockForm(inst, i) : '') +
           (ad && !S().live && i.connected && info.ical ? '<p class="ag-ic-link mono">' + I('cal') + '<span>' + esc(info.ical) + '</span></p>' : '') +
           (r ? '<div class="ag-ic-res">' + (r.blk ? I('check') + '<span>' + esc(r.blk.note) + ': <button type="button" class="ag-link" data-ag-nav="calendar">' + esc(BB.q.property(r.blk.pid).short) + ', ' + D.fmt(r.blk.from) + ' \u2013 ' + D.fmt(r.blk.to) + '</button>. Blocked on your sites.</span>' : I('check') + '<span>Checked. No new dates.</span>') + '</div>' : '') +
           '<div class="ag-ic-f"><small class="muted mono">' + (i.lastSync ? (ad ? 'Checked ' : 'Last sync ') + esc(BB.ago(i.lastSync)) : ad ? 'Not added' : 'Never synced') + '</small><div class="ag-acts-row">' +
             (ad && i.connected ? '<button class="btn sm" data-ag="cn-sync" data-v="' + i.id + '">' + I('sync') + 'Check now</button>' : '') +
-            (conf ? '' : '<button class="btn sm ' + (i.connected ? 'ghost' : ad ? '' : 'primary') + '" data-ag="cn-toggle" data-v="' + i.id + '">' + (i.connected ? (ad ? 'Stop sync' : 'Disconnect') : (ad ? 'Add calendar link' : 'Connect')) + '</button>') + '</div></div></article>';
+            (conf ? '' : '<button class="btn sm ' + (i.connected ? 'ghost' : ad ? '' : 'primary') + '" data-ag="cn-toggle" data-v="' + i.id + '">' + (i.connected ? (ad ? 'Stop sync' : 'Disconnect') : (i.api ? 'Connect ' + esc(i.name) : ad ? 'Add calendar link' : 'Connect')) + '</button>') + '</div></div></article>';
       };
       return wrap(inst, 'ag-conn',
         vh('Connections', 'What runs your direct bookings, from payments and email to door codes, plus optional calendar sync. Turn one off and see exactly what changes.', syncing.length ? '<button class="btn" data-ag="cn-syncall">' + I('sync') + 'Check synced calendars</button>' : '') +
         (res && res.id === 'all' ? '<div class="ag-banner ' + (res.blks.length ? 'good' : 'info') + '">' + I(res.blks.length ? 'check' : 'sync') + '<div><p>' + (res.blks.length ? '<b>' + res.blks.length + (res.blks.length === 1 ? ' stay' : ' stays') + ' booked elsewhere.</b> Those dates are now blocked on your own sites, so you never double book.' : 'Calendars checked. No new dates.') + '</p>' + (res.blks.length ? '<div class="ag-links">' + res.blks.map(k => '<button class="btn sm" data-ag-nav="calendar">' + esc(k.note) + ' \xB7 ' + esc(BB.q.property(k.pid).short) + ' \xB7 ' + D.fmt(k.from) + ' \u2013 ' + D.fmt(k.to) + '</button>').join('') + '</div>' : '') + '</div></div>' : '') +
         diagram +
         groups.map(([gname, list]) => '<section class="ag-group"><h3 class="ag-gh">' + I(GICON[gname] || 'plug') + esc(gname) + '<span class="muted">' + list.filter(i => i.connected).length + ' of ' + list.length + ' connected</span></h3><div class="ag-icards">' + list.map(icard).join('') + '</div></section>').join('') +
-        (addons.length ? '<section class="ag-group ag-addons"><div class="ag-addon-h"><div><span class="eyebrow">Optional add-on</span><h3 class="disp">Calendar sync add-on, \xA315/month</h3><p>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Paste a calendar link (iCal) and dates booked there are blocked on your sites, so you never double book. We read dates only and never change anything on those platforms. You do not need it to take direct bookings.</p></div>' + (syncing.length ? BB.pill('good', 'On for ' + syncing.length + (syncing.length === 1 ? ' calendar' : ' calendars')) : BB.pill('muted', 'Not added')) + '</div><div class="ag-icards">' + addons.map(icard).join('') + '</div></section>' : '') + BB.aiTm('ag-tm'));
+        (addons.length ? '<section class="ag-group ag-addons"><div class="ag-addon-h"><div><span class="eyebrow">Optional add-on</span><h3 class="disp">Calendar sync add-on, \xA315/month</h3><p>Calendar sync with your channel manager, Airbnb, Vrbo, Booking.com or any site with a calendar link. Paste each calendar link (iCal) and dates booked there are blocked on your sites, then paste your Bookingbooster link back into each site so they block each other and your direct bookings. We check every few minutes, and again the moment a guest starts booking. Dates only: never guests, prices or messages. You do not need it to take direct bookings.</p></div>' + (syncing.length ? BB.pill('good', 'On for ' + syncing.length + (syncing.length === 1 ? ' calendar' : ' calendars')) : BB.pill('muted', 'Not added')) + '</div><div class="ag-icards">' + addons.filter(i => !i.api).map(icard).join('') + '</div>' +
+          (addons.some(i => i.api) ? '<div class="ag-addon-h ag-addon-sub"><div><h3 class="disp">Or connect your channel manager directly</h3><p>Use Beds24, Smoobu, Hostaway, Guesty or Lodgify? Connect it with your own API key instead of calendar links. Dates booked anywhere close on your sites within minutes, and your direct bookings close the same nights in your channel manager, which passes them on to Airbnb, Booking.com and Vrbo. Calendar links can take a few hours to reach Airbnb; this does not.</p></div></div><div class="ag-icards">' + addons.filter(i => i.api).map(icard).join('') + '</div>' : '') + '</section>' : '') + BB.aiTm('ag-tm'));
     },
   }, hooks);
 })();
@@ -2892,7 +2934,7 @@ var require_bb_embedded_files = __commonJS({
   const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
   const card = (title, meta, body, cls) => '<section class="a-card ' + (cls || '') + '">' + (title ? '<div class="a-card-h"><h3>' + title + '</h3>' + (meta ? '<div class="a-card-m">' + meta + '</div>' : '') + '</div>' : '') + body + '</section>';
   const DEP = 200;
-  const ADDONS = ['cm', 'airbnb', 'vrbo', 'booking']; // optional calendar sync (iCal): dates booked elsewhere arrive as blocks, never as bookings
+  const ADDONS = BB.SYNC_IDS; // optional calendar sync (iCal): dates booked elsewhere arrive as blocks, never as bookings
   const addonOn = () => ADDONS.some(c => BB.q.connected(c));
   const srcKey = b => b.channel !== 'direct' ? b.channel : (b.source || 'website');
   const srcChip = b => b.channel !== 'direct' ? '<span class="a-src s-' + b.channel + '"><i></i>' + esc(BB.CHANNEL[b.channel]) + '<em>add-on</em></span>' : '<span class="a-src s-' + esc(b.source || 'website') + '"><i></i>' + esc(BB.sourceLabel(b)) + '</span>';
@@ -5394,7 +5436,7 @@ button { cursor: pointer; }
   const reduced = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const TABS = [['today', 'Today', 'home'], ['calendar', 'Calendar', 'cal'], ['inbox', 'Inbox', 'inbox'], ['guests', 'Guests', 'users'], ['grow', 'Grow', 'chart']];
   const TAB_LABEL = Object.fromEntries(TABS.map(t => [t[0], t[1]]));
-  const CHANNELS = ['cm', 'airbnb', 'vrbo', 'booking']; // optional calendar sync links: dates booked there arrive as blocks
+  const CHANNELS = BB.SYNC_IDS; // optional calendar sync links: dates booked there arrive as blocks
 
   /* ---------- small data helpers ---------- */
   const lastMsg = t => t.messages[t.messages.length - 1] || null;
@@ -10317,6 +10359,52 @@ body.p-lock { overflow: hidden; }
       blocks: [], events: [], notifications: [], seq: 100,
     };
   };
+
+  /* ---------- calendar sync add-on: more calendars and channel manager APIs ---------- */
+  // Added to every account, old or new, the first time it loads.
+  BB.SYNC_EXTRA = [
+    { id: 'other', name: 'Other calendar', group: 'Add-ons', addon: true, connected: false, detail: 'Optional. Paste a calendar link (iCal) from any other site, such as Plum Guide, Sykes, Holidu, Expedia or Google Calendar. Dates booked there are blocked on your sites.', lastSync: null },
+    { id: 'beds24', name: 'Beds24', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Beds24 account. Dates booked there close on your sites, and direct bookings close the dates in Beds24 within minutes.', lastSync: null },
+    { id: 'smoobu', name: 'Smoobu', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Smoobu account. Dates booked there close on your sites, and direct bookings close the dates in Smoobu within minutes.', lastSync: null },
+    { id: 'hostaway', name: 'Hostaway', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Hostaway account. Dates booked there close on your sites, and direct bookings close the dates in Hostaway within minutes.', lastSync: null },
+    { id: 'guesty', name: 'Guesty', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Guesty account. Dates booked there close on your sites, and direct bookings close the dates in Guesty within minutes.', lastSync: null },
+    { id: 'lodgify', name: 'Lodgify', group: 'Add-ons', addon: true, api: true, readOnly: true, connected: false, detail: 'Reads your Lodgify bookings every few minutes so those dates close on your sites. Lodgify reads your direct bookings back from your Bookingbooster calendar link.', lastSync: null },
+  ];
+  BB.ensureChannels = function (s) {
+    if (!s || !Array.isArray(s.integrations)) return;
+    BB.SYNC_EXTRA.forEach(x => { if (!s.integrations.some(i => i.id === x.id)) s.integrations.push(Object.assign({}, x)); });
+  };
+  try { BB.ensureChannels(S()); } catch (_) {}
+
+  // Pick which listing in the channel manager is which home. The listings come from the server when the host connects.
+  BB.act.mapChannelListing = function (id, pid, listingId) {
+    const i = BB.q.integration(id); if (!i || !i.api || !BB.q.property(pid)) return { ok: false };
+    listingId = listingId == null ? '' : String(listingId);
+    if (listingId && !(i.listings || []).some(l => String(l.id) === listingId)) return { ok: false, error: 'That listing is not in your ' + i.name + ' account.' };
+    i.map = i.map || {};
+    if (listingId) i.map[pid] = listingId; else { delete i.map[pid]; S().blocks = S().blocks.filter(k => !(k.sync === id && k.propertyId === pid)); }
+    const l = (i.listings || []).find(x => String(x.id) === listingId);
+    BB.log('sync', i.name, listingId ? P(pid).short + ' is now linked to "' + (l ? l.name : listingId) + '" in ' + i.name + '.' : P(pid).short + ' is no longer linked to ' + i.name + '.', id);
+    if (listingId) BB.fx('channels.sync', { id });
+    BB.store.commit({ type: 'integration', id });
+    return { ok: true };
+  };
+
+  // When a direct booking is made, changed or cancelled on a home linked to a channel manager API, tell the server
+  // to update the channel manager straight away (not just on the next scheduled check).
+  const directPrint = () => {
+    const s = S(); const homes = new Set();
+    (s.integrations || []).forEach(i => { if (i.api && i.connected && i.map) Object.keys(i.map).forEach(pid => homes.add(pid)); });
+    if (!homes.size) return '';
+    return s.bookings.filter(b => homes.has(b.propertyId) && b.status !== 'cancelled' && b.checkOut >= s.today).map(b => b.id + ':' + b.propertyId + ':' + b.checkIn + ':' + b.checkOut).sort().join(',')
+      + '|' + s.blocks.filter(k => homes.has(k.propertyId) && !k.sync && k.to >= s.today).map(k => k.propertyId + ':' + k.from + ':' + k.to).sort().join(',');
+  };
+  const commit0 = BB.store.commit;
+  BB.store.commit = function (meta) {
+    const s = S();
+    if (s && s.live) { const fp = directPrint(); if (fp && fp !== s.directPrint) { s.directPrint = fp; BB.fx('channels.push', {}); } else if (!fp && s.directPrint) s.directPrint = ''; }
+    return commit0.call(BB.store, meta);
+  };
 })();
 ` }, "/app/web/src/store.js": { "t": `/* Bookingbooster prototype: shared data store, business rules and the connection layer.
    Every surface (website, host console, host mobile, property site, guest app) reads and writes this one store.
@@ -10349,10 +10437,14 @@ body.p-lock { overflow: hidden; }
   const TODAY = '2026-11-14';
   const PLATFORM_FEE = { direct: 0, airbnb: 0.155, vrbo: 0.08, booking: 0.15 };
   BB.PLATFORM_FEE = PLATFORM_FEE;
-  BB.CHANNEL = { direct: 'Direct', airbnb: 'Airbnb', vrbo: 'Vrbo', booking: 'Booking.com', cm: 'Channel manager' };
+  BB.CHANNEL = { direct: 'Direct', airbnb: 'Airbnb', vrbo: 'Vrbo', booking: 'Booking.com', cm: 'Channel manager', other: 'Other calendar', beds24: 'Beds24', smoobu: 'Smoobu', hostaway: 'Hostaway', guesty: 'Guesty', lodgify: 'Lodgify' };
   // Calendar sync (optional add-on) reads the dates booked elsewhere from a calendar link (iCal) and blocks them. Dates only: no guest names, prices or messages.
-  BB.SYNC_IDS = ['cm', 'airbnb', 'vrbo', 'booking'];
-  BB.bookedOn = id => id === 'cm' ? 'Booked via your channel manager' : 'Booked on ' + BB.CHANNEL[id];
+  // ICAL_IDS are calendar links (iCal) pasted per home. API_IDS are channel managers connected with the host's own API key:
+  // two-way and near instant (dates booked there block your sites, and direct bookings close the dates there).
+  BB.ICAL_IDS = ['cm', 'airbnb', 'vrbo', 'booking', 'other'];
+  BB.API_IDS = ['beds24', 'smoobu', 'hostaway', 'guesty', 'lodgify'];
+  BB.SYNC_IDS = BB.ICAL_IDS.concat(BB.API_IDS);
+  BB.bookedOn = id => id === 'cm' ? 'Booked via your channel manager' : id === 'other' ? 'Booked on another site' : BB.API_IDS.includes(id) ? 'Booked via ' + BB.CHANNEL[id] : 'Booked on ' + BB.CHANNEL[id];
   // How a booking found the host. Direct bookings are the product; 'sync' means it came in through the optional calendar sync add-on.
   BB.SOURCE = { website: 'Booking site', google: 'Google search', ai: 'AI answer', email: 'Guest email', campaign: 'Campaign', referral: 'Referral', 'guest-app': 'Guest app', console: 'Added by host', mobile: 'Host app', sync: 'Calendar sync' };
   BB.sourceLabel = b => b.channel !== 'direct' ? BB.bookedOn(b.channel) : (BB.SOURCE[b.source] || 'Booking site');
@@ -13707,7 +13799,7 @@ var require_config = __commonJS({
       // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
       // is held for refunds, and the smallest payout (pence).
       affiliate: { rate: Math.max(0, Math.min(100, +(E.AFFILIATE_RATE || 25))), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
-      icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15)
+      icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10)
     };
   }
 });
@@ -15070,7 +15162,7 @@ var require_ical = __commonJS({
       d.setUTCDate(d.getUTCDate() + n);
       return d.toISOString().slice(0, 10);
     }
-    function parse(text) {
+    function events(text) {
       const out = [];
       let ev = null;
       for (const line of unfold(text)) {
@@ -15078,7 +15170,7 @@ var require_ical = __commonJS({
         else if (line === "END:VEVENT") {
           if (ev && ev.from) {
             if (!ev.to || ev.to <= ev.from) ev.to = addDay(ev.from, 1);
-            if (ev.status !== "CANCELLED") out.push(ev);
+            if (ev.status !== "CANCELLED" && ev.to <= addDay(ev.from, 400)) out.push(ev);
           }
           ev = null;
         } else if (ev) {
@@ -15087,20 +15179,41 @@ var require_ical = __commonJS({
           const key = line.slice(0, i).split(";")[0].toUpperCase(), val = line.slice(i + 1).trim();
           if (key === "DTSTART") ev.from = toIso(val);
           if (key === "DTEND") ev.to = toIso(val);
+          if (key === "UID") ev.uid = val.slice(0, 200);
           if (key === "SUMMARY") ev.summary = val.slice(0, 120);
           if (key === "STATUS") ev.status = val.toUpperCase();
         }
       }
-      out.sort((a, b) => a.from.localeCompare(b.from));
+      return out;
+    }
+    function merge(list) {
+      const out = list.map((r) => ({ from: r.from, to: r.to })).sort((a, b) => a.from.localeCompare(b.from));
       const merged = [];
       for (const r of out) {
-        if (r.to > addDay(r.from, 400)) continue;
         const last = merged[merged.length - 1];
         if (last && r.from <= last.to) {
           if (r.to > last.to) last.to = r.to;
         } else merged.push({ from: r.from, to: r.to });
       }
       return merged;
+    }
+    function parse(text) {
+      return merge(events(text));
+    }
+    function fromNights(nights) {
+      const days = Array.from(new Set(nights)).sort();
+      const out = [];
+      for (const d of days) {
+        const last = out[out.length - 1];
+        if (last && last.to === d) last.to = addDay(d, 1);
+        else out.push({ from: d, to: addDay(d, 1) });
+      }
+      return out;
+    }
+    function nightsOf(from, to) {
+      const out = [];
+      for (let d = from; d < to && out.length < 800; d = addDay(d, 1)) out.push(d);
+      return out;
     }
     function privateIp(ip) {
       if (net.isIPv4(ip)) {
@@ -15148,20 +15261,33 @@ var require_ical = __commonJS({
         clearTimeout(t);
       }
     }
-    function feed(s, pid, host) {
+    var CHANNELS = ["cm", "airbnb", "vrbo", "booking", "other"];
+    function feed(s, pid, host, channel) {
       const p = s.properties.find((x) => x.id === pid);
       if (!p) return null;
+      if (channel && !CHANNELS.includes(channel)) return null;
       const stamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
       const d = (iso) => iso.replace(/-/g, "");
       const ev = [];
       for (const b of s.bookings) if (b.propertyId === pid && b.status !== "cancelled" && b.checkOut >= s.today) ev.push({ uid: b.id, from: b.checkIn, to: b.checkOut, summary: "Booked direct" });
-      for (const k of s.blocks) if (k.propertyId === pid && !k.sync && k.to >= s.today) ev.push({ uid: "blk-" + k.from + "-" + k.to, from: k.from, to: k.to, summary: "Not available" });
-      const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Bookingbooster//Calendar sync//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:" + p.name + " (direct bookings)"];
+      for (const k of s.blocks) {
+        if (k.propertyId !== pid || k.to < s.today) continue;
+        if (!k.sync) ev.push({ uid: "blk-" + k.from + "-" + k.to, from: k.from, to: k.to, summary: "Not available" });
+        else if (channel && k.sync !== channel) ev.push({ uid: "sync-" + k.sync + "-" + k.from + "-" + k.to, from: k.from, to: k.to, summary: "Not available" });
+      }
+      const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Bookingbooster//Calendar sync//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:" + p.name + (channel ? " (Bookingbooster)" : " (direct bookings)"), "X-PUBLISHED-TTL:PT15M", "REFRESH-INTERVAL;VALUE=DURATION:PT15M"];
       for (const e of ev) lines.push("BEGIN:VEVENT", "UID:" + e.uid + "@" + host, "DTSTAMP:" + stamp, "DTSTART;VALUE=DATE:" + d(e.from), "DTEND;VALUE=DATE:" + d(e.to), "SUMMARY:" + e.summary, "TRANSP:OPAQUE", "END:VEVENT");
       lines.push("END:VCALENDAR");
       return lines.join("\r\n") + "\r\n";
     }
-    module.exports = { parse, fetchCalendar, feed, privateIp };
+    function dropEchoes(list, s, pid, host) {
+      const own = /* @__PURE__ */ new Set();
+      for (const b of s.bookings) if (b.propertyId === pid && b.status !== "cancelled") own.add(b.checkIn + "|" + b.checkOut);
+      for (const k of s.blocks) if (k.propertyId === pid && !k.sync) own.add(k.from + "|" + k.to);
+      const tail = host ? "@" + String(host).toLowerCase() : null;
+      return list.filter((e) => !(tail && e.uid && String(e.uid).toLowerCase().endsWith(tail)) && !own.has(e.from + "|" + e.to));
+    }
+    module.exports = { parse, events, merge, fromNights, nightsOf, addDay, dropEchoes, fetchCalendar, feed, privateIp, CHANNELS };
   }
 });
 
@@ -18638,13 +18764,412 @@ var require_stripe_auto = __commonJS({
   }
 });
 
+// server/channels.js
+var require_channels = __commonJS({
+  "server/channels.js"(exports, module) {
+    var crypto = __require("crypto");
+    var ical = require_ical();
+    var UA = "Bookingbooster calendar sync (+https://booking-booster.co.uk)";
+    var ApiError = class extends Error {
+      constructor(msg, status) {
+        super(msg);
+        this.status = status;
+      }
+    };
+    async function http(method, url, { headers = {}, body, form, timeout = 15e3 } = {}) {
+      const h = Object.assign({ "user-agent": UA, accept: "application/json" }, headers);
+      let payload;
+      if (form) {
+        h["content-type"] = "application/x-www-form-urlencoded";
+        payload = new URLSearchParams(form).toString();
+      } else if (body !== void 0) {
+        h["content-type"] = "application/json";
+        payload = JSON.stringify(body);
+      }
+      let r;
+      try {
+        r = await fetch(url, { method, headers: h, body: payload, signal: AbortSignal.timeout(timeout) });
+      } catch (e) {
+        throw new ApiError(e.name === "TimeoutError" ? "took too long to answer" : "could not be reached");
+      }
+      const text = await r.text();
+      let j = null;
+      try {
+        j = text ? JSON.parse(text) : null;
+      } catch (_) {
+      }
+      if (r.status === 401 || r.status === 403) throw new ApiError("did not accept the key. Check it and connect again.", r.status);
+      if (r.status === 429) throw new ApiError("asked us to slow down. We will try again shortly.", 429);
+      if (!r.ok) throw new ApiError("answered with error " + r.status + (j && (j.message || j.error) ? " (" + String(j.message || j.error).slice(0, 120) + ")" : ""), r.status);
+      return j;
+    }
+    var need = (creds, keys) => {
+      for (const k of keys) if (!String(creds[k] || "").trim()) throw new ApiError("needs your " + k.replace(/([A-Z])/g, " $1").toLowerCase() + ".");
+    };
+    var lastNight = (to) => ical.addDay(to, -1);
+    var BEDS24 = "https://api.beds24.com/v2";
+    var beds24 = {
+      name: "Beds24",
+      fields: [{ key: "inviteCode", label: "Invite code", secret: true }],
+      async token(ctx) {
+        if (ctx.creds.token && ctx.creds.tokenExp > Date.now() + 6e4) return ctx.creds.token;
+        const j = await http("GET", BEDS24 + "/authentication/token", { headers: { refreshToken: ctx.creds.refreshToken } });
+        ctx.creds.token = j.token;
+        ctx.creds.tokenExp = Date.now() + (Number(j.expiresIn) || 86400) * 1e3;
+        await ctx.save(ctx.creds);
+        return j.token;
+      },
+      async connect(c) {
+        let creds;
+        if (c.refreshToken) creds = { refreshToken: String(c.refreshToken).trim() };
+        else {
+          need(c, ["inviteCode"]);
+          const j2 = await http("GET", BEDS24 + "/authentication/setup", { headers: { code: String(c.inviteCode).trim(), deviceName: "Bookingbooster" } });
+          creds = { refreshToken: j2.refreshToken, token: j2.token, tokenExp: Date.now() + (Number(j2.expiresIn) || 86400) * 1e3 };
+        }
+        const ctx = { creds, save: async () => {
+        } };
+        const j = await http("GET", BEDS24 + "/properties?includeAllRooms=true", { headers: { token: await beds24.token(ctx) } });
+        const listings = [];
+        for (const p of j && j.data || []) for (const r of p.roomTypes || []) listings.push({ id: String(r.id), name: (p.name || "Property") + ((p.roomTypes || []).length > 1 ? " \xB7 " + (r.name || r.id) : "") });
+        return { creds: ctx.creds, listings };
+      },
+      async busy(ctx, lid, a, b) {
+        const qs = new URLSearchParams({ roomId: lid, departureFrom: a, arrivalTo: b });
+        ["new", "confirmed", "request", "black"].forEach((x) => qs.append("status", x));
+        const j = await http("GET", BEDS24 + "/bookings?" + qs, { headers: { token: await beds24.token(ctx) } });
+        return { ranges: (j && j.data || []).filter((x) => x.arrival && x.departure).map((x) => ({ from: x.arrival, to: x.departure, ref: String(x.id) })) };
+      },
+      async block(ctx, lid, from, to, note) {
+        const j = await http("POST", BEDS24 + "/bookings", { headers: { token: await beds24.token(ctx) }, body: [{ roomId: Number(lid), status: "black", arrival: from, departure: to, lastName: note, notes: note }] });
+        const r = Array.isArray(j) ? j[0] : j;
+        const id = r && (r.new && r.new.id || r.id);
+        if (!id) throw new ApiError("did not confirm the block" + (r && r.errors ? ": " + JSON.stringify(r.errors).slice(0, 120) : "."));
+        return String(id);
+      },
+      async unblock(ctx, lid, rec) {
+        await http("DELETE", BEDS24 + "/bookings?id=" + encodeURIComponent(rec.ref), { headers: { token: await beds24.token(ctx) } });
+      }
+    };
+    var SMOOBU = "https://login.smoobu.com";
+    var rfc3986 = (x) => encodeURIComponent(x).replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+    function smoobuSign(creds, method, path, query, body, now = /* @__PURE__ */ new Date(), nonce = crypto.randomUUID()) {
+      const qs = Object.keys(query || {}).sort().map((k) => rfc3986(k) + "=" + rfc3986(query[k])).join("&");
+      const timestamp = now.toISOString().replace(/\.\d{3}Z$/, "Z");
+      const bodyHash = crypto.createHash("sha256").update(body || "").digest("hex");
+      const canonical = [method, path, qs, timestamp, nonce, bodyHash, creds.apiKey].join("\n");
+      const signature = crypto.createHmac("sha256", creds.apiSecret).update(canonical).digest("base64");
+      return { qs, headers: { "X-API-Key": creds.apiKey, "X-Timestamp": timestamp, "X-Nonce": nonce, "X-Signature": signature, "cache-control": "no-cache" } };
+    }
+    async function smoobuCall(creds, method, path, query, body) {
+      const raw = body === void 0 ? "" : JSON.stringify(body);
+      const sig = smoobuSign(creds, method, path, query, raw);
+      return http(method, SMOOBU + path + (sig.qs ? "?" + sig.qs : ""), { headers: sig.headers, body });
+    }
+    var smoobu = {
+      name: "Smoobu",
+      fields: [{ key: "apiKey", label: "API key" }, { key: "apiSecret", label: "API secret", secret: true }],
+      async connect(c) {
+        need(c, ["apiKey", "apiSecret"]);
+        const creds = { apiKey: String(c.apiKey).trim(), apiSecret: String(c.apiSecret).trim() };
+        const j = await smoobuCall(creds, "GET", "/api/apartments");
+        return { creds, listings: (j && j.apartments || []).map((x) => ({ id: String(x.id), name: x.name || String(x.id) })) };
+      },
+      async busy(ctx, lid, a, b) {
+        const out = [];
+        for (let page = 1; page <= 20; page++) {
+          const j = await smoobuCall(ctx.creds, "GET", "/api/reservations", { apartmentId: lid, departureFrom: a, arrivalTo: b, pageSize: "100", page: String(page), showCancellation: "false" });
+          for (const x of j && j.bookings || []) if (x.arrival && x.departure && !/cancel/i.test(String(x.type || ""))) out.push({ from: x.arrival, to: x.departure, ref: String(x.id) });
+          if (!j || !j.page_count || page >= j.page_count) break;
+        }
+        return { ranges: out };
+      },
+      async block(ctx, lid, from, to, note) {
+        const j = await smoobuCall(ctx.creds, "POST", "/api/reservations", void 0, { arrivalDate: from, departureDate: to, apartmentId: Number(lid), firstName: "Bookingbooster", lastName: note, notice: note + ". Dates only, made by Bookingbooster calendar sync." });
+        if (!j || !j.id) throw new ApiError("did not confirm the block.");
+        return String(j.id);
+      },
+      async unblock(ctx, lid, rec) {
+        await smoobuCall(ctx.creds, "DELETE", "/api/reservations/" + encodeURIComponent(rec.ref));
+      }
+    };
+    var HOSTAWAY = "https://api.hostaway.com/v1";
+    var hostaway = {
+      name: "Hostaway",
+      fields: [{ key: "accountId", label: "Account ID" }, { key: "apiKey", label: "API key", secret: true }],
+      async token(ctx) {
+        if (ctx.creds.token && ctx.creds.tokenExp > Date.now() + 36e5) return ctx.creds.token;
+        const j = await http("POST", HOSTAWAY + "/accessTokens", { form: { grant_type: "client_credentials", client_id: ctx.creds.accountId, client_secret: ctx.creds.apiKey, scope: "general" } });
+        ctx.creds.token = j.access_token;
+        ctx.creds.tokenExp = Date.now() + (Number(j.expires_in) || 86400) * 1e3;
+        await ctx.save(ctx.creds);
+        return j.access_token;
+      },
+      h: async (ctx) => ({ authorization: "Bearer " + await hostaway.token(ctx), "cache-control": "no-cache" }),
+      async connect(c) {
+        need(c, ["accountId", "apiKey"]);
+        const ctx = { creds: { accountId: String(c.accountId).trim(), apiKey: String(c.apiKey).trim() }, save: async () => {
+        } };
+        const j = await http("GET", HOSTAWAY + "/listings?limit=500", { headers: await hostaway.h(ctx) });
+        return { creds: ctx.creds, listings: (j && j.result || []).map((x) => ({ id: String(x.id), name: x.internalListingName || x.name || String(x.id) })) };
+      },
+      // The calendar covers reservations and the host's own blocks alike.
+      async busy(ctx, lid, a, b) {
+        const j = await http("GET", HOSTAWAY + "/listings/" + encodeURIComponent(lid) + "/calendar?" + new URLSearchParams({ startDate: a, endDate: b }), { headers: await hostaway.h(ctx) });
+        return { nights: (j && j.result || []).filter((d) => d.date && (d.isAvailable === 0 || d.isAvailable === false)).map((d) => String(d.date).slice(0, 10)) };
+      },
+      async block(ctx, lid, from, to, note) {
+        await http("PUT", HOSTAWAY + "/listings/" + encodeURIComponent(lid) + "/calendar", { headers: await hostaway.h(ctx), body: { startDate: from, endDate: lastNight(to), isAvailable: 0, note } });
+        return from + "/" + to;
+      },
+      async unblock(ctx, lid, rec) {
+        await http("PUT", HOSTAWAY + "/listings/" + encodeURIComponent(lid) + "/calendar", { headers: await hostaway.h(ctx), body: { startDate: rec.from, endDate: lastNight(rec.to), isAvailable: 1 } });
+      }
+    };
+    var GUESTY = "https://open-api.guesty.com";
+    var guesty = {
+      name: "Guesty",
+      fields: [{ key: "clientId", label: "Client ID" }, { key: "clientSecret", label: "Client secret", secret: true }],
+      async token(ctx) {
+        if (ctx.creds.token && ctx.creds.tokenExp > Date.now() + 6e5) return ctx.creds.token;
+        const j = await http("POST", GUESTY + "/oauth2/token", { form: { grant_type: "client_credentials", scope: "open-api", client_id: ctx.creds.clientId, client_secret: ctx.creds.clientSecret } });
+        ctx.creds.token = j.access_token;
+        ctx.creds.tokenExp = Date.now() + (Number(j.expires_in) || 86400) * 1e3;
+        await ctx.save(ctx.creds);
+        return j.access_token;
+      },
+      h: async (ctx) => ({ authorization: "Bearer " + await guesty.token(ctx) }),
+      async connect(c) {
+        need(c, ["clientId", "clientSecret"]);
+        const ctx = { creds: { clientId: String(c.clientId).trim(), clientSecret: String(c.clientSecret).trim() }, save: async () => {
+        } };
+        const j = await http("GET", GUESTY + "/v1/listings?" + new URLSearchParams({ limit: "100", fields: "_id title nickname" }), { headers: await guesty.h(ctx) });
+        return { creds: ctx.creds, listings: (j && j.results || []).map((x) => ({ id: String(x._id), name: x.nickname || x.title || String(x._id) })) };
+      },
+      async busy(ctx, lid, a, b) {
+        const j = await http("GET", GUESTY + "/v1/availability-pricing/api/calendar/listings/" + encodeURIComponent(lid) + "?" + new URLSearchParams({ startDate: a, endDate: b }), { headers: await guesty.h(ctx) });
+        const days = j && j.data && j.data.days || j && j.days || [];
+        return { nights: days.filter((d) => d.date && d.status && d.status !== "available").map((d) => String(d.date).slice(0, 10)) };
+      },
+      async block(ctx, lid, from, to, note) {
+        await http("PUT", GUESTY + "/v1/availability-pricing/api/calendar/listings/" + encodeURIComponent(lid), { headers: await guesty.h(ctx), body: { startDate: from, endDate: lastNight(to), status: "unavailable", note } });
+        return from + "/" + to;
+      },
+      async unblock(ctx, lid, rec) {
+        await http("PUT", GUESTY + "/v1/availability-pricing/api/calendar/listings/" + encodeURIComponent(lid), { headers: await guesty.h(ctx), body: { startDate: rec.from, endDate: lastNight(rec.to), status: "available" } });
+      }
+    };
+    var LODGIFY = "https://api.lodgify.com";
+    var lodgify = {
+      name: "Lodgify",
+      readOnly: true,
+      fields: [{ key: "apiKey", label: "API key", secret: true }],
+      h: (ctx) => ({ "X-ApiKey": ctx.creds.apiKey }),
+      async connect(c) {
+        need(c, ["apiKey"]);
+        const creds = { apiKey: String(c.apiKey).trim() };
+        const j = await http("GET", LODGIFY + "/v2/properties?" + new URLSearchParams({ size: "100" }), { headers: lodgify.h({ creds }) });
+        const items = Array.isArray(j) ? j : j && j.items || [];
+        return { creds, listings: items.map((x) => ({ id: String(x.id), name: x.name || String(x.id) })) };
+      },
+      async busy(ctx, lid, a, b) {
+        const out = [];
+        for (let page = 1; page <= 20; page++) {
+          const j = await http("GET", LODGIFY + "/v2/reservations/bookings?" + new URLSearchParams({ page: String(page), size: "50", stayFilter: "Upcoming", includeCount: "true" }), { headers: lodgify.h(ctx) });
+          const items = j && j.items || [];
+          for (const x of items) if (String(x.property_id) === String(lid) && x.arrival && x.departure && ["Booked", "Tentative", "Open"].includes(x.status)) out.push({ from: String(x.arrival).slice(0, 10), to: String(x.departure).slice(0, 10), ref: String(x.id) });
+          if (items.length < 50) break;
+        }
+        return { ranges: out.filter((r) => r.to > a && r.from < b) };
+      }
+    };
+    var ADAPTERS = { beds24, smoobu, hostaway, guesty, lodgify };
+    module.exports = function({ ws, secrets, log, host }) {
+      const key = (id) => "cm:" + id;
+      async function creds(wid, id) {
+        const raw = await secrets.get(wid, key(id));
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (_) {
+          return null;
+        }
+      }
+      async function connect(w, id, input) {
+        const A = ADAPTERS[id];
+        if (!A) throw new ApiError("Unknown channel manager.");
+        let r;
+        try {
+          r = await A.connect(input || {});
+        } catch (e) {
+          throw new ApiError(A.name + " " + e.message, 400);
+        }
+        await secrets.set(w.id, key(id), JSON.stringify(r.creds));
+        await ws.withWs(w.id, (BB) => {
+          const i = BB.q.integration(id);
+          const s = BB.store.get();
+          i.connected = true;
+          i.listings = r.listings.slice(0, 300);
+          i.error = null;
+          i.lastSync = s.today + "T" + s.clock;
+          i.map = i.map || {};
+          i.pushed = i.pushed || {};
+          const norm = (x) => String(x || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          for (const p of s.properties) if (!i.map[p.id]) {
+            const l = i.listings.find((x) => norm(x.name) && (norm(x.name) === norm(p.name) || norm(x.name) === norm(p.short))) || (s.properties.length === 1 && i.listings.length === 1 ? i.listings[0] : null);
+            if (l) i.map[p.id] = l.id;
+          }
+          s.account.addon = true;
+          BB.log("sync", i.name, "Connected your " + i.name + " account. Found " + i.listings.length + (i.listings.length === 1 ? " listing" : " listings") + ".", id);
+          BB.store.commit({ type: "integration", id });
+        });
+        return r.listings;
+      }
+      async function disconnect(w, id) {
+        const A = ADAPTERS[id];
+        const c = await creds(w.id, id);
+        const i = w.state.integrations.find((x) => x.id === id);
+        if (A && c && i && A.unblock) {
+          const ctx = { creds: c, save: (n) => secrets.set(w.id, key(id), JSON.stringify(n)) };
+          for (const [, rec] of Object.entries(i.pushed || {})) {
+            if (rec.to < w.state.today) continue;
+            try {
+              await A.unblock(ctx, rec.lid, rec);
+            } catch (e) {
+              log("channels", id, "unblock on disconnect", e.message);
+            }
+          }
+        }
+        await secrets.del(w.id, key(id));
+        await ws.withWs(w.id, (BB) => {
+          const x = BB.q.integration(id);
+          if (x) {
+            x.pushed = {};
+            x.listings = [];
+            x.map = {};
+            x.error = null;
+            x.status = {};
+          }
+          BB.store.commit({});
+        });
+      }
+      async function syncOne(w, id, { pull = true, push = true, only } = {}) {
+        const A = ADAPTERS[id];
+        const i = w.state.integrations.find((x) => x.id === id);
+        if (!A || !i || !i.connected || !i.map) return;
+        const c = await creds(w.id, id);
+        if (!c) return;
+        const ctx = { creds: c, save: (n) => secrets.set(w.id, key(id), JSON.stringify(n)) };
+        const s = w.state;
+        const today = s.today;
+        const until = ical.addDay(today, 540);
+        for (const [pid, lid] of Object.entries(i.map)) {
+          if (only && pid !== only) continue;
+          const status = { checked: (/* @__PURE__ */ new Date()).toISOString() };
+          try {
+            const pushed = Object.assign({}, i.pushed || {});
+            if (push && A.block) {
+              const want = {};
+              for (const b of s.bookings) if (b.propertyId === pid && b.status !== "cancelled" && b.checkOut > today) want["b:" + b.id] = { from: b.checkIn < today ? today : b.checkIn, to: b.checkOut, note: "Booked direct " + b.id };
+              for (const k of s.blocks) if (k.propertyId === pid && !k.sync && k.to > today) want["k:" + k.from + ":" + k.to] = { from: k.from < today ? today : k.from, to: k.to, note: "Not available (Bookingbooster)" };
+              const adds = {}, gone = [];
+              for (const [kk, rec] of Object.entries(pushed)) {
+                if (rec.pid !== pid) continue;
+                const wnt = want[kk];
+                if (wnt && wnt.from === rec.from && wnt.to === rec.to && rec.lid === lid) continue;
+                if (rec.to > today) await A.unblock(ctx, rec.lid, rec);
+                gone.push(kk);
+                delete pushed[kk];
+              }
+              for (const [kk, wnt] of Object.entries(want)) {
+                if (pushed[kk]) continue;
+                const ref = await A.block(ctx, lid, wnt.from, wnt.to, wnt.note);
+                adds[kk] = pushed[kk] = { pid, lid, from: wnt.from, to: wnt.to, ref };
+              }
+              if (gone.length || Object.keys(adds).length) {
+                status.pushed = Object.keys(adds).length;
+                status.removed = gone.length;
+                await ws.withWs(w.id, (BB) => {
+                  const x = BB.q.integration(id);
+                  x.pushed = x.pushed || {};
+                  gone.forEach((k) => delete x.pushed[k]);
+                  Object.assign(x.pushed, adds);
+                  BB.store.commit({ quiet: true });
+                }, { quiet: true });
+              }
+            }
+            if (pull) {
+              const got = await A.busy(ctx, lid, today, until);
+              const mine = Object.values(pushed).filter((r) => r.pid === pid);
+              const ownRefs = new Set(mine.map((r) => String(r.ref)));
+              let ranges;
+              if (got.nights) {
+                const ownN = /* @__PURE__ */ new Set();
+                mine.forEach((r) => ical.nightsOf(r.from, r.to).forEach((n) => ownN.add(n)));
+                ranges = ical.fromNights(got.nights.filter((n) => !ownN.has(n)));
+              } else ranges = ical.merge(ical.dropEchoes(got.ranges.filter((r) => !ownRefs.has(String(r.ref))), s, pid, host));
+              ranges = ranges.filter((r) => r.to > today);
+              status.count = ranges.length;
+              await ws.withWs(w.id, (BB) => BB.act.applyCalendar(id, pid, ranges), { quiet: true });
+            }
+            status.ok = status.checked;
+          } catch (e) {
+            status.error = A.name + " " + e.message;
+            log("channels", w.id, id, pid, e.message);
+          }
+          await ws.withWs(w.id, (BB) => {
+            const x = BB.q.integration(id);
+            x.status = x.status || {};
+            const prev = x.status[pid] || {};
+            x.status[pid] = Object.assign({}, prev, status, status.error ? {} : { error: null });
+            x.error = Object.values(x.status).map((v) => v.error).find(Boolean) || null;
+            if (status.error && !prev.error) BB.log("sync", x.name, "Could not sync " + (BB.q.property(pid) || {}).short + ": " + status.error, id);
+            if (status.ok) {
+              const st = BB.store.get();
+              x.lastSync = st.today + "T" + st.clock;
+            }
+            BB.store.commit({ quiet: true });
+          }, { quiet: true });
+        }
+      }
+      const running = /* @__PURE__ */ new Map();
+      function sync(w, opts = {}) {
+        const prev = running.get(w.id) || Promise.resolve();
+        const next = prev.then(() => syncAll(w, opts)).catch((e) => log("channels", w.id, e.message));
+        running.set(w.id, next);
+        next.finally(() => {
+          if (running.get(w.id) === next) running.delete(w.id);
+        });
+        return next;
+      }
+      async function syncAll(w, opts) {
+        const ids = opts.id ? [opts.id] : Object.keys(ADAPTERS);
+        for (const id of ids) {
+          try {
+            const cur = await ws.open(w.id);
+            await syncOne(cur || w, id, opts);
+          } catch (e) {
+            log("channels", w.id, id, e.message);
+          }
+        }
+      }
+      return { connect, disconnect, sync, ADAPTERS };
+    };
+    module.exports.ADAPTERS = ADAPTERS;
+    module.exports.ApiError = ApiError;
+    module.exports.smoobuSign = smoobuSign;
+  }
+});
+
 // server/effects.js
 var require_effects = __commonJS({
   "server/effects.js"(exports, module) {
     var ical = require_ical();
     var invoiceMod = require_invoice();
     module.exports = function(ctx) {
-      const { cfg, ws, msg, stripe, ai, auth, urls, db, log } = ctx;
+      const { cfg, ws, msg, stripe, ai, auth, urls, db, log, secrets } = ctx;
+      const host = new URL(cfg.baseUrl).host;
+      const channels = ctx.channels || require_channels()({ ws, secrets, log, host });
       const money = (n) => "\xA3" + Number(n || 0).toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0 });
       const fmt = (iso, o) => (/* @__PURE__ */ new Date(iso + "T00:00:00Z")).toLocaleDateString("en-GB", Object.assign({ timeZone: "UTC", weekday: "short", day: "numeric", month: "short", year: "numeric" }, o || {}));
       const first = (n) => String(n || "").split(" ")[0];
@@ -18786,26 +19311,59 @@ var require_effects = __commonJS({
           BB.store.commit({});
         });
       }
-      async function calendars(w, id) {
-        const s = w.state;
-        const ids = id ? [id] : ["cm", "airbnb", "vrbo", "booking"];
+      const ICAL_IDS = ical.CHANNELS;
+      async function calendars(w, id, only) {
+        const ids = id ? [id] : ICAL_IDS.concat(Object.keys(channels.ADAPTERS));
         for (const iid of ids) {
-          const i = s.integrations.find((x) => x.id === iid);
+          if (channels.ADAPTERS[iid]) {
+            await channels.sync(w, { id: iid, only });
+            continue;
+          }
+          const i = w.state.integrations.find((x) => x.id === iid);
           if (!i || !i.connected || !i.links) continue;
           for (const [pid, url] of Object.entries(i.links)) {
+            if (only && pid !== only) continue;
+            const status = { checked: (/* @__PURE__ */ new Date()).toISOString() };
             try {
-              const ranges = ical.parse(await ical.fetchCalendar(url));
-              await ws.withWs(w.id, (BB) => BB.act.applyCalendar(iid, pid, ranges), { quiet: true });
+              const s = w.state;
+              const ranges = ical.merge(ical.dropEchoes(ical.events(await ical.fetchCalendar(url)), s, pid, host)).filter((r) => r.to > s.today);
+              const had = s.blocks.filter((k) => k.sync === iid && k.propertyId === pid && k.to > s.today).length;
+              const prev = (i.status || {})[pid] || {};
+              if (!ranges.length && had && !prev.empty) {
+                status.empty = true;
+                status.ok = status.checked;
+                status.count = had;
+              } else {
+                status.empty = false;
+                status.ok = status.checked;
+                status.count = ranges.length;
+                await ws.withWs(w.id, (BB) => BB.act.applyCalendar(iid, pid, ranges), { quiet: true });
+              }
             } catch (e) {
-              await ws.withWs(w.id, (BB) => {
-                const ii = BB.q.integration(iid);
-                ii.error = e.message;
-                BB.log("sync", ii.name, "Could not read the calendar link for " + (BB.q.property(pid) || {}).short + ": " + e.message, iid);
-                BB.store.commit({});
-              });
+              status.error = e.message;
             }
+            await ws.withWs(w.id, (BB) => {
+              const ii = BB.q.integration(iid);
+              ii.status = ii.status || {};
+              const prev = ii.status[pid] || {};
+              ii.status[pid] = Object.assign({}, prev, status, status.error ? {} : { error: null });
+              ii.error = Object.values(ii.status).map((v) => v.error).find(Boolean) || null;
+              if (status.error && prev.error !== status.error) BB.log("sync", ii.name, "Could not read the calendar link for " + (BB.q.property(pid) || {}).short + ": " + status.error, iid);
+              if (status.empty && !prev.empty) BB.log("sync", ii.name, "The calendar link for " + (BB.q.property(pid) || {}).short + " came back empty. Its dates stay blocked until the next check confirms it.", iid);
+              BB.store.commit({ quiet: true });
+            }, { quiet: true });
           }
         }
+      }
+      const fresh = /* @__PURE__ */ new Map();
+      async function freshen(w, pid, ms = 5e3) {
+        if (w.kind !== "live") return;
+        const k = w.id + "|" + pid;
+        if (Date.now() - (fresh.get(k) || 0) < 3 * 6e4) return;
+        const linked = w.state.integrations.some((i) => i.connected && (i.links && i.links[pid] || i.api && i.map && i.map[pid]));
+        if (!linked) return;
+        fresh.set(k, Date.now());
+        await Promise.race([calendars(w, null, pid).catch((e) => log("freshen", e.message)), new Promise((r) => setTimeout(r, ms))]);
       }
       async function aiCheck(w) {
         const s = w.state;
@@ -18917,6 +19475,8 @@ var require_effects = __commonJS({
             else if (f.type === "sms.guest") await guestSms(w, d);
             else if (f.type === "campaign.send") await campaign(w, d);
             else if (f.type === "ical.sync") await calendars(w, d.id);
+            else if (f.type === "channels.sync") await channels.sync(w, { id: d.id });
+            else if (f.type === "channels.push") await channels.sync(w, { pull: false });
             else if (f.type === "ai.check") await aiCheck(w);
             else if (f.type === "payment.refund") await refund(w, d);
             else if (f.type === "payment.link") await paymentLink(w, d);
@@ -18933,7 +19493,7 @@ var require_effects = __commonJS({
           }
         }
       }
-      return Object.assign(run, { calendars, aiCheck, siteLive });
+      return Object.assign(run, { calendars, freshen, channels, aiCheck, siteLive });
     };
   }
 });
@@ -22766,6 +23326,7 @@ var require_server = __commonJS({
       if (!p) throw err(404, "That home is not taking bookings.");
       x.source = ["google", "ai", "campaign", "referral"].includes(input.source) ? input.source : input.source === "guest-app" ? "guest-app" : "website";
       x.channel = "direct";
+      await effects.freshen(w, p.id);
       const ready = stripeReady(w), how = pub.guestPay(w.state);
       if (kind === "transfer" && how === "card") return json(res, { ok: false, error: "This home takes card payments only. Pay by card or send a booking request." });
       if (kind !== "transfer" && kind !== "request" && how === "transfer") return json(res, { ok: false, error: "This home takes payment by bank transfer. Choose bank transfer to book.", transfer: true });
@@ -23140,13 +23701,13 @@ Disallow: /
         const step = ["checkin", "messages", "guide", "checkout", "trip"].includes(u.searchParams.get("step")) ? u.searchParams.get("step") : u.searchParams.get("done") || u.searchParams.get("paid") ? "done" : null;
         return tripPage(res, w, b, k, step);
       }
-      if (mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)\.ics$/)) {
+      if (mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z]+))?\.ics$/)) {
         const r = await ws.bySlug(mm[1]);
         const pid = decodeURIComponent(mm[2]);
-        if (!r || !auth.verify(mm[3], "ical", r.id, pid)) return send(res, 404, "Not found", "text/plain");
+        if (!r || !auth.verify(mm[3], "ical", r.id, pid) || mm[4] && !ical.CHANNELS.includes(mm[4])) return send(res, 404, "Not found", "text/plain");
         const w = await ws.open(r.id);
         w.catchUp();
-        const f = ical.feed(w.state, pid, MAIN_HOST);
+        const f = ical.feed(w.state, pid, MAIN_HOST, mm[4]);
         if (!f) return send(res, 404, "Not found", "text/plain");
         return send(res, 200, f, "text/calendar; charset=utf-8", { "cache-control": "no-cache", "content-disposition": 'inline; filename="' + pid + '.ics"' });
       }
@@ -23553,7 +24114,9 @@ Disallow: /
             if (iid === "lock" && cur.connected) await secrets.del(w.id, "nuki");
             if (iid === "sms" && !cur.connected && !cfg.sms.sid) {
             }
-            if (cur.addon && !cur.connected) throw err(400, "Paste a calendar link to turn on calendar sync.");
+            if (cur.api && !cur.connected) throw err(400, "Add your " + cur.name + " key to connect it.");
+            if (cur.addon && !cur.api && !cur.connected) throw err(400, "Paste a calendar link to turn on calendar sync.");
+            if (cur.api && cur.connected) await effects.channels.disconnect(w, iid);
           }
           if (name === "toggleIntegration" && j.args && j.args[0] === "stripe" && stripe.enabled) {
             const on = w.state.integrations.find((i) => i.id === "stripe").connected;
@@ -23672,7 +24235,27 @@ Disallow: /
           return json(res, { url: urls.trip(w, b) });
         }
         if (p === "/api/outbox") return json(res, { items: await msg.outbox(w.id, 100) });
-        if (p === "/api/calendar-feeds") return json(res, { feeds: w.state.properties.map((x) => ({ propertyId: x.id, name: x.name, url: urls.ical(w, x) })) });
+        if (p === "/api/calendar-feeds") return json(res, { feeds: w.state.properties.map((x) => {
+          const url = urls.ical(w, x);
+          return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map((c) => [c, url.replace(/\.ics$/, "." + c + ".ics")])) };
+        }) });
+        if (p === "/app/channel/connect" && m === "POST") {
+          const j = await jsonBody(req, 4e3);
+          const id = String(j.id || "");
+          const A = effects.channels.ADAPTERS[id];
+          if (!A) throw err(404, "Unknown channel manager");
+          if (!auth.limit("cm:" + w.id, 10, 6e5)) throw err(429, "Too many tries. Wait a few minutes and try again.");
+          const input = {};
+          for (const f of A.fields) input[f.key] = String((j.creds || {})[f.key] || "").trim().slice(0, 500);
+          let listings;
+          try {
+            listings = await effects.channels.connect(w, id, input);
+          } catch (e) {
+            throw err(e.status && e.status < 500 ? 400 : 502, e.message);
+          }
+          effects.channels.sync(w, { id }).catch((e) => log("channels", e.message));
+          return json(res, { state: (await ws.open(w.id)).state, version: await ws.version(w.id), listings });
+        }
         return notFound(res);
       }
       return notFound(res);

@@ -29,10 +29,14 @@
   const TODAY = '2026-11-14';
   const PLATFORM_FEE = { direct: 0, airbnb: 0.155, vrbo: 0.08, booking: 0.15 };
   BB.PLATFORM_FEE = PLATFORM_FEE;
-  BB.CHANNEL = { direct: 'Direct', airbnb: 'Airbnb', vrbo: 'Vrbo', booking: 'Booking.com', cm: 'Channel manager' };
+  BB.CHANNEL = { direct: 'Direct', airbnb: 'Airbnb', vrbo: 'Vrbo', booking: 'Booking.com', cm: 'Channel manager', other: 'Other calendar', beds24: 'Beds24', smoobu: 'Smoobu', hostaway: 'Hostaway', guesty: 'Guesty', lodgify: 'Lodgify' };
   // Calendar sync (optional add-on) reads the dates booked elsewhere from a calendar link (iCal) and blocks them. Dates only: no guest names, prices or messages.
-  BB.SYNC_IDS = ['cm', 'airbnb', 'vrbo', 'booking'];
-  BB.bookedOn = id => id === 'cm' ? 'Booked via your channel manager' : 'Booked on ' + BB.CHANNEL[id];
+  // ICAL_IDS are calendar links (iCal) pasted per home. API_IDS are channel managers connected with the host's own API key:
+  // two-way and near instant (dates booked there block your sites, and direct bookings close the dates there).
+  BB.ICAL_IDS = ['cm', 'airbnb', 'vrbo', 'booking', 'other'];
+  BB.API_IDS = ['beds24', 'smoobu', 'hostaway', 'guesty', 'lodgify'];
+  BB.SYNC_IDS = BB.ICAL_IDS.concat(BB.API_IDS);
+  BB.bookedOn = id => id === 'cm' ? 'Booked via your channel manager' : id === 'other' ? 'Booked on another site' : BB.API_IDS.includes(id) ? 'Booked via ' + BB.CHANNEL[id] : 'Booked on ' + BB.CHANNEL[id];
   // How a booking found the host. Direct bookings are the product; 'sync' means it came in through the optional calendar sync add-on.
   BB.SOURCE = { website: 'Booking site', google: 'Google search', ai: 'AI answer', email: 'Guest email', campaign: 'Campaign', referral: 'Referral', 'guest-app': 'Guest app', console: 'Added by host', mobile: 'Host app', sync: 'Calendar sync' };
   BB.sourceLabel = b => b.channel !== 'direct' ? BB.bookedOn(b.channel) : (BB.SOURCE[b.source] || 'Booking site');
