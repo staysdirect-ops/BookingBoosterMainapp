@@ -110,5 +110,5 @@ module.exports = function (db, cfg) {
   }
   const sweep = setInterval(() => { const t = now(); for (const [k, v] of hits) if (!v.some(x => t - x < 3600e3)) hits.delete(k); }, 600e3); if (sweep.unref) sweep.unref();
 
-  return { startMagic, finishMagicLink, finishMagicCode, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: id => q.user.get(id), userByEmail: e => q.userByEmail.get(String(e || '').trim().toLowerCase()) };
+  return { startMagic, finishMagicLink, finishMagicCode, hashPass, checkPass, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: id => q.user.get(id), userByEmail: e => q.userByEmail.get(String(e || '').trim().toLowerCase()) };
 };
