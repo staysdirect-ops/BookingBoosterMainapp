@@ -13275,7 +13275,92 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
  "badge_done": " <span style=\\"font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#12805C;background-color:#E6F6EF;border-radius:6px;padding:2px 6px;white-space:nowrap;\\">Done</span>",
  "badge_opt": " <span style=\\"font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#5A6386;background-color:#F5F7FF;border:1px solid #E3E7F5;border-radius:6px;padding:2px 6px;white-space:nowrap;\\">Optional</span>",
  "o05_row": "<tr><td valign=\\"middle\\" style=\\"padding:14px 12px 14px 0;[[BORDER]]\\"><p style=\\"margin:0 0 2px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:21px;font-weight:600;color:#0F1630;\\">{{name}}</p><p style=\\"margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;color:#5A6386;\\">{{desc}}</p></td>\\n<td width=\\"46\\" align=\\"right\\" valign=\\"middle\\" style=\\"padding:14px 0;[[BORDER]]\\"><table role=\\"presentation\\" cellpadding=\\"0\\" cellspacing=\\"0\\" border=\\"0\\" style=\\"border-collapse:separate;background-color:#C9D0EE;border-radius:12px;\\"><tr><td style=\\"padding:3px;\\"><table role=\\"presentation\\" cellpadding=\\"0\\" cellspacing=\\"0\\" border=\\"0\\"><tr><td width=\\"18\\" height=\\"18\\" style=\\"width:18px;height:18px;border-radius:9px;background-color:#FFFFFF;font-size:0;\\">&nbsp;</td><td width=\\"18\\" style=\\"width:18px;font-size:0;\\">&nbsp;</td></tr></table></td></tr></table></td></tr>"
-}` }, "/app/server/emails/host-t02-payment-failed.html": { "t": `<!DOCTYPE html>
+}` }, "/app/server/emails/host-t01-password-reset.html": { "t": `<!DOCTYPE html>
+<!--
+  BOOKINGBOOSTER HOST EMAIL :: host-t01-password-reset
+  Purpose:   Password reset link with request details.
+  Trigger:   Event: host asks for a reset on /forgot, or the Bookingbooster team sends one from the admin console. The link expires after one hour or first use.
+  Subject:   Reset your Bookingbooster password
+  Preheader: Choose a new password. The link works once, for one hour.
+  Merge tags used: {{first_name}}, {{email}}, {{reset_url}}, {{reset_intro}}, {{request_time}}, {{request_device}}, {{request_location}}, {{security_url}}, {{site_url}}, {{help_url}}, {{account_url}}, {{privacy_url}}, {{company_address}}, {{company_number}}, {{vat_number}}
+  Sample values (for previews and QA only):
+    {{first_name}} = Hannah
+    {{email}} = hannah@fellsidebarn.co.uk
+    {{reset_url}} = #
+    {{reset_intro}} = Someone, hopefully you, asked to reset the password for
+    {{request_time}} = Fri 9 Oct, 19:42 BST
+    {{request_device}} = Safari on iPhone
+    {{request_location}} = United Kingdom
+  Notes: UK English. Based on host-t03-magic-link.
+-->
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Reset your Bookingbooster password</title>
+<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+<!--[if !mso]><!--><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"><!--<![endif]-->
+<style>
+  :root { color-scheme: light; supported-color-schemes: light; }
+  body { margin:0 !important; padding:0 !important; width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+  img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
+  a[x-apple-data-detectors] { color:inherit !important; text-decoration:none !important; }
+  u + #body a { color:inherit; text-decoration:none; }
+  @media only screen and (max-width:620px) {
+    .container { width:100% !important; }
+    .px { padding-left:24px !important; padding-right:24px !important; }
+    .pxl { padding-left:24px !important; }
+    .pxr { padding-right:24px !important; }
+    .pxo { padding-left:12px !important; padding-right:12px !important; }
+    .stack { display:block !important; width:100% !important; max-width:100% !important; box-sizing:border-box; padding-left:0 !important; padding-right:0 !important; }
+    .stack-gap { padding:0 0 12px 0 !important; }
+    .h1 { font-size:32px !important; line-height:36px !important; }
+    .h1xl { font-size:44px !important; line-height:46px !important; }
+    .h2 { font-size:22px !important; line-height:28px !important; }
+    .full { width:100% !important; height:auto !important; }
+    .hide-m { display:none !important; max-height:0 !important; overflow:hidden !important; mso-hide:all; }
+    .center-m { text-align:center !important; }
+    .btn-full { width:100% !important; }
+    .btn-full a { display:block !important; }
+    .num-m { font-size:28px !important; line-height:32px !important; }
+  }
+</style>
+</head>
+<body id="body" style="margin:0;padding:0;background-color:#F5F7FF;word-spacing:normal;">
+<div style="display:none;font-size:1px;color:#F5F7FF;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">Choose a new password. The link works once, for one hour.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F5F7FF;">
+<tr><td align="center" class="pxo" style="padding:28px 16px 40px 16px;">
+<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td><![endif]-->
+<table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;border-collapse:separate;">
+  <tr><td style="background-color:#FFFFFF;border:1px solid #E3E7F5;border-radius:20px;overflow:hidden;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td class="pxl" align="left" valign="middle" style="padding:22px 0 20px 40px;"><a href="{{site_url}}" style="text-decoration:none;"><img src="../assets/logo.png" width="158" height="40" alt="Bookingbooster" style="display:block;width:158px;height:40px;"></a></td>
+      <td class="pxr" align="right" valign="middle" style="padding:22px 40px 20px 12px;"><span style="font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#5A6386;white-space:nowrap;">Security</span></td>
+    </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:16px 40px 28px 40px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="52" height="52" align="center" valign="middle" style="width:52px;height:52px;border-radius:14px;background-color:#E4E9FF;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:24px;font-weight:800;color:#2747F5;">&#8635;</td></tr></table><div style="height:20px;line-height:20px;font-size:0;">&nbsp;</div><h1 class="h1" style="margin:0 0 16px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:34px;line-height:40px;font-weight:800;letter-spacing:-1.2px;color:#0F1630;word-break:break-word;">Choose a new password</h1><p style="margin:0 0 24px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:17px;line-height:27px;color:#5A6386;font-weight:400;text-align:left;">Hi {{first_name}}. {{reset_intro}} <strong style="color:#0F1630;">{{email}}</strong>. Tap the button to choose a new one. The link works once and expires in one hour.</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{reset_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Choose a new password</a></td></tr></table><div style="height:22px;line-height:22px;font-size:0;">&nbsp;</div>
+<p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:22px;color:#5A6386;">Button not working? Copy this link into your browser:<br><a href="{{reset_url}}" style="color:#2747F5;word-break:break-all;">{{reset_url}}</a></p></td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:0 0 22px 0;"><div style="height:1px;line-height:1px;font-size:0;background-color:#E3E7F5;">&nbsp;</div></td></tr></table><p style="margin:0 0 10px 0;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:12px;line-height:16px;letter-spacing:1.4px;text-transform:uppercase;color:#5A6386;font-weight:500;">Request details</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:9px 12px 9px 0;border-bottom:1px solid #E3E7F5;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#5A6386;">Time</td><td align="right" style="padding:9px 0;border-bottom:1px solid #E3E7F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;line-height:21px;color:#0F1630;white-space:nowrap;">{{request_time}}</td></tr><tr><td style="padding:9px 12px 9px 0;border-bottom:1px solid #E3E7F5;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#5A6386;">Device</td><td align="right" style="padding:9px 0;border-bottom:1px solid #E3E7F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;line-height:21px;color:#0F1630;white-space:nowrap;">{{request_device}}</td></tr><tr><td style="padding:9px 12px 9px 0;border-bottom:1px solid #E3E7F5;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#5A6386;">Approx. location</td><td align="right" style="padding:9px 0;border-bottom:1px solid #E3E7F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;line-height:21px;color:#0F1630;white-space:nowrap;">{{request_location}}</td></tr></table><div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">Did not ask for this? You can ignore this email and your password stays the same. Setting a new password signs you out on every other device. If you keep getting these, <a href="{{security_url}}" style="font-family:'Geist', Helvetica, Arial, sans-serif;color:#2747F5;font-weight:600;text-decoration:underline;text-underline-offset:3px;">secure your account</a>.</p></td></tr></table>
+
+  </td></tr>
+  <tr><td class="px" style="padding:28px 32px 0 32px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5A6386;" align="center">
+    <p style="margin:0 0 10px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:15px;line-height:20px;font-weight:700;color:#0F1630;letter-spacing:-0.2px;">More direct bookings. Less platform fees.</p>
+    <p style="margin:0 0 10px 0;">This is a service email about your Bookingbooster account. We send it even if you have opted out of marketing, because it concerns your account, billing or security.</p>
+    <p style="margin:0 0 10px 0;"><a href="{{help_url}}" style="color:#5A6386;text-decoration:underline;">Help centre</a> &nbsp;&middot;&nbsp; <a href="{{account_url}}" style="color:#5A6386;text-decoration:underline;">Account settings</a> &nbsp;&middot;&nbsp; <a href="{{privacy_url}}" style="color:#5A6386;text-decoration:underline;">Privacy (UK GDPR)</a></p>
+    <p style="margin:0;">{{company_name}} &middot; {{company_address}}<br>Registered in England and Wales &middot; Company no. {{company_number}} &middot; VAT {{vat_number}}</p>
+  </td></tr>
+</table>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr>
+</table>
+</body>
+</html>
+` }, "/app/server/emails/host-t02-payment-failed.html": { "t": `<!DOCTYPE html>
 <html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
 <meta charset="utf-8">
@@ -14320,8 +14405,13 @@ var require_auth = __commonJS({
         delSession: db.prepare("DELETE FROM sessions WHERE token = ?"),
         delUserSessions: db.prepare("DELETE FROM sessions WHERE user_id = ?"),
         addReset: db.prepare("INSERT INTO resets (token, user_id, expires_at) VALUES (?, ?, ?)"),
-        reset: db.prepare("SELECT * FROM resets WHERE token = ? AND expires_at > ?"),
-        delReset: db.prepare("DELETE FROM resets WHERE token = ?"),
+        // Taking a token deletes it in the same statement, so a link or code can only ever be used once.
+        takeReset: db.prepare("DELETE FROM resets WHERE token = ? AND expires_at > ? RETURNING user_id"),
+        delMagic: db.prepare("DELETE FROM resets WHERE user_id = ? AND (token LIKE 'ml:%' OR token LIKE 'mc:%')"),
+        sweepResets: db.prepare("DELETE FROM resets WHERE expires_at <= ?"),
+        failMagic: db.prepare("INSERT INTO kv (k, v) VALUES (?, '1') ON CONFLICT (k) DO UPDATE SET v = (coalesce(nullif(kv.v, ''), '0')::int + 1)::text RETURNING v"),
+        delKv: db.prepare("DELETE FROM kv WHERE k = ?"),
+        setVerified: db.prepare("UPDATE users SET verified = 1 WHERE id = ?"),
         setEmail: db.prepare("UPDATE users SET email = ?, name = ? WHERE id = ?"),
         delUser: db.prepare("DELETE FROM users WHERE id = ?")
       };
@@ -14368,12 +14458,46 @@ var require_auth = __commonJS({
         return { token, user: u };
       }
       async function finishReset(token, password) {
-        const r = await q.reset.get(hash(String(token || "")), now());
+        const r = await q.takeReset.get(hash(String(token || "")), now());
         if (!r) return null;
         await q.setPass.run(hashPass(password), r.user_id);
-        await q.delReset.run(hash(token));
         await q.delUserSessions.run(r.user_id);
         return q.user.get(r.user_id);
+      }
+      const MAGIC_TTL = 15 * 6e4, MAGIC_TRIES = 5;
+      const codeKey = (userId, code) => "mc:" + crypto.createHmac("sha256", cfg.secret).update(userId + ":" + code).digest("hex");
+      const failKey = (userId) => "magicfail:" + userId;
+      async function startMagic(email) {
+        const u = await q.userByEmail.get(String(email || "").trim().toLowerCase());
+        if (!u) return null;
+        await q.sweepResets.run(now());
+        await q.delMagic.run(u.id);
+        await q.delKv.run(failKey(u.id));
+        const token = crypto.randomBytes(32).toString("base64url"), code = String(crypto.randomInt(0, 1e6)).padStart(6, "0");
+        await q.addReset.run("ml:" + hash(token), u.id, now() + MAGIC_TTL);
+        await q.addReset.run(codeKey(u.id, code), u.id, now() + MAGIC_TTL);
+        return { token, code, user: u };
+      }
+      async function signedIn(userId) {
+        await q.delMagic.run(userId);
+        await q.delKv.run(failKey(userId));
+        await q.setVerified.run(userId);
+        return q.user.get(userId);
+      }
+      async function finishMagicLink(token) {
+        const r = await q.takeReset.get("ml:" + hash(String(token || "")), now());
+        return r ? signedIn(r.user_id) : null;
+      }
+      async function finishMagicCode(email, code) {
+        const u = await q.userByEmail.get(String(email || "").trim().toLowerCase());
+        if (!u) return null;
+        code = String(code || "").replace(/\D/g, "");
+        if (code.length !== 6) return null;
+        const r = await q.takeReset.get(codeKey(u.id, code), now());
+        if (r) return signedIn(u.id);
+        const f = await q.failMagic.get(failKey(u.id));
+        if (+(f && f.v) >= MAGIC_TRIES) await q.delMagic.run(u.id);
+        return null;
       }
       async function changePassword(userId, current, next) {
         const u = await q.user.get(userId);
@@ -14415,7 +14539,7 @@ var require_auth = __commonJS({
         for (const [k, v] of hits) if (!v.some((x) => t - x < 36e5)) hits.delete(k);
       }, 6e5);
       if (sweep.unref) sweep.unref();
-      return { hashPass, checkPass, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: (id) => q.user.get(id), userByEmail: (e) => q.userByEmail.get(String(e || "").trim().toLowerCase()) };
+      return { startMagic, finishMagicLink, finishMagicCode, hashPass, checkPass, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: (id) => q.user.get(id), userByEmail: (e) => q.userByEmail.get(String(e || "").trim().toLowerCase()) };
     };
   }
 });
@@ -17304,6 +17428,132 @@ var require_host_emails = __commonJS({
         );
       }
       return { run, paymentFailed, report, checklist, prefs, setPrefs, unsubUrl: unsub, verifyUnsub: (wid, kind, sig) => ["setup", "report", "news"].includes(kind) && auth.verify(sig, "hostmail", wid, kind) };
+    };
+  }
+});
+
+// server/signin.js
+var require_signin = __commonJS({
+  "server/signin.js"(exports, module) {
+    module.exports = function({ cfg, auth, msg, log }) {
+      const E = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      function device(ua) {
+        ua = String(ua || "");
+        const browser = /Edg\//.test(ua) ? "Edge" : /OPR\/|Opera/.test(ua) ? "Opera" : /Firefox\//.test(ua) ? "Firefox" : /SamsungBrowser/.test(ua) ? "Samsung Internet" : /Chrome\/|CriOS\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "";
+        const os = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android" : /Windows/.test(ua) ? "Windows" : /Mac OS X|Macintosh/.test(ua) ? "Mac" : /CrOS/.test(ua) ? "Chromebook" : /Linux/.test(ua) ? "Linux" : "";
+        return browser && os ? browser + " on " + os : browser || os || "Unknown device";
+      }
+      function location(req) {
+        const cc = String(req.headers["cf-ipcountry"] || req.headers["x-vercel-ip-country"] || req.headers["x-country-code"] || "").trim().toUpperCase();
+        if (!/^[A-Z]{2}$/.test(cc) || cc === "XX" || cc === "T1") return "Not available";
+        try {
+          return new Intl.DisplayNames(["en-GB"], { type: "region" }).of(cc) || cc;
+        } catch (_) {
+          return cc;
+        }
+      }
+      function when(ms) {
+        const f = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZoneName: "short" }).formatToParts(new Date(ms));
+        const g = (k) => (f.find((x) => x.type === k) || {}).value || "";
+        return g("weekday") + " " + g("day") + " " + g("month") + ", " + g("hour") + ":" + g("minute") + " " + g("timeZoneName");
+      }
+      function common(user, req) {
+        return {
+          first_name: String(user.name || "").trim().split(/\s+/)[0] || "there",
+          email: user.email,
+          request_time: when(Date.now()),
+          request_device: req ? device(req.headers["user-agent"]) : "Bookingbooster team",
+          request_location: req ? location(req) : "Not available",
+          security_url: cfg.baseUrl + "/forgot",
+          site_url: cfg.baseUrl,
+          help_url: cfg.baseUrl + "/help",
+          account_url: cfg.baseUrl + "/app/account",
+          privacy_url: cfg.baseUrl + "/privacy",
+          preferences_url: cfg.baseUrl + "/app/account#emails",
+          unsubscribe_url: cfg.baseUrl + "/app/account#emails",
+          company_address: cfg.company.address,
+          company_number: cfg.company.number,
+          vat_number: cfg.company.vat
+        };
+      }
+      function sendReset(r, req, team) {
+        const link = cfg.baseUrl + "/reset?t=" + r.token, subject = "Reset your Bookingbooster password";
+        const v = Object.assign(common(r.user, team ? null : req), {
+          reset_url: link,
+          reset_intro: team ? "The Bookingbooster team sent you this link to set a new password for" : "Someone, hopefully you, asked to reset the password for"
+        });
+        const text = (team ? "The Bookingbooster team sent you a link to set a new password." : "Reset your Bookingbooster password.") + " It works once, for one hour: " + link + "\n\nIf you did not ask for this, ignore this email and your password stays the same.";
+        return msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject, text, html: msg.template("host-t01-password-reset", v), meta: Object.assign({ template: "reset" }, team ? { team: true } : {}) });
+      }
+      function sendMagic(r, req) {
+        const link = cfg.baseUrl + "/login/link?t=" + r.token, code = r.code.slice(0, 3) + " " + r.code.slice(3), subject = "Your Bookingbooster sign-in link";
+        const v = Object.assign(common(r.user, req), { magic_link_url: link, login_code: code });
+        const text = "Sign in to Bookingbooster: " + link + "\n\nOr enter this code: " + code + "\n\nThe link and code work once and expire in 15 minutes. If you did not ask for this, ignore this email; nobody can sign in without it.";
+        return msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject, text, html: msg.template("host-t03-magic-link", v), meta: { template: "magic-link" } });
+      }
+      const emailForm = (h, o) => h.authPage("Sign in with email", "<h1>Sign in with email</h1><p>We will email you a link and a code. No password needed.</p>" + (o && o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + '<form method="post" action="/login/email"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o && o.email) + '"></label><button type="submit">Email me a sign-in link</button></form><div class="links"><a href="/login">Sign in with a password</a><a href="/start">Create an account</a></div>');
+      const codeForm = (h, email, err) => h.authPage("Check your email", "<h1>Check your email</h1><p>If there is an account for <b>" + E(email) + "</b>, a sign-in link is on its way. Tap it, or enter the 6-digit code from the email here. Both work once, for 15 minutes.</p>" + (err ? '<p class="err" role="alert">' + E(err) + "</p>" : "") + '<form method="post" action="/login/code"><input type="hidden" name="email" value="' + E(email) + '"><label>Code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,7}" maxlength="7" required></label><button type="submit">Sign in</button></form><div class="links"><a href="/login/email">Send a new link</a><a href="/login">Sign in with a password</a></div>');
+      const expired = (h) => h.authPage("Link expired", '<h1>That link has expired.</h1><p>Sign-in links work once, for 15 minutes.</p><p><a href="/login/email">Send a new one</a></p>');
+      async function route(req, res, p, m, u, h) {
+        if (p === "/login/email" && m === "GET") {
+          h.send(res, 200, emailForm(h));
+          return true;
+        }
+        if (p === "/login/email" && m === "POST") {
+          const f = await h.formBody(req), email = String(f.email || "").trim().toLowerCase().slice(0, 200);
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+            h.send(res, 400, emailForm(h, { err: "Enter the email address you sign in with.", email }));
+            return true;
+          }
+          if (!auth.limit("magic:" + h.ip(req), 10, 36e5)) {
+            h.send(res, 429, emailForm(h, { err: "Too many sign-in emails from here. Wait an hour, or sign in with your password.", email }));
+            return true;
+          }
+          if (auth.limit("magic-to:" + email, 3, 9e5)) {
+            const r = await auth.startMagic(email);
+            if (r) {
+              await sendMagic(r, req).catch((e) => log("signin", "magic link email failed", e.message));
+            }
+          }
+          h.send(res, 200, codeForm(h, email));
+          return true;
+        }
+        if (p === "/login/code" && m === "POST") {
+          const f = await h.formBody(req), email = String(f.email || "").trim().toLowerCase().slice(0, 200);
+          if (!auth.limit("magic-code:" + h.ip(req), 20, 9e5)) {
+            h.send(res, 429, codeForm(h, email, "Too many tries. Wait 15 minutes, then ask for a new code."));
+            return true;
+          }
+          const user = await auth.finishMagicCode(email, f.code);
+          if (!user) {
+            h.send(res, 401, codeForm(h, email, "That code is not right or has expired. After five wrong tries you will need a new one."));
+            return true;
+          }
+          await h.signIn(res, user);
+          return true;
+        }
+        if (p === "/login/link" && m === "GET") {
+          const t = u.searchParams.get("t") || "";
+          h.send(res, 200, h.authPage("Sign in", '<h1>Sign in to Bookingbooster</h1><p>Tap the button to finish signing in on this device.</p><form method="post" action="/login/link"><input type="hidden" name="t" value="' + E(t) + '"><button type="submit">Sign in</button></form>'));
+          return true;
+        }
+        if (p === "/login/link" && m === "POST") {
+          const f = await h.formBody(req);
+          if (!auth.limit("magic-link:" + h.ip(req), 30, 9e5)) {
+            h.send(res, 429, expired(h));
+            return true;
+          }
+          const user = await auth.finishMagicLink(f.t);
+          if (!user) {
+            h.send(res, 400, expired(h));
+            return true;
+          }
+          await h.signIn(res, user);
+          return true;
+        }
+        return false;
+      }
+      return { route, sendReset, sendMagic, device };
     };
   }
 });
@@ -22908,6 +23158,7 @@ var require_server = __commonJS({
     var domains = require_domains()({ cfg, auth, log });
     var backup = require_backup()({ db, cfg, log });
     var hostMail = require_host_emails()({ db, cfg, msg, auth, ws, urls, leads, log });
+    var signin = require_signin()({ cfg, auth, msg, log });
     var campaigns = require_campaigns()({ db, cfg, msg, auth, leads, hostMail, log });
     var campaignsAdmin = require_campaigns_admin();
     var adminUi = require_admin_shell();
@@ -23455,7 +23706,7 @@ var require_server = __commonJS({
     var E = pages.esc;
     function loginForm(o) {
       o = o || {};
-      return authPage("Sign in", CLEAR_OFFLINE + "<h1>Sign in</h1><p>Your console, bookings and guests.</p>" + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + (o.ok ? '<p class="ok">' + E(o.ok) + "</p>" : "") + '<form method="post" action="/login"><input type="hidden" name="next" value="' + E(o.next || "/app") + '"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || "") + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button></form><div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
+      return authPage("Sign in", CLEAR_OFFLINE + "<h1>Sign in</h1><p>Your console, bookings and guests.</p>" + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + (o.ok ? '<p class="ok">' + E(o.ok) + "</p>" : "") + '<form method="post" action="/login"><input type="hidden" name="next" value="' + E(o.next || "/app") + '"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || "") + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button></form><p style="margin:12px 0 0;text-align:center"><a href="/login/email">Email me a sign-in link instead</a></p><div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
     }
     var MEDIA = /* @__PURE__ */ new Map();
     var GUIDES_A = ["direct-booking-playbook.pdf", "direct-booking-launch-checklist.pdf", "ai-search-self-audit.pdf", "fee-leak-worksheet.pdf"];
@@ -23799,8 +24050,7 @@ Disallow: /
           const r0 = await db.prepare("SELECT email FROM users WHERE workspace_id = ? ORDER BY created_at LIMIT 1").get(hm[1]);
           const r = r0 && await auth.startReset(r0.email);
           if (r) {
-            const link = cfg.baseUrl + "/reset?t=" + r.token;
-            await msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: "Reset your Bookingbooster password", text: "The Bookingbooster team sent you a link to set a new password. It works for one hour: " + link + "\n\nIf you did not ask for this, ignore this email.", meta: { template: "reset", team: true } });
+            await signin.sendReset(r, req, true);
             log("admin", "password reset sent for", hm[1]);
           }
           return await U.detailPage(res, hm[1], r ? "Password reset link sent to " + r.user.email + ". It works for one hour." : "", r ? "" : "This account has no sign-in email.");
@@ -23892,6 +24142,14 @@ Disallow: /
         const next = /^\/app(\/|$|\?)/.test(f.next || "") && f.next !== "/app" ? f.next : await isAdminEmail(user.email) ? "/admin" : "/app";
         return redirect(res, next, { "set-cookie": cookie("bb_s", await auth.startSession(user.id), 30 * 86400) });
       }
+      if (p.startsWith("/login/") && await signin.route(req, res, p, m, u, {
+        authPage,
+        formBody,
+        send,
+        redirect,
+        ip,
+        signIn: async (r, user) => redirect(r, await isAdminEmail(user.email) ? "/admin" : "/app", { "set-cookie": cookie("bb_s", await auth.startSession(user.id), 30 * 86400) })
+      })) return;
       if (p === "/logout" && m === "POST") {
         await auth.endSession(cookies(req).bb_s);
         return redirect(res, "/login", { "set-cookie": cookie("bb_s", "", 0) });
@@ -23901,10 +24159,7 @@ Disallow: /
         const f = await formBody(req);
         if (auth.limit("forgot:" + ip(req), 5, 36e5)) {
           const r = await auth.startReset(f.email);
-          if (r) {
-            const link = cfg.baseUrl + "/reset?t=" + r.token;
-            msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: "Reset your Bookingbooster password", text: "Reset your password within the hour: " + link + "\n\nIf you did not ask for this, ignore this email.", meta: { template: "reset" } });
-          }
+          if (r) signin.sendReset(r, req).catch((e) => log("signin", "reset email failed", e.message));
         }
         return send(res, 200, authPage("Check your email", "<h1>Check your email</h1><p>If there is an account for that address, a reset link is on its way. It works for one hour.</p>"));
       }

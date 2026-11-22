@@ -64,6 +64,7 @@ const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
 const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
+const signin = require('./signin')({ cfg, auth, msg, log });
 const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
 const campaignsAdmin = require('./campaigns-admin');
 const adminUi = require('./admin-shell');
@@ -406,6 +407,7 @@ function loginForm(o) {
   o = o || {};
   return authPage('Sign in', CLEAR_OFFLINE + '<h1>Sign in</h1><p>Your console, bookings and guests.</p>' + (o.err ? '<p class="err" role="alert">' + E(o.err) + '</p>' : '') + (o.ok ? '<p class="ok">' + E(o.ok) + '</p>' : '') +
     '<form method="post" action="/login"><input type="hidden" name="next" value="' + E(o.next || '/app') + '"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || '') + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button></form>' +
+    '<p style="margin:12px 0 0;text-align:center"><a href="/login/email">Email me a sign-in link instead</a></p>' +
     '<div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
 }
 
@@ -660,7 +662,7 @@ async function route(req, res) {
     if (hm && !hm[2] && m === 'GET') return await U.detailPage(res, hm[1]);
     if (hm && hm[2] && m === 'POST') { // the team sends the host the same reset link as /forgot
       const r0 = await db.prepare('SELECT email FROM users WHERE workspace_id = ? ORDER BY created_at LIMIT 1').get(hm[1]); const r = r0 && await auth.startReset(r0.email);
-      if (r) { const link = cfg.baseUrl + '/reset?t=' + r.token; await msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: 'Reset your Bookingbooster password', text: 'The Bookingbooster team sent you a link to set a new password. It works for one hour: ' + link + '\n\nIf you did not ask for this, ignore this email.', meta: { template: 'reset', team: true } }); log('admin', 'password reset sent for', hm[1]); }
+      if (r) { await signin.sendReset(r, req, true); log('admin', 'password reset sent for', hm[1]); }
       return await U.detailPage(res, hm[1], r ? 'Password reset link sent to ' + r.user.email + '. It works for one hour.' : '', r ? '' : 'This account has no sign-in email.');
     }
     return notFound(res);
@@ -709,11 +711,13 @@ async function route(req, res) {
     const next = /^\/app(\/|$|\?)/.test(f.next || '') && f.next !== '/app' ? f.next : (await isAdminEmail(user.email) ? '/admin' : '/app');
     return redirect(res, next, { 'set-cookie': cookie('bb_s', await auth.startSession(user.id), 30 * 86400) });
   }
+  if (p.startsWith('/login/') && await signin.route(req, res, p, m, u, { authPage, formBody, send, redirect, ip,
+    signIn: async (r, user) => redirect(r, await isAdminEmail(user.email) ? '/admin' : '/app', { 'set-cookie': cookie('bb_s', await auth.startSession(user.id), 30 * 86400) }) })) return;
   if (p === '/logout' && m === 'POST') { await auth.endSession(cookies(req).bb_s); return redirect(res, '/login', { 'set-cookie': cookie('bb_s', '', 0) }); }
   if (p === '/forgot' && m === 'GET') return send(res, 200, authPage('Reset password', '<h1>Reset your password</h1><p>We will email you a link.</p><form method="post"><label>Email<input name="email" type="email" required autocomplete="email"></label><button>Email me a link</button></form>'));
   if (p === '/forgot' && m === 'POST') {
     const f = await formBody(req);
-    if (auth.limit('forgot:' + ip(req), 5, 3600e3)) { const r = await auth.startReset(f.email); if (r) { const link = cfg.baseUrl + '/reset?t=' + r.token; msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: 'Reset your Bookingbooster password', text: 'Reset your password within the hour: ' + link + '\n\nIf you did not ask for this, ignore this email.', meta: { template: 'reset' } }); } }
+    if (auth.limit('forgot:' + ip(req), 5, 3600e3)) { const r = await auth.startReset(f.email); if (r) signin.sendReset(r, req).catch(e => log('signin', 'reset email failed', e.message)); }
     return send(res, 200, authPage('Check your email', '<h1>Check your email</h1><p>If there is an account for that address, a reset link is on its way. It works for one hour.</p>'));
   }
   if (p === '/reset') {
