@@ -907,6 +907,37 @@ var require_bb_embedded_files = __commonJS({
 .ag .ag-dom > .ag-note { margin: 0 0 12px; }
 .ag .ag-dg { margin: 0 0 14px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
 .ag .ag-dom .ag-fine { margin: 12px 0 0; font-size: 13px; }
+
+/* Contacts: upload with column matching (app-grow.js V.contacts) */
+.ag .ag-ctup { display: grid; gap: 14px; }
+.ag .ag-steps { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; font-size: 13px; color: var(--muted); }
+.ag .ag-steps li { display: flex; align-items: center; gap: 8px; }
+.ag .ag-steps li > span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--surface-2); }
+.ag .ag-steps li > span .ic { width: 13px; height: 13px; }
+.ag .ag-steps li.on { color: var(--fg); font-weight: 600; }
+.ag .ag-steps li.on > span { background: var(--brand, #3355FF); color: #fff; }
+.ag .ag-steps li.done > span { background: var(--good-soft); color: var(--good); }
+.ag .ag-drop { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; padding: 28px 18px; border: 1.5px dashed var(--line-strong, #9aa3b5); border-radius: 16px; cursor: pointer; background: var(--surface-2); transition: border-color .15s, background .15s; }
+.ag .ag-drop > .ic { width: 26px; height: 26px; color: var(--primary); }
+.ag .ag-drop span { font-size: 13px; max-width: 46ch; }
+.ag .ag-drop:hover, .ag .ag-drop.over, .ag .ag-drop:focus-within { border-color: var(--brand, #3355FF); background: color-mix(in oklab, var(--brand, #3355FF) 6%, var(--surface-2)); }
+.ag .ag-drop:focus-within { outline: 2px solid var(--brand, #3355FF); outline-offset: 2px; }
+.ag .ag-paste summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--primary); }
+.ag .ag-paste[open] summary { margin-bottom: 10px; }
+.ag .ag-paste .ag-acts-row { margin-top: 10px; }
+.ag .ag-ctmap td { vertical-align: middle; }
+.ag .ag-ctmap select { width: 100%; min-width: 150px; }
+.ag .ag-ctmap tr.ag-off td:first-child, .ag .ag-ctmap tr.ag-off .ag-ctex { opacity: .55; }
+.ag .ag-ctex { display: flex; flex-wrap: wrap; gap: 4px; max-width: 360px; }
+.ag .ag-ctex span { font-size: 12.5px; background: var(--surface-2); border-radius: 6px; padding: 2px 6px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag .ag-ctrev td small { display: block; color: var(--muted); font-size: 12.5px; }
+.ag .ag-cttag { max-width: 320px; }
+@container ag (max-width: 640px) {
+  .ag .ag-ctmap thead { display: none; }
+  .ag .ag-ctmap tr { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 10px 0; }
+  .ag .ag-ctmap td { padding: 0 12px; border: 0; }
+  .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 ` }, "/app/web/src/app-grow.js": { "t": `/* Bookingbooster prototype: host console views for Grow (guests, campaigns, automations), Get found (website, AI visibility)
    and Settings (connections). Registers into BB.appViews; app.js owns the frame, routing and event forwarding. */
 (function () {
@@ -989,18 +1020,20 @@ var require_bb_embedded_files = __commonJS({
   }
   function onInput(ev, inst) {
     const el = ev.target; if (el.dataset && el.dataset.agNotes) { inst.st.gu_nd = { gid: el.dataset.agNotes, v: el.value }; return; }
-    if (el.dataset && el.dataset.agimp !== undefined) { inst.st.gu_csv = el.value; inst.st.gu_rows = parseCsv(el.value); clearTimeout(inst._impT); inst._impT = setTimeout(() => inst.render(), 400); return; }
+    if (el.dataset && el.dataset.ctpaste !== undefined) { const had = !!(inst.st.ct_paste || '').trim(); inst.st.ct_paste = el.value; if (had !== !!el.value.trim()) { const b = el.closest('details').querySelector('[data-ag="ct-paste"]'); if (b) b.disabled = !el.value.trim(); } return; }
     const f = el.dataset && el.dataset.agf; if (!f) return;
     const [scope, key] = f.split('.');
     if (scope === 'gu') { inst.st['gu_' + key] = el.value; inst.render(); }
     if (scope === 'cp') { const e = inst.st.cp_edit; if (!e) return; e[key] = el.type === 'number' ? Number(el.value) : el.value; inst.render(); }
     if (scope === 'ws') { const d = wsDraft(inst); d[key] = el.type === 'number' ? Math.max(0, Number(el.value) || 0) : el.value; inst.render(); }
+    if (scope === 'ct') { inst.st['ct_' + key] = el.value; if (key === 'q') { inst.st.ct_all = false; inst.render(); } return; }
     if (scope === 'of') { inst.st.gu_offer[key] = el.value; inst.render(); }
     if (scope === 'faq') { inst.st['ws_faq_' + key] = el.value; }
   }
   function onChange(ev, inst) {
     const el = ev.target;
-    if (el.dataset.agimpfile !== undefined) { const f = el.files && el.files[0]; if (f) { const r = new FileReader(); r.onload = () => { inst.st.gu_csv = String(r.result).slice(0, 2e6); inst.st.gu_rows = parseCsv(inst.st.gu_csv); inst.render(); }; r.readAsText(f); } el.value = ''; return; }
+    if (el.dataset.ctfile !== undefined) { const f = el.files && el.files[0]; if (f) ctRead(inst, f); el.value = ''; return; }
+    if (el.dataset.ctmap != null) { const m = inst.st.ct_map, i = +el.dataset.ctmap, v = el.value; if (v) m.forEach((x, j) => { if (x === v && j !== i) m[j] = ''; }); m[i] = v; inst.render(); return; }
     if (el.dataset.agphotos) { if (el.files && el.files.length && BB.api) uploadPhotos(inst, el.dataset.agphotos, el.files); el.value = ''; return; }
     if (el.dataset.agcap != null) { const p = BB.q.property(inst.st.ws_pid); const ph = (p.photos || []).map(x => Object.assign({}, x)); const i = +el.dataset.agcap; if (ph[i] && ph[i].cap !== el.value.trim()) { ph[i].cap = el.value.trim().slice(0, 80); BB.act.updateProperty(p.id, { photos: ph }, true); BB.toast('Caption saved'); } return; }
     if (el.dataset.agNotes) { inst.st.gu_nd = null; const g = BB.q.guest(el.dataset.agNotes); if (g && g.notes !== el.value) { BB.act.updateGuest(g.id, { notes: el.value }); BB.toast('Note saved'); } return; }
@@ -1022,13 +1055,39 @@ var require_bb_embedded_files = __commonJS({
       BB.act.addFaq(inst.st.ws_pid, q, a); BB.toast('FAQ published');
     }
   }
-  const hooks = { click: onClick, input: onInput, change: onChange, submit: onSubmit };
+  // Drag a CSV onto the upload box on Contacts.
+  function onDragover(ev, inst) { const d = ev.target.closest && ev.target.closest('[data-ctdrop]'); if (!d) return; ev.preventDefault(); d.classList.add('over'); }
+  function onDrop(ev, inst) {
+    const d = ev.target.closest && ev.target.closest('[data-ctdrop]'); if (!d) return; ev.preventDefault(); d.classList.remove('over');
+    const f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0]; if (f) ctRead(inst, f);
+  }
+  function ctRead(inst, f) {
+    if (f.size > 10e6) { inst.set({ ct_err: 'That file is over 10 MB. Split it into smaller files and upload them one at a time.' }); return; }
+    const r = new FileReader(); r.onload = () => ctLoad(inst, String(r.result), f.name); r.onerror = () => inst.set({ ct_err: 'We could not read that file.' }); r.readAsText(f);
+  }
+  function ctReset(st) { ['ct_cells', 'ct_map', 'ct_plan', 'ct_file', 'ct_err', 'ct_paste', 'ct_res', 'ct_tag'].forEach(k => { st[k] = null; }); st.ct_step = ''; st.ct_head = false; st.ct_consent = false; st.ct_sms = false; }
+  const hooks = { click: onClick, input: onInput, change: onChange, submit: onSubmit, dragover: onDragover, drop: onDrop };
 
   const HANDLERS = {
     /* guests */
-    'gu-imp': inst => inst.set({ gu_imp: !inst.st.gu_imp }),
-    'gu-consent': inst => inst.set({ gu_consent: !inst.st.gu_consent }),
-    'gu-imp-go': inst => { const r = BB.act.importGuests(inst.st.gu_rows || [], { consent: !!inst.st.gu_consent }); inst.st.gu_rows = null; inst.st.gu_csv = ''; inst.set({ gu_imp: false, gu_consent: false }); BB.toast('Imported ' + r.added + ' guest' + (r.added === 1 ? '' : 's') + (r.updated ? ', updated ' + r.updated : '') + (r.skipped ? ', skipped ' + r.skipped : ''), 'good'); },
+    'gu-imp': inst => { ctReset(inst.st); inst.st.ct_step = 'pick'; nav(inst, 'contacts'); },
+    /* contacts upload */
+    'ct-up': inst => { ctReset(inst.st); inst.set({ ct_step: 'pick' }); },
+    'ct-x': inst => { ctReset(inst.st); inst.render(); },
+    'ct-paste': inst => ctLoad(inst, inst.st.ct_paste || '', ''),
+    'ct-head': inst => { const st = inst.st; st.ct_head = !st.ct_head; const width = st.ct_map.length;
+      st.ct_map = st.ct_head ? CTX().guess(Array.from({ length: width }, (_, i) => st.ct_cells[0][i] || ''), st.ct_cells.slice(1, 25)) : st.ct_map; inst.render(); },
+    'ct-back': (inst, v) => inst.set({ ct_step: v, ct_plan: null }),
+    'ct-next': inst => { const st = inst.st; st.ct_plan = CTX().plan(ctRows(st)); inst.set({ ct_step: 'review' }); },
+    'ct-consent': inst => inst.set({ ct_consent: !inst.st.ct_consent }),
+    'ct-sms': inst => inst.set({ ct_sms: !inst.st.ct_sms }),
+    'ct-go': (inst, v, el) => { const st = inst.st; el.disabled = true;
+      const r = BB.act.importContacts(ctRows(st), { consent: !!st.ct_consent, sms: !!st.ct_sms, tag: st.ct_tag || '' });
+      ctReset(st); st.ct_step = 'done'; st.ct_res = r; inst.render();
+      BB.toast('Uploaded ' + r.added + ' new contact' + (r.added === 1 ? '' : 's') + (r.updated ? ', updated ' + r.updated : ''), 'good'); },
+    'ct-email': inst => { ctReset(inst.st); inst.st.cp_tpl = 'season'; inst.st.cp_seg = 'list'; inst.st.cp_for = null; nav(inst, 'campaign', 'new'); },
+    'ct-f': (inst, v) => inst.set({ ct_f: v, ct_all: false }),
+    'ct-all': inst => inst.set({ ct_all: true }),
     'gu-seg': (inst, v) => inst.set({ gu_seg: v }),
     'gu-sort': (inst, v) => inst.set({ gu_sort: v }),
     'gu-all': inst => inst.set({ gu_all: true }),
@@ -1132,32 +1191,6 @@ var require_bb_embedded_files = __commonJS({
      GUESTS (CRM list)
      ===================================================================== */
   const TAGS = ['Repeat', 'Family', 'Pet owner', 'Couple', 'Remote work', 'VIP', 'Hot tub fan'];
-  // CSV import: name, email, phone, last stay, stays, dog. Headers are matched loosely.
-  function parseCsv(text) {
-    const rows = []; let row = [], cell = '', q = false;
-    for (let i = 0; i < text.length; i++) { const c = text[i];
-      if (q) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c; }
-      else if (c === '"') q = true; else if (c === ',' || c === ';' || c === '\\t') { row.push(cell); cell = ''; }
-      else if (c === '\\n' || c === '\\r') { if (c === '\\r' && text[i + 1] === '\\n') i++; row.push(cell); if (row.some(x => x.trim())) rows.push(row); row = []; cell = ''; }
-      else cell += c; }
-    row.push(cell); if (row.some(x => x.trim())) rows.push(row);
-    if (!rows.length) return [];
-    const head = rows[0].map(h => h.trim().toLowerCase());
-    const col = re => head.findIndex(h => re.test(h));
-    const has = col(/e-?mail/) >= 0;
-    const ix = has ? { name: col(/name|guest/), email: col(/e-?mail/), phone: col(/phone|mobile|tel/), lastStay: col(/last|check.?out|date|stay(ed)? on/), stays: col(/^stays|times|visits|number/), dog: col(/dog|pet/), city: col(/city|town/) } : { name: 0, email: 1, phone: 2, lastStay: 3 };
-    return (has ? rows.slice(1) : rows).map(r => Object.fromEntries(Object.entries(ix).filter(([, v]) => v >= 0).map(([k, v]) => [k, (r[v] || '').trim()])));
-  }
-  function importPanel(inst) {
-    const st = inst.st, rows = st.gu_rows || [];
-    return '<section class="a-card ag-card ag-imp"><div class="a-card-h"><h3>Import your guest list</h3><button class="btn sm ghost" data-ag="gu-imp">' + I('x') + 'Close</button></div><div class="ag-form">' +
-      '<p class="muted ag-p">Paste rows from a spreadsheet or upload a CSV with columns for name, email, phone and last stay date. Guests already here are matched by email.</p>' +
-      '<label class="field"><span>Guests (CSV)</span><textarea id="' + ID(inst, 'gimp') + '" data-agimp rows="6" placeholder="name,email,phone,last stay&#10;Kim Lee,kim@example.co.uk,07700 900123,2026-08-14">' + esc(st.gu_csv || '') + '</textarea></label>' +
-      '<label class="btn sm ag-upl">' + I('out') + 'Upload a CSV file<input type="file" accept=".csv,text/csv,text/plain" data-agimpfile hidden></label>' +
-      (rows.length ? '<p class="ag-note">' + I('users') + '<span><b>' + rows.length + ' row' + (rows.length === 1 ? '' : 's') + ' found.</b> ' + rows.filter(r => /@/.test(r.email || '')).length + ' with an email. First: ' + esc((rows[0].name || '') + ' ' + (rows[0].email || '')) + '</span></p>' : '') +
-      '<button type="button" class="g-check ag-consent" role="checkbox" aria-checked="' + !!st.gu_consent + '" data-ag="gu-consent"><span class="ag-box">' + (st.gu_consent ? I('check') : '') + '</span><span>These guests agreed to hear from me by email (for example they ticked a box when they booked). Subscribe them to my guest list.</span></button>' +
-      '<div class="ag-acts-row"><button class="btn primary" data-ag="gu-imp-go"' + (rows.length ? '' : ' disabled') + '>Import ' + (rows.length || '') + ' guests</button></div></div></section>';
-  }
   V.guests = Object.assign({
     label: 'Guests', group: 'Grow', icon: 'users', order: 10,
     render(inst) {
@@ -1176,8 +1209,7 @@ var require_bb_embedded_files = __commonJS({
       const chips = [['all', 'Everyone', s.guests.length]].concat(Object.keys(segs).map(k => [k, segs[k].label, segs[k].guests.length]));
       return wrap(inst, 'ag-guests',
         vh('Guests', 'Everyone who has stayed with you, in one list you own. No platform keeps them from you.',
-          (s.live ? '<button class="btn" data-ag="gu-imp">' + I('plus') + 'Import guests</button>' : '') + '<button class="btn" data-ag="cp-new" data-v="season">' + I('mail') + 'Email a segment</button><button class="btn primary" data-ag="gu-book">' + I('plus') + 'New booking</button>') +
-        (st.gu_imp ? importPanel(inst) : '') +
+          '<button class="btn" data-ag="gu-imp">' + I('upload') + 'Upload contacts</button>' + '<button class="btn" data-ag="cp-new" data-v="season">' + I('mail') + 'Email a segment</button><button class="btn primary" data-ag="gu-book">' + I('plus') + 'New booking</button>') +
         '<div class="ag-kpis">' + kpi('Total guests', s.guests.length, foundSearch + ' found you on Google or AI') + kpi('Subscribed', pct(subPct), 'Can receive your emails') + kpi('Repeat rate', pct(repeat), 'Stayed 2 or more times', 'up') + kpi('Avg lifetime value', money(Math.round(avgLife)), 'Per guest with a stay') + '</div>' +
         '<section class="a-card ag-card ag-pad0">' +
           '<div class="ag-toolbar"><label class="ag-search">' + I('search') + '<input id="' + ID(inst, 'gq') + '" data-agf="gu.q" type="search" placeholder="Search name, email, city or tag" value="' + esc(st.gu_q || '') + '" aria-label="Search guests"></label>' +
@@ -1194,6 +1226,116 @@ var require_bb_embedded_files = __commonJS({
             }).join('') + '</tbody></table></div>'
           : '<div class="a-empty ag-empty">' + I('search') + '<b>No guests match</b><p>Try another name or clear the segment filter.</p></div>') +
           (more ? '<button type="button" class="ag-more" data-ag="gu-all">Show all ' + total + ' guests' + I('chev') + '</button>' : '') + '<p class="ag-foot muted">' + (more ? rows.length + ' of ' + total + ' shown. ' : '') + total + ' of ' + s.guests.length + ' guests' + (seg !== 'all' ? ' in "' + esc(segs[seg].label) + '"' : '') + '. Segments only count guests who subscribed to emails.</p>' +
+        '</section>');
+    },
+  }, hooks);
+
+  /* =====================================================================
+     CONTACTS (everyone on the host's list, plus "Upload contacts": CSV, column mapping, dedupe by email or phone)
+     ===================================================================== */
+  const CTX = () => BB.contacts;
+  const CT_TEMPLATE = 'data:text/csv;charset=utf-8,' + encodeURIComponent('First name,Last name,Email,Phone,Town,Last stay,Stays,Tags,Agreed to emails\\nKim,Lee,kim@example.co.uk,07700 900123,Leeds,14/08/2026,2,Family,yes\\n');
+  function ctLoad(inst, text, file) {
+    const cells = CTX().parse(text); const st = inst.st;
+    if (!cells.length) { inst.set({ ct_err: 'That file has no rows we could read. Save it from your spreadsheet as CSV and try again.' }); return; }
+    const head = CTX().hasHeader(cells);
+    const width = Math.min(30, Math.max.apply(null, cells.slice(0, 50).map(r => r.length)));
+    const hrow = head ? cells[0] : [];
+    st.ct_cells = cells; st.ct_file = file || ''; st.ct_head = head; st.ct_err = null;
+    st.ct_map = CTX().guess(Array.from({ length: width }, (_, i) => hrow[i] || ''), cells.slice(head ? 1 : 0, 25));
+    if (!head && !st.ct_map.some(Boolean)) st.ct_map = ['name', 'email', 'phone', 'lastStay'].concat(Array(Math.max(0, width - 4)).fill('')).slice(0, width);
+    st.ct_step = 'map'; inst.render();
+  }
+  const ctRows = st => CTX().apply(st.ct_cells.slice(st.ct_head ? 1 : 0), st.ct_map);
+  function ctPick(inst) {
+    const st = inst.st;
+    return '<div class="ag-form">' +
+      '<label class="ag-drop" data-ctdrop><input type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" data-ctfile class="ag-sr">' + I('upload') +
+        '<b>Choose a CSV file or drop it here</b><span class="muted">From Excel, Google Sheets, Numbers, Airbnb, your booking system or your old mailing list. Up to ' + CTX().MAX.toLocaleString('en-GB') + ' contacts at a time.</span></label>' +
+      '<details class="ag-paste"' + (st.ct_paste ? ' open' : '') + '><summary>Or paste rows from a spreadsheet</summary>' +
+        '<label class="field"><span>Contacts</span><textarea id="' + ID(inst, 'ctp') + '" data-ctpaste rows="5" placeholder="Name,Email,Phone&#10;Kim Lee,kim@example.co.uk,07700 900123">' + esc(st.ct_paste || '') + '</textarea></label>' +
+        '<div class="ag-acts-row"><button class="btn" data-ag="ct-paste"' + ((st.ct_paste || '').trim() ? '' : ' disabled') + '>Use these rows</button></div></details>' +
+      (st.ct_err ? '<p class="ag-err" role="alert">' + esc(st.ct_err) + '</p>' : '') +
+      '<p class="muted ag-p">Any columns work. You choose what each one is on the next step. <a href="' + CT_TEMPLATE + '" download="contacts-template.csv">Download a template</a></p></div>';
+  }
+  function ctMapStep(inst) {
+    const st = inst.st, cells = st.ct_cells, body = cells.slice(st.ct_head ? 1 : 0);
+    const has = f => st.ct_map.includes(f);
+    const ok = has('email') || has('phone');
+    const opts = cur => '<option value="">Don\u2019t import</option>' + CTX().FIELDS.map(([k, t]) => '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + t + '</option>').join('');
+    return '<div class="ag-form">' +
+      '<p class="ag-note">' + I('list') + '<span><b>' + body.length.toLocaleString('en-GB') + ' row' + (body.length === 1 ? '' : 's') + (st.ct_file ? ' in ' + esc(st.ct_file) : '') + '.</b> We guessed what each column is. Check them, and set any you don\u2019t need to \u201CDon\u2019t import\u201D.' + (body.length > CTX().MAX ? ' Only the first ' + CTX().MAX.toLocaleString('en-GB') + ' will be uploaded this time.' : '') + '</span></p>' +
+      '<button type="button" class="g-check ag-consent" role="checkbox" aria-checked="' + !!st.ct_head + '" data-ag="ct-head"><span class="ag-box">' + (st.ct_head ? I('check') : '') + '</span><span>The first row is column headings</span></button>' +
+      '<div class="tblwrap"><table class="tbl ag-ctmap"><thead><tr><th>Column in your file</th><th>Examples</th><th>Upload as</th></tr></thead><tbody>' +
+        st.ct_map.map((f, i) => {
+          const ex = body.slice(0, 3).map(r => r[i] || '').filter(Boolean);
+          return '<tr' + (f ? '' : ' class="ag-off"') + '><td><b>' + esc(st.ct_head ? (cells[0][i] || 'Column ' + (i + 1)) : 'Column ' + (i + 1)) + '</b></td><td class="ag-ctex">' + (ex.length ? ex.map(v => '<span>' + esc(v.slice(0, 40)) + '</span>').join('') : '<span class="muted">Empty</span>') + '</td>' +
+            '<td><select id="' + ID(inst, 'ctm' + i) + '" data-ctmap="' + i + '" aria-label="Upload column ' + (i + 1) + ' as">' + opts(f) + '</select></td></tr>';
+        }).join('') + '</tbody></table></div>' +
+      (ok ? '' : '<p class="ag-err" role="alert">Choose which column holds the email or the phone number. We need one of them to know who is who.</p>') +
+      '<div class="ag-acts-row"><button class="btn ghost" data-ag="ct-back" data-v="pick">' + I('back') + 'Choose another file</button><button class="btn primary" data-ag="ct-next"' + (ok ? '' : ' disabled') + '>Check for duplicates' + I('arrow') + '</button></div></div>';
+  }
+  function ctReview(inst) {
+    const st = inst.st, plan = st.ct_plan; const consentCol = st.ct_map.includes('consent');
+    const lab = { new: ['good', 'New'], update: ['info', 'Already here'], dupe: ['muted', 'Duplicate row'], skip: ['warn', 'Skipped'] };
+    const why = e => e.status === 'update' ? 'Matched by ' + e.by + ' to ' + esc((BB.q.guest(e.guestId) || {}).name || 'a contact') : e.status === 'dupe' ? 'Same person as row ' + (e.of + 1 + (st.ct_head ? 1 : 0)) + ', merged' : e.status === 'skip' ? esc(e.why) : '';
+    const show = plan.rows.filter(e => e.status !== 'new').slice(0, 6).concat(plan.rows.filter(e => e.status === 'new').slice(0, 4)).sort((a, b) => a.row - b.row).slice(0, 8);
+    return '<div class="ag-form">' +
+      '<div class="ag-kpis ag-ctk">' + kpi('New contacts', plan.added.toLocaleString('en-GB'), 'Will be added') + kpi('Already here', plan.updated.toLocaleString('en-GB'), 'Matched by email or phone, blanks filled in') +
+        kpi('Duplicate rows', plan.duplicates.toLocaleString('en-GB'), 'Same person twice in the file, merged') + kpi('Skipped', plan.invalid.toLocaleString('en-GB'), 'No valid email or phone') + '</div>' +
+      (show.length ? '<div class="tblwrap"><table class="tbl ag-ctrev"><thead><tr><th>Row</th><th>Contact</th><th>What happens</th></tr></thead><tbody>' + show.map(e => '<tr><td class="num">' + (e.row + 1 + (st.ct_head ? 1 : 0)) + '</td><td><b>' + esc(e.c.name || '\u2014') + '</b><small>' + esc([e.c.email, e.c.phone].filter(Boolean).join(' \xB7 ') || 'No contact details') + '</small></td><td>' + BB.pill(lab[e.status][0], lab[e.status][1]) + ' <span class="muted">' + why(e) + '</span></td></tr>').join('') + '</tbody></table></div>' : '') +
+      (consentCol ? '<p class="ag-note">' + I('check') + '<span>Your <b>Agreed to emails</b> column decides who is subscribed. Rows that say yes are subscribed, the rest are not.</span></p>'
+        : '<button type="button" class="g-check ag-consent" role="checkbox" aria-checked="' + !!st.ct_consent + '" data-ag="ct-consent"><span class="ag-box">' + (st.ct_consent ? I('check') : '') + '</span><span>These people agreed to hear from me by email (for example they ticked a box when they booked or signed up). Subscribe them to my emails.</span></button>') +
+      '<button type="button" class="g-check ag-consent" role="checkbox" aria-checked="' + !!st.ct_sms + '" data-ag="ct-sms"><span class="ag-box">' + (st.ct_sms ? I('check') : '') + '</span><span>They also agreed to get texts from me.</span></button>' +
+      '<p class="muted ag-p">Anyone who unsubscribed before stays unsubscribed, whatever the file says.</p>' +
+      '<label class="field ag-cttag"><span>Tag this upload (optional)</span><input id="' + ID(inst, 'ctt') + '" data-agf="ct.tag" maxlength="24" placeholder="For example Newsletter 2025" value="' + esc(st.ct_tag || '') + '"></label>' +
+      '<div class="ag-acts-row"><button class="btn ghost" data-ag="ct-back" data-v="map">' + I('back') + 'Back to columns</button><button class="btn primary" data-ag="ct-go"' + (plan.added + plan.updated ? '' : ' disabled') + '>' + I('upload') + 'Upload ' + (plan.added + plan.updated).toLocaleString('en-GB') + ' contact' + (plan.added + plan.updated === 1 ? '' : 's') + '</button></div></div>';
+  }
+  function ctDone(inst) {
+    const r = inst.st.ct_res;
+    return '<div class="ag-form"><div class="ag-banner good">' + I('check') + '<div><p><b>' + r.added.toLocaleString('en-GB') + ' new contact' + (r.added === 1 ? '' : 's') + ' added</b>' + (r.updated ? ', ' + r.updated.toLocaleString('en-GB') + ' already here updated' : '') + (r.duplicates ? ', ' + r.duplicates + ' duplicate row' + (r.duplicates === 1 ? '' : 's') + ' merged' : '') + (r.skipped ? ', ' + r.skipped + ' skipped' : '') + '.</p>' +
+      '<p class="muted">' + (r.subscribed ? r.subscribed.toLocaleString('en-GB') + ' can now get your emails. Send to \u201CEveryone on your list\u201D, or to past guests if you added their last stay.' : 'Nobody new was subscribed, so campaigns will not go to them.') + '</p></div></div>' +
+      '<div class="ag-acts-row">' + (r.subscribed ? '<button class="btn primary" data-ag="ct-email">' + I('mail') + 'Email your list</button>' : '') + '<button class="btn" data-ag="ct-up">' + I('upload') + 'Upload more</button><button class="btn ghost" data-ag="ct-x">Done</button></div></div>';
+  }
+  function ctPanel(inst) {
+    const st = inst.st, step = st.ct_step;
+    const steps = [['pick', 'Choose file'], ['map', 'Match columns'], ['review', 'Check and upload']];
+    const at = steps.findIndex(x => x[0] === step);
+    return '<section class="a-card ag-card ag-imp ag-ctup" aria-label="Upload contacts"><div class="a-card-h"><h3>Upload contacts</h3><button class="btn sm ghost" data-ag="ct-x">' + I('x') + 'Close</button></div>' +
+      (step !== 'done' ? '<ol class="ag-steps">' + steps.map(([k, t], i) => '<li class="' + (i < at ? 'done' : i === at ? 'on' : '') + '"' + (i === at ? ' aria-current="step"' : '') + '><span class="num">' + (i < at ? I('check') : i + 1) + '</span>' + t + '</li>').join('') + '</ol>' : '') +
+      (step === 'pick' ? ctPick(inst) : step === 'map' ? ctMapStep(inst) : step === 'review' ? ctReview(inst) : ctDone(inst)) + '</section>';
+  }
+  const CT_FILTERS = [['all', 'Everyone'], ['subscribed', 'Subscribed'], ['stayed', 'Has stayed'], ['nostay', 'No stay yet'], ['imported', 'Imported'], ['nosub', 'Not subscribed']];
+  V.contacts = Object.assign({
+    label: 'Contacts', group: 'Grow', icon: 'user', order: 12,
+    render(inst) {
+      const s = S(), st = inst.st; const f = st.ct_f || 'all', q = (st.ct_q || '').trim().toLowerCase();
+      const idx = guestIndex();
+      const stayed = x => x.n > 0 || !!x.g.lastStay;
+      const test = { all: () => true, subscribed: x => x.g.subscribed && x.g.email, stayed, nostay: x => !stayed(x), imported: x => x.g.source === 'import', nosub: x => !x.g.subscribed };
+      let rows = idx.filter(test[f] || test.all);
+      if (q) rows = rows.filter(x => [x.g.name, x.g.email, x.g.phone, x.g.city].concat(x.g.tags || []).join(' ').toLowerCase().includes(q));
+      rows = rows.slice().sort((a, b) => (b.g.firstSeen || b.g.createdAt || '').localeCompare(a.g.firstSeen || a.g.createdAt || '') || a.g.name.localeCompare(b.g.name));
+      const total = rows.length; const more = !st.ct_all && total > 50; if (more) rows = rows.slice(0, 50);
+      const subs = idx.filter(test.subscribed).length, up = idx.filter(test.imported).length, phoneOnly = idx.filter(x => !x.g.email && x.g.phone).length;
+      return wrap(inst, 'ag-guests ag-contacts',
+        vh('Contacts', 'Everyone you can reach: guests who booked, people from your funnels and anyone you upload. One list you own.',
+          '<button class="btn" data-ag="ct-email">' + I('mail') + 'Email your list</button><button class="btn primary" data-ag="ct-up">' + I('upload') + 'Upload contacts</button>') +
+        (st.ct_step ? ctPanel(inst) : '') +
+        '<div class="ag-kpis">' + kpi('Contacts', s.guests.length.toLocaleString('en-GB'), idx.filter(stayed).length + ' have stayed with you') + kpi('Subscribed', subs.toLocaleString('en-GB'), 'Can get your emails') +
+          kpi('Imported', up.toLocaleString('en-GB'), 'From your own lists') + kpi('Phone only', phoneOnly.toLocaleString('en-GB'), 'No email address yet') + '</div>' +
+        '<section class="a-card ag-card ag-pad0">' +
+          '<div class="ag-toolbar"><label class="ag-search">' + I('search') + '<input id="' + ID(inst, 'ctq') + '" data-agf="ct.q" type="search" placeholder="Search name, email, phone, town or tag" value="' + esc(st.ct_q || '') + '" aria-label="Search contacts"></label></div>' +
+          '<div class="ag-chips" role="group" aria-label="Filter contacts">' + CT_FILTERS.map(([k, t]) => '<button type="button" class="chip" data-ag="ct-f" data-v="' + k + '" aria-pressed="' + (f === k) + '">' + t + '<span class="num">' + idx.filter(test[k]).length + '</span></button>').join('') + '</div>' +
+          (rows.length ? '<div class="tblwrap"><table class="tbl ag-gtbl ag-cttbl"><thead><tr><th>Contact</th><th class="ag-c-city">Phone</th><th class="ag-c-last">Source</th><th class="num ag-r">Stays</th><th class="ag-c-tags">Tags</th><th class="ag-c-sub">Emails</th></tr></thead><tbody>' +
+            rows.map(x => { const g = x.g; const n = x.n + (g.stays || 0);
+              return '<tr data-open data-ag="gu-open" data-v="' + g.id + '" tabindex="0"><td><div class="ag-who">' + BB.avatar(g.name, 'sm') + '<div><b>' + esc(g.name) + '</b><small>' + esc(g.email || 'No email') + '</small></div></div></td>' +
+                '<td class="ag-c-city num">' + esc(g.phone || '\u2014') + '</td><td class="ag-c-last">' + (g.source === 'import' ? '<span class="ag-tag">Imported</span>' : g.source === 'funnel' ? 'Funnel sign-up' : esc(BB.SOURCE[g.source] || (x.n ? 'Booking' : 'Sign-up'))) + '</td>' +
+                '<td class="num ag-r">' + (n || '<span class="muted">0</span>') + '</td><td class="ag-c-tags">' + ((g.tags || []).length ? g.tags.slice(0, 3).map(t => '<span class="ag-tag">' + esc(t) + '</span>').join('') : '<span class="muted">\u2014</span>') + '</td>' +
+                '<td class="ag-c-sub">' + (g.subscribed && g.email ? BB.pill('good', 'Subscribed') : g.unsubscribedAt ? BB.pill('warn', 'Unsubscribed') : BB.pill('muted', 'Not subscribed')) + '</td></tr>'; }).join('') + '</tbody></table></div>'
+          : '<div class="a-empty ag-empty">' + I(s.guests.length ? 'search' : 'users') + (s.guests.length ? '<b>No contacts match</b><p>Try another search or filter.</p>' : '<b>No contacts yet</b><p>Upload a CSV of past guests or your mailing list to get started.</p><button class="btn primary" data-ag="ct-up">' + I('upload') + 'Upload contacts</button>') + '</div>') +
+          (more ? '<button type="button" class="ag-more" data-ag="ct-all">Show all ' + total.toLocaleString('en-GB') + ' contacts' + I('chev') + '</button>' : '') +
+          '<p class="ag-foot muted">' + (more ? rows.length + ' of ' + total.toLocaleString('en-GB') + ' shown. ' : '') + 'Uploads match people already here by email, then by phone number, so nobody is added twice.</p>' +
         '</section>');
     },
   }, hooks);
@@ -1332,7 +1474,8 @@ var require_bb_embedded_files = __commonJS({
     const st = inst.st; const id = st.id || 'new';
     if (st.cp_for !== id || !st.cp_edit) {
       const c = S().campaigns.find(x => x.id === id);
-      st.cp_edit = c ? toEdit(c) : template(st.cp_tpl || 'gap'); st.cp_for = id; st.cp_conf = false; st.cp_err = null;
+      st.cp_edit = c ? toEdit(c) : template(st.cp_tpl || 'gap'); st.cp_for = id;
+      if (!c && st.cp_seg) { st.cp_edit.segment = st.cp_seg; st.cp_seg = null; } st.cp_conf = false; st.cp_err = null;
       if (!st.cp_sim || st.cp_sim.id !== id) st.cp_sim = null;
     }
     return st.cp_edit;
@@ -3069,6 +3212,8 @@ var require_bb_embedded_files = __commonJS({
         fwd('input', ev);
       });
       root.addEventListener('change', ev => { if (ev.target.closest('[data-nb]')) { nbChange(ev.target, inst); return; } fwd('change', ev); });
+      root.addEventListener('dragover', ev => fwd('dragover', ev));
+      root.addEventListener('drop', ev => fwd('drop', ev));
       root.addEventListener('submit', ev => { ev.preventDefault(); if (ev.target.closest('[data-nb]')) { nbSubmit(inst); return; } fwd('submit', ev); });
       root.addEventListener('focusin', ev => { if (ev.target.dataset && ev.target.dataset.a === 'q' && !inst.st.qOpen && inst.st.q) inst.set({ qOpen: true }); });
       root.addEventListener('keydown', ev => {
@@ -5443,8 +5588,8 @@ button { cursor: pointer; }
     if (!real) return 0;
     return seg === 'past' ? Math.max(real, 412) : seg === 'repeat' ? Math.max(real, 212) : real;
   }
-  const SEG_ORDER = ['repeat', 'recent', 'past', 'pets', 'lapsed'];
-  const SEG_SHORT = { past: 'All past guests', repeat: 'Repeat guests', pets: 'Pet owners', recent: 'Last 12 months', lapsed: 'Lapsed 6+ months' };
+  const SEG_ORDER = ['repeat', 'recent', 'past', 'pets', 'lapsed', 'list'];
+  const SEG_SHORT = { past: 'All past guests', repeat: 'Repeat guests', pets: 'Pet owners', recent: 'Last 12 months', lapsed: 'Lapsed 6+ months', list: 'Everyone on your list' };
   const TPL = [['gap', 'Gap nights'], ['comeback', 'Come-back offer'], ['holiday', 'Holiday dates'], ['pets', 'Bring the dog']];
 
   /* AI-written campaign copy from the calendar and listing facts. v picks a rewrite. */
@@ -10240,6 +10385,135 @@ body.p-lock { overflow: hidden; }
     BB.store.commit({ type: 'guest' });
     return { added, updated, skipped };
   };
+  /* ---------- contacts (CSV upload with column mapping and dedupe) ----------
+     Everything runs here, in the browser for the preview and on the server for the saved copy. No outside service. */
+  const CT = BB.contacts = {};
+  CT.MAX = 5000;
+  CT.FIELDS = [['name', 'Full name'], ['firstName', 'First name'], ['lastName', 'Last name'], ['email', 'Email'], ['phone', 'Phone'], ['city', 'Town or city'],
+    ['lastStay', 'Last stay date'], ['stays', 'Number of stays'], ['tags', 'Tags'], ['notes', 'Notes'], ['dog', 'Has a dog'], ['consent', 'Agreed to emails']];
+  // CSV, semicolon or tab separated text into rows of cells. Handles quotes, doubled quotes and line breaks inside quotes.
+  CT.parse = function (text) {
+    text = String(text || '').replace(/^\uFEFF/, '');
+    const first = (text.split(/\\r?\\n/)[0] || '');
+    const count = ch => first.split(ch).length - 1;
+    const sep = count('\\t') > count(',') && count('\\t') >= count(';') ? '\\t' : count(';') > count(',') ? ';' : ',';
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) { const c = text[i];
+      if (q) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c; }
+      else if (c === '"' && !cell.trim()) { q = true; cell = ''; }
+      else if (c === sep) { row.push(cell.trim()); cell = ''; }
+      else if (c === '\\n' || c === '\\r') { if (c === '\\r' && text[i + 1] === '\\n') i++; row.push(cell.trim()); if (row.some(Boolean)) rows.push(row); row = []; cell = ''; if (rows.length > CT.MAX + 1) break; }
+      else cell += c; }
+    row.push(cell.trim()); if (row.some(Boolean)) rows.push(row);
+    return rows;
+  };
+  const EMAIL_RE = /^[^@\\s<>",;]+@[^@\\s<>",;]+\\.[^@\\s<>",;.]{2,}$/;
+  CT.email = v => { const e = String(v || '').trim().replace(/^mailto:/i, '').toLowerCase(); return EMAIL_RE.test(e) ? e.slice(0, 120) : ''; };
+  // Phone numbers compared on digits only, with UK +44 / 0044 written the same as a leading 0.
+  CT.phoneKey = v => {
+    let d = String(v || '').trim().replace(/[^\\d+]/g, '');
+    if (/^\\+44|^0044/.test(d)) d = '0' + d.replace(/^\\+44|^0044/, '').replace(/^0/, '');
+    else if (/^44\\d{10}$/.test(d)) d = '0' + d.slice(2);
+    else if (d[0] === '+') d = '+' + d.slice(1).replace(/\\+/g, ''); else d = d.replace(/\\+/g, '');
+    if (/^7\\d{9}$/.test(d)) d = '0' + d; // spreadsheets drop the leading 0 of UK mobiles
+    return d.replace(/\\D/g, '').length >= 7 ? d : '';
+  };
+  CT.date = v => {
+    const s = String(v || '').trim(); let m;
+    if ((m = s.match(/^(\\d{4})-(\\d{1,2})-(\\d{1,2})/))) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+    if ((m = s.match(/^(\\d{1,2})[/.-](\\d{1,2})[/.-](\\d{2}|\\d{4})$/))) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; if (+m[2] > 12) return null; return y + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0'); } // UK order: day first
+    return null;
+  };
+  // Guess what each column holds from its heading, then from what is in it.
+  CT.guess = function (head, sample) {
+    const R = [['email', /e-?mail/], ['firstName', /^(first|given|fore)\\s*name|^first$/], ['lastName', /^(last|family|sur)\\s*name|^surname$|^last$/], ['phone', /phone|mobile|tel|cell|whats/],
+      ['lastStay', /last|check(ed)?.?(out|in)|stay(ed)?\\s*(on|date)|^date|arriv|depart/], ['stays', /^stays$|times|visits|number of|^bookings$|count/], ['city', /city|town|location|^place/],
+      ['dog', /dog|pet/], ['consent', /consent|opt.?in|marketing|subscri|newsletter|agreed/], ['tags', /^tags?$|label|group|segment/], ['notes', /note|comment/], ['name', /name|guest|contact|customer|^who$/]];
+    const used = new Set();
+    return head.map((h, i) => {
+      const k = String(h || '').trim().toLowerCase();
+      let f = (R.find(([f, re]) => re.test(k) && !used.has(f)) || [])[0];
+      if (!f) { const vals = sample.map(r => r[i] || '').filter(Boolean); if (vals.length && vals.every(v => CT.email(v))) f = 'email'; else if (vals.length && vals.every(v => CT.phoneKey(v) && !/[a-z]/i.test(v))) f = 'phone'; }
+      if (f && used.has(f)) f = '';
+      if (f) used.add(f); return f || '';
+    });
+  };
+  // Does the first row look like headings rather than a contact?
+  CT.hasHeader = rows => !!rows.length && !rows[0].some(v => CT.email(v)) && rows[0].some(v => /[a-z]/i.test(v));
+  // Rows of cells plus a column map into contact objects.
+  CT.apply = function (rows, map) {
+    return rows.slice(0, CT.MAX).map(r => { const o = {}; map.forEach((f, i) => { if (f && r[i] != null && String(r[i]).trim()) o[f] = o[f] ? o[f] + ' ' + String(r[i]).trim() : String(r[i]).trim(); }); return o; });
+  };
+  const yes = v => /^(y|yes|true|1|x|\u2713|ticked|agreed|subscribed|opted.?in)$/i.test(String(v || '').trim());
+  const cleanRow = r => {
+    const name = (String(r.name || '').trim() || [r.firstName, r.lastName].filter(Boolean).join(' ').trim()).replace(/\\s+/g, ' ').slice(0, 80);
+    const tags = String(r.tags || '').split(/[,;|]/).map(t => t.trim().replace(/\\s+/g, ' ').slice(0, 24)).filter(Boolean).slice(0, 8);
+    return { name, email: CT.email(r.email), phoneKey: CT.phoneKey(r.phone), phone: String(r.phone || '').trim().slice(0, 30), city: String(r.city || '').trim().slice(0, 40),
+      lastStay: CT.date(r.lastStay), stays: Math.max(0, Math.min(99, parseInt(r.stays, 10) || 0)), tags, notes: String(r.notes || '').trim().slice(0, 500), dog: yes(r.dog) || yes(r.pets), consent: r.consent == null ? null : yes(r.consent) };
+  };
+  // Work out what an upload would do, without changing anything. Rows sharing an email or phone number are one contact.
+  CT.plan = function (rows) {
+    const s = S(), byEmail = new Map(), byPhone = new Map();
+    s.guests.forEach(g => { const e = CT.email(g.email); if (e && !byEmail.has(e)) byEmail.set(e, g); const p = CT.phoneKey(g.phone); if (p && !byPhone.has(p)) byPhone.set(p, g); });
+    const out = [], fileEmail = new Map(), filePhone = new Map(), claimed = new Map(); let invalid = 0, dupes = 0;
+    (rows || []).slice(0, CT.MAX).forEach((raw, i) => {
+      const c = cleanRow(raw);
+      if (!c.email && !c.phoneKey) { invalid++; out.push({ row: i, status: 'skip', c, why: raw.email || raw.phone ? 'Email and phone both look wrong' : 'No email or phone' }); return; }
+      // A phone match only counts when the emails don't disagree: two people can share a home phone.
+      const differ = (x, y) => !!(x && y && x !== y);
+      const byP = c.phoneKey && byPhone.get(c.phoneKey);
+      const ex = (c.email && byEmail.get(c.email)) || (byP && !differ(c.email, CT.email(byP.email)) ? byP : null) || null;
+      const pt = c.phoneKey && filePhone.get(c.phoneKey);
+      const twin = (c.email && fileEmail.get(c.email)) || (ex && claimed.get(ex.id)) || (!ex && pt && !differ(c.email, pt.c.email) ? pt : null);
+      if (twin) { dupes++; merge(twin.c, c); index(twin); out.push({ row: i, status: 'dupe', c, of: twin.row }); return; }
+      const e = { row: i, status: ex ? 'update' : 'new', c, guestId: ex ? ex.id : null, by: ex ? (c.email && byEmail.get(c.email) === ex ? 'email' : 'phone') : null };
+      if (ex) claimed.set(ex.id, e);
+      out.push(e); index(e);
+    });
+    function index(e) { if (e.c.email && !fileEmail.has(e.c.email)) fileEmail.set(e.c.email, e); if (e.c.phoneKey && !filePhone.has(e.c.phoneKey)) filePhone.set(e.c.phoneKey, e); }
+    function merge(a, b) {
+      ['name', 'email', 'phone', 'phoneKey', 'city', 'notes'].forEach(k => { if (!a[k] && b[k]) a[k] = b[k]; });
+      if (b.lastStay && (!a.lastStay || b.lastStay > a.lastStay)) a.lastStay = b.lastStay; a.stays = Math.max(a.stays, b.stays);
+      b.tags.forEach(t => { if (!a.tags.some(x => x.toLowerCase() === t.toLowerCase())) a.tags.push(t); }); a.dog = a.dog || b.dog; if (b.consent != null) a.consent = a.consent === false ? false : b.consent;
+    }
+    const n = k => out.filter(x => x.status === k).length;
+    return { rows: out, added: n('new'), updated: n('update'), duplicates: dupes, invalid, total: (rows || []).length, capped: (rows || []).length > CT.MAX };
+  };
+  // Upload contacts. opts.consent: they all agreed to emails (a per-row "agreed" column wins when it is mapped).
+  // opts.sms: they agreed to texts. opts.tag: an extra tag for this upload. Anyone who unsubscribed stays unsubscribed.
+  BB.act.importContacts = function (rows, opts) {
+    opts = opts || {}; const s = S(); const plan = CT.plan(rows);
+    const tag = String(opts.tag || '').trim().replace(/\\s+/g, ' ').slice(0, 24);
+    const addTags = (g, list) => list.forEach(t => { if (t && !g.tags.some(x => x.toLowerCase() === t.toLowerCase())) g.tags.push(t); });
+    let subscribed = 0;
+    plan.rows.forEach(e => {
+      if (e.status !== 'new' && e.status !== 'update') return;
+      const c = e.c; const agreed = c.consent == null ? !!opts.consent : c.consent;
+      let g;
+      if (e.status === 'update') {
+        g = BB.q.guest(e.guestId); if (!g) return;
+        if (!g.email && c.email) g.email = c.email;
+        if (!g.phone && c.phone) g.phone = c.phone;
+        if ((!g.name || g.name === (g.email || '').split('@')[0]) && c.name) g.name = c.name;
+        if (!g.city && c.city) g.city = c.city;
+        if (c.notes && !(g.notes || '').includes(c.notes)) g.notes = ((g.notes ? g.notes + '\\n' : '') + c.notes).slice(0, 2000);
+        if (c.lastStay && (!g.lastStay || c.lastStay > g.lastStay)) g.lastStay = c.lastStay;
+        if (c.stays > (g.stays || 0)) g.stays = c.stays;
+      } else {
+        g = { id: 'g' + (++s.seq), name: c.name || (c.email ? c.email.split('@')[0] : 'Contact ' + c.phone), email: c.email, phone: c.phone, city: c.city, tags: ['Imported'],
+          subscribed: false, source: 'import', notes: c.notes, lastStay: c.lastStay, stays: c.stays || (c.lastStay ? 1 : 0), firstSeen: s.today, createdAt: s.today };
+        s.guests.push(g);
+      }
+      g.tags = g.tags || []; addTags(g, c.tags.concat(c.dog ? ['Pet owner'] : [], tag ? [tag] : []));
+      if (agreed && g.email && !g.unsubscribedAt && !g.subscribed) { g.subscribed = true; subscribed++; }
+      if (opts.sms && g.phone && !g.smsOptOut) g.smsOptIn = true;
+    });
+    const r = { added: plan.added, updated: plan.updated, duplicates: plan.duplicates, skipped: plan.invalid, subscribed };
+    BB.log('campaign', 'Contacts', 'Uploaded contacts: ' + r.added + ' new, ' + r.updated + ' matched to people already here' + (r.duplicates ? ', ' + r.duplicates + ' duplicate row' + (r.duplicates === 1 ? '' : 's') + ' merged' : '') +
+      (r.skipped ? ', ' + r.skipped + ' skipped without an email or phone' : '') + '. ' + (r.subscribed ? r.subscribed + ' subscribed to your emails.' : 'Nobody new was subscribed, so campaigns will not go to them.'), null, ['Contacts']);
+    BB.store.commit({ type: 'guest' });
+    return r;
+  };
   // Calendar link (iCal) for an add-on calendar, per home. Stored on the integration so the server can read it.
   BB.act.setCalendarLink = function (id, pid, url) {
     const i = BB.q.integration(id); if (!i) return;
@@ -10639,13 +10913,16 @@ body.p-lock { overflow: hidden; }
       // Imported guests carry lastStay (and stays) from the host's own records.
       const stayed = g => S().bookings.some(b => b.guestId === g.id && b.checkOut <= today) || (g.lastStay && g.lastStay <= today);
       const since = (g, d) => S().bookings.some(b => b.guestId === g.id && b.status !== 'cancelled' && b.status !== 'request' && b.checkOut > d) || (g.lastStay && g.lastStay > d);
-      const past = S().guests.filter(g => g.subscribed && stayed(g));
+      const list = S().guests.filter(g => g.subscribed && g.email);
+      const past = list.filter(stayed);
       return {
         past: { label: 'All past guests', guests: past },
         repeat: { label: 'Repeat guests', guests: past.filter(g => BB.q.stays(g.id).length + (g.stays || 0) >= 2) },
         pets: { label: 'Dog owners', guests: past.filter(g => g.tags.includes('Pet owner') || S().bookings.some(b => b.guestId === g.id && b.pets)) },
         recent: { label: 'Stayed in the last 12 months', guests: past.filter(g => since(g, D.add(today, -365))) },
         lapsed: { label: 'No stay in 6+ months', guests: past.filter(g => !since(g, D.add(today, -180))) },
+        // Everyone subscribed, including uploaded contacts who have not stayed yet.
+        list: { label: 'Everyone on your list', guests: list },
       };
     },
   };
@@ -11130,6 +11407,7 @@ body.p-lock { overflow: hidden; }
     chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
     out: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
+    upload: '<path d="M12 15V4M7 9l5-5 5 5M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     play: '<path d="M7 4l13 8-13 8z"/>',
     reset: '<path d="M4 12a8 8 0 108-8H8M4 4v4h4"/>',
@@ -19279,7 +19557,7 @@ var require_effects = __commonJS({
         for (const g of seg) {
           const v = vars(w, null, p, g);
           const body = "Hi " + first(g.name) + ",\n\n" + c.body.text;
-          const html = simple(p, v, body, { label: c.body.cta || "Book direct", url: urls.track(w, "c", c, g) }, 'You get this because you stayed with us and joined our guest list. <a href="' + v.unsubscribe_url + '">Unsubscribe</a>');
+          const html = simple(p, v, body, { label: c.body.cta || "Book direct", url: urls.track(w, "c", c, g) }, (c.segment === "list" ? "You get this because you joined our guest list." : "You get this because you stayed with us and joined our guest list.") + ' <a href="' + v.unsubscribe_url + '">Unsubscribe</a>');
           const tracked = html.replace("</body>", '<img src="' + urls.track(w, "o", c, g) + '" width="1" height="1" alt="" style="display:block;border:0"></body>');
           const r = await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: c.subject, text: body + "\n\n" + urls.track(w, "c", c, g) + "\n\nUnsubscribe: " + v.unsubscribe_url, html: tracked, from: fromFor(w), replyTo: s.account.email, meta: { campaign: c.id, broadcast: true }, unsubscribeUrl: v.unsubscribe_url });
           if (r.ok) sent++;
