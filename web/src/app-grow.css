@@ -645,3 +645,34 @@
 .ag .ag-dom > .ag-note { margin: 0 0 12px; }
 .ag .ag-dg { margin: 0 0 14px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
 .ag .ag-dom .ag-fine { margin: 12px 0 0; font-size: 13px; }
+
+/* Contacts: upload with column matching (app-grow.js V.contacts) */
+.ag .ag-ctup { display: grid; gap: 14px; }
+.ag .ag-steps { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; font-size: 13px; color: var(--muted); }
+.ag .ag-steps li { display: flex; align-items: center; gap: 8px; }
+.ag .ag-steps li > span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--surface-2); }
+.ag .ag-steps li > span .ic { width: 13px; height: 13px; }
+.ag .ag-steps li.on { color: var(--fg); font-weight: 600; }
+.ag .ag-steps li.on > span { background: var(--brand, #3355FF); color: #fff; }
+.ag .ag-steps li.done > span { background: var(--good-soft); color: var(--good); }
+.ag .ag-drop { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; padding: 28px 18px; border: 1.5px dashed var(--line-strong, #9aa3b5); border-radius: 16px; cursor: pointer; background: var(--surface-2); transition: border-color .15s, background .15s; }
+.ag .ag-drop > .ic { width: 26px; height: 26px; color: var(--primary); }
+.ag .ag-drop span { font-size: 13px; max-width: 46ch; }
+.ag .ag-drop:hover, .ag .ag-drop.over, .ag .ag-drop:focus-within { border-color: var(--brand, #3355FF); background: color-mix(in oklab, var(--brand, #3355FF) 6%, var(--surface-2)); }
+.ag .ag-drop:focus-within { outline: 2px solid var(--brand, #3355FF); outline-offset: 2px; }
+.ag .ag-paste summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--primary); }
+.ag .ag-paste[open] summary { margin-bottom: 10px; }
+.ag .ag-paste .ag-acts-row { margin-top: 10px; }
+.ag .ag-ctmap td { vertical-align: middle; }
+.ag .ag-ctmap select { width: 100%; min-width: 150px; }
+.ag .ag-ctmap tr.ag-off td:first-child, .ag .ag-ctmap tr.ag-off .ag-ctex { opacity: .55; }
+.ag .ag-ctex { display: flex; flex-wrap: wrap; gap: 4px; max-width: 360px; }
+.ag .ag-ctex span { font-size: 12.5px; background: var(--surface-2); border-radius: 6px; padding: 2px 6px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag .ag-ctrev td small { display: block; color: var(--muted); font-size: 12.5px; }
+.ag .ag-cttag { max-width: 320px; }
+@container ag (max-width: 640px) {
+  .ag .ag-ctmap thead { display: none; }
+  .ag .ag-ctmap tr { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 10px 0; }
+  .ag .ag-ctmap td { padding: 0 12px; border: 0; }
+  .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -62,14 +62,14 @@ module.exports = function (cfg) {
       return { id: s.id, url: s.url };
     },
     async refund(paymentIntent, amount) { return api('POST', '/refunds', { payment_intent: paymentIntent, amount: amount ? pence(amount) : undefined, reverse_transfer: true, refund_application_fee: true }); },
-    async subscribe({ customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
+    async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
       // Annual billing (2 months free) uses the yearly prices; the add-on then bills yearly too, at 12 × £15.
       // No setup fee and no free month: the first month (or year) is paid at checkout, before the host sets anything up.
       const P = cfg.stripe.prices, yearly = annual && P[plan + 'Annual'];
       const price = yearly ? P[plan + 'Annual'] : P[plan]; if (!price) throw new Error('No Stripe price is set for the ' + plan + ' plan.');
       const add = yearly ? P.addonAnnual : P.addon;
       const items = [{ price, quantity: 1 }]; if (addon && add) items.push({ price: add, quantity: 1 });
-      const s = await api('POST', '/checkout/sessions', { mode: 'subscription', customer_email: customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
+      const s = await api('POST', '/checkout/sessions', { mode: 'subscription', customer: customer || undefined, customer_email: customer ? undefined : customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
       return { id: s.id, url: s.url };
     },
     // AI credit top-up: a one-off card payment to Bookingbooster (not to the host's own Stripe account).

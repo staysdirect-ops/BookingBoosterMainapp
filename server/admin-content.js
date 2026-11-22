@@ -72,6 +72,7 @@ module.exports = function ({ cfg, msg, leads, campaigns, social, ui, E, send, em
   async function catalogue() {
     const out = [];
     for (const [key, sq] of Object.entries(leads.series || {})) for (const st of sq.steps) out.push({ id: 'lead.' + key + '.' + st.key, group: 'lead', name: sq.name + ' · ' + st.key, subject: ((await leads.sample(key, st.key)) || {}).subject, series: sq.name, step: st.key, when: whenLead(key, st.key), live: true });
+    const O = leads.outreach; if (O) for (const [key, sq] of Object.entries(O.series)) for (const st of sq.steps) out.push({ id: 'out.' + key + '.' + st.key, group: 'out', name: sq.name.replace(/:.*/, '') + ' · ' + st.key, subject: st.subject, series: sq.name, step: st.key, when: (O.active(key) ? 'On' : 'Inactive draft, cannot send') + ' · day ' + st.day + ' · for ' + sq.sources.join(', ') + ' leads', live: O.active(key) });
     for (const d of campaigns.designs || []) out.push({ id: 'camp.' + d.key, group: 'camp', name: d.name, subject: d.subject, when: d.when, live: false, campaign: d.key });
     for (const [f, group, subject, when, live] of FILES) out.push({ id: 'tpl.' + f, group, name: titleOf(f), subject, when, live, file: f });
     return out;
@@ -79,6 +80,7 @@ module.exports = function ({ cfg, msg, leads, campaigns, social, ui, E, send, em
   const whenLead = (seq, k) => (k === 'E1' ? 'Straight after the form' : 'Later in the series, timed from the form');
   const GROUPS = [
     ['lead', 'To leads: automatic follow-up after a website form', 'Each website form starts its own series. They send by themselves; see Leads for who is in which.'],
+    ['out', 'To imported leads: outreach sequences (inactive drafts)', 'Drafts for imported leads, by source tag. They cannot send until the series is switched on in the code. Merge fields stay in curly brackets here.'],
     ['camp', 'To hosts and leads: designed marketing campaigns', 'Ready-made campaigns. Open one in Email campaigns to fill in the details and send it.'],
     ['host', 'To hosts: onboarding and account emails', 'Sent to each host about their own account.'],
     ['guest', 'To guests: from each host’s booking site', 'Sent in the host’s name to their guests.'],
@@ -88,6 +90,7 @@ module.exports = function ({ cfg, msg, leads, campaigns, social, ui, E, send, em
   async function render(id) {
     let m;
     if ((m = id.match(/^lead\.([a-z]+)\.([A-Za-z0-9]+)$/))) { const r = await leads.sample(m[1], m[2]); return r && { subject: r.subject, html: r.html }; }
+    if ((m = id.match(/^out\.([a-z-]+)\.([A-Z0-9]+)$/)) && leads.outreach) { const r = leads.outreach.sample(m[1], m[2]); return r && { subject: r.subject, html: r.html }; }
     if ((m = id.match(/^camp\.([a-z0-9-]+)$/))) { const r = await campaigns.preview(m[1]); return r && { subject: r.subject, html: r.html }; }
     if ((m = id.match(/^tpl\.([a-z0-9-]+)$/))) { const f = FILES.find(x => x[0] === m[1]); if (!f) return null; return { subject: f[2], html: msg.template(f[0], sampleVars(f[0], f[2])) }; }
     return null;

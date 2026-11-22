@@ -88,7 +88,7 @@ module.exports = function (ctx) {
     for (const g of seg) {
       const v = vars(w, null, p, g);
       const body = 'Hi ' + first(g.name) + ',\n\n' + c.body.text;
-      const html = simple(p, v, body, { label: c.body.cta || 'Book direct', url: urls.track(w, 'c', c, g) }, 'You get this because you stayed with us and joined our guest list. <a href="' + v.unsubscribe_url + '">Unsubscribe</a>');
+      const html = simple(p, v, body, { label: c.body.cta || 'Book direct', url: urls.track(w, 'c', c, g) }, (c.segment === 'list' ? 'You get this because you joined our guest list.' : 'You get this because you stayed with us and joined our guest list.') + ' <a href="' + v.unsubscribe_url + '">Unsubscribe</a>');
       const tracked = html.replace('</body>', '<img src="' + urls.track(w, 'o', c, g) + '" width="1" height="1" alt="" style="display:block;border:0"></body>');
       const r = await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: c.subject, text: body + '\n\n' + urls.track(w, 'c', c, g) + '\n\nUnsubscribe: ' + v.unsubscribe_url, html: tracked, from: fromFor(w), replyTo: s.account.email, meta: { campaign: c.id, broadcast: true }, unsubscribeUrl: v.unsubscribe_url });
       if (r.ok) sent++;
@@ -184,7 +184,7 @@ module.exports = function (ctx) {
     await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: 'Booking request: ' + p.name + ', ' + fmt(b.checkIn), text: text + '\n\nOpen your console: ' + url, html: simple(p, vars(w, b, p, g), text, { label: 'Accept or decline', url }), meta: { template: 'host-request', bookingId: b.id } });
   }
   // An unpaid sign-up's site is still offline ("opening soon"), so its "site is live" email waits for the first payment (siteLive).
-  const unpaid = async w => { if (!stripe.enabled || w.kind !== 'live') return false; const r = await ws.row(w.id); return !r || !r.billing_status || r.billing_status === 'trial'; };
+  const unpaid = async w => { if (!stripe.enabled || w.kind !== 'live') return false; const r = await ws.row(w.id); return !r || !r.billing_status || r.billing_status === 'trial' || r.billing_status === 'cancelled'; };
   async function siteLive(wid) { const w = await ws.open(wid); if (!w) return; for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true); }
   async function hostEmail(w, d, paid) {
     if (!paid && await unpaid(w)) return;

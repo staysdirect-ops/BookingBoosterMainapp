@@ -207,6 +207,135 @@
     BB.store.commit({ type: 'guest' });
     return { added, updated, skipped };
   };
+  /* ---------- contacts (CSV upload with column mapping and dedupe) ----------
+     Everything runs here, in the browser for the preview and on the server for the saved copy. No outside service. */
+  const CT = BB.contacts = {};
+  CT.MAX = 5000;
+  CT.FIELDS = [['name', 'Full name'], ['firstName', 'First name'], ['lastName', 'Last name'], ['email', 'Email'], ['phone', 'Phone'], ['city', 'Town or city'],
+    ['lastStay', 'Last stay date'], ['stays', 'Number of stays'], ['tags', 'Tags'], ['notes', 'Notes'], ['dog', 'Has a dog'], ['consent', 'Agreed to emails']];
+  // CSV, semicolon or tab separated text into rows of cells. Handles quotes, doubled quotes and line breaks inside quotes.
+  CT.parse = function (text) {
+    text = String(text || '').replace(/^﻿/, '');
+    const first = (text.split(/\r?\n/)[0] || '');
+    const count = ch => first.split(ch).length - 1;
+    const sep = count('\t') > count(',') && count('\t') >= count(';') ? '\t' : count(';') > count(',') ? ';' : ',';
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) { const c = text[i];
+      if (q) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c; }
+      else if (c === '"' && !cell.trim()) { q = true; cell = ''; }
+      else if (c === sep) { row.push(cell.trim()); cell = ''; }
+      else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cell.trim()); if (row.some(Boolean)) rows.push(row); row = []; cell = ''; if (rows.length > CT.MAX + 1) break; }
+      else cell += c; }
+    row.push(cell.trim()); if (row.some(Boolean)) rows.push(row);
+    return rows;
+  };
+  const EMAIL_RE = /^[^@\s<>",;]+@[^@\s<>",;]+\.[^@\s<>",;.]{2,}$/;
+  CT.email = v => { const e = String(v || '').trim().replace(/^mailto:/i, '').toLowerCase(); return EMAIL_RE.test(e) ? e.slice(0, 120) : ''; };
+  // Phone numbers compared on digits only, with UK +44 / 0044 written the same as a leading 0.
+  CT.phoneKey = v => {
+    let d = String(v || '').trim().replace(/[^\d+]/g, '');
+    if (/^\+44|^0044/.test(d)) d = '0' + d.replace(/^\+44|^0044/, '').replace(/^0/, '');
+    else if (/^44\d{10}$/.test(d)) d = '0' + d.slice(2);
+    else if (d[0] === '+') d = '+' + d.slice(1).replace(/\+/g, ''); else d = d.replace(/\+/g, '');
+    if (/^7\d{9}$/.test(d)) d = '0' + d; // spreadsheets drop the leading 0 of UK mobiles
+    return d.replace(/\D/g, '').length >= 7 ? d : '';
+  };
+  CT.date = v => {
+    const s = String(v || '').trim(); let m;
+    if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+    if ((m = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{2}|\d{4})$/))) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; if (+m[2] > 12) return null; return y + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0'); } // UK order: day first
+    return null;
+  };
+  // Guess what each column holds from its heading, then from what is in it.
+  CT.guess = function (head, sample) {
+    const R = [['email', /e-?mail/], ['firstName', /^(first|given|fore)\s*name|^first$/], ['lastName', /^(last|family|sur)\s*name|^surname$|^last$/], ['phone', /phone|mobile|tel|cell|whats/],
+      ['lastStay', /last|check(ed)?.?(out|in)|stay(ed)?\s*(on|date)|^date|arriv|depart/], ['stays', /^stays$|times|visits|number of|^bookings$|count/], ['city', /city|town|location|^place/],
+      ['dog', /dog|pet/], ['consent', /consent|opt.?in|marketing|subscri|newsletter|agreed/], ['tags', /^tags?$|label|group|segment/], ['notes', /note|comment/], ['name', /name|guest|contact|customer|^who$/]];
+    const used = new Set();
+    return head.map((h, i) => {
+      const k = String(h || '').trim().toLowerCase();
+      let f = (R.find(([f, re]) => re.test(k) && !used.has(f)) || [])[0];
+      if (!f) { const vals = sample.map(r => r[i] || '').filter(Boolean); if (vals.length && vals.every(v => CT.email(v))) f = 'email'; else if (vals.length && vals.every(v => CT.phoneKey(v) && !/[a-z]/i.test(v))) f = 'phone'; }
+      if (f && used.has(f)) f = '';
+      if (f) used.add(f); return f || '';
+    });
+  };
+  // Does the first row look like headings rather than a contact?
+  CT.hasHeader = rows => !!rows.length && !rows[0].some(v => CT.email(v)) && rows[0].some(v => /[a-z]/i.test(v));
+  // Rows of cells plus a column map into contact objects.
+  CT.apply = function (rows, map) {
+    return rows.slice(0, CT.MAX).map(r => { const o = {}; map.forEach((f, i) => { if (f && r[i] != null && String(r[i]).trim()) o[f] = o[f] ? o[f] + ' ' + String(r[i]).trim() : String(r[i]).trim(); }); return o; });
+  };
+  const yes = v => /^(y|yes|true|1|x|✓|ticked|agreed|subscribed|opted.?in)$/i.test(String(v || '').trim());
+  const cleanRow = r => {
+    const name = (String(r.name || '').trim() || [r.firstName, r.lastName].filter(Boolean).join(' ').trim()).replace(/\s+/g, ' ').slice(0, 80);
+    const tags = String(r.tags || '').split(/[,;|]/).map(t => t.trim().replace(/\s+/g, ' ').slice(0, 24)).filter(Boolean).slice(0, 8);
+    return { name, email: CT.email(r.email), phoneKey: CT.phoneKey(r.phone), phone: String(r.phone || '').trim().slice(0, 30), city: String(r.city || '').trim().slice(0, 40),
+      lastStay: CT.date(r.lastStay), stays: Math.max(0, Math.min(99, parseInt(r.stays, 10) || 0)), tags, notes: String(r.notes || '').trim().slice(0, 500), dog: yes(r.dog) || yes(r.pets), consent: r.consent == null ? null : yes(r.consent) };
+  };
+  // Work out what an upload would do, without changing anything. Rows sharing an email or phone number are one contact.
+  CT.plan = function (rows) {
+    const s = S(), byEmail = new Map(), byPhone = new Map();
+    s.guests.forEach(g => { const e = CT.email(g.email); if (e && !byEmail.has(e)) byEmail.set(e, g); const p = CT.phoneKey(g.phone); if (p && !byPhone.has(p)) byPhone.set(p, g); });
+    const out = [], fileEmail = new Map(), filePhone = new Map(), claimed = new Map(); let invalid = 0, dupes = 0;
+    (rows || []).slice(0, CT.MAX).forEach((raw, i) => {
+      const c = cleanRow(raw);
+      if (!c.email && !c.phoneKey) { invalid++; out.push({ row: i, status: 'skip', c, why: raw.email || raw.phone ? 'Email and phone both look wrong' : 'No email or phone' }); return; }
+      // A phone match only counts when the emails don't disagree: two people can share a home phone.
+      const differ = (x, y) => !!(x && y && x !== y);
+      const byP = c.phoneKey && byPhone.get(c.phoneKey);
+      const ex = (c.email && byEmail.get(c.email)) || (byP && !differ(c.email, CT.email(byP.email)) ? byP : null) || null;
+      const pt = c.phoneKey && filePhone.get(c.phoneKey);
+      const twin = (c.email && fileEmail.get(c.email)) || (ex && claimed.get(ex.id)) || (!ex && pt && !differ(c.email, pt.c.email) ? pt : null);
+      if (twin) { dupes++; merge(twin.c, c); index(twin); out.push({ row: i, status: 'dupe', c, of: twin.row }); return; }
+      const e = { row: i, status: ex ? 'update' : 'new', c, guestId: ex ? ex.id : null, by: ex ? (c.email && byEmail.get(c.email) === ex ? 'email' : 'phone') : null };
+      if (ex) claimed.set(ex.id, e);
+      out.push(e); index(e);
+    });
+    function index(e) { if (e.c.email && !fileEmail.has(e.c.email)) fileEmail.set(e.c.email, e); if (e.c.phoneKey && !filePhone.has(e.c.phoneKey)) filePhone.set(e.c.phoneKey, e); }
+    function merge(a, b) {
+      ['name', 'email', 'phone', 'phoneKey', 'city', 'notes'].forEach(k => { if (!a[k] && b[k]) a[k] = b[k]; });
+      if (b.lastStay && (!a.lastStay || b.lastStay > a.lastStay)) a.lastStay = b.lastStay; a.stays = Math.max(a.stays, b.stays);
+      b.tags.forEach(t => { if (!a.tags.some(x => x.toLowerCase() === t.toLowerCase())) a.tags.push(t); }); a.dog = a.dog || b.dog; if (b.consent != null) a.consent = a.consent === false ? false : b.consent;
+    }
+    const n = k => out.filter(x => x.status === k).length;
+    return { rows: out, added: n('new'), updated: n('update'), duplicates: dupes, invalid, total: (rows || []).length, capped: (rows || []).length > CT.MAX };
+  };
+  // Upload contacts. opts.consent: they all agreed to emails (a per-row "agreed" column wins when it is mapped).
+  // opts.sms: they agreed to texts. opts.tag: an extra tag for this upload. Anyone who unsubscribed stays unsubscribed.
+  BB.act.importContacts = function (rows, opts) {
+    opts = opts || {}; const s = S(); const plan = CT.plan(rows);
+    const tag = String(opts.tag || '').trim().replace(/\s+/g, ' ').slice(0, 24);
+    const addTags = (g, list) => list.forEach(t => { if (t && !g.tags.some(x => x.toLowerCase() === t.toLowerCase())) g.tags.push(t); });
+    let subscribed = 0;
+    plan.rows.forEach(e => {
+      if (e.status !== 'new' && e.status !== 'update') return;
+      const c = e.c; const agreed = c.consent == null ? !!opts.consent : c.consent;
+      let g;
+      if (e.status === 'update') {
+        g = BB.q.guest(e.guestId); if (!g) return;
+        if (!g.email && c.email) g.email = c.email;
+        if (!g.phone && c.phone) g.phone = c.phone;
+        if ((!g.name || g.name === (g.email || '').split('@')[0]) && c.name) g.name = c.name;
+        if (!g.city && c.city) g.city = c.city;
+        if (c.notes && !(g.notes || '').includes(c.notes)) g.notes = ((g.notes ? g.notes + '\n' : '') + c.notes).slice(0, 2000);
+        if (c.lastStay && (!g.lastStay || c.lastStay > g.lastStay)) g.lastStay = c.lastStay;
+        if (c.stays > (g.stays || 0)) g.stays = c.stays;
+      } else {
+        g = { id: 'g' + (++s.seq), name: c.name || (c.email ? c.email.split('@')[0] : 'Contact ' + c.phone), email: c.email, phone: c.phone, city: c.city, tags: ['Imported'],
+          subscribed: false, source: 'import', notes: c.notes, lastStay: c.lastStay, stays: c.stays || (c.lastStay ? 1 : 0), firstSeen: s.today, createdAt: s.today };
+        s.guests.push(g);
+      }
+      g.tags = g.tags || []; addTags(g, c.tags.concat(c.dog ? ['Pet owner'] : [], tag ? [tag] : []));
+      if (agreed && g.email && !g.unsubscribedAt && !g.subscribed) { g.subscribed = true; subscribed++; }
+      if (opts.sms && g.phone && !g.smsOptOut) g.smsOptIn = true;
+    });
+    const r = { added: plan.added, updated: plan.updated, duplicates: plan.duplicates, skipped: plan.invalid, subscribed };
+    BB.log('campaign', 'Contacts', 'Uploaded contacts: ' + r.added + ' new, ' + r.updated + ' matched to people already here' + (r.duplicates ? ', ' + r.duplicates + ' duplicate row' + (r.duplicates === 1 ? '' : 's') + ' merged' : '') +
+      (r.skipped ? ', ' + r.skipped + ' skipped without an email or phone' : '') + '. ' + (r.subscribed ? r.subscribed + ' subscribed to your emails.' : 'Nobody new was subscribed, so campaigns will not go to them.'), null, ['Contacts']);
+    BB.store.commit({ type: 'guest' });
+    return r;
+  };
   // Calendar link (iCal) for an add-on calendar, per home. Stored on the integration so the server can read it.
   BB.act.setCalendarLink = function (id, pid, url) {
     const i = BB.q.integration(id); if (!i) return;
@@ -249,7 +378,20 @@
   // Payment confirmed by Stripe (webhook). Turns a pending booking into a confirmed, paid one.
   BB.act.paymentConfirmed = function (id, info) {
     const b = BB.q.booking(id); if (!b) return;
-    const was = b.status; b.paid = true; if (b.status === 'pending') b.status = 'confirmed';
+    if (info && info.intent && b.payment && b.payment.intent === info.intent && (b.paid || b.lateRefund)) return; // Stripe sent the same event again
+    // The payment landed after the 30 minute hold was released (Stripe's own session lasts a minute longer, and webhooks
+    // can arrive late). Take the stay back if the nights are still free; otherwise, or if it was cancelled on purpose, refund the card.
+    if (b.status === 'cancelled') {
+      b.payment = Object.assign({}, b.payment || {}, info || {});
+      if (!b.expired || !BB.q.isAvailable(b.propertyId, b.checkIn, b.checkOut, b.id)) {
+        b.lateRefund = true; BB.fx('payment.refund', { bookingId: id });
+        BB.log('payment', 'Stripe', first(gOf(b).name) + ' paid ' + money(b.total) + ' after ' + b.id + ' was released, and the dates are no longer free. The payment is being refunded to their card.', id, ['Booking site', 'Stripe']);
+        BB.notify('Late payment refunded · ' + money(b.total), gOf(b).name + ' paid after the hold ran out. Stripe is refunding it.', id);
+        BB.store.commit({ type: 'booking', id }); return;
+      }
+      b.status = 'pending'; delete b.expired;
+    }
+    const was = b.status; b.paid = true; if (b.status === 'pending') { b.status = 'confirmed'; delete b.holdUntil; }
     b.payment = Object.assign({}, b.payment || {}, info || {});
     BB.log('payment', 'Stripe', 'Charged ' + money(b.total) + ' to ' + first(gOf(b).name) + "'s card. Payout lands in 2 days.", id, ['Booking site', 'Stripe']);
     if (was === 'pending') { BB.runAutomations('booking.created', b); BB.notify('Payment received · ' + money(b.total), gOf(b).name + ' paid for ' + P(b.propertyId).short + '.', id); }
@@ -257,7 +399,7 @@
   };
   BB.act.expirePending = function (id) {
     const b = BB.q.booking(id); if (!b || b.status !== 'pending') return;
-    b.status = 'cancelled'; BB.log('booking', 'Booking site', 'Released ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + ' at ' + P(b.propertyId).short + ': ' + gOf(b).name + ' did not finish paying.', id);
+    b.status = 'cancelled'; b.expired = true; BB.log('booking', 'Booking site', 'Released ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + ' at ' + P(b.propertyId).short + ': ' + gOf(b).name + ' did not finish paying.', id);
     BB.store.commit({ type: 'booking', id });
   };
   BB.act.unsubscribe = function (gid) { const g = BB.q.guest(gid); if (!g || !g.subscribed) return; g.subscribed = false; g.unsubscribedAt = S().today; BB.log('campaign', 'Guest list', g.name + ' unsubscribed from emails.', gid); BB.store.commit({ type: 'guest', id: gid }); };

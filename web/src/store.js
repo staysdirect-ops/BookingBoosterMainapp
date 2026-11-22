@@ -310,13 +310,16 @@
       // Imported guests carry lastStay (and stays) from the host's own records.
       const stayed = g => S().bookings.some(b => b.guestId === g.id && b.checkOut <= today) || (g.lastStay && g.lastStay <= today);
       const since = (g, d) => S().bookings.some(b => b.guestId === g.id && b.status !== 'cancelled' && b.status !== 'request' && b.checkOut > d) || (g.lastStay && g.lastStay > d);
-      const past = S().guests.filter(g => g.subscribed && stayed(g));
+      const list = S().guests.filter(g => g.subscribed && g.email);
+      const past = list.filter(stayed);
       return {
         past: { label: 'All past guests', guests: past },
         repeat: { label: 'Repeat guests', guests: past.filter(g => BB.q.stays(g.id).length + (g.stays || 0) >= 2) },
         pets: { label: 'Dog owners', guests: past.filter(g => g.tags.includes('Pet owner') || S().bookings.some(b => b.guestId === g.id && b.pets)) },
         recent: { label: 'Stayed in the last 12 months', guests: past.filter(g => since(g, D.add(today, -365))) },
         lapsed: { label: 'No stay in 6+ months', guests: past.filter(g => !since(g, D.add(today, -180))) },
+        // Everyone subscribed, including uploaded contacts who have not stayed yet.
+        list: { label: 'Everyone on your list', guests: list },
       };
     },
   };

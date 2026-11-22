@@ -74,10 +74,12 @@ function jsonLd(s, p, url) {
 
 function head(s, p, url) {
   const t = titleOf(p), d = descOf(p);
+  // Link previews need an absolute image URL; uploaded photos are stored as /media/... paths.
+  const img = p.photos && p.photos[0] && p.photos[0].url ? new URL(p.photos[0].url, url).href : '';
   return '<link rel="canonical" href="' + esc(url) + '">' +
     '<meta property="og:type" content="website"><meta property="og:title" content="' + esc(t) + '"><meta property="og:description" content="' + esc(d) + '"><meta property="og:url" content="' + esc(url) + '"><meta property="og:locale" content="en_GB">' +
-    (p.photos && p.photos[0] ? '<meta property="og:image" content="' + esc(p.photos[0].url) + '">' : '') +
-    '<meta name="twitter:card" content="summary_large_image">' +
+    (img ? '<meta property="og:image" content="' + esc(img) + '"><meta name="twitter:image" content="' + esc(img) + '">' : '') +
+    '<meta name="twitter:card" content="' + (img ? 'summary_large_image' : 'summary') + '"><meta name="twitter:title" content="' + esc(t) + '"><meta name="twitter:description" content="' + esc(d) + '">' +
     '<link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(url.replace(/\/$/, '') + '/llms.txt') + '">' +
     '<script type="application/ld+json">' + JSON.stringify(jsonLd(s, p, url)).replace(/</g, '\\u003c') + '</script>';
 }

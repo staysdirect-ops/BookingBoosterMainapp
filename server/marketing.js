@@ -78,8 +78,8 @@ function head(base, path) {
   const url = base + '/';
   return '<link rel="canonical" href="' + esc(url) + '">' +
     '<meta property="og:type" content="website"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(TITLE) + '"><meta property="og:description" content="' + esc(DESCRIPTION) + '">' +
-    '<meta property="og:url" content="' + esc(url) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + '/assets/icons/icon-512.png') + '">' +
-    '<meta name="twitter:card" content="summary"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">' +
+    '<meta property="og:url" content="' + esc(url) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + '/assets/icons/og.png') + '"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Bookingbooster: your rental\u2019s own booking engine">' +
+    '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(TITLE) + '"><meta name="twitter:description" content="' + esc(DESCRIPTION) + '"><meta name="twitter:image" content="' + esc(base + '/assets/icons/og.png') + '"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">' +
     '<link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(base + '/llms.txt') + '">';
 }
 const ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, '\\u003c') + '</script>';
