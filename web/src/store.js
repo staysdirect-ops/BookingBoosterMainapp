@@ -29,10 +29,14 @@
   const TODAY = '2026-11-14';
   const PLATFORM_FEE = { direct: 0, airbnb: 0.155, vrbo: 0.08, booking: 0.15 };
   BB.PLATFORM_FEE = PLATFORM_FEE;
-  BB.CHANNEL = { direct: 'Direct', airbnb: 'Airbnb', vrbo: 'Vrbo', booking: 'Booking.com', cm: 'Channel manager' };
+  BB.CHANNEL = { direct: 'Direct', airbnb: 'Airbnb', vrbo: 'Vrbo', booking: 'Booking.com', cm: 'Channel manager', other: 'Other calendar', beds24: 'Beds24', smoobu: 'Smoobu', hostaway: 'Hostaway', guesty: 'Guesty', lodgify: 'Lodgify' };
   // Calendar sync (optional add-on) reads the dates booked elsewhere from a calendar link (iCal) and blocks them. Dates only: no guest names, prices or messages.
-  BB.SYNC_IDS = ['cm', 'airbnb', 'vrbo', 'booking'];
-  BB.bookedOn = id => id === 'cm' ? 'Booked via your channel manager' : 'Booked on ' + BB.CHANNEL[id];
+  // ICAL_IDS are calendar links (iCal) pasted per home. API_IDS are channel managers connected with the host's own API key:
+  // two-way and near instant (dates booked there block your sites, and direct bookings close the dates there).
+  BB.ICAL_IDS = ['cm', 'airbnb', 'vrbo', 'booking', 'other'];
+  BB.API_IDS = ['beds24', 'smoobu', 'hostaway', 'guesty', 'lodgify'];
+  BB.SYNC_IDS = BB.ICAL_IDS.concat(BB.API_IDS);
+  BB.bookedOn = id => id === 'cm' ? 'Booked via your channel manager' : id === 'other' ? 'Booked on another site' : BB.API_IDS.includes(id) ? 'Booked via ' + BB.CHANNEL[id] : 'Booked on ' + BB.CHANNEL[id];
   // How a booking found the host. Direct bookings are the product; 'sync' means it came in through the optional calendar sync add-on.
   BB.SOURCE = { website: 'Booking site', google: 'Google search', ai: 'AI answer', email: 'Guest email', campaign: 'Campaign', referral: 'Referral', 'guest-app': 'Guest app', console: 'Added by host', mobile: 'Host app', sync: 'Calendar sync' };
   BB.sourceLabel = b => b.channel !== 'direct' ? BB.bookedOn(b.channel) : (BB.SOURCE[b.source] || 'Booking site');
@@ -306,13 +310,16 @@
       // Imported guests carry lastStay (and stays) from the host's own records.
       const stayed = g => S().bookings.some(b => b.guestId === g.id && b.checkOut <= today) || (g.lastStay && g.lastStay <= today);
       const since = (g, d) => S().bookings.some(b => b.guestId === g.id && b.status !== 'cancelled' && b.status !== 'request' && b.checkOut > d) || (g.lastStay && g.lastStay > d);
-      const past = S().guests.filter(g => g.subscribed && stayed(g));
+      const list = S().guests.filter(g => g.subscribed && g.email);
+      const past = list.filter(stayed);
       return {
         past: { label: 'All past guests', guests: past },
         repeat: { label: 'Repeat guests', guests: past.filter(g => BB.q.stays(g.id).length + (g.stays || 0) >= 2) },
         pets: { label: 'Dog owners', guests: past.filter(g => g.tags.includes('Pet owner') || S().bookings.some(b => b.guestId === g.id && b.pets)) },
         recent: { label: 'Stayed in the last 12 months', guests: past.filter(g => since(g, D.add(today, -365))) },
         lapsed: { label: 'No stay in 6+ months', guests: past.filter(g => !since(g, D.add(today, -180))) },
+        // Everyone subscribed, including uploaded contacts who have not stayed yet.
+        list: { label: 'Everyone on your list', guests: list },
       };
     },
   };

@@ -14,8 +14,13 @@ module.exports = function (db, cfg) {
     delSession: db.prepare('DELETE FROM sessions WHERE token = ?'),
     delUserSessions: db.prepare('DELETE FROM sessions WHERE user_id = ?'),
     addReset: db.prepare('INSERT INTO resets (token, user_id, expires_at) VALUES (?, ?, ?)'),
-    reset: db.prepare('SELECT * FROM resets WHERE token = ? AND expires_at > ?'),
-    delReset: db.prepare('DELETE FROM resets WHERE token = ?'),
+    // Taking a token deletes it in the same statement, so a link or code can only ever be used once.
+    takeReset: db.prepare('DELETE FROM resets WHERE token = ? AND expires_at > ? RETURNING user_id'),
+    delMagic: db.prepare("DELETE FROM resets WHERE user_id = ? AND (token LIKE 'ml:%' OR token LIKE 'mc:%')"),
+    sweepResets: db.prepare('DELETE FROM resets WHERE expires_at <= ?'),
+    failMagic: db.prepare("INSERT INTO kv (k, v) VALUES (?, '1') ON CONFLICT (k) DO UPDATE SET v = (coalesce(nullif(kv.v, ''), '0')::int + 1)::text RETURNING v"),
+    delKv: db.prepare('DELETE FROM kv WHERE k = ?'),
+    setVerified: db.prepare('UPDATE users SET verified = 1 WHERE id = ?'),
     setEmail: db.prepare('UPDATE users SET email = ?, name = ? WHERE id = ?'),
     delUser: db.prepare('DELETE FROM users WHERE id = ?'),
   };
@@ -46,9 +51,41 @@ module.exports = function (db, cfg) {
     return { token, user: u };
   }
   async function finishReset(token, password) {
-    const r = await q.reset.get(hash(String(token || '')), now()); if (!r) return null;
-    await q.setPass.run(hashPass(password), r.user_id); await q.delReset.run(hash(token)); await q.delUserSessions.run(r.user_id);
+    const r = await q.takeReset.get(hash(String(token || '')), now()); if (!r) return null;
+    await q.setPass.run(hashPass(password), r.user_id); await q.delUserSessions.run(r.user_id);
     return q.user.get(r.user_id);
+  }
+
+  // Passwordless sign-in: an emailed link plus a 6-digit code for when the email is opened on another device.
+  // Both live in the resets table (prefixed ml: and mc:, so they never match a password reset), work for
+  // 15 minutes, and either one used signs in and voids the other. Five wrong codes void both.
+  const MAGIC_TTL = 15 * 60e3, MAGIC_TRIES = 5;
+  const codeKey = (userId, code) => 'mc:' + crypto.createHmac('sha256', cfg.secret).update(userId + ':' + code).digest('hex');
+  const failKey = userId => 'magicfail:' + userId;
+  async function startMagic(email) {
+    const u = await q.userByEmail.get(String(email || '').trim().toLowerCase()); if (!u) return null;
+    await q.sweepResets.run(now()); await q.delMagic.run(u.id); await q.delKv.run(failKey(u.id));
+    const token = crypto.randomBytes(32).toString('base64url'), code = String(crypto.randomInt(0, 1e6)).padStart(6, '0');
+    await q.addReset.run('ml:' + hash(token), u.id, now() + MAGIC_TTL);
+    await q.addReset.run(codeKey(u.id, code), u.id, now() + MAGIC_TTL);
+    return { token, code, user: u };
+  }
+  async function signedIn(userId) {
+    await q.delMagic.run(userId); await q.delKv.run(failKey(userId)); await q.setVerified.run(userId);
+    return q.user.get(userId);
+  }
+  async function finishMagicLink(token) {
+    const r = await q.takeReset.get('ml:' + hash(String(token || '')), now());
+    return r ? signedIn(r.user_id) : null;
+  }
+  async function finishMagicCode(email, code) {
+    const u = await q.userByEmail.get(String(email || '').trim().toLowerCase()); if (!u) return null;
+    code = String(code || '').replace(/\D/g, ''); if (code.length !== 6) return null;
+    const r = await q.takeReset.get(codeKey(u.id, code), now());
+    if (r) return signedIn(u.id);
+    const f = await q.failMagic.get(failKey(u.id));
+    if (+(f && f.v) >= MAGIC_TRIES) await q.delMagic.run(u.id);
+    return null;
   }
 
   // Account page: change password (signs out other devices) and update the sign-in email.
@@ -73,5 +110,5 @@ module.exports = function (db, cfg) {
   }
   const sweep = setInterval(() => { const t = now(); for (const [k, v] of hits) if (!v.some(x => t - x < 3600e3)) hits.delete(k); }, 600e3); if (sweep.unref) sweep.unref();
 
-  return { hashPass, checkPass, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: id => q.user.get(id), userByEmail: e => q.userByEmail.get(String(e || '').trim().toLowerCase()) };
+  return { startMagic, finishMagicLink, finishMagicCode, hashPass, checkPass, changePassword, checkUserPass, setEmail, deleteUser, createUser, login, startSession, session, endSession, startReset, finishReset, sign, verify, limit, user: id => q.user.get(id), userByEmail: e => q.userByEmail.get(String(e || '').trim().toLowerCase()) };
 };

@@ -32,7 +32,7 @@
   const vh = (title, sub, acts) => '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
   const card = (title, meta, body, cls) => '<section class="a-card ' + (cls || '') + '">' + (title ? '<div class="a-card-h"><h3>' + title + '</h3>' + (meta ? '<div class="a-card-m">' + meta + '</div>' : '') + '</div>' : '') + body + '</section>';
   const DEP = 200;
-  const ADDONS = ['cm', 'airbnb', 'vrbo', 'booking']; // optional calendar sync (iCal): dates booked elsewhere arrive as blocks, never as bookings
+  const ADDONS = BB.SYNC_IDS; // optional calendar sync (iCal): dates booked elsewhere arrive as blocks, never as bookings
   const addonOn = () => ADDONS.some(c => BB.q.connected(c));
   const srcKey = b => b.channel !== 'direct' ? b.channel : (b.source || 'website');
   const srcChip = b => b.channel !== 'direct' ? '<span class="a-src s-' + b.channel + '"><i></i>' + esc(BB.CHANNEL[b.channel]) + '<em>add-on</em></span>' : '<span class="a-src s-' + esc(b.source || 'website') + '"><i></i>' + esc(BB.sourceLabel(b)) + '</span>';
@@ -209,6 +209,8 @@
         fwd('input', ev);
       });
       root.addEventListener('change', ev => { if (ev.target.closest('[data-nb]')) { nbChange(ev.target, inst); return; } fwd('change', ev); });
+      root.addEventListener('dragover', ev => fwd('dragover', ev));
+      root.addEventListener('drop', ev => fwd('drop', ev));
       root.addEventListener('submit', ev => { ev.preventDefault(); if (ev.target.closest('[data-nb]')) { nbSubmit(inst); return; } fwd('submit', ev); });
       root.addEventListener('focusin', ev => { if (ev.target.dataset && ev.target.dataset.a === 'q' && !inst.st.qOpen && inst.st.q) inst.set({ qOpen: true }); });
       root.addEventListener('keydown', ev => {
