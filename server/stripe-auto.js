@@ -11,7 +11,7 @@ const PLANS = [
   ['GROWTH', 'Bookingbooster Growth', 200],
   ['CALENDAR_SYNC', 'Bookingbooster calendar sync add-on', 15],
 ];
-const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid', 'charge.refunded', 'charge.dispute.closed'];
+const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.updated', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid', 'charge.refunded', 'charge.dispute.closed'];
 const CONNECT_EVENTS = ['account.updated'];
 
 // Creates (or finds) everything. Returns { prices: { STRIPE_PRICE_...: id }, webhookSecret, connectWebhookSecret, endpoints }.

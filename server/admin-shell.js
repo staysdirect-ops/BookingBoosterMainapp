@@ -27,7 +27,7 @@ const MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect w
 
 const NAV = [
   ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['hosts', '/admin/hosts', 'home', 'Users'], ['partners', '/admin/affiliates', 'share', 'Partners']]],
-  ['Marketing', [['campaigns', '/admin/campaigns', 'mail', 'Email campaigns'], ['emails', '/admin/emails', 'doc', 'Email templates'], ['social', '/admin/social', 'share', 'Social posts']]],
+  ['Marketing', [['flows', '/admin/flows', 'spark', 'Sales flows'], ['campaigns', '/admin/campaigns', 'mail', 'Email campaigns'], ['emails', '/admin/emails', 'doc', 'Email templates'], ['social', '/admin/social', 'share', 'Social posts']]],
   ['Settings', [['settings', '/admin/settings', 'gear', 'Stripe, links and backups']]],
 ];
 
