@@ -86,7 +86,7 @@ module.exports = function (ctx) {
     for (const g of seg) {
       const v = vars(w, null, p, g);
       const body = 'Hi ' + first(g.name) + ',\n\n' + c.body.text;
-      const html = simple(p, v, body, { label: c.body.cta || 'Book direct', url: urls.track(w, 'c', c, g) }, 'You get this because you stayed with us and joined our guest list. <a href="' + v.unsubscribe_url + '">Unsubscribe</a>');
+      const html = simple(p, v, body, { label: c.body.cta || 'Book direct', url: urls.track(w, 'c', c, g) }, (c.segment === 'list' ? 'You get this because you joined our guest list.' : 'You get this because you stayed with us and joined our guest list.') + ' <a href="' + v.unsubscribe_url + '">Unsubscribe</a>');
       const tracked = html.replace('</body>', '<img src="' + urls.track(w, 'o', c, g) + '" width="1" height="1" alt="" style="display:block;border:0"></body>');
       const r = await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: c.subject, text: body + '\n\n' + urls.track(w, 'c', c, g) + '\n\nUnsubscribe: ' + v.unsubscribe_url, html: tracked, from: fromFor(w), replyTo: s.account.email, meta: { campaign: c.id, broadcast: true }, unsubscribeUrl: v.unsubscribe_url });
       if (r.ok) sent++;
