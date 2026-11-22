@@ -62,6 +62,7 @@ const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
+const registrar = require('./registrar')({ cfg, db, ws, stripe, domains, log });
 const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
 const signin = require('./signin')({ cfg, auth, msg, log });
@@ -345,6 +346,15 @@ async function signup(req, res) {
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
   const ref = await aff.forSignup(req, b.ref, email); // the partner who referred them, if any
   const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
+  // A new domain to buy for them: check it and the registration contact before anything is created.
+  const buyDomain = registrar.enabled() && b.domainMode === 'new' && b.property && String(b.property.domain || '').toLowerCase().trim();
+  const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith('.' + cfg.sitesDomain)) && !ws.isOurs(buyDomain);
+  if (wantsBuy) {
+    const bad = registrar.problem(buyDomain); if (bad) throw err(400, bad);
+    const c = registrar.contact({ name, email }, b.registrant || {}); if (c.err) throw err(400, c.err);
+    let s = null; try { s = await registrar.search([buyDomain]); } catch (e) { log('signup domain search', e.message); }
+    if (s && s[0] && !s[0].ok) throw err(409, buyDomain + ' has just been taken. Go back to the domain step and pick another.');
+  }
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
   const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
@@ -354,6 +364,11 @@ async function signup(req, res) {
     p.reviews = 0; p.rating = 0; // reviews are earned here, never copied in
     p.domain = String(p.domain || '').toLowerCase().replace(/[^a-z0-9.-]/g, '').slice(0, 80);
     await ws.act(wid, 'addProperty', [p]);
+    if (wantsBuy) {
+      const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
+      const o = await registrar.order(wid, pid, buyDomain, { name, email }, Object.assign({ organisation: a.business }, b.registrant || {}));
+      if (o.err) log('signup domain', wid, buyDomain, o.err);
+    }
     if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
   }
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
@@ -366,6 +381,7 @@ async function signup(req, res) {
     return json(res, { ok: true, redirect: to }, 200, set);
   }
   ws.defer(welcome(wid), 'welcome');
+  if (wantsBuy) ws.defer(registrar.due(wid), 'domain'); // no card billing on this server: buy it now
   json(res, { ok: true, redirect: '/app?welcome=1' }, 200, set);
 }
 // Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
@@ -379,6 +395,7 @@ async function planPaid(wid, customer, plan) {
   await ws.setMeta(wid, { billing_status: 'active', stripe_customer: customer, plan });
   await ws.withWs(wid, BB => { const a = BB.store.get().account; if (plan) a.plan = plan; a.billing = 'active'; BB.store.commit({}); });
   if (first) { ws.defer(welcome(wid), 'welcome'); ws.defer(effects.siteLive(wid), 'site-live'); } // the "site is live" email waits for payment too
+  ws.defer(registrar.due(wid), 'domain'); // a new domain chosen at sign-up is only bought once the plan is paid
 }
 // Hosts who have not paid yet only see the payment page, their billing and their account. Team members are let through.
 const PAY_OPEN = ['/app/pay', '/app/pay/done', '/app/billing', '/app/billing/start', '/app/billing/portal', '/app/account'];
@@ -647,7 +664,7 @@ async function route(req, res) {
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
       head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
-      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: '/api/domains/search', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (m === 'GET' && Object.hasOwn(answers.PAGES, p)) { const a = answers.render(cfg.baseUrl, p); return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: 'read', index: true }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' }); }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
@@ -661,6 +678,14 @@ async function route(req, res) {
   if (p === '/llms-full.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()) + '\n---\n\n' + answers.fullText(cfg.baseUrl), 'text/plain; charset=utf-8');
   if (p === '/' + ownIndexKey() + '.txt') return send(res, 200, ownIndexKey(), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
+  // Sign-up domain step: is this name free to register? { live: false } when buying domains is switched off.
+  if (p === '/api/domains/search' && m === 'GET') {
+    if (!auth.limit('dsearch:' + ip(req), 60, 3600e3)) throw err(429, 'Too many searches. Try again in a few minutes.');
+    if (!registrar.enabled()) return json(res, { live: false });
+    const names = String(u.searchParams.get('names') || '').split(',').slice(0, 8);
+    try { return json(res, { live: true, results: await registrar.search(names) }); }
+    catch (e) { log('domain search', e.message); throw err(502, 'We could not check domains just now. Try again in a minute.'); }
+  }
   if (p === '/admin') return await adminPage(req, res);
   if (p === '/admin/affiliates' || p.startsWith('/admin/affiliates/')) { if (!await isAdmin(req)) return notFound(res); if (await aff.admin(req, res, p, m, ((await me(req)) || {}).email)) return; return notFound(res); }
   if (m === 'GET' && (p === '/admin/leads' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
@@ -1184,7 +1209,8 @@ async function runTick(t) {
       if (daily && ai.available().length) { const c = w.state.ai.checkedAt; if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg('ai', effects.aiCheck(w)); }
     } catch (e) { log('job', id, e.message); }
   }
-  if (last.domains === t) bg('domains', checkDomains());
+  if (last.domains === t) { bg('domains', checkDomains()); bg('registrar', registrar.due()); }
+  if (daily) bg('renewals', registrar.renewals(t));
   if (last.events === t && cfg.events.crawl) bg('events', eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 100e3 : 240e3));
   if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists

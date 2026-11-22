@@ -450,14 +450,30 @@
     if (qd && !qd.includes('.')) qd += '.co.uk';
     if (!/^[a-z0-9][a-z0-9-]{1,40}\.[a-z]{2,10}(\.[a-z]{2,4})?$/.test(qd)) return { err: 'Enter a domain like ' + slug(ob.d.name || 'yourhome') + '.co.uk' };
     const base = slug(ob.d.name) || qd.split('.')[0], tn = slug(town(ob.d.area));
-    const sugg = [base + '.co.uk', 'stay' + base + '.co.uk', base + tn + '.co.uk', base + '.uk', base + '.com'].filter((x, i, a) => x !== qd && a.indexOf(x) === i).slice(0, 4);
+    const tlds = buyLive() ? BB.BOOT.domainOffer.tlds : null, offered = x => !tlds || tlds.some(t => x.endsWith('.' + t) && x.split('.').length === t.split('.').length + 1);
+    const sugg = [base + '.co.uk', 'stay' + base + '.co.uk', base + tn + '.co.uk', base + '.uk', base + '.com'].filter((x, i, a) => x !== qd && a.indexOf(x) === i && offered(x)).slice(0, 4);
+    if (tlds && !offered(qd)) return { err: 'We can register ' + tlds.map(t => '.' + t).join(', ') + ' domains for you. Already own another? Use “I already have a domain”.' };
     return { list: [{ d: qd, ok: hash(qd) % 3 !== 0, main: true }].concat(sugg.map(x => ({ d: x, ok: hash(x) % 3 !== 0 }))) };
+  }
+  // On the real sign-up page with domain buying switched on, availability comes from the registrar. Otherwise (demo) it is pretend.
+  const buyLive = () => !!(REAL() && BB.BOOT.domainOffer && BB.BOOT.domainOffer.live);
+  const buying = ob => buyLive() && ob.dMode === 'new' && !!ob.domain && !/bookingbooster\.site$/.test(ob.domain);
+  function domainNote() {
+    const o = (BB.BOOT && BB.BOOT.domainOffer) || {};
+    if (!buyLive()) return 'Free first year';
+    return o.renewal === 'charge' && o.renewalPrice > 0 ? 'Free first year, then £' + o.renewalPrice + ' a year' : 'Included in your plan';
   }
   function checkDomain(inst) {
     const ob = inst.st.ob, r = obDomainResults(ob);
     if (r.err) { ob.dErr2 = r.err; ob.dState = 'idle'; inst.render(); return; }
     ob.dErr2 = ''; ob.dState = 'checking'; inst.render();
-    later(inst, 750, () => { ob.dState = 'done'; ob.dRes = r.list; if (!ob.domain) { const first = r.list.find(x => x.ok); if (first) ob.domain = first.d; } inst.render(); });
+    const show = list => { ob.dState = 'done'; ob.dRes = list; if (!ob.domain || (!/bookingbooster\.site$/.test(ob.domain) && !list.some(x => x.d === ob.domain && x.ok))) { const first = list.find(x => x.ok); ob.domain = first ? first.d : ''; } inst.render(); };
+    if (!buyLive()) return later(inst, 750, () => show(r.list));
+    BB.api.call(BB.BOOT.domainSearchUrl + '?names=' + encodeURIComponent(r.list.map(x => x.d).join(',')), null, 'GET').then(j => {
+      if (!j.live) { show(r.list); return; }
+      const ok = {}; (j.results || []).forEach(x => { ok[x.d] = x.ok; });
+      show(r.list.map(x => Object.assign({}, x, { ok: !!ok[x.d] })));
+    }, e => { ob.dState = 'idle'; ob.dErr2 = e.message; inst.render(); });
   }
   // "I already have a domain": tidy what they typed into a bare address, the same way the server does.
   function cleanOwn(v) { return String(v || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').replace(/[/?#].*$/, '').replace(/:\d+$/, '').replace(/^www\./, '').replace(/\.$/, ''); }
@@ -530,7 +546,8 @@
     let signup = null;
     if (REAL()) {
       const a = ob.acct || {};
-      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url })
+      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url,
+        domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     }
     const t = () => later(inst, 480, () => {
@@ -608,12 +625,12 @@
             (ok ? ownDomain(ob, sub) : '<p class="s-fine">Type it without www, like <b>larchcabin.co.uk</b>. Next we show you exactly what to change, step by step.</p>') +
             '<form data-form="next" class="s-ob-form">' + navRow(ok ? 'Use ' + ob.domain : 'Type your domain to continue', !ok) + '</form>';
         }
-        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. A .co.uk domain is included free for the first year on every plan.</p>' + tabs +
+        return '<h1 class="s-ob-h">Pick a domain.</h1><p class="s-ob-sub">Guests trust a name that matches the home. ' + (buyLive() ? 'We register it in your name, point it at your site and add the padlock (HTTPS) for you.' : 'A .co.uk domain is included free for the first year on every plan.') + '</p>' + tabs +
           '<form data-form="domain" novalidate class="s-dom-form"><label class="s-f s-f-big"><span>Search for a domain</span><span class="s-inwrap">' + icon('search') + '<input id="s-ob-dq-' + u + '" data-ob="dq" value="' + esc(ob.dq) + '" autocomplete="off" spellcheck="false"></span></label><button class="btn ink lg" type="submit"' + (ob.dState === 'checking' ? ' disabled' : '') + '>' + (ob.dState === 'checking' ? 'Checking…' : 'Check') + '</button></form>' +
           (ob.dErr2 ? '<p class="s-err" role="alert">' + esc(ob.dErr2) + '</p>' : '') +
           '<div class="s-doms" aria-live="polite">' + (ob.dState === 'checking' ? '<p class="s-dom-wait"><i class="s-spin"></i>Checking availability…</p>' : (ob.dRes || []).map(r =>
             '<div class="s-dom' + (ob.domain === r.d ? ' on' : '') + (r.ok ? '' : ' taken') + '"><span class="s-dom-n">' + esc(r.d) + (r.main ? '<em>Your search</em>' : '') + '</span>' +
-            (r.ok ? '<span class="s-dom-p">' + BB.pill('good', 'Available') + '<span class="muted">Free first year</span></span>' : '<span class="s-dom-p">' + BB.pill('muted', 'Taken') + '</span>') +
+            (r.ok ? '<span class="s-dom-p">' + BB.pill('good', 'Available') + '<span class="muted">' + domainNote() + '</span></span>' : '<span class="s-dom-p">' + BB.pill('muted', 'Taken') + '</span>') +
             (r.ok ? '<button class="btn sm ' + (ob.domain === r.d ? 'primary' : '') + '" data-dom="' + esc(r.d) + '" aria-pressed="' + (ob.domain === r.d) + '">' + (ob.domain === r.d ? icon('check') + 'Selected' : 'Choose') + '</button>' : '<span></span>') + '</div>').join('')) +
           '<div class="s-dom s-dom-free' + (ob.domain === sub ? ' on' : '') + '"><span class="s-dom-n">' + esc(sub) + '<em>Free address, add a domain later</em></span><span class="s-dom-p">' + BB.pill('info', 'Always free') + '</span>' +
             '<button class="btn sm ' + (ob.domain === sub ? 'primary' : '') + '" data-dom="' + esc(sub) + '" aria-pressed="' + (ob.domain === sub) + '">' + (ob.domain === sub ? icon('check') + 'Selected' : 'Choose') + '</button></div></div>' +
@@ -655,7 +672,7 @@
           '<dl class="s-review">' +
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' · ' + $(+d.nightly) + ' a night · sleeps ' + esc(d.sleeps) + ' · ' + esc(d.bedrooms) + ' bedrooms · ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
-            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\.site$/.test(ob.domain) ? 'Free address' : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
+            '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\.site$/.test(ob.domain) ? 'Free address' : buying(ob) ? 'We register it in your name once your first payment goes through. ' + domainNote() : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
             '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
           '</dl>' +
@@ -670,7 +687,23 @@
     return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
       '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + f('ref', 'Referral code (optional)', 'text', 'off', 'If someone recommended us') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
+      (buying(inst.st.ob) ? regFields(inst) : '') +
       (inst.st.ob.acctErr ? '<p class="s-err" role="alert">' + esc(inst.st.ob.acctErr) + '</p>' : '') + '</div>';
+  }
+  // The domain is registered in the host's own name, and Nominet needs a postal address and phone number for that.
+  function regFields(inst) {
+    const r = inst.st.ob.reg2 || (inst.st.ob.reg2 = { address: '', city: '', postcode: '', phone: '' }), u = inst.uid;
+    const f = (k, label, ac, ph, type) => '<label class="s-f"><span>' + label + '</span><input id="s-rg-' + k + '-' + u + '" data-rg="' + k + '" type="' + (type || 'text') + '" autocomplete="' + ac + '" value="' + esc(r[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
+    return '<h2 class="s-acct-h">Who owns ' + esc(inst.st.ob.domain) + '</h2><p class="s-ob-sub">We register the domain in your name, so it is yours to keep. The domain registry asks for an address and phone number. They are not shown publicly.</p>' +
+      '<div class="s-grid2">' + f('address', 'Address', 'address-line1', '1 Fell Lane') + f('city', 'Town or city', 'address-level2', 'Ambleside') + f('postcode', 'Postcode', 'postal-code', 'LA22 9AA') + f('phone', 'Phone', 'tel', '07700 900123', 'tel') + '</div>';
+  }
+  function regError(r) {
+    r = r || {};
+    if (String(r.address || '').trim().length < 3) return 'Enter the first line of your address. The domain is registered in your name.';
+    if (String(r.city || '').trim().length < 2) return 'Enter your town or city.';
+    if (!/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i.test(String(r.postcode || '').trim())) return 'Enter a UK postcode, like LA22 9AA.';
+    if (String(r.phone || '').replace(/\D/g, '').length < 10) return 'Enter a phone number, like 07700 900123.';
+    return '';
   }
   function navRow(label, disabled) {
     return '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg" type="submit"' + (disabled ? ' disabled' : '') + '>' + esc(label) + icon('arrow') + '</button></div>';
@@ -788,6 +821,7 @@
       });
       BB.on(root, 'input', '[data-ai]', el => { inst.st.ai[el.dataset.ai] = el.value; });
       BB.on(root, 'change', '[data-ai]', el => { inst.st.ai[el.dataset.ai] = el.value; });
+      BB.on(root, 'input', '[data-rg]', el => { const ob = inst.st.ob; (ob.reg2 || (ob.reg2 = {}))[el.dataset.rg] = el.value; if (ob.acctErr) { ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'input', '[data-ac]', el => { const a = inst.st.ob.acct; a[el.dataset.ac] = el.type === 'checkbox' ? el.checked : el.value; if (inst.st.ob.acctErr) { inst.st.ob.acctErr = ''; const er = root.querySelector('.s-acct .s-err'); if (er) er.remove(); } });
       BB.on(root, 'change', '[data-ac="terms"]', el => { inst.st.ob.acct.terms = el.checked; });
       BB.on(root, 'input', '[data-ob]', el => { inst.st.ob[el.dataset.ob] = el.value; if (el.dataset.ob === 'url' && inst.st.ob.urlErr) { inst.st.ob.urlErr = ''; inst.render(); } });
@@ -812,7 +846,7 @@
           ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
-        if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
+        if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct) || (buying(ob) ? regError(ob.reg2) : ''); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
       });
       function scrollTopOb() { window.scrollTo({ top: 0 }); }
       function mapConn(c) { const o = {}; Object.keys(c).forEach(k => o[k] = c[k] === 'on' ? 'on' : 'off'); return o; }
