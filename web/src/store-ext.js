@@ -378,7 +378,20 @@
   // Payment confirmed by Stripe (webhook). Turns a pending booking into a confirmed, paid one.
   BB.act.paymentConfirmed = function (id, info) {
     const b = BB.q.booking(id); if (!b) return;
-    const was = b.status; b.paid = true; if (b.status === 'pending') b.status = 'confirmed';
+    if (info && info.intent && b.payment && b.payment.intent === info.intent && (b.paid || b.lateRefund)) return; // Stripe sent the same event again
+    // The payment landed after the 30 minute hold was released (Stripe's own session lasts a minute longer, and webhooks
+    // can arrive late). Take the stay back if the nights are still free; otherwise, or if it was cancelled on purpose, refund the card.
+    if (b.status === 'cancelled') {
+      b.payment = Object.assign({}, b.payment || {}, info || {});
+      if (!b.expired || !BB.q.isAvailable(b.propertyId, b.checkIn, b.checkOut, b.id)) {
+        b.lateRefund = true; BB.fx('payment.refund', { bookingId: id });
+        BB.log('payment', 'Stripe', first(gOf(b).name) + ' paid ' + money(b.total) + ' after ' + b.id + ' was released, and the dates are no longer free. The payment is being refunded to their card.', id, ['Booking site', 'Stripe']);
+        BB.notify('Late payment refunded · ' + money(b.total), gOf(b).name + ' paid after the hold ran out. Stripe is refunding it.', id);
+        BB.store.commit({ type: 'booking', id }); return;
+      }
+      b.status = 'pending'; delete b.expired;
+    }
+    const was = b.status; b.paid = true; if (b.status === 'pending') { b.status = 'confirmed'; delete b.holdUntil; }
     b.payment = Object.assign({}, b.payment || {}, info || {});
     BB.log('payment', 'Stripe', 'Charged ' + money(b.total) + ' to ' + first(gOf(b).name) + "'s card. Payout lands in 2 days.", id, ['Booking site', 'Stripe']);
     if (was === 'pending') { BB.runAutomations('booking.created', b); BB.notify('Payment received · ' + money(b.total), gOf(b).name + ' paid for ' + P(b.propertyId).short + '.', id); }
@@ -386,7 +399,7 @@
   };
   BB.act.expirePending = function (id) {
     const b = BB.q.booking(id); if (!b || b.status !== 'pending') return;
-    b.status = 'cancelled'; BB.log('booking', 'Booking site', 'Released ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + ' at ' + P(b.propertyId).short + ': ' + gOf(b).name + ' did not finish paying.', id);
+    b.status = 'cancelled'; b.expired = true; BB.log('booking', 'Booking site', 'Released ' + D.fmt(b.checkIn) + '–' + D.fmt(b.checkOut) + ' at ' + P(b.propertyId).short + ': ' + gOf(b).name + ' did not finish paying.', id);
     BB.store.commit({ type: 'booking', id });
   };
   BB.act.unsubscribe = function (gid) { const g = BB.q.guest(gid); if (!g || !g.subscribed) return; g.subscribed = false; g.unsubscribedAt = S().today; BB.log('campaign', 'Guest list', g.name + ' unsubscribed from emails.', gid); BB.store.commit({ type: 'guest', id: gid }); };

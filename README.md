@@ -35,7 +35,7 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 
 ## What works in a real account
 
-- **Accounts.** Sign-up, sign-in, password reset by email, sessions in secure cookies, one workspace per host.
+- **Accounts.** Sign-up, sign-in with a password or an emailed link and 6-digit code (single use, 15 minutes, five wrong codes void it; `server/signin.js`), password reset by branded email, sessions in secure cookies, one workspace per host.
 - **Booking sites.** Each home gets a site rendered on the server so search engines and AI assistants can read it: VacationRental and FAQPage structured data, `robots.txt` that welcomes AI crawlers, `sitemap.xml` and `llms.txt`. Hosts upload their own photos and write the guest details, area guide and house rules in Website & SEO. Nothing is made up for them.
 - **Bookings.** With Stripe connected, guests pay through Stripe Checkout and the money goes straight to the host's Stripe account (Connect, destination charges). The dates are held for 30 minutes while they pay. Without Stripe, the site takes a booking request that the host accepts or declines. Accepting sends the guest a payment link once Stripe is connected.
 - **Bank transfer and invoices.** In Payments, hosts can add their bank details (account name, sort code and account number, or IBAN and BIC) and turn on bank transfer. Guests can then choose "Book and pay by bank transfer" at checkout, alongside card payment or instead of a booking request. The stay is booked and the dates are held, and the guest gets an invoice by email (with a printable invoice page on their trip link) that shows the bank details, the amount, the due date (the host's number of days, never later than the day before arrival) and the booking reference. The booking confirmation email and the door code are held back until the host presses "Bank transfer received". Hosts can also email an invoice for any unpaid direct booking, for example a phone booking or an accepted request. Booking sites only learn that bank transfer is on; the bank details only go to a guest who chose it. Unpaid invoices are not cancelled automatically: overdue ones show in the booking and in Waiting for payment, and the host decides.
@@ -59,6 +59,18 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 - **Billing.** One plan: £200 a month inc. VAT (or £2,000 a year), paid upfront, no setup fee, plus the £15 calendar sync add-on, through Stripe subscriptions and the customer portal. New hosts pay first: sign-up goes straight to Stripe Checkout, and until the first payment the console shows only the payment page (`/app/pay`), billing and account. Team members (ADMIN_EMAILS or `config:admins`) are let through. The welcome email goes out once it is paid.
 
 Some connections show as "Coming soon" in real accounts: Turno, Google Business Profile, Search Console, Google Analytics and PriceLabs. They still work in the demo.
+
+## Partner programme
+
+Anyone can join at `/partners` and gets a link (`/r/<code>`) and a code. A host who signs up through either is theirs for life: the partner earns 25% (`AFFILIATE_RATE`) of every payment that host makes for their plan, monthly or yearly, add-on included, for as long as they keep paying. AI credit top-ups do not earn commission. The code lives in `server/affiliates.js`.
+
+- **Attribution.** `/r/<code>`, or `?ref=<code>` on `/`, `/pricing`, `/start`, `/help` or `/partners`, keeps the code in the `bb_ref` cookie for 90 days (`AFFILIATE_COOKIE_DAYS`). `/r/<code>?to=/pricing` sends people to a chosen page. The last link clicked wins. The sign-up form has a "Referral code" box, prefilled from the cookie, and a typed code wins over the cookie. A mistyped code is refused so the partner is not lost. Nobody can refer their own email address. Clicks are counted once a day per visitor.
+- **Commission.** Card payments come from Stripe's `invoice.paid`, so the first payment and every renewal count. Each invoice is recorded once, however often Stripe retries. Bank transfers from a host (a package, say) are recorded by the team in `/admin/affiliates`, which works out the commission the same way. Commission is worked out on the amount the host paid, VAT included.
+- **Refunds.** Stripe's `charge.refunded` and lost chargebacks (`charge.dispute.closed`) take back the same share of the commission, part refunds included. The team can mark a bank-transfer commission as refunded. If the commission was already paid out, the partner's balance goes negative and comes off their next payout.
+- **Payouts.** Commission is on hold for 30 days (`AFFILIATE_HOLD_DAYS`), then it is due. The team pays partners with £50 or more due (`AFFILIATE_MIN_PAYOUT`) by bank transfer, then presses "Mark paid" in `/admin/affiliates`, and the partner gets an email.
+- **Partner dashboard** (`/partners/dashboard`): their link and code, clicks, hosts signed up and paying (numbered, never named), every commission with its status, payouts, and where to pay them. Partners have their own sign-in and password reset, separate from host accounts.
+- **Team view** (`/admin/affiliates`, "Partners" in the team menu): every partner with clicks, referrals, earned, on hold, due and paid, their payout details, Mark paid, Pause (their link stops working and new payments earn nothing), recording a bank transfer, linking a host to a partner by hand, and the latest commissions.
+- On Supabase, run `supabase/affiliates.sql` once before deploying, because the live function does not create tables. The existing Stripe webhook gets the two new refund events added by itself on the next background run. If you set the webhook up by hand, add `charge.refunded` and `charge.dispute.closed` to it.
 
 ## Marketing site forms
 
@@ -107,7 +119,7 @@ Hosts can turn off the checklist, tips and weekly report under "Emails from us" 
 ## Stripe setup
 
 1. Turn on Connect (Express accounts) in your Stripe dashboard.
-2. On the live server this happens by itself once the key is set (see `server/stripe-auto.js`). By hand: run `STRIPE_SECRET_KEY=sk_live_... BASE_URL=https://booking-booster.co.uk npm run stripe-setup`. It creates the monthly and yearly prices (VAT included; the yearly plan is 10 months' price, the yearly add-on is £180) and two webhooks to `/webhooks/stripe`: one for platform events (`checkout.session.completed`, `checkout.session.expired`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`) and a Connect one for hosts' `account.updated`. It prints the ids and signing secrets to add as secrets. Running it again reuses what exists.
+2. On the live server this happens by itself once the key is set (see `server/stripe-auto.js`). By hand: run `STRIPE_SECRET_KEY=sk_live_... BASE_URL=https://booking-booster.co.uk npm run stripe-setup`. It creates the monthly and yearly prices (VAT included; the yearly plan is 10 months' price, the yearly add-on is £180) and two webhooks to `/webhooks/stripe`: one for platform events (`checkout.session.completed`, `checkout.session.expired`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`, `charge.refunded`, `charge.dispute.closed`) and a Connect one for hosts' `account.updated`. It prints the ids and signing secrets to add as secrets. Running it again reuses what exists.
 3. In Stripe's customer portal settings, let customers update cards and cancel at the end of the period.
 
 `npm run preflight` lists any launch setting that is still missing. In production the server also logs that list on start. The full launch steps are in `LAUNCH.md`.
@@ -132,6 +144,7 @@ Hosts can turn off the checklist, tips and weekly report under "Emails from us" 
 | `server/leads.js`, `lead-emails.js` | Lead follow-up email series |
 | `server/host-emails.js` | Setup checklist, week-3 tips, weekly report and payment failed emails to hosts |
 | `server/domains.js` | Hosts' own domains: DNS checks and certificates |
+| `server/affiliates.js` | Partner programme: referral links, commission, refunds, partner dashboard and payouts |
 | `server/backup.js` | Daily database backups |
 | `server/preflight.js`, `scripts/stripe-setup.js` | Launch settings check, one-off Stripe prices and webhooks |
 | `LAUNCH.md` | Step-by-step launch on Fly.io |

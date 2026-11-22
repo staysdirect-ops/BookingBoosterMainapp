@@ -3,7 +3,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const TABLES = ['workspaces', 'users', 'sessions', 'domains', 'outbox', 'leads', 'payments', 'secrets', 'resets', 'lead_seq', 'lead_optout', 'kv'];
+const TABLES = ['workspaces', 'users', 'sessions', 'domains', 'outbox', 'leads', 'payments', 'secrets', 'resets', 'lead_seq', 'lead_optout', 'kv', 'affiliates', 'referrals', 'commissions', 'aff_payouts', 'aff_clicks'];
 
 module.exports = function ({ db, cfg, log }) {
   const dir = path.join(cfg.dataDir, 'backups');
