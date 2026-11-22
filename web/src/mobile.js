@@ -8,7 +8,7 @@
   const reduced = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const TABS = [['today', 'Today', 'home'], ['calendar', 'Calendar', 'cal'], ['inbox', 'Inbox', 'inbox'], ['guests', 'Guests', 'users'], ['grow', 'Grow', 'chart']];
   const TAB_LABEL = Object.fromEntries(TABS.map(t => [t[0], t[1]]));
-  const CHANNELS = ['cm', 'airbnb', 'vrbo', 'booking']; // optional calendar sync links: dates booked there arrive as blocks
+  const CHANNELS = BB.SYNC_IDS; // optional calendar sync links: dates booked there arrive as blocks
 
   /* ---------- small data helpers ---------- */
   const lastMsg = t => t.messages[t.messages.length - 1] || null;
