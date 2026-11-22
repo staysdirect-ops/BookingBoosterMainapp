@@ -46,6 +46,15 @@ create table if not exists commissions (
 create table if not exists aff_payouts (id bigserial primary key, affiliate_id text not null references affiliates(id), amount integer not null, reference text, created_at bigint not null);
 create index if not exists comm_aff on commissions(affiliate_id, created_at);
 create index if not exists ref_aff on referrals(affiliate_id);
+-- bulk imports (server/lead-import.js): phone, the list it came from, when the person consented, and whether we hold an email
+alter table leads add column if not exists phone text;
+alter table leads add column if not exists source text;
+alter table leads add column if not exists consent_at text;
+alter table leads add column if not exists has_email integer;
+alter table leads add column if not exists import_batch text;
+create index if not exists leads_email_lower on leads (lower(email));
+create index if not exists leads_phone on leads (phone);
+update leads set has_email = case when coalesce(email, '') = '' then 0 else 1 end where has_email is null;
 create index if not exists lead_seq_due on lead_seq(status, next_at);
 create index if not exists outbox_ws on outbox(workspace_id, created_at);
 create index if not exists pay_ws on payments(workspace_id, booking_id);
