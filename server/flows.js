@@ -207,7 +207,7 @@ module.exports = function ({ db, cfg, msg, auth, ws, leads, hostMail, stripe, lo
     let s = await get('flows:settings');
     if (!s) s = {};
     let changed = false;
-    for (const f of FLOWS) if (!s[f.id]) { s[f.id] = { on: true, since: Date.now() - 3 * DAY }; changed = true; } // new flows start on, and only pick up the last 3 days
+    for (const f of FLOWS) if (!s[f.id]) { s[f.id] = { on: false, since: Date.now() }; changed = true; } // new flows start off: the team switches each one on in /admin/flows, and it starts from that moment
     if (changed) await put('flows:settings', s);
     return s;
   }

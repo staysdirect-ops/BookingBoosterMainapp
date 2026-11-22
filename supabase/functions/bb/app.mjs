@@ -20226,7 +20226,7 @@ var require_flows = __commonJS({
         if (!s) s = {};
         let changed = false;
         for (const f of FLOWS) if (!s[f.id]) {
-          s[f.id] = { on: true, since: Date.now() - 3 * DAY };
+          s[f.id] = { on: false, since: Date.now() };
           changed = true;
         }
         if (changed) await put("flows:settings", s);

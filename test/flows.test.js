@@ -34,6 +34,9 @@ test.before(async () => {
   const base = 'http://localhost:' + mock.address().port;
   t = await start({ RESEND_API_KEY: 're_test_fake', EMAIL_API_BASE: base, STRIPE_SECRET_KEY: 'sk_test_fake', STRIPE_API_BASE: base, STRIPE_WEBHOOK_SECRET: SECRET, ADMIN_EMAILS: 'host@example.co.uk', ALLOW_TEST_CLOCK: '1' });
   await t.signup();
+  const page = await t.call('/admin/flows', { method: 'GET' });
+  assert.match(page.body, /Off/, 'flows start off');
+  for (const id of ['lead_call', 'call_paid', 'signup', 'onboard', 'retain']) await form('/admin/flows/' + id + '/toggle', { on: '1' });
   created = (await t.sql("SELECT created_at FROM workspaces WHERE kind = 'live' ORDER BY created_at DESC LIMIT 1"))[0].created_at;
 });
 test.after(() => { t.stop(); mock.close(); });
