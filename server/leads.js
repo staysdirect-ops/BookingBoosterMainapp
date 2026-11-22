@@ -61,6 +61,85 @@ module.exports = function ({ db, cfg, msg, auth, log }) {
   const links = { bookCall: () => settings().book_call_url, meeting: () => settings().meeting_url, sampleReport: () => settings().sample_report_url };
   const SEQ = require('./lead-emails')({ dayAt, ukAt, date, time, app, guide: f => app('/guides/' + f), link: n => (links[n] ? links[n]() : '') });
 
+  /* ---------- outreach sequences for imported leads (server/outreach-emails.js) ----------
+     Inactive drafts: nobody is enrolled and nothing is sent while a series is not active. */
+  const OUT = require('./outreach-emails');
+  const outActive = k => !!(OUT.series[k] && (OUT.series[k].active === true || (cfg.testClock && (cfg.outreachTestOn || []).includes(k))));
+  const OUT_DEFAULTS = { link: '', sender_name: '', company_footer: '' };
+  const outSettings = async () => Object.assign({}, OUT_DEFAULTS, await kv('outreach-settings'));
+  const oq = {
+    lead: db.prepare('SELECT * FROM leads WHERE id = ?'),
+    lead2: db.prepare('SELECT * FROM leads WHERE id = ?'),
+  };
+  const fieldsIn = s => [...new Set((String(s).match(/\{([a-z_]+)\}/g) || []).map(x => x.slice(1, -1)))];
+  const fillRaw = (s, v) => String(s).replace(/\{([a-z_]+)\}/g, (m, k) => (v[k] == null || v[k] === '' ? m : String(v[k])));
+  // The merge fields for one lead: what the import kept, plus the team's outreach settings.
+  function outVars(lead, st) {
+    let d = {}; try { d = JSON.parse(lead.data || '{}'); } catch (_) {}
+    const key = re => { const k = Object.keys(d).find(x => re.test(x)); return k ? String(d[k]).trim() : ''; };
+    const property = key(/(business|property).*name|^property$|^business$/i) || String(lead.name || '').trim();
+    const person = String(lead.name || '').trim();
+    return { first_name: person && person !== property ? person.split(/\s+/)[0] : '', property_name: property, town: key(/^(town|city)$/i),
+      brand: OUT.BRANDS[lead.source] || '', link: st.link, sender_name: st.sender_name, company_footer: st.company_footer };
+  }
+  // One outreach email. With no lead (the team's template gallery) the merge fields stay in curly brackets.
+  function outRender(seqKey, step, v, leadId) {
+    const unsub = leadId == null ? cfg.baseUrl + '/u/lead/{lead_id}/{signature}' : cfg.baseUrl + '/u/lead/' + leadId + '/' + auth.sign('lead', leadId);
+    const subject = fillRaw(step.subject, v), body = fillRaw(step.body, v), footer = fillRaw('{company_footer}', v);
+    const link = t => esc(t).replace(/https?:\/\/[^\s<]+[^\s<.,)]/g, u => '<a href="' + u + '">' + u + '</a>');
+    const paras = body.split(/\n{2,}/).map(b => {
+      const lines = b.split('\n');
+      if (lines.every(l => /^- /.test(l))) return '<ul style="margin:0 0 16px;padding-left:20px">' + lines.map(l => '<li style="margin:0 0 6px">' + link(l.slice(2)) + '</li>').join('') + '</ul>';
+      return '<p style="margin:0 0 16px">' + lines.map(link).join('<br>') + '</p>';
+    }).join('');
+    const foot = '<p style="margin:0 0 6px">Sent by ' + esc(OUT.SENDER) + '.</p><p style="margin:0 0 6px">' + link(footer) + '</p><p style="margin:0"><a href="' + esc(unsub) + '" style="color:#8A90A6">Unsubscribe in one click</a> and we will not email you again.</p>';
+    const html = '<!doctype html><html><body style="margin:0;background:#ffffff;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#141A33">' +
+      '<div style="max-width:560px;margin:0 auto;padding:24px 16px;font-size:16px;line-height:1.55">' + paras +
+      '<div style="margin-top:24px;padding-top:16px;border-top:1px solid #E6E8F0;color:#8A90A6;font-size:12px;line-height:1.5">' + foot + '</div></div></body></html>';
+    const text = body + '\n\n--\nSent by ' + OUT.SENDER + '.\n' + footer + '\n\nUnsubscribe: ' + unsub;
+    return { subject, html, text, unsub, missing: fieldsIn(subject + '\n' + body + '\n' + footer) };
+  }
+  // Puts an imported lead on the outreach series for its source tag. Refused while that series is inactive.
+  async function outEnroll(leadId, now) {
+    now = now || Date.now();
+    const lead = await oq.lead.get(leadId); if (!lead) return { error: 'No such lead' };
+    const seq = OUT.forSource(lead.source); if (!seq) return { error: 'No outreach series for this source' };
+    if (!outActive(seq)) return { error: 'This outreach series is an inactive draft', seq };
+    if (!lead.email) return { error: 'No email address', seq };
+    if (await q.optedOut.get(lead.email)) return { error: 'Unsubscribed', seq };
+    if (await q.hasUser.get(lead.email)) return { error: 'Already a customer', seq };
+    const r = await q.ins.run(leadId, seq, 'active', null, '{}', JSON.stringify({ enrolled_at: now }), now);
+    if (!r.changes) return { error: 'Already on a series', seq };
+    return { ok: true, seq };
+  }
+  async function outAdvance(row, now) {
+    if (!outActive(row.seq)) return []; // inactive draft: never sends, never changes the row
+    const stop = status => q.save.run(row.idx, status, null, row.sent, row.vars, now, row.lead_id);
+    if (await q.optedOut.get(row.email)) { await stop('unsubscribed'); return []; }
+    if (await q.hasUser.get(row.email)) { await stop('converted'); return []; }
+    const S = OUT.series[row.seq], vars = JSON.parse(row.vars || '{}'), sent = JSON.parse(row.sent || '{}'), base = vars.enrolled_at || row.start;
+    const v = outVars(await oq.lead2.get(row.lead_id), await outSettings()), out = [];
+    let idx = row.idx, nextAt = null, status = 'active';
+    while (idx < S.steps.length) {
+      const step = S.steps[idx], due = step.day <= 1 ? base : dayAt(base, step.day - 1);
+      if (due > now) { nextAt = due; break; }
+      const r = outRender(row.seq, step, v, row.lead_id);
+      if (r.missing.length) { status = 'waiting'; vars.missing = r.missing; break; } // never send with a gap: hold until the fields are filled in
+      const res = await msg.sendEmail({ to: row.email, subject: r.subject, text: r.text, html: r.html, from: cfg.leads.from || undefined, replyTo: cfg.company.support, unsubscribeUrl: r.unsub,
+        meta: { lead: row.lead_id, seq: row.seq, step: step.key, broadcast: true } });
+      if (!res.ok && !res.test) { nextAt = now + 30 * 6e4; break; }
+      sent[step.key] = now; out.push(step.key); idx++; delete vars.missing;
+    }
+    if (idx >= S.steps.length) status = 'done';
+    await q.save.run(idx, status, status === 'active' ? nextAt : null, JSON.stringify(sent), JSON.stringify(vars), now, row.lead_id);
+    return out;
+  }
+  const outreach = {
+    series: OUT.series, active: outActive, enroll: outEnroll, settings: outSettings,
+    saveSettings: async s => setKv('outreach-settings', Object.assign(await outSettings(), s)),
+    sample: (seq, key) => { const S = OUT.series[seq], step = S && S.steps.find(x => x.key === key); return step ? outRender(seq, step, {}, null) : null; },
+  };
+
   // Start the right series for a new lead. Returns the series key or null.
   async function start(leadId, kind, email, d) {
     const seq = pick(kind, d || {}); if (!seq || !SEQ[seq]) return null;
@@ -126,6 +205,7 @@ module.exports = function ({ db, cfg, msg, auth, log }) {
   async function advance(leadId, now) {
     now = now || Date.now();
     const row = await q.get.get(leadId); if (!row || !['active', 'waiting'].includes(row.status)) return [];
+    if (OUT.series[row.seq]) return outAdvance(row, now);
     await loadSettings();
     const steps = SEQ[row.seq] ? SEQ[row.seq].steps : [];
     const stop = status => q.save.run(row.idx, status, null, row.sent, row.vars, now, leadId);
@@ -173,8 +253,8 @@ module.exports = function ({ db, cfg, msg, auth, log }) {
   async function stop(leadId) { const row = await q.get.get(leadId); if (!row) return false; await q.save.run(row.idx, 'stopped', null, row.sent, row.vars, Date.now(), leadId); return true; }
   async function info(leadId) {
     const row = await q.get.get(leadId); if (!row) return null;
-    const steps = SEQ[row.seq] ? SEQ[row.seq].steps : []; const v = JSON.parse(row.vars || '{}');
-    return { seq: row.seq, name: SEQ[row.seq] ? SEQ[row.seq].name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || '{}')), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
+    const S = SEQ[row.seq] || OUT.series[row.seq], steps = S ? S.steps : []; const v = JSON.parse(row.vars || '{}');
+    return { seq: row.seq, name: S ? S.name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || '{}')), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
   }
 
   // The team admin's template gallery: one step of a series, rendered exactly as it goes out, for a made-up lead.
@@ -188,5 +268,5 @@ module.exports = function ({ db, cfg, msg, auth, log }) {
     return render(row, step, context(row, now, false));
   }
 
-  return { series: SEQ, sample, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async s => { await loadSettings(); await setKv('lead-settings', Object.assign({}, current, s)); await loadSettings(); }, ukAt, pick };
+  return { series: SEQ, outreach, sample, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async s => { await loadSettings(); await setKv('lead-settings', Object.assign({}, current, s)); await loadSettings(); }, ukAt, pick };
 };
