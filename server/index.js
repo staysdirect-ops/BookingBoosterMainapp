@@ -145,7 +145,9 @@ function publicBoot(w, mode, extra) {
 /* ---------------- property site & trip pages ---------------- */
 // A live host's sites stay offline to guests until the first payment (only when Stripe is on).
 // The signed-in host can still preview their own site on the main domain.
-function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
+// Not paid yet, or the plan was cancelled: the site is offline to guests and the console shows the payment page.
+const offPlan = st => !st || st === 'trial' || st === 'cancelled';
+function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; return offPlan((w.row || {}).billing_status); }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
 // Search engines, with no sign-in for the host: every live home's site is submitted to Google Search Console through our
@@ -318,8 +320,11 @@ async function stripeWebhook(req, res) {
       }
     }
     if (['invoice.paid', 'charge.refunded', 'charge.dispute.closed'].includes(ev.type)) await aff.stripeEvent(ev, async c => { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(c); return r && r.id; });
-    if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
-  } catch (e) { log('webhook', ev.type, e.message); }
+    if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer);
+      // An old subscription ending after the host has already restarted on a new one must not switch the site off.
+      let other = false; if (r) { try { const l = await stripe.api('GET', '/subscriptions', { customer: o.customer, status: 'all', limit: 20 }); other = (l.data || []).some(x => x.id !== o.id && ['active', 'trialing', 'past_due'].includes(x.status)); } catch (e) { log('webhook', 'subscriptions', e.message); } }
+      if (r && !other) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
+  } catch (e) { log('webhook', ev.type, e.message); return json(res, { error: 'not processed, retry' }, 500); } // a 500 makes Stripe send it again; every step above is safe to repeat
   json(res, { received: true });
 }
 async function markStripe(wid, on, bank) {
@@ -365,7 +370,7 @@ async function signup(req, res) {
 // Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
 async function planCheckout(w) {
   const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
-  return stripe.subscribe({ customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
+  return stripe.subscribe({ customer: r.stripe_customer || undefined, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
 }
 // The plan is paid (from the webhook or the return from Checkout, whichever comes first): open the console and say welcome once.
 async function planPaid(wid, customer, plan) {
@@ -378,12 +383,14 @@ async function planPaid(wid, customer, plan) {
 const PAY_OPEN = ['/app/pay', '/app/pay/done', '/app/billing', '/app/billing/start', '/app/billing/portal', '/app/account'];
 async function mustPay(req, w) {
   if (!stripe.enabled || w.kind !== 'live') return false;
-  const r = await ws.row(w.id); if (r && r.billing_status && r.billing_status !== 'trial') return false;
+  const r = await ws.row(w.id); if (r && !offPlan(r.billing_status)) return false;
   return !await isAdmin(req);
 }
 function payPage(w, note) {
-  const s = w.state, price = 200, due = s.account.annual ? '£' + price * 10 + ' for your first year' : '£' + price + ' for your first month';
-  return authPage('Start your plan', '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>' +
+  const s = w.state, price = 200, ended = (w.row || {}).billing_status === 'cancelled';
+  const due = s.account.annual ? '£' + price * 10 + (ended ? ' for the year' : ' for your first year') : '£' + price + (ended ? ' for the month' : ' for your first month');
+  return authPage(ended ? 'Restart your plan' : 'Start your plan', (ended ? '<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay ' + due + ' to restart your plan. Everything you set up is still here.</p>'
+    : '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>') +
     (note ? '<p class="ok" role="status">' + E(note) + '</p>' : '') +
     '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? 'the year' : 'the first month') + ' today, then it renews automatically. No commission on any booking. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '</div>' +
     '<form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form>' +
@@ -760,7 +767,7 @@ async function route(req, res) {
     if (p.startsWith('/app/account/') && m === 'POST') return accountPost(req, res, p, w, s);
     if (p === '/app/billing/start' && m === 'POST') {
       if (!stripe.enabled) return redirect(res, '/app/billing?msg=stripe');
-      const r = await ws.row(w.id); if (r.stripe_customer && r.billing_status && r.billing_status !== 'trial') return redirect(res, '/app/billing');
+      const r = await ws.row(w.id); if (r.stripe_customer && !offPlan(r.billing_status)) return redirect(res, '/app/billing');
       return redirect(res, (await planCheckout(w)).url);
     }
     if (p === '/app/billing/topup' && m === 'POST') {
@@ -1089,7 +1096,7 @@ async function billingPage(w, sp) {
   const r = await ws.row(w.id); const s = w.state; const price = 200;
   const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
   return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
-    (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
+    (stripe.enabled ? (r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === 'cancelled' ? 'Restart your plan' : 'Start your plan') + '</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
     (credits.enabled ? await creditCard(w, sp) : '') +
     '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
 }
