@@ -13665,6 +13665,8 @@ var require_config = __commonJS({
       jobsKey: E.JOBS_KEY || "",
       secret: secret(),
       secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? "https:" : "")),
+      outreachTestOn: E.ALLOW_TEST_CLOCK === "1" ? String(E.OUTREACH_TEST_ON || "").split(",").map((x) => x.trim()).filter(Boolean) : [],
+      // tests only: switch outreach drafts on
       testClock: E.ALLOW_TEST_CLOCK === "1",
       // tests only: lets /admin/leads/run move the lead-email clock forward
       // A host's own domain: what their DNS should point at (defaults to the BASE_URL host), plus Fly.io certificates
@@ -16380,6 +16382,109 @@ var require_lead_emails = __commonJS({
   }
 });
 
+// server/outreach-emails.js
+var require_outreach_emails = __commonJS({
+  "server/outreach-emails.js"(exports, module) {
+    var SENDER = "Faster Software Group trading as Booking Booster";
+    var series = {
+      // Sequence A: scraped UK hosts, 4 emails
+      "outreach-a": {
+        name: "Outreach A: scraped UK hosts",
+        active: false,
+        sources: ["scraped"],
+        steps: [
+          { key: "A1", day: 1, subject: "{property_name}: bookings without the commission", body: `Hi {first_name},
+
+I came across {property_name} and wanted to ask one question. When a guest books with you through a platform, how much of that booking do you actually keep?
+
+Booking Booster builds and runs a direct booking website for your holiday let, on your own domain. Guests see live availability, book instantly and pay you directly by card. We take no commission on any booking.
+
+It is \xA3200 a month including VAT, with no setup fee and no contract.
+
+Would it be worth a look? You can see how it works here: {link}
+
+{sender_name}
+Booking Booster` },
+          { key: "A2", day: 4, subject: "What the \xA3200 a month covers", body: `Hi {first_name},
+
+A fair question about any monthly fee is what you get for it. For Booking Booster it is this:
+
+- Your own booking website on your own domain, with live availability, instant booking, card payments and security deposit holds.
+- Local pages published every month so the site can be found on Google.
+- A guest check-in app with door codes, plus emails and texts to bring past guests back.
+- One plan covers up to 3 homes.
+
+You can cancel at any time, and you keep your domain and your guest list if you leave.
+
+Have a look here: {link}
+
+{sender_name}` },
+          { key: "A3", day: 9, subject: "Can a guest find {property_name} without a platform?", body: `Hi {first_name},
+
+Try searching for a holiday let in {town} on Google, or asking ChatGPT for one. The question is whether {property_name} shows up by itself, or only inside someone else's listing site.
+
+Booking Booster sites are set up for both. We publish local search pages each month, and each site is structured so that AI tools such as ChatGPT, Gemini and Perplexity can read it and recommend it. Every home also gets a search health score, so you can see what is working.
+
+The guests who find you that way book with you directly and pay you directly.
+
+Details are here: {link}
+
+{sender_name}` },
+          { key: "A4", day: 15, subject: "Shall I close this off?", body: `Hi {first_name},
+
+I have written a few times about a direct booking site for {property_name}, and I don't want to keep filling your inbox.
+
+If the timing is wrong, no problem at all, and this is my last email. If you would like to see it, the page is here: {link}. It is \xA3200 a month, or \xA32,000 if paid yearly, which works out as two months free.
+
+Either way, I wish you a full calendar.
+
+{sender_name}` }
+        ]
+      },
+      // Sequence B: Stays Direct and Contractor Stop hosts, 3 emails. {brand} follows the lead's source tag.
+      "outreach-b": {
+        name: "Outreach B: Stays Direct and Contractor Stop hosts",
+        active: false,
+        sources: ["stays-direct", "contractor-stop"],
+        steps: [
+          { key: "B1", day: 1, subject: "A booking site of your own, {first_name}", body: `Hi {first_name},
+
+You know us from {brand}, where {property_name} is listed. I am writing because we have built something for hosts like you and I wanted you to hear about it from us first.
+
+It is called Booking Booster. It gives your property its own booking website, on your own domain, where guests see live availability, book instantly and pay you directly by card. There is no commission on any booking.
+
+Nothing changes with your {brand} listing. This sits alongside it, so the guests who look for you directly have somewhere to book.
+
+It is \xA3200 a month including VAT, with no setup fee and no contract. Have a look: {link}
+
+{sender_name}` },
+          { key: "B2", day: 5, subject: "Your guests, your list", body: `Hi {first_name},
+
+The part of this I would want to know as a host is who owns the relationship with the guest. With Booking Booster, you do.
+
+With a Booking Booster site, every guest who books is on your own guest list. The site sends them check-in details and door codes, and follows up by email and text so they come back to you next time. If you ever leave, you keep the domain and you can export the whole list.
+
+One plan covers up to 3 properties. Details are here: {link}
+
+{sender_name}` },
+          { key: "B3", day: 10, subject: "Last note on this", body: `Hi {first_name},
+
+This is my last email about Booking Booster, so I will keep it short.
+
+Your own booking site, no commission, guests pay you directly. \xA3200 a month, or \xA32,000 if paid yearly, which works out as two months free. Cancel any time.
+
+If you want it, start here: {link}. If you have a question first, just reply to this email and I will answer it myself.
+
+{sender_name}` }
+        ]
+      }
+    };
+    var BRANDS = { "stays-direct": "Stays Direct", "contractor-stop": "Contractor Stop" };
+    var forSource = (source) => Object.keys(series).find((k) => series[k].sources.includes(source)) || null;
+    module.exports = { series, SENDER, BRANDS, forSource };
+  }
+});
+
 // server/leads.js
 var require_leads = __commonJS({
   "server/leads.js"(exports, module) {
@@ -16448,6 +16553,126 @@ var require_leads = __commonJS({
       const app = (p) => cfg.baseUrl + p;
       const links = { bookCall: () => settings().book_call_url, meeting: () => settings().meeting_url, sampleReport: () => settings().sample_report_url };
       const SEQ = require_lead_emails()({ dayAt, ukAt, date, time, app, guide: (f) => app("/guides/" + f), link: (n) => links[n] ? links[n]() : "" });
+      const OUT = require_outreach_emails();
+      const outActive = (k) => !!(OUT.series[k] && (OUT.series[k].active === true || cfg.testClock && (cfg.outreachTestOn || []).includes(k)));
+      const OUT_DEFAULTS = { link: "", sender_name: "", company_footer: "" };
+      const outSettings = async () => Object.assign({}, OUT_DEFAULTS, await kv("outreach-settings"));
+      const oq = {
+        lead: db.prepare("SELECT * FROM leads WHERE id = ?"),
+        lead2: db.prepare("SELECT * FROM leads WHERE id = ?")
+      };
+      const fieldsIn = (s) => [...new Set((String(s).match(/\{([a-z_]+)\}/g) || []).map((x) => x.slice(1, -1)))];
+      const fillRaw = (s, v) => String(s).replace(/\{([a-z_]+)\}/g, (m, k) => v[k] == null || v[k] === "" ? m : String(v[k]));
+      function outVars(lead, st) {
+        let d = {};
+        try {
+          d = JSON.parse(lead.data || "{}");
+        } catch (_) {
+        }
+        const key = (re) => {
+          const k = Object.keys(d).find((x) => re.test(x));
+          return k ? String(d[k]).trim() : "";
+        };
+        const property = key(/(business|property).*name|^property$|^business$/i) || String(lead.name || "").trim();
+        const person = String(lead.name || "").trim();
+        return {
+          first_name: person && person !== property ? person.split(/\s+/)[0] : "",
+          property_name: property,
+          town: key(/^(town|city)$/i),
+          brand: OUT.BRANDS[lead.source] || "",
+          link: st.link,
+          sender_name: st.sender_name,
+          company_footer: st.company_footer
+        };
+      }
+      function outRender(seqKey, step, v, leadId) {
+        const unsub = leadId == null ? cfg.baseUrl + "/u/lead/{lead_id}/{signature}" : cfg.baseUrl + "/u/lead/" + leadId + "/" + auth.sign("lead", leadId);
+        const subject = fillRaw(step.subject, v), body = fillRaw(step.body, v), footer = fillRaw("{company_footer}", v);
+        const link = (t) => esc(t).replace(/https?:\/\/[^\s<]+[^\s<.,)]/g, (u) => '<a href="' + u + '">' + u + "</a>");
+        const paras = body.split(/\n{2,}/).map((b) => {
+          const lines = b.split("\n");
+          if (lines.every((l) => /^- /.test(l))) return '<ul style="margin:0 0 16px;padding-left:20px">' + lines.map((l) => '<li style="margin:0 0 6px">' + link(l.slice(2)) + "</li>").join("") + "</ul>";
+          return '<p style="margin:0 0 16px">' + lines.map(link).join("<br>") + "</p>";
+        }).join("");
+        const foot = '<p style="margin:0 0 6px">Sent by ' + esc(OUT.SENDER) + '.</p><p style="margin:0 0 6px">' + link(footer) + '</p><p style="margin:0"><a href="' + esc(unsub) + '" style="color:#8A90A6">Unsubscribe in one click</a> and we will not email you again.</p>';
+        const html = '<!doctype html><html><body style="margin:0;background:#ffffff;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#141A33"><div style="max-width:560px;margin:0 auto;padding:24px 16px;font-size:16px;line-height:1.55">' + paras + '<div style="margin-top:24px;padding-top:16px;border-top:1px solid #E6E8F0;color:#8A90A6;font-size:12px;line-height:1.5">' + foot + "</div></div></body></html>";
+        const text = body + "\n\n--\nSent by " + OUT.SENDER + ".\n" + footer + "\n\nUnsubscribe: " + unsub;
+        return { subject, html, text, unsub, missing: fieldsIn(subject + "\n" + body + "\n" + footer) };
+      }
+      async function outEnroll(leadId, now) {
+        now = now || Date.now();
+        const lead = await oq.lead.get(leadId);
+        if (!lead) return { error: "No such lead" };
+        const seq = OUT.forSource(lead.source);
+        if (!seq) return { error: "No outreach series for this source" };
+        if (!outActive(seq)) return { error: "This outreach series is an inactive draft", seq };
+        if (!lead.email) return { error: "No email address", seq };
+        if (await q.optedOut.get(lead.email)) return { error: "Unsubscribed", seq };
+        if (await q.hasUser.get(lead.email)) return { error: "Already a customer", seq };
+        const r = await q.ins.run(leadId, seq, "active", null, "{}", JSON.stringify({ enrolled_at: now }), now);
+        if (!r.changes) return { error: "Already on a series", seq };
+        return { ok: true, seq };
+      }
+      async function outAdvance(row, now) {
+        if (!outActive(row.seq)) return [];
+        const stop2 = (status2) => q.save.run(row.idx, status2, null, row.sent, row.vars, now, row.lead_id);
+        if (await q.optedOut.get(row.email)) {
+          await stop2("unsubscribed");
+          return [];
+        }
+        if (await q.hasUser.get(row.email)) {
+          await stop2("converted");
+          return [];
+        }
+        const S = OUT.series[row.seq], vars = JSON.parse(row.vars || "{}"), sent = JSON.parse(row.sent || "{}"), base = vars.enrolled_at || row.start;
+        const v = outVars(await oq.lead2.get(row.lead_id), await outSettings()), out = [];
+        let idx = row.idx, nextAt = null, status = "active";
+        while (idx < S.steps.length) {
+          const step = S.steps[idx], due = step.day <= 1 ? base : dayAt(base, step.day - 1);
+          if (due > now) {
+            nextAt = due;
+            break;
+          }
+          const r = outRender(row.seq, step, v, row.lead_id);
+          if (r.missing.length) {
+            status = "waiting";
+            vars.missing = r.missing;
+            break;
+          }
+          const res = await msg.sendEmail({
+            to: row.email,
+            subject: r.subject,
+            text: r.text,
+            html: r.html,
+            from: cfg.leads.from || void 0,
+            replyTo: cfg.company.support,
+            unsubscribeUrl: r.unsub,
+            meta: { lead: row.lead_id, seq: row.seq, step: step.key, broadcast: true }
+          });
+          if (!res.ok && !res.test) {
+            nextAt = now + 30 * 6e4;
+            break;
+          }
+          sent[step.key] = now;
+          out.push(step.key);
+          idx++;
+          delete vars.missing;
+        }
+        if (idx >= S.steps.length) status = "done";
+        await q.save.run(idx, status, status === "active" ? nextAt : null, JSON.stringify(sent), JSON.stringify(vars), now, row.lead_id);
+        return out;
+      }
+      const outreach = {
+        series: OUT.series,
+        active: outActive,
+        enroll: outEnroll,
+        settings: outSettings,
+        saveSettings: async (s) => setKv("outreach-settings", Object.assign(await outSettings(), s)),
+        sample: (seq, key) => {
+          const S = OUT.series[seq], step = S && S.steps.find((x) => x.key === key);
+          return step ? outRender(seq, step, {}, null) : null;
+        }
+      };
       async function start(leadId, kind, email, d) {
         const seq = pick(kind, d || {});
         if (!seq || !SEQ[seq]) return null;
@@ -16533,6 +16758,7 @@ var require_leads = __commonJS({
         now = now || Date.now();
         const row = await q.get.get(leadId);
         if (!row || !["active", "waiting"].includes(row.status)) return [];
+        if (OUT.series[row.seq]) return outAdvance(row, now);
         await loadSettings();
         const steps = SEQ[row.seq] ? SEQ[row.seq].steps : [];
         const stop2 = (status2) => q.save.run(row.idx, status2, null, row.sent, row.vars, now, leadId);
@@ -16627,9 +16853,9 @@ var require_leads = __commonJS({
       async function info(leadId) {
         const row = await q.get.get(leadId);
         if (!row) return null;
-        const steps = SEQ[row.seq] ? SEQ[row.seq].steps : [];
+        const S = SEQ[row.seq] || OUT.series[row.seq], steps = S ? S.steps : [];
         const v = JSON.parse(row.vars || "{}");
-        return { seq: row.seq, name: SEQ[row.seq] ? SEQ[row.seq].name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || "{}")), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
+        return { seq: row.seq, name: S ? S.name : row.seq, status: row.status, next_at: row.next_at, sent: Object.keys(JSON.parse(row.sent || "{}")), total: steps.length, next: steps[row.idx] ? steps[row.idx].key : null, vars: v };
       }
       async function sample(seq, key) {
         const S = SEQ[seq], step = S && S.steps.find((x) => x.key === key);
@@ -16648,7 +16874,7 @@ var require_leads = __commonJS({
         const row = { lead_id: 0, seq, name: "Hannah Lees", vars: JSON.stringify(v), sent: "{}", start: now };
         return render(row, step, context(row, now, false));
       }
-      return { series: SEQ, sample, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async (s) => {
+      return { series: SEQ, outreach, sample, start, advance, run, setVars, unsubscribe, stop, info, settings, loadSettings, saveSettings: async (s) => {
         await loadSettings();
         await setKv("lead-settings", Object.assign({}, current, s));
         await loadSettings();
@@ -18214,6 +18440,8 @@ var require_admin_content = __commonJS({
       async function catalogue() {
         const out = [];
         for (const [key, sq] of Object.entries(leads.series || {})) for (const st of sq.steps) out.push({ id: "lead." + key + "." + st.key, group: "lead", name: sq.name + " \xB7 " + st.key, subject: (await leads.sample(key, st.key) || {}).subject, series: sq.name, step: st.key, when: whenLead(key, st.key), live: true });
+        const O = leads.outreach;
+        if (O) for (const [key, sq] of Object.entries(O.series)) for (const st of sq.steps) out.push({ id: "out." + key + "." + st.key, group: "out", name: sq.name.replace(/:.*/, "") + " \xB7 " + st.key, subject: st.subject, series: sq.name, step: st.key, when: (O.active(key) ? "On" : "Inactive draft, cannot send") + " \xB7 day " + st.day + " \xB7 for " + sq.sources.join(", ") + " leads", live: O.active(key) });
         for (const d of campaigns.designs || []) out.push({ id: "camp." + d.key, group: "camp", name: d.name, subject: d.subject, when: d.when, live: false, campaign: d.key });
         for (const [f, group, subject, when, live] of FILES) out.push({ id: "tpl." + f, group, name: titleOf(f), subject, when, live, file: f });
         return out;
@@ -18221,6 +18449,7 @@ var require_admin_content = __commonJS({
       const whenLead = (seq, k) => k === "E1" ? "Straight after the form" : "Later in the series, timed from the form";
       const GROUPS = [
         ["lead", "To leads: automatic follow-up after a website form", "Each website form starts its own series. They send by themselves; see Leads for who is in which."],
+        ["out", "To imported leads: outreach sequences (inactive drafts)", "Drafts for imported leads, by source tag. They cannot send until the series is switched on in the code. Merge fields stay in curly brackets here."],
         ["camp", "To hosts and leads: designed marketing campaigns", "Ready-made campaigns. Open one in Email campaigns to fill in the details and send it."],
         ["host", "To hosts: onboarding and account emails", "Sent to each host about their own account."],
         ["guest", "To guests: from each host\u2019s booking site", "Sent in the host\u2019s name to their guests."],
@@ -18230,6 +18459,10 @@ var require_admin_content = __commonJS({
         let m;
         if (m = id.match(/^lead\.([a-z]+)\.([A-Za-z0-9]+)$/)) {
           const r = await leads.sample(m[1], m[2]);
+          return r && { subject: r.subject, html: r.html };
+        }
+        if ((m = id.match(/^out\.([a-z-]+)\.([A-Z0-9]+)$/)) && leads.outreach) {
+          const r = leads.outreach.sample(m[1], m[2]);
           return r && { subject: r.subject, html: r.html };
         }
         if (m = id.match(/^camp\.([a-z0-9-]+)$/)) {
@@ -23595,6 +23828,10 @@ Disallow: /
         if (p === "/admin/hostmail/run" && cfg.testClock && await isAdmin(req)) {
           const b = await jsonBody(req, 1e3);
           return json(res, { sent: await hostMail.run(+b.at || Date.now()) });
+        }
+        if (p === "/admin/leads/outreach/enroll" && cfg.testClock && await isAdmin(req)) {
+          const b = await jsonBody(req, 1e3);
+          return json(res, await leads.outreach.enroll(+b.id, +b.at || void 0));
         }
         if (p === "/admin/leads/run" && cfg.testClock && await isAdmin(req)) {
           const b = await jsonBody(req, 1e3);
