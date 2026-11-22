@@ -51,10 +51,16 @@ module.exports = {
   jobsKey: E.JOBS_KEY || '',
   secret: secret(),
   secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? 'https:' : '')),
+  outreachTestOn: E.ALLOW_TEST_CLOCK === '1' ? String(E.OUTREACH_TEST_ON || '').split(',').map(x => x.trim()).filter(Boolean) : [], // tests only: switch outreach drafts on
   testClock: E.ALLOW_TEST_CLOCK === '1', // tests only: lets /admin/leads/run move the lead-email clock forward
   // A host's own domain: what their DNS should point at (defaults to the BASE_URL host), plus Fly.io certificates
   domains: { target: E.CUSTOM_DOMAIN_TARGET || '', ips: (E.CUSTOM_DOMAIN_IPS || '').split(',').map(x => x.trim()).filter(Boolean), flyToken: E.FLY_API_TOKEN || '', flyApp: E.FLY_APP_NAME || '',
     get fakeDns() { try { return E.ALLOW_TEST_CLOCK === '1' && E.DNS_FAKE_FILE ? JSON.parse(require('fs').readFileSync(E.DNS_FAKE_FILE, 'utf8')) : null; } catch (_) { return {}; } } },
+  // Buying new domains for hosts through our 20i reseller account (server/registrar.js). Off until TWENTYI_API_KEY is set.
+  registrar: { key: (E.TWENTYI_API_KEY || '').trim(), apiBase: E.TWENTYI_API_BASE, packageId: (E.TWENTYI_PACKAGE_ID || '').trim(),
+    tlds: (E.DOMAIN_TLDS || 'co.uk,uk,com').split(',').map(x => x.trim().replace(/^\./, '').toLowerCase()).filter(Boolean),
+    perAccount: Math.max(1, +(E.DOMAINS_PER_ACCOUNT || 1)), privacy: E.DOMAIN_PRIVACY === '1',
+    renewal: E.DOMAIN_RENEWAL === 'charge' ? 'charge' : 'included', renewalPrice: num(E.DOMAIN_RENEWAL_PRICE, 0) },
   legalReviewed: /^\d{4}-\d{2}-\d{2}$/.test(E.LEGAL_REVIEWED || '') ? E.LEGAL_REVIEWED : '', // the date a solicitor signed off /privacy and /terms
   backupKeep: Math.max(1, +(E.BACKUP_KEEP || 14)),
   leads: { from: E.LEADS_FROM || '', signoff: E.LEADS_SIGNOFF || 'The Bookingbooster team' },
@@ -75,5 +81,5 @@ module.exports = {
   // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
   // is held for refunds, and the smallest payout (pence).
   affiliate: { rate: Math.max(0, Math.min(100, +(E.AFFILIATE_RATE || 25))), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
-  icalEveryMin: +(E.ICAL_SYNC_MINUTES || 15),
+  icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
 };

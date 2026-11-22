@@ -8,7 +8,7 @@
   const reduced = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const TABS = [['today', 'Today', 'home'], ['calendar', 'Calendar', 'cal'], ['inbox', 'Inbox', 'inbox'], ['guests', 'Guests', 'users'], ['grow', 'Grow', 'chart']];
   const TAB_LABEL = Object.fromEntries(TABS.map(t => [t[0], t[1]]));
-  const CHANNELS = ['cm', 'airbnb', 'vrbo', 'booking']; // optional calendar sync links: dates booked there arrive as blocks
+  const CHANNELS = BB.SYNC_IDS; // optional calendar sync links: dates booked there arrive as blocks
 
   /* ---------- small data helpers ---------- */
   const lastMsg = t => t.messages[t.messages.length - 1] || null;
@@ -57,8 +57,8 @@
     if (!real) return 0;
     return seg === 'past' ? Math.max(real, 412) : seg === 'repeat' ? Math.max(real, 212) : real;
   }
-  const SEG_ORDER = ['repeat', 'recent', 'past', 'pets', 'lapsed'];
-  const SEG_SHORT = { past: 'All past guests', repeat: 'Repeat guests', pets: 'Pet owners', recent: 'Last 12 months', lapsed: 'Lapsed 6+ months' };
+  const SEG_ORDER = ['repeat', 'recent', 'past', 'pets', 'lapsed', 'list'];
+  const SEG_SHORT = { past: 'All past guests', repeat: 'Repeat guests', pets: 'Pet owners', recent: 'Last 12 months', lapsed: 'Lapsed 6+ months', list: 'Everyone on your list' };
   const TPL = [['gap', 'Gap nights'], ['comeback', 'Come-back offer'], ['holiday', 'Holiday dates'], ['pets', 'Bring the dog']];
 
   /* AI-written campaign copy from the calendar and listing facts. v picks a rewrite. */

@@ -62,8 +62,10 @@ const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
+const registrar = require('./registrar')({ cfg, db, ws, stripe, domains, log });
 const backup = require('./backup')({ db, cfg, log });
 const hostMail = require('./host-emails')({ db, cfg, msg, auth, ws, urls, leads, log });
+const signin = require('./signin')({ cfg, auth, msg, log });
 const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
 const campaignsAdmin = require('./campaigns-admin');
 const flowsAdmin = require('./flows-admin');
@@ -146,7 +148,9 @@ function publicBoot(w, mode, extra) {
 /* ---------------- property site & trip pages ---------------- */
 // A live host's sites stay offline to guests until the first payment (only when Stripe is on).
 // The signed-in host can still preview their own site on the main domain.
-function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; const st = (w.row || {}).billing_status; return !st || st === 'trial'; }
+// Not paid yet, or the plan was cancelled: the site is offline to guests and the console shows the payment page.
+const offPlan = st => !st || st === 'trial' || st === 'cancelled';
+function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; return offPlan((w.row || {}).billing_status); }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
 // Search engines, with no sign-in for the host: every live home's site is submitted to Google Search Console through our
@@ -254,6 +258,7 @@ async function publicBook(req, res, w) {
   const p = w.state.properties.find(q => q.id === x.propertyId && q.published !== false); if (!p) throw err(404, 'That home is not taking bookings.');
   x.source = ['google', 'ai', 'campaign', 'referral'].includes(input.source) ? input.source : (input.source === 'guest-app' ? 'guest-app' : 'website');
   x.channel = 'direct';
+  await effects.freshen(w, p.id); // re-read Airbnb and the rest first if they were not checked in the last few minutes
   const ready = stripeReady(w), how = pub.guestPay(w.state);
   // The host chose how guests pay. A bank-transfer-only home turns away card checkouts, and the other way round.
   if (kind === 'transfer' && how === 'card') return json(res, { ok: false, error: 'This home takes card payments only. Pay by card or send a booking request.' });
@@ -320,8 +325,11 @@ async function stripeWebhook(req, res) {
     }
     if (ev.type === 'customer.subscription.updated') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await flows.cancelling(r.id, o); } // cancel requested: offer a pause
     if (['invoice.paid', 'charge.refunded', 'charge.dispute.closed'].includes(ev.type)) await aff.stripeEvent(ev, async c => { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(c); return r && r.id; });
-    if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer); if (r) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
-  } catch (e) { log('webhook', ev.type, e.message); }
+    if (ev.type === 'customer.subscription.deleted') { const r = await db.prepare('SELECT id FROM workspaces WHERE stripe_customer = ?').get(o.customer);
+      // An old subscription ending after the host has already restarted on a new one must not switch the site off.
+      let other = false; if (r) { try { const l = await stripe.api('GET', '/subscriptions', { customer: o.customer, status: 'all', limit: 20 }); other = (l.data || []).some(x => x.id !== o.id && ['active', 'trialing', 'past_due'].includes(x.status)); } catch (e) { log('webhook', 'subscriptions', e.message); } }
+      if (r && !other) await ws.setMeta(r.id, { billing_status: 'cancelled' }); }
+  } catch (e) { log('webhook', ev.type, e.message); return json(res, { error: 'not processed, retry' }, 500); } // a 500 makes Stripe send it again; every step above is safe to repeat
   json(res, { received: true });
 }
 async function markStripe(wid, on, bank) {
@@ -341,6 +349,15 @@ async function signup(req, res) {
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
   const ref = await aff.forSignup(req, b.ref, email); // the partner who referred them, if any
   const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
+  // A new domain to buy for them: check it and the registration contact before anything is created.
+  const buyDomain = registrar.enabled() && b.domainMode === 'new' && b.property && String(b.property.domain || '').toLowerCase().trim();
+  const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith('.' + cfg.sitesDomain)) && !ws.isOurs(buyDomain);
+  if (wantsBuy) {
+    const bad = registrar.problem(buyDomain); if (bad) throw err(400, bad);
+    const c = registrar.contact({ name, email }, b.registrant || {}); if (c.err) throw err(400, c.err);
+    let s = null; try { s = await registrar.search([buyDomain]); } catch (e) { log('signup domain search', e.message); }
+    if (s && s[0] && !s[0].ok) throw err(409, buyDomain + ' has just been taken. Go back to the domain step and pick another.');
+  }
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
   const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
@@ -350,6 +367,11 @@ async function signup(req, res) {
     p.reviews = 0; p.rating = 0; // reviews are earned here, never copied in
     p.domain = String(p.domain || '').toLowerCase().replace(/[^a-z0-9.-]/g, '').slice(0, 80);
     await ws.act(wid, 'addProperty', [p]);
+    if (wantsBuy) {
+      const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
+      const o = await registrar.order(wid, pid, buyDomain, { name, email }, Object.assign({ organisation: a.business }, b.registrant || {}));
+      if (o.err) log('signup domain', wid, buyDomain, o.err);
+    }
     if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
   }
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
@@ -362,12 +384,13 @@ async function signup(req, res) {
     return json(res, { ok: true, redirect: to }, 200, set);
   }
   ws.defer(welcome(wid), 'welcome');
+  if (wantsBuy) ws.defer(registrar.due(wid), 'domain'); // no card billing on this server: buy it now
   json(res, { ok: true, redirect: '/app?welcome=1' }, 200, set);
 }
 // Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
 async function planCheckout(w) {
   const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
-  return stripe.subscribe({ customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
+  return stripe.subscribe({ customer: r.stripe_customer || undefined, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
 }
 // The plan is paid (from the webhook or the return from Checkout, whichever comes first): open the console and say welcome once.
 async function planPaid(wid, customer, plan) {
@@ -375,17 +398,20 @@ async function planPaid(wid, customer, plan) {
   await ws.setMeta(wid, { billing_status: 'active', stripe_customer: customer, plan });
   await ws.withWs(wid, BB => { const a = BB.store.get().account; if (plan) a.plan = plan; a.billing = 'active'; BB.store.commit({}); });
   if (first) { ws.defer(welcome(wid), 'welcome'); ws.defer(effects.siteLive(wid), 'site-live'); } // the "site is live" email waits for payment too
+  ws.defer(registrar.due(wid), 'domain'); // a new domain chosen at sign-up is only bought once the plan is paid
 }
 // Hosts who have not paid yet only see the payment page, their billing and their account. Team members are let through.
 const PAY_OPEN = ['/app/pay', '/app/pay/done', '/app/billing', '/app/billing/start', '/app/billing/portal', '/app/account'];
 async function mustPay(req, w) {
   if (!stripe.enabled || w.kind !== 'live') return false;
-  const r = await ws.row(w.id); if (r && r.billing_status && r.billing_status !== 'trial') return false;
+  const r = await ws.row(w.id); if (r && !offPlan(r.billing_status)) return false;
   return !await isAdmin(req);
 }
 function payPage(w, note) {
-  const s = w.state, price = 200, due = s.account.annual ? '£' + price * 10 + ' for your first year' : '£' + price + ' for your first month';
-  return authPage('Start your plan', '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>' +
+  const s = w.state, price = 200, ended = (w.row || {}).billing_status === 'cancelled';
+  const due = s.account.annual ? '£' + price * 10 + (ended ? ' for the year' : ' for your first year') : '£' + price + (ended ? ' for the month' : ' for your first month');
+  return authPage(ended ? 'Restart your plan' : 'Start your plan', (ended ? '<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay ' + due + ' to restart your plan. Everything you set up is still here.</p>'
+    : '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>') +
     (note ? '<p class="ok" role="status">' + E(note) + '</p>' : '') +
     '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? 'the year' : 'the first month') + ' today, then it renews automatically. No commission on any booking. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '</div>' +
     '<form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form>' +
@@ -409,6 +435,7 @@ function loginForm(o) {
   o = o || {};
   return authPage('Sign in', CLEAR_OFFLINE + '<h1>Sign in</h1><p>Your console, bookings and guests.</p>' + (o.err ? '<p class="err" role="alert">' + E(o.err) + '</p>' : '') + (o.ok ? '<p class="ok">' + E(o.ok) + '</p>' : '') +
     '<form method="post" action="/login"><input type="hidden" name="next" value="' + E(o.next || '/app') + '"><label>Email<input name="email" type="email" autocomplete="email" required value="' + E(o.email || '') + '"></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Sign in</button></form>' +
+    '<p style="margin:12px 0 0;text-align:center"><a href="/login/email">Email me a sign-in link instead</a></p>' +
     '<div class="links"><a href="/forgot">Forgot your password?</a><a href="/start">Create an account</a></div><div class="card"><b>Just looking?</b><p style="margin:6px 0 0">Try the <a href="/demo">full demo</a> with a sample host account. Nothing you do there is real.</p></div>');
 }
 
@@ -510,10 +537,12 @@ async function route(req, res) {
     const step = ['checkin', 'messages', 'guide', 'checkout', 'trip'].includes(u.searchParams.get('step')) ? u.searchParams.get('step') : (u.searchParams.get('done') || u.searchParams.get('paid') ? 'done' : null);
     return tripPage(res, w, b, k, step);
   }
-  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)\.ics$/))) {
+  // <token>.ics carries direct bookings and blocks made here; <token>.<calendar>.ics (for example .airbnb.ics) also
+  // carries the dates read from every other calendar, so Airbnb, Vrbo and Booking.com block each other through us.
+  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z]+))?\.ics$/))) {
     const r = await ws.bySlug(mm[1]); const pid = decodeURIComponent(mm[2]);
-    if (!r || !auth.verify(mm[3], 'ical', r.id, pid)) return send(res, 404, 'Not found', 'text/plain');
-    const w = await ws.open(r.id); w.catchUp(); const f = ical.feed(w.state, pid, MAIN_HOST); if (!f) return send(res, 404, 'Not found', 'text/plain');
+    if (!r || !auth.verify(mm[3], 'ical', r.id, pid) || (mm[4] && !ical.CHANNELS.includes(mm[4]))) return send(res, 404, 'Not found', 'text/plain');
+    const w = await ws.open(r.id); w.catchUp(); const f = ical.feed(w.state, pid, MAIN_HOST, mm[4]); if (!f) return send(res, 404, 'Not found', 'text/plain');
     return send(res, 200, f, 'text/calendar; charset=utf-8', { 'cache-control': 'no-cache', 'content-disposition': 'inline; filename="' + pid + '.ics"' });
   }
   // Campaign click and open tracking: one count per guest, signed links only.
@@ -649,7 +678,7 @@ async function route(req, res) {
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
       head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
-      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
+      boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: '/api/domains/search', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (m === 'GET' && Object.hasOwn(answers.PAGES, p)) { const a = answers.render(cfg.baseUrl, p); return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: 'read', index: true }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' }); }
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
@@ -663,6 +692,14 @@ async function route(req, res) {
   if (p === '/llms-full.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()) + '\n---\n\n' + answers.fullText(cfg.baseUrl), 'text/plain; charset=utf-8');
   if (p === '/' + ownIndexKey() + '.txt') return send(res, 200, ownIndexKey(), 'text/plain; charset=utf-8');
   if (p === '/api/signup' && m === 'POST') return await signup(req, res);
+  // Sign-up domain step: is this name free to register? { live: false } when buying domains is switched off.
+  if (p === '/api/domains/search' && m === 'GET') {
+    if (!auth.limit('dsearch:' + ip(req), 60, 3600e3)) throw err(429, 'Too many searches. Try again in a few minutes.');
+    if (!registrar.enabled()) return json(res, { live: false });
+    const names = String(u.searchParams.get('names') || '').split(',').slice(0, 8);
+    try { return json(res, { live: true, results: await registrar.search(names) }); }
+    catch (e) { log('domain search', e.message); throw err(502, 'We could not check domains just now. Try again in a minute.'); }
+  }
   if (p === '/admin') return await adminPage(req, res);
   if (p === '/admin/affiliates' || p.startsWith('/admin/affiliates/')) { if (!await isAdmin(req)) return notFound(res); if (await aff.admin(req, res, p, m, ((await me(req)) || {}).email)) return; return notFound(res); }
   if (m === 'GET' && (p === '/admin/leads' || p === '/admin/settings')) return await adminPage(req, res, '', p.slice(7));
@@ -674,7 +711,7 @@ async function route(req, res) {
     if (hm && !hm[2] && m === 'GET') return await U.detailPage(res, hm[1]);
     if (hm && hm[2] && m === 'POST') { // the team sends the host the same reset link as /forgot
       const r0 = await db.prepare('SELECT email FROM users WHERE workspace_id = ? ORDER BY created_at LIMIT 1').get(hm[1]); const r = r0 && await auth.startReset(r0.email);
-      if (r) { const link = cfg.baseUrl + '/reset?t=' + r.token; await msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: 'Reset your Bookingbooster password', text: 'The Bookingbooster team sent you a link to set a new password. It works for one hour: ' + link + '\n\nIf you did not ask for this, ignore this email.', meta: { template: 'reset', team: true } }); log('admin', 'password reset sent for', hm[1]); }
+      if (r) { await signin.sendReset(r, req, true); log('admin', 'password reset sent for', hm[1]); }
       return await U.detailPage(res, hm[1], r ? 'Password reset link sent to ' + r.user.email + '. It works for one hour.' : '', r ? '' : 'This account has no sign-in email.');
     }
     return notFound(res);
@@ -691,7 +728,9 @@ async function route(req, res) {
   }
   if (p.startsWith('/admin/') && m === 'POST') {
     if (p === '/admin/hostmail/run' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await hostMail.run(+b.at || Date.now()) }); } // test servers only
+    if (p === '/admin/leads/outreach/enroll' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, await leads.outreach.enroll(+b.id, +b.at || undefined)); } // test servers only, until the outreach series are switched on
     if (p === '/admin/leads/run' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await leads.run(+b.at || Date.now()) }); } // test servers only: run the clock forward
+    if (p === '/admin/leads/import') return await leadImportPost(req, res);
     return await adminPost(req, res, p);
   }
   if (p === '/api/leads' && (m === 'POST' || m === 'OPTIONS')) return lead(req, res);
@@ -723,11 +762,13 @@ async function route(req, res) {
     const next = /^\/app(\/|$|\?)/.test(f.next || '') && f.next !== '/app' ? f.next : (await isAdminEmail(user.email) ? '/admin' : '/app');
     return redirect(res, next, { 'set-cookie': cookie('bb_s', await auth.startSession(user.id), 30 * 86400) });
   }
+  if (p.startsWith('/login/') && await signin.route(req, res, p, m, u, { authPage, formBody, send, redirect, ip,
+    signIn: async (r, user) => redirect(r, await isAdminEmail(user.email) ? '/admin' : '/app', { 'set-cookie': cookie('bb_s', await auth.startSession(user.id), 30 * 86400) }) })) return;
   if (p === '/logout' && m === 'POST') { await auth.endSession(cookies(req).bb_s); return redirect(res, '/login', { 'set-cookie': cookie('bb_s', '', 0) }); }
   if (p === '/forgot' && m === 'GET') return send(res, 200, authPage('Reset password', '<h1>Reset your password</h1><p>We will email you a link.</p><form method="post"><label>Email<input name="email" type="email" required autocomplete="email"></label><button>Email me a link</button></form>'));
   if (p === '/forgot' && m === 'POST') {
     const f = await formBody(req);
-    if (auth.limit('forgot:' + ip(req), 5, 3600e3)) { const r = await auth.startReset(f.email); if (r) { const link = cfg.baseUrl + '/reset?t=' + r.token; msg.sendEmail({ workspaceId: r.user.workspace_id, to: r.user.email, subject: 'Reset your Bookingbooster password', text: 'Reset your password within the hour: ' + link + '\n\nIf you did not ask for this, ignore this email.', meta: { template: 'reset' } }); } }
+    if (auth.limit('forgot:' + ip(req), 5, 3600e3)) { const r = await auth.startReset(f.email); if (r) signin.sendReset(r, req).catch(e => log('signin', 'reset email failed', e.message)); }
     return send(res, 200, authPage('Check your email', '<h1>Check your email</h1><p>If there is an account for that address, a reset link is on its way. It works for one hour.</p>'));
   }
   if (p === '/reset') {
@@ -771,7 +812,7 @@ async function route(req, res) {
     if (p.startsWith('/app/account/') && m === 'POST') return accountPost(req, res, p, w, s);
     if (p === '/app/billing/start' && m === 'POST') {
       if (!stripe.enabled) return redirect(res, '/app/billing?msg=stripe');
-      const r = await ws.row(w.id); if (r.stripe_customer && r.billing_status && r.billing_status !== 'trial') return redirect(res, '/app/billing');
+      const r = await ws.row(w.id); if (r.stripe_customer && !offPlan(r.billing_status)) return redirect(res, '/app/billing');
       return redirect(res, (await planCheckout(w)).url);
     }
     if (p === '/app/billing/topup' && m === 'POST') {
@@ -805,7 +846,9 @@ async function route(req, res) {
         if (iid === 'lock' && !cur.connected) throw err(400, 'Paste your Nuki API token to connect your locks.');
         if (iid === 'lock' && cur.connected) await secrets.del(w.id, 'nuki');
         if (iid === 'sms' && !cur.connected && !cfg.sms.sid) { /* allowed: texts stay in the outbox until Twilio keys are set */ }
-        if (cur.addon && !cur.connected) throw err(400, 'Paste a calendar link to turn on calendar sync.');
+        if (cur.api && !cur.connected) throw err(400, 'Add your ' + cur.name + ' key to connect it.');
+        if (cur.addon && !cur.api && !cur.connected) throw err(400, 'Paste a calendar link to turn on calendar sync.');
+        if (cur.api && cur.connected) await effects.channels.disconnect(w, iid); // reopens the dates we closed there and forgets the key
       }
       if (name === 'toggleIntegration' && j.args && j.args[0] === 'stripe' && stripe.enabled) { const on = w.state.integrations.find(i => i.id === 'stripe').connected; if (!on) return json(res, { state: w.state, version: await ws.version(w.id), redirect: '/app/stripe/connect', notice: 'Opening Stripe to connect your account' }); }
       const r = await ws.act(w.id, name, Array.isArray(j.args) ? j.args : []);
@@ -870,14 +913,44 @@ async function route(req, res) {
     if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
-    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => ({ propertyId: x.id, name: x.name, url: urls.ical(w, x) })) });
+    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
+    // Calendar sync add-on: connect a channel manager with the host's own API key (kept encrypted, never sent to the browser).
+    if (p === '/app/channel/connect' && m === 'POST') {
+      const j = await jsonBody(req, 4e3); const id = String(j.id || ''); const A = effects.channels.ADAPTERS[id];
+      if (!A) throw err(404, 'Unknown channel manager');
+      if (!auth.limit('cm:' + w.id, 10, 600e3)) throw err(429, 'Too many tries. Wait a few minutes and try again.');
+      const input = {}; for (const f of A.fields) input[f.key] = String((j.creds || {})[f.key] || '').trim().slice(0, 500);
+      let listings; try { listings = await effects.channels.connect(w, id, input); } catch (e) { throw err(e.status && e.status < 500 ? 400 : 502, e.message); }
+      effects.channels.sync(w, { id }).catch(e => log('channels', e.message));
+      return json(res, { state: (await ws.open(w.id)).state, version: await ws.version(w.id), listings });
+    }
     return notFound(res);
   }
   return notFound(res);
 }
 
 /* ---------------- leads from the marketing sites ---------------- */
-const leadIns = db.prepare('INSERT INTO leads (kind, email, name, data, created_at) VALUES (?, ?, ?, ?, ?)');
+const leadIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at, source, has_email) VALUES (?, ?, ?, ?, ?, 'website', 1)");
+const leadImport = require('./lead-import')({ db });
+// The team's CSV import (admin only). A plain form upload (multipart) from /admin/leads, or JSON { csv, source, dry_run } for scripts.
+// Imported leads are stored only: they are not started on any follow-up series and team campaigns do not reach them.
+async function leadImportPost(req, res) {
+  if (!await isAdmin(req)) return notFound(res);
+  const ct = String(req.headers['content-type'] || ''); let f;
+  try {
+    if (ct.includes('multipart/form-data')) f = require('./lead-import').multipart(Buffer.from(await body(req, 8e6), 'utf8'), ct) || {};
+    else if (ct.includes('json')) f = await jsonBody(req, 8e6);
+    else f = Object.fromEntries(new URLSearchParams(await body(req, 8e6)));
+  } catch (e) { return ct.includes('json') ? json(res, { error: e.message }, e.status || 400) : await adminPage(req, res, '', 'leads', e.status === 413 ? 'That file is over 8 MB. Split it and import each part.' : 'Could not read the upload.'); }
+  const dryRun = ['1', 'true', 'on', 'yes'].includes(String(f.dry_run || '').toLowerCase()) || f.dry_run === true;
+  const r = await leadImport.importCsv(f.csv || f.file || '', { source: f.source, dryRun });
+  if (!r.error) log('leads', 'import', r.batch, r.source, (dryRun ? 'dry run ' : '') + r.loaded + ' loaded, ' + r.rejected + ' rejected');
+  if (ct.includes('json')) return json(res, r, r.error ? 400 : 200);
+  if (r.error) return await adminPage(req, res, '', 'leads', r.error);
+  const why = Object.entries(r.reasons).map(([k, n]) => n + ' ' + leadImport.REASONS[k].toLowerCase()).join(', ');
+  return await adminPage(req, res, (r.dryRun ? 'Check only, nothing saved: ' + r.loaded + ' of ' + r.total + ' rows would load' : 'Imported ' + r.loaded + ' of ' + r.total + ' rows as ' + r.source) +
+    ' (' + r.has_email + ' with email, ' + r.no_email + ' phone only).' + (r.rejected ? ' Rejected ' + r.rejected + ': ' + why + '.' : '') + (r.dryRun ? '' : ' None of them get emails.'), 'leads');
+}
 // Team view of leads and accounts, for the emails listed in ADMIN_EMAILS.
 // Also config:admins in the kv table (comma separated), so team members can be added without changing the server's settings.
 const isAdminEmail = async email => { email = String(email || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
@@ -913,7 +986,7 @@ async function adminPage(req, res, note, section, err) {
     let x = {}; try { x = JSON.parse(l.data || '{}'); } catch (_) {}
     const f = info.get(l.id);
     const prog = f ? '<b>' + E(f.name) + '</b><div style="margin:4px 0">' + A.pill(statusPill[f.status] || 'muted', status[f.status] || f.status) + '</div><small>' + f.sent.length + ' of ' + f.total + ' sent' + (f.status === 'active' && f.next_at ? ' · next ' + d(f.next_at) : '') + (f.status === 'waiting' && f.next ? ' · next: ' + E(f.next) : '') + '</small>' : '<small>No emails</small>';
-    return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + '</td><td>' + A.pill('muted', l.kind) + '</td><td><b>' + E(l.email) + '</b><small>' + E(l.name || '') + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !['referrer'].includes(k)).map(([k, v]) => k + ': ' + v).join(' · ')) + '</td><td>' + prog + '</td><td style="min-width:240px">' + leadActions(l) + '</td></tr>';
+    return '<tr><td class="num" style="white-space:nowrap">' + d(l.created_at) + '</td><td>' + A.pill('muted', l.kind) + (l.source && l.source !== 'website' ? '<small>' + E(l.source) + '</small>' : '') + '</td><td><b>' + E(l.email || l.phone || '') + '</b><small>' + E(l.name || '') + (l.email && l.phone ? ' · ' + E(l.phone) : '') + (l.consent_at ? ' · consent ' + E(l.consent_at) : '') + '</small></td><td class="wrap">' + E(Object.entries(x).filter(([k]) => !['referrer'].includes(k)).map(([k, v]) => k + ': ' + v).join(' · ')) + '</td><td>' + prog + '</td><td style="min-width:240px">' + leadActions(l) + '</td></tr>';
   };
   const LEAD_HEADS = ['When', 'Form', 'Who', 'Answers', 'Emails', ''];
   const hostRow = a => {
@@ -932,8 +1005,13 @@ async function adminPage(req, res, note, section, err) {
       A.field('key', '', 'Stripe secret key', { type: 'password', ph: 'sk_live_...', req: true, extra: ' autocomplete="off" spellcheck="false"' }) + '<div class="row"><button class="btn primary sm">Save and connect</button></div></form></details>' : ''));
   const shell = o => send(res, 200, A.shell(Object.assign({ email: who, waiting: waiting.length, note, err }, o)), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
 
-  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms. Their follow-up emails go out by themselves; anything marked “Waiting for you” needs a person.',
-    body: '<section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), 'No leads yet. They arrive here from the forms on the website.') + '</section>' });
+  const importCard = A.card('Import leads from a CSV', 'Stored only, no emails', '<form class="adm-form" method="post" action="/admin/leads/import" enctype="multipart/form-data">' +
+    '<small class="adm-help">One row per lead with an email or phone column (an optional consent date column too, e.g. 14/03/2026). Duplicates are skipped by email, then by phone. Imported leads are not started on any email series and campaigns do not reach them.</small>' +
+    '<label>CSV file<input type="file" name="file" accept=".csv,text/csv" required></label>' +
+    '<label>Source<select name="source" required><option value="">Choose…</option>' + leadImport.SOURCES.map(x => '<option value="' + x + '">' + x + '</option>').join('') + '</select></label>' +
+    '<label class="row"><input type="checkbox" name="dry_run" value="1" checked> Check only, do not save</label><div class="row"><button class="btn primary sm">Import</button></div></form>');
+  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms and imports. Website leads get their follow-up emails by themselves; imported leads get none; anything marked “Waiting for you” needs a person.',
+    body: '<details class="adm-x" style="margin-bottom:16px"><summary>' + A.icon('plus') + 'Import leads from a CSV</summary>' + importCard + '</details><section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), 'No leads yet. They arrive here from the forms on the website.') + '</section>' });
   if (section === 'hosts') return shell({ title: 'Host accounts', active: 'hosts', sub: accts.length + ' host accounts · AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + ' a month' + (cfg.credits.markup !== 1 ? ', usage charged at ' + cfg.credits.markup + '× cost' : ', usage charged at cost') + '.',
     body: '<div class="adm-kpis">' + A.kpi('Host accounts', accts.length) + A.kpi('Paying', accts.filter(a => a.billing_status === 'active').length) + A.kpi('Not paid yet', accts.filter(a => !a.billing_status || a.billing_status === 'trial').length) + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' +
       '<section class="a-card a-flush">' + A.table(HOST_HEADS, accts.map(hostRow), 'No host accounts yet.') + '</section>' });
@@ -960,7 +1038,7 @@ async function adminPage(req, res, note, section, err) {
     body: '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
       A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' + await marketingRow(A) +
       '<div class="a-grid adm-top"><div class="a-s8">' + A.card('Waiting for you', waiting.length + ' lead' + (waiting.length === 1 ? '' : 's'), needs, waiting.length ? 'a-flush' : '').replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div>' +
-      '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email) + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
+      '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email || l.phone || '') + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
 }
 // the overview's marketing row: write an email, what is going out on social, and the email library
 async function marketingRow(A) {
@@ -1075,7 +1153,7 @@ async function billingPage(w, sp) {
   const r = await ws.row(w.id); const s = w.state; const price = 200;
   const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
   return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
-    (stripe.enabled ? (r.stripe_customer ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>Start your plan</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
+    (stripe.enabled ? (r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === 'cancelled' ? 'Restart your plan' : 'Start your plan') + '</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
     (credits.enabled ? await creditCard(w, sp) : '') +
     '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
 }
@@ -1149,7 +1227,8 @@ async function runTick(t) {
       if (daily && ai.available().length) { const c = w.state.ai.checkedAt; if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg('ai', effects.aiCheck(w)); }
     } catch (e) { log('job', id, e.message); }
   }
-  if (last.domains === t) bg('domains', checkDomains());
+  if (last.domains === t) { bg('domains', checkDomains()); bg('registrar', registrar.due()); }
+  if (daily) bg('renewals', registrar.renewals(t));
   if (last.events === t && cfg.events.crawl) bg('events', eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 100e3 : 240e3));
   if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists
