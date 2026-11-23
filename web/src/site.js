@@ -11,7 +11,7 @@
   /* ---------- static content ---------- */
   const PLANS = [
     // One plan: a monthly price including VAT. No setup fee.
-    { id: 'growth', name: 'Growth', price: 200, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
+    { id: 'growth', name: 'Growth', price: 197, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
   ];
   const ADDON = { name: 'Calendar sync add-on', price: 15 };
   const plan = id => PLANS.find(p => p.id === id) || PLANS[0];
@@ -31,7 +31,7 @@
     ['What is AI visibility?', 'How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps.'],
     ['How long does setup take?', 'Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week.'],
     ['Who owns the guest list?', 'You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR.'],
-    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is £200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
+    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is £197 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
   ];
 
   /* ---------- small helpers ---------- */
@@ -126,7 +126,7 @@
         '<h1 class="s-h1 s-rise" style="--d:1">Fill your calendar <span class="s-hl">without the 15% fee.</span></h1>' +
         '<p class="s-lead s-rise" style="--d:2">Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Set up for you, with no commission on bookings.</p>' +
         '<div class="s-cta s-rise" style="--d:3"><button class="btn s-yel lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn s-out lg"' + go('live') + '>' + icon('play') + 'Try the live demo</button></div>' +
-        '<p class="s-hero3-price s-rise" style="--d:4"><b>£200 a month. No setup fee.</b> No commission on bookings. Prices include VAT. Cancel anytime.</p>' +
+        '<p class="s-hero3-price s-rise" style="--d:4"><b>£197 a month. No setup fee.</b> No commission on bookings. Prices include VAT. Cancel anytime.</p>' +
       '</div>' +
       '<div class="s-hero3-stage s-rise" style="--d:2" role="img" aria-label="A holiday let booking website, the host app showing today’s bookings, a new direct booking and a ChatGPT recommendation">' +
         frame('shot-site', 'larchfellcabin.co.uk', 's-hero3-browser') + phoneF('phone-today', 's-hero3-phone') +
@@ -232,7 +232,7 @@
         '<div class="s-calc-net"><span data-cv="netLabel">' + (v.net >= 0 ? 'Left over after the plan' : 'Short of covering the plan') + '</span><b class="num" data-cv="net" data-v="' + v.net + '">' + $(v.net) + '</b></div>' +
         '<p class="s-calc-pay" data-cv="pay">' + payLine(v) + '</p>' +
         '<button class="btn accent lg block" data-act="start">Start keeping it' + icon('arrow') + '</button>' +
-        '<p class="s-fine">Estimate only. Uses Airbnb’s host-only fee of 15.5% and the plan’s first year billed monthly (12 months at £200), including VAT.</p>' +
+        '<p class="s-fine">Estimate only. Uses Airbnb’s host-only fee of 15.5% and the plan’s first year billed monthly (12 months at £197), including VAT.</p>' +
       '</div>' +
     '</div></section>';
   }
@@ -359,7 +359,7 @@
   function pricing(inst) {
     const an = inst.st.annual;
     return '<section class="s-sec s-pricing" id="s-pricing-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. £200 a month, with no setup fee. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
+      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. £197 a month, with no setup fee. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
         '</div>' +
       '<div class="s-plans">' + PLANS.map(p => '<article class="s-plan' + (p.hot ? ' hot' : '') + '">' + '' +
         '<h3>' + p.name + '</h3><p class="s-plan-tag">' + p.tag + '</p><div class="s-amt"><b class="num">£' + perMonth(p, an) + '</b><span>/ month</span></div>' +
@@ -656,7 +656,7 @@
           (ready ? '' : '<p class="s-fine">Connect Stripe so guests can pay you. It is the one thing a booking site needs.</p>') +
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
       }
-      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">£200 a month, with no setup fee. Cancel anytime, prices include VAT.</p>' +
+      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">£197 a month, with no setup fee. Cancel anytime, prices include VAT.</p>' +
         '<div class="s-obplans" role="radiogroup" aria-label="Plan">' + PLANS.map(p => '<button class="s-obplan' + (ob.plan === p.id ? ' on' : '') + '" role="radio" aria-checked="' + (ob.plan === p.id) + '" data-pick-plan="' + p.id + '">' +
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
           '<span class="s-amt"><b class="num">£' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' No setup fee.</span>' +

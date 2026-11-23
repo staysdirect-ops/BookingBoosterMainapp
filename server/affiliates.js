@@ -160,14 +160,14 @@ module.exports = function ({ db, cfg, auth, msg, stripe, log, h }) {
   const page = (title, inner, wide) => h.authPage(title + ' · Bookingbooster partners', inner, wide);
   const terms = '<div class="card"><b>How it works</b><ul style="margin:8px 0 0;padding-left:20px;color:var(--mut)">' +
     '<li>You get your own link and a code. Hosts who sign up through either are yours for life.</li>' +
-    '<li>You earn <b>' + pct + '</b> of every plan or package payment they make to us, monthly or yearly, for as long as they keep paying.</li>' +
+    '<li>You earn <b>' + pct + '</b> of every plan payment they make to us, monthly or yearly, for as long as they keep paying.</li>' +
     '<li>Your link is remembered for ' + A.cookieDays + ' days. If a host clicks someone else\'s link later, the latest link counts. A code typed at sign-up always counts.</li>' +
     '<li>Each commission is held for ' + A.holdDays + ' days in case of a refund, then it is yours. If a payment is refunded, the same share of the commission is taken back.</li>' +
     '<li>We pay by bank transfer at the start of each month once you have ' + money(A.minPayout) + ' or more cleared.</li>' +
     '<li>You cannot refer yourself. No spam, no bidding on our name in search ads, and no promising things we do not offer. We can close an account that breaks these rules.</li></ul></div>';
   function landing(o) {
     o = o || {}; const inp = (l, n, t, ac, v) => '<label>' + l + '<input name="' + n + '" type="' + t + '" autocomplete="' + ac + '" value="' + E(v || '') + '" required></label>';
-    return page('Partner programme', '<h1>Earn ' + pct + ' for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. You earn ' + pct + ' of every plan and package payment, for as long as they stay with us.</p>' + terms +
+    return page('Partner programme', '<h1>Earn ' + pct + ' for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. You earn ' + pct + ' of every plan payment, for as long as they stay with us.</p>' + terms +
       (o.err ? '<p class="err" role="alert">' + E(o.err) + '</p>' : '') +
       '<form class="card" method="post" action="/partners/join"><b>Join the programme</b>' + inp('Your name', 'name', 'text', 'name', o.name) + inp('Email', 'email', 'email', 'email', o.email) + inp('Password (at least 10 characters)', 'password', 'password', 'new-password') +
       '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="agree" required style="margin-top:4px">I agree to the programme rules above and the <a href="/terms" target="_blank">terms</a>.</label><button>Get my link</button></form>' +

@@ -6,9 +6,9 @@
 'use strict';
 const crypto = require('crypto');
 
-// One plan: £200 a month, paid from the first month (no setup fee). The calendar sync add-on is £15 a month on top.
+// One plan: £197 a month, paid from the first month (no setup fee). The calendar sync add-on is £15 a month on top.
 const PLANS = [
-  ['GROWTH', 'Bookingbooster Growth', 200],
+  ['GROWTH', 'Bookingbooster Growth', 197],
   ['CALENDAR_SYNC', 'Bookingbooster calendar sync add-on', 15],
 ];
 const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.updated', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid', 'charge.refunded', 'charge.dispute.closed'];
@@ -17,6 +17,28 @@ const CONNECT_EVENTS = ['account.updated'];
 // Creates (or finds) everything. Returns { prices: { STRIPE_PRICE_...: id }, webhookSecret, connectWebhookSecret, endpoints }.
 // recreate: an endpoint that already exists has a signing secret Stripe will not show again, so with recreate it is replaced.
 async function setup(stripe, baseUrl, { recreate } = {}) {
+  async function endpoint(url, events, connect) {
+    const description = connect ? 'Bookingbooster Connect events' : 'Bookingbooster platform events';
+    const all = await stripe.api('GET', '/webhook_endpoints', { limit: 100 });
+    const ex = (all.data || []).find(e => e.url === url && e.description === description);
+    if (ex && !recreate) { await stripe.api('POST', '/webhook_endpoints/' + ex.id, { enabled_events: events }); return { id: ex.id, secret: null }; }
+    if (ex) await stripe.api('DELETE', '/webhook_endpoints/' + ex.id);
+    const e = await stripe.api('POST', '/webhook_endpoints', Object.assign({ url, enabled_events: events, description }, connect ? { connect: true } : {}));
+    return { id: e.id, secret: e.secret };
+  }
+
+  const prices = await makePrices(stripe);
+  const url = baseUrl + '/webhooks/stripe';
+  const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
+  return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
+}
+
+// The plan amounts, kept with the saved setup: when they change, new Stripe prices are made for new sign-ups.
+// Hosts already subscribed stay on the price they signed up at until it is changed for them in Stripe.
+const AMOUNTS = PLANS.map(x => x[0] + '=' + x[2]).join(',');
+
+// Creates (or finds) the monthly and yearly price of each plan.
+async function makePrices(stripe) {
   // The amount is part of the lookup key, so changing a price creates a new Stripe price instead of reusing the old one.
   async function price(env, product, amount, interval) {
     const lookup = 'bb_' + env.toLowerCase() + '_' + interval + '_' + amount;
@@ -29,15 +51,6 @@ async function setup(stripe, baseUrl, { recreate } = {}) {
     const prod = (prods.data || []).find(p => p.metadata && p.metadata.bb_plan === env);
     return prod || stripe.api('POST', '/products', { name, tax_code: 'txcd_10103001', metadata: { bb_plan: env } }); // SaaS, business use
   }
-  async function endpoint(url, events, connect) {
-    const description = connect ? 'Bookingbooster Connect events' : 'Bookingbooster platform events';
-    const all = await stripe.api('GET', '/webhook_endpoints', { limit: 100 });
-    const ex = (all.data || []).find(e => e.url === url && e.description === description);
-    if (ex && !recreate) { await stripe.api('POST', '/webhook_endpoints/' + ex.id, { enabled_events: events }); return { id: ex.id, secret: null }; }
-    if (ex) await stripe.api('DELETE', '/webhook_endpoints/' + ex.id);
-    const e = await stripe.api('POST', '/webhook_endpoints', Object.assign({ url, enabled_events: events, description }, connect ? { connect: true } : {}));
-    return { id: e.id, secret: e.secret };
-  }
 
   const prices = {};
   for (const [env, name, monthly] of PLANS) {
@@ -46,9 +59,7 @@ async function setup(stripe, baseUrl, { recreate } = {}) {
     // yearly: plans are 10 months' price (2 months free); the add-on is 12 × £15
     prices['STRIPE_PRICE_' + env + '_ANNUAL'] = await price(env, prod.id, env === 'CALENDAR_SYNC' ? monthly * 12 : monthly * 10, 'year');
   }
-  const url = baseUrl + '/webhooks/stripe';
-  const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
-  return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
+  return prices;
 }
 
 // The live server side: fills cfg.stripe from the kv table and creates what is missing.
@@ -110,6 +121,14 @@ function auto({ cfg, stripe, db, log }) {
         try { await stripe.api('POST', '/prices/' + s.prices.STRIPE_PRICE_SETUP, { active: false }); log('stripe', 'Archived the old setup fee price'); delete s.prices.STRIPE_PRICE_SETUP; await set.run(KEY, JSON.stringify(s)); }
         catch (e) { log('stripe archive', e.message); }
       }
+      // The plan price changed (e.g. £200 to £197 a month): make the new prices once and use them for new checkouts.
+      if (s.amounts !== AMOUNTS) {
+        try {
+          const was = s.prices, now = await makePrices(stripe);
+          for (const [k, name] of Object.entries(P)) if (cfg.stripe.prices[name] && cfg.stripe.prices[name] === was[k]) delete cfg.stripe.prices[name];
+          s.prices = Object.assign({}, was, now); s.amounts = AMOUNTS; await set.run(KEY, JSON.stringify(s)); log('stripe', 'New plan prices set up: ' + AMOUNTS);
+        } catch (e) { log('stripe prices', e.message); }
+      }
       // New events added since the endpoint was made (refunds, for the partner programme): add them to it once.
       if (s.events !== PLATFORM_EVENTS.join(',') && s.endpoints && s.endpoints[0]) {
         try { await stripe.api('POST', '/webhook_endpoints/' + s.endpoints[0], { enabled_events: PLATFORM_EVENTS }); s.events = PLATFORM_EVENTS.join(','); await set.run(KEY, JSON.stringify(s)); } catch (e) { log('stripe events', e.message); }
@@ -121,7 +140,7 @@ function auto({ cfg, stripe, db, log }) {
     if (envDone) return null; // set by hand in the environment: nothing to do
     try {
       const r = await setup(stripe, cfg.baseUrl, { recreate: true });
-      const saved = { fp: fp(), mode: mode(), at: t, events: PLATFORM_EVENTS.join(','), prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
+      const saved = { fp: fp(), mode: mode(), at: t, amounts: AMOUNTS, events: PLATFORM_EVENTS.join(','), prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
       await set.run(KEY, JSON.stringify(saved)); apply(saved); log('stripe', 'Prices and webhooks set up in ' + mode() + ' mode' + (cfg.stripe.keyName ? ', key from ' + cfg.stripe.keyName : ''));
       return saved;
     } catch (e) {

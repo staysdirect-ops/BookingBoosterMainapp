@@ -109,11 +109,11 @@ test('a failed plan payment emails the host and marks the account, and paying cl
     return t.call('/webhooks/stripe', { body: raw, headers: { 'stripe-signature': 't=' + ts + ',v1=' + sig } });
   };
   const now = Math.floor(Date.now() / 1000);
-  const r = await hook({ type: 'invoice.payment_failed', data: { object: { id: 'in_1', customer: 'cus_1', amount_due: 20000, billing_reason: 'subscription_cycle', created: now, next_payment_attempt: now + 3 * 86400 } } });
+  const r = await hook({ type: 'invoice.payment_failed', data: { object: { id: 'in_1', customer: 'cus_1', amount_due: 19700, billing_reason: 'subscription_cycle', created: now, next_payment_attempt: now + 3 * 86400 } } });
   assert.equal(r.status, 200);
   const m = await t.until(async () => host().find(x => /^Action needed/.test(x.subject)));
   assert.ok(m, 'payment failed email sent');
-  assert.match(m.html, /£200/);
+  assert.match(m.html, /£197/);
   assert.match(m.html, /Visa/);
   assert.match(m.html, /4242/);
   assert.match(m.html, /insufficient funds/);

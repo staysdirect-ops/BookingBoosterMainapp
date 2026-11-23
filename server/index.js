@@ -348,7 +348,7 @@ async function signup(req, res) {
   if (pw.length < 10) throw err(400, 'Use a password of at least 10 characters.');
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
   const ref = await aff.forSignup(req, b.ref, email); // the partner who referred them, if any
-  const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
+  const plan = 'Growth'; // one plan: £197 a month, paid upfront, no setup fee
   // A new domain to buy for them: check it and the registration contact before anything is created.
   const buyDomain = registrar.enabled() && b.domainMode === 'new' && b.property && String(b.property.domain || '').toLowerCase().trim();
   const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith('.' + cfg.sitesDomain)) && !ws.isOurs(buyDomain);
@@ -408,7 +408,7 @@ async function mustPay(req, w) {
   return !await isAdmin(req);
 }
 function payPage(w, note) {
-  const s = w.state, price = 200, ended = (w.row || {}).billing_status === 'cancelled';
+  const s = w.state, price = 197, ended = (w.row || {}).billing_status === 'cancelled';
   const due = s.account.annual ? '£' + price * 10 + (ended ? ' for the year' : ' for your first year') : '£' + price + (ended ? ' for the month' : ' for your first month');
   return authPage(ended ? 'Restart your plan' : 'Start your plan', (ended ? '<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay ' + due + ' to restart your plan. Everything you set up is still here.</p>'
     : '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>') +
@@ -420,7 +420,7 @@ function payPage(w, note) {
 }
 async function welcome(wid) {
   const w = await ws.open(wid); const s = w.state; const p = s.properties[0];
-  const v = { first_name: s.account.owner.split(' ')[0], plan_name: s.account.plan, plan_price: '£200 a month', property_name: p ? p.name : 'your home', go_live_date: 'today', site_url: p ? urls.site(w, p) : cfg.baseUrl, dashboard_url: cfg.baseUrl + '/app', account_url: cfg.baseUrl + '/app', setup_url: cfg.baseUrl + '/app', help_url: cfg.baseUrl + '/help', setup_lead_name: 'The Bookingbooster team', setup_lead_initials: 'BB', company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + '/privacy', unsubscribe_url: cfg.baseUrl + '/app', preferences_url: cfg.baseUrl + '/app' };
+  const v = { first_name: s.account.owner.split(' ')[0], plan_name: s.account.plan, plan_price: '£197 a month', property_name: p ? p.name : 'your home', go_live_date: 'today', site_url: p ? urls.site(w, p) : cfg.baseUrl, dashboard_url: cfg.baseUrl + '/app', account_url: cfg.baseUrl + '/app', setup_url: cfg.baseUrl + '/app', help_url: cfg.baseUrl + '/help', setup_lead_name: 'The Bookingbooster team', setup_lead_initials: 'BB', company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + '/privacy', unsubscribe_url: cfg.baseUrl + '/app', preferences_url: cfg.baseUrl + '/app' };
   await msg.sendEmail({ workspaceId: wid, to: s.account.email, subject: 'Welcome to Bookingbooster', text: 'Welcome, ' + v.first_name + '. Your console: ' + v.dashboard_url, html: msg.template('host-o01-welcome', v), meta: { template: 'welcome' } });
 }
 
@@ -1150,7 +1150,7 @@ async function deleteWorkspace(wid) {
   for (const dir of ['uploads', 'media']) await files.delPrefix(dir + '/' + wid);
 }
 async function billingPage(w, sp) {
-  const r = await ws.row(w.id); const s = w.state; const price = 200;
+  const r = await ws.row(w.id); const s = w.state; const price = 197;
   const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
   return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
     (stripe.enabled ? (r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === 'cancelled' ? 'Restart your plan' : 'Start your plan') + '</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
