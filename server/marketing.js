@@ -4,21 +4,21 @@
 'use strict';
 const { esc } = require('./pages');
 
-const PRICE = { setup: 0, month: 200, year: 2000, addon: 15, homes: 3, aiCredit: 50 };
+const PRICE = { setup: 0, month: 197, year: 1970, addon: 15, homes: 3, aiCredit: 50 };
 const FAQ = [
   ['Do I have to leave Airbnb or Vrbo?', 'No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (£15 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there.'],
   ['How do guests pay?', 'By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout.'],
   ['What is AI visibility?', 'How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps.'],
   ['How long does setup take?', 'Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week.'],
   ['Who owns the guest list?', 'You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR.'],
-  ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is £200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
+  ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is £197 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
 ];
 // Extra answers for search engines and AI assistants. They are true of the product today.
 const MORE = [
   ['What is Bookingbooster?', 'Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission.'],
-  ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking.'],
+  ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £197 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking.'],
   ['Is Bookingbooster a channel manager?', 'No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (£15 a month) keeps your calendars in step so you never double book.'],
-  ['Is there a yearly plan?', 'Yes. The plan is £200 a month, or £2,000 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT.'],
+  ['Is there a yearly plan?', 'Yes. The plan is £197 a month, or £1,970 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT.'],
   ['What AI credit is included?', 'Every plan includes £50 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from £10, and top-ups never expire.'],
   ['Does Bookingbooster do SEO and AI search optimisation?', 'Yes. Every site is built for Google, Google Maps and AI assistants: structured data, an image sitemap, llms.txt, AI crawler access and IndexNow are automatic. A Search health score for each home covers on-page, technical, local, content, image, AEO, GEO, LLMO and Google AI Overviews, drafts the writing from your facts, and checks real answers in ChatGPT, Gemini, Perplexity and Google every week.'],
   ['Who is Bookingbooster for?', 'Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd’s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us.'],
@@ -36,7 +36,7 @@ const STEPS = [
   ['Bookings come direct', 'Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season.'],
 ];
 const TITLE = 'Bookingbooster · Direct booking websites for UK holiday lets';
-const DESCRIPTION = 'Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. £200 a month, with no setup fee. No commission.';
+const DESCRIPTION = 'Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. £197 a month, with no setup fee. No commission.';
 const allFaq = () => FAQ.concat(MORE);
 
 // The brand's live social profiles (the accounts connected in Metricool).

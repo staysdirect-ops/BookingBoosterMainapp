@@ -25,7 +25,7 @@ test('sequence A is 4 emails for scraped leads, B is 3 for Stays Direct and Cont
   assert.deepEqual(A.sources, ['scraped']); assert.deepEqual(B.sources, ['stays-direct', 'contractor-stop']);
   assert.deepEqual(A.steps.map(s => [s.key, s.day]), [['A1', 1], ['A2', 4], ['A3', 9], ['A4', 15]]);
   assert.deepEqual(B.steps.map(s => [s.key, s.day]), [['B1', 1], ['B2', 5], ['B3', 10]]);
-  assert.deepEqual([...A.steps, ...B.steps].map(s => s.subject), ['{property_name}: bookings without the commission', 'What the £200 a month covers', 'Can a guest find {property_name} without a platform?', 'Shall I close this off?',
+  assert.deepEqual([...A.steps, ...B.steps].map(s => s.subject), ['{property_name}: bookings without the commission', 'What the £197 a month covers', 'Can a guest find {property_name} without a platform?', 'Shall I close this off?',
     'A booking site of your own, {first_name}', 'Your guests, your list', 'Last note on this']);
   for (const s of [...A.steps, ...B.steps]) { assert.match(s.body, /^Hi \{first_name\},\n\n/); assert.match(s.body, /\{link\}/); assert.match(s.body, /\{sender_name\}/); }
   assert.match(B.steps[0].body, /You know us from \{brand\}, where \{property_name\} is listed\./);

@@ -27,7 +27,7 @@ test('creates monthly and yearly prices with VAT included (no setup fee), and bo
   const r = await run(); assert.equal(r.code, 0, r.err);
   assert.equal(prices.length, 4); assert.ok(prices.every(p => p.tax === 'inclusive'));
   const amt = k => prices.find(p => p.lookup_key === k).unit_amount;
-  assert.equal(amt('bb_growth_month_200'), 20000); assert.equal(amt('bb_growth_year_2000'), 200000); assert.equal(amt('bb_calendar_sync_year_180'), 18000);
+  assert.equal(amt('bb_growth_month_197'), 19700); assert.equal(amt('bb_growth_year_1970'), 197000); assert.equal(amt('bb_calendar_sync_year_180'), 18000);
   assert.ok(!prices.some(p => /setup/.test(p.lookup_key))); assert.doesNotMatch(r.out, /STRIPE_PRICE_SETUP/);
   assert.equal(hooks.length, 2); assert.ok(hooks.some(h => h.connect)); assert.ok(hooks.every(h => h.url === 'https://app.example.co.uk/webhooks/stripe'));
   assert.match(r.out, /STRIPE_PRICE_GROWTH_ANNUAL=price_\d/); assert.match(r.out, /STRIPE_CONNECT_WEBHOOK_SECRET=whsec_/);

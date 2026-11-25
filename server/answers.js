@@ -76,7 +76,7 @@ const PAGES = {
       ['How it works', '<ol><li><strong>Paste your listing link.</strong> We copy your photos, reviews and house rules from Airbnb or Vrbo. Nothing there is changed.</li><li><strong>We build and tune it.</strong> Your site is live the same day on a free address. Your own domain, SEO pages and guest list take about a week.</li><li><strong>Bookings come direct.</strong> Guests find you on Google and in AI answers, pay you, and are invited back next season.</li></ol>'],
     ],
     faq: [
-      ['Is a direct booking website worth it for one holiday let?', 'Usually, yes, once a home takes more than about £13,000 a year through Airbnb: at the 15.5% host-only fee that is roughly £2,000 in fees, the cost of a year of Bookingbooster on annual billing. Every direct stay after that is money you keep.'],
+      ['Is a direct booking website worth it for one holiday let?', 'Usually, yes, once a home takes more than about £13,000 a year through Airbnb: at the 15.5% host-only fee that is roughly £2,000 in fees, more than a year of Bookingbooster on annual billing (£1,970). Every direct stay after that is money you keep.'],
       ['Do I have to leave Airbnb to take direct bookings?', 'No. Most hosts keep their listings and move repeat guests and search traffic to their own site over time. The calendar sync add-on blocks dates booked on the platforms so you never double book.'],
       ['Does Bookingbooster take commission?', 'No. ' + PRICE_LINE + ' Guests pay you directly through your own Stripe account.'],
       ['How long does it take to set up?', 'Your site can be live the same day on a free address. Connecting your own domain, local SEO pages and importing your guest list takes about a week.'],

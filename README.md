@@ -58,7 +58,7 @@ With nothing in `.env` the server runs in test mode. Emails and texts are saved 
 - **Phone app.** `/app/phone` installs to the home screen (manifest, icons and a service worker). It opens the last copy when there is no signal. Signing out clears that copy.
 - **Privacy notice and terms.** `/privacy` and `/terms` are drafted from what the app actually does (`server/legal.js`). They say "Draft" until a solicitor has reviewed them.
 - **Account and data.** Hosts can change their details and password, download everything, and delete their account. Deleting ends the Stripe subscription first, then removes the account, sites, bookings, guests, photos and uploads.
-- **Billing.** One plan: £200 a month inc. VAT (or £2,000 a year), paid upfront, no setup fee, plus the £15 calendar sync add-on, through Stripe subscriptions and the customer portal. New hosts pay first: sign-up goes straight to Stripe Checkout, and until the first payment the console shows only the payment page (`/app/pay`), billing and account. Team members (ADMIN_EMAILS or `config:admins`) are let through. The welcome email goes out once it is paid.
+- **Billing.** One plan: £197 a month inc. VAT (or £1,970 a year), paid upfront, no setup fee, plus the £15 calendar sync add-on, through Stripe subscriptions and the customer portal. New hosts pay first: sign-up goes straight to Stripe Checkout, and until the first payment the console shows only the payment page (`/app/pay`), billing and account. Team members (ADMIN_EMAILS or `config:admins`) are let through. The welcome email goes out once it is paid.
 
 Some connections show as "Coming soon" in real accounts: Turno, Google Business Profile, Search Console, Google Analytics and PriceLabs. They still work in the demo.
 

@@ -42,7 +42,7 @@ module.exports = function ({ db, ws, cfg, credits, urls, ui, E, send, email, adm
     const term = String(q.get('q') || '').trim().toLowerCase(), fb = BILL[q.get('billing')] ? q.get('billing') : '';
     const shown = accts.filter(a => { const s = sums.get(a.id) || {}; return (!fb || (a.billing_status || 'trial') === fb) && (!term || [a.email, a.name, a.slug, s.business, s.owner].some(x => String(x || '').toLowerCase().includes(term))); });
     const paying = accts.filter(a => a.billing_status === 'active').length, fails = accts.filter(a => a.billing_status === 'past_due').length;
-    const mrr = paying * 200, recent = accts.filter(a => a.created_at > Date.now() - 30 * 864e5).length, active7 = accts.filter(a => a.last_seen > Date.now() - 7 * 864e5).length;
+    const mrr = paying * 197, recent = accts.filter(a => a.created_at > Date.now() - 30 * 864e5).length, active7 = accts.filter(a => a.last_seen > Date.now() - 7 * 864e5).length;
     const row = a => {
       const s = sums.get(a.id) || {}, left = creditLeft(a);
       return '<tr><td><a href="/admin/hosts/' + E(a.id) + '" style="color:inherit;text-decoration:none"><b>' + E(s.business || a.slug) + '</b></a><small>' + E(a.name || s.owner || '') + ' · ' + E(a.email || 'no login') + (a.email && !a.verified ? ' · email not confirmed' : '') + '</small></td>' +

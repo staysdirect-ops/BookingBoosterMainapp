@@ -25,13 +25,13 @@ I came across {property_name} and wanted to ask one question. When a guest books
 
 Booking Booster builds and runs a direct booking website for your holiday let, on your own domain. Guests see live availability, book instantly and pay you directly by card. We take no commission on any booking.
 
-It is £200 a month including VAT, with no setup fee and no contract.
+It is £197 a month including VAT, with no setup fee and no contract.
 
 Would it be worth a look? You can see how it works here: {link}
 
 {sender_name}
 Booking Booster` },
-      { key: 'A2', day: 4, subject: 'What the £200 a month covers', body: `Hi {first_name},
+      { key: 'A2', day: 4, subject: 'What the £197 a month covers', body: `Hi {first_name},
 
 A fair question about any monthly fee is what you get for it. For Booking Booster it is this:
 
@@ -60,7 +60,7 @@ Details are here: {link}
 
 I have written a few times about a direct booking site for {property_name}, and I don't want to keep filling your inbox.
 
-If the timing is wrong, no problem at all, and this is my last email. If you would like to see it, the page is here: {link}. It is £200 a month, or £2,000 if paid yearly, which works out as two months free.
+If the timing is wrong, no problem at all, and this is my last email. If you would like to see it, the page is here: {link}. It is £197 a month, or £1,970 if paid yearly, which works out as two months free.
 
 Either way, I wish you a full calendar.
 
@@ -82,7 +82,7 @@ It is called Booking Booster. It gives your property its own booking website, on
 
 Nothing changes with your {brand} listing. This sits alongside it, so the guests who look for you directly have somewhere to book.
 
-It is £200 a month including VAT, with no setup fee and no contract. Have a look: {link}
+It is £197 a month including VAT, with no setup fee and no contract. Have a look: {link}
 
 {sender_name}` },
       { key: 'B2', day: 5, subject: 'Your guests, your list', body: `Hi {first_name},
@@ -98,7 +98,7 @@ One plan covers up to 3 properties. Details are here: {link}
 
 This is my last email about Booking Booster, so I will keep it short.
 
-Your own booking site, no commission, guests pay you directly. £200 a month, or £2,000 if paid yearly, which works out as two months free. Cancel any time.
+Your own booking site, no commission, guests pay you directly. £197 a month, or £1,970 if paid yearly, which works out as two months free. Cancel any time.
 
 If you want it, start here: {link}. If you have a question first, just reply to this email and I will answer it myself.
 

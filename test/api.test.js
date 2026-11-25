@@ -35,7 +35,7 @@ test.after(() => { srv.stop(); icsSrv.close(); fs.rmSync(DATA, { recursive: true
 test('marketing pages, robots and llms.txt', async () => {
   const home = await call('/'); assert.equal(home.status, 200); assert.match(home.body, /bookingbooster/i);
   const robots = await call('/robots.txt'); assert.match(robots.body, /GPTBot/); assert.match(robots.body, /Sitemap:/);
-  const llms = await call('/llms.txt'); assert.equal(llms.status, 200); assert.match(llms.body, /£200 a month, no setup fee/); assert.match(llms.body, /## Questions/);
+  const llms = await call('/llms.txt'); assert.equal(llms.status, 200); assert.match(llms.body, /£197 a month, no setup fee/); assert.match(llms.body, /## Questions/);
   // Crawlable words and structured data, without running JavaScript
   assert.match(home.body, /<h1>Fill your calendar without the 15% fee/); assert.match(home.body, /application\/ld\+json/);
   const ld = JSON.parse(home.body.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
@@ -54,7 +54,7 @@ test('answer pages for AI search are crawlable, structured and listed', async ()
     assert.doesNotMatch(r.body, /997|setup fee of/);
   }
   const map = await call('/sitemap.xml'); assert.match(map.body, /\/direct-booking-website</); assert.match(map.body, /\/guides</);
-  const llms = await call('/llms.txt'); assert.match(llms.body, /ai-search-for-holiday-lets/); assert.match(llms.body, /£2,000 a year/); assert.match(llms.body, /£50 a month included/);
+  const llms = await call('/llms.txt'); assert.match(llms.body, /ai-search-for-holiday-lets/); assert.match(llms.body, /£1,970 a year/); assert.match(llms.body, /£50 a month included/);
   const robots = await call('/robots.txt'); assert.match(robots.body, /Perplexity-User/);
   const guide = await call('/guides'); for (const f of require('../server/answers').GUIDES) assert.ok(fs.existsSync(path.join(__dirname, '..', 'web', 'guides', f[0])), f[0]);
   assert.match(guide.body, /get-found-in-ai-search\.pdf/);

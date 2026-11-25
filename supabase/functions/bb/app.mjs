@@ -9390,7 +9390,7 @@ body.p-lock { overflow: hidden; }
   /* ---------- static content ---------- */
   const PLANS = [
     // One plan: a monthly price including VAT. No setup fee.
-    { id: 'growth', name: 'Growth', price: 200, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
+    { id: 'growth', name: 'Growth', price: 197, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
   ];
   const ADDON = { name: 'Calendar sync add-on', price: 15 };
   const plan = id => PLANS.find(p => p.id === id) || PLANS[0];
@@ -9410,7 +9410,7 @@ body.p-lock { overflow: hidden; }
     ['What is AI visibility?', 'How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps.'],
     ['How long does setup take?', 'Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week.'],
     ['Who owns the guest list?', 'You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR.'],
-    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is \xA3200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
+    ['Do prices include VAT?', 'Yes. Every price on this page includes VAT. It is \xA3197 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours.'],
   ];
 
   /* ---------- small helpers ---------- */
@@ -9505,7 +9505,7 @@ body.p-lock { overflow: hidden; }
         '<h1 class="s-h1 s-rise" style="--d:1">Fill your calendar <span class="s-hl">without the 15% fee.</span></h1>' +
         '<p class="s-lead s-rise" style="--d:2">Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Set up for you, with no commission on bookings.</p>' +
         '<div class="s-cta s-rise" style="--d:3"><button class="btn s-yel lg" data-act="start">Get my booking site' + icon('arrow') + '</button><button class="btn s-out lg"' + go('live') + '>' + icon('play') + 'Try the live demo</button></div>' +
-        '<p class="s-hero3-price s-rise" style="--d:4"><b>\xA3200 a month. No setup fee.</b> No commission on bookings. Prices include VAT. Cancel anytime.</p>' +
+        '<p class="s-hero3-price s-rise" style="--d:4"><b>\xA3197 a month. No setup fee.</b> No commission on bookings. Prices include VAT. Cancel anytime.</p>' +
       '</div>' +
       '<div class="s-hero3-stage s-rise" style="--d:2" role="img" aria-label="A holiday let booking website, the host app showing today\u2019s bookings, a new direct booking and a ChatGPT recommendation">' +
         frame('shot-site', 'larchfellcabin.co.uk', 's-hero3-browser') + phoneF('phone-today', 's-hero3-phone') +
@@ -9611,7 +9611,7 @@ body.p-lock { overflow: hidden; }
         '<div class="s-calc-net"><span data-cv="netLabel">' + (v.net >= 0 ? 'Left over after the plan' : 'Short of covering the plan') + '</span><b class="num" data-cv="net" data-v="' + v.net + '">' + $(v.net) + '</b></div>' +
         '<p class="s-calc-pay" data-cv="pay">' + payLine(v) + '</p>' +
         '<button class="btn accent lg block" data-act="start">Start keeping it' + icon('arrow') + '</button>' +
-        '<p class="s-fine">Estimate only. Uses Airbnb\u2019s host-only fee of 15.5% and the plan\u2019s first year billed monthly (12 months at \xA3200), including VAT.</p>' +
+        '<p class="s-fine">Estimate only. Uses Airbnb\u2019s host-only fee of 15.5% and the plan\u2019s first year billed monthly (12 months at \xA3197), including VAT.</p>' +
       '</div>' +
     '</div></section>';
   }
@@ -9738,7 +9738,7 @@ body.p-lock { overflow: hidden; }
   function pricing(inst) {
     const an = inst.st.annual;
     return '<section class="s-sec s-pricing" id="s-pricing-' + inst.uid + '"><div class="s-w">' +
-      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. \xA3200 a month, with no setup fee. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
+      '<div class="s-head s-head-row"><div>' + pill('Pricing') + '<h2 class="s-h2">Less than one platform fee a month.</h2><p class="s-sub">One plan, done for you. \xA3197 a month, with no setup fee. Cancel anytime. Prices include VAT. Covers up to 3 homes; more than that, talk to us.</p></div>' +
         '</div>' +
       '<div class="s-plans">' + PLANS.map(p => '<article class="s-plan' + (p.hot ? ' hot' : '') + '">' + '' +
         '<h3>' + p.name + '</h3><p class="s-plan-tag">' + p.tag + '</p><div class="s-amt"><b class="num">\xA3' + perMonth(p, an) + '</b><span>/ month</span></div>' +
@@ -9913,6 +9913,13 @@ body.p-lock { overflow: hidden; }
     };
   }
   const REAL = () => !!(BB.BOOT && BB.BOOT.mode === 'marketing');
+  // Pay first (card billing on): /start is only the account and the payment. The site setup runs after payment, at /app/setup,
+  // where SETUP() is true: the same steps without Connect and Plan, and no account form.
+  const SETUP = () => REAL() && !!BB.BOOT.setup;
+  const PAYFIRST = () => REAL() && !!BB.BOOT.payFirst && !SETUP();
+  const FLOW = () => SETUP() ? [1, 2, 3, 4, 7] : [1, 2, 3, 4, 5, 6, 7];
+  const nextStep = n => { const f = FLOW(), i = f.indexOf(n); return i < 0 ? n + 1 : f[Math.min(f.length - 1, i + 1)]; };
+  const prevStep = n => { const f = FLOW(), i = f.indexOf(n); return i <= 0 ? 1 : f[i - 1]; };
   function acctError(a) {
     if (!a || String(a.name || '').trim().length < 2) return 'Enter your name.';
     if (!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(String(a.email || '').trim())) return 'Enter your email address.';
@@ -9923,7 +9930,10 @@ body.p-lock { overflow: hidden; }
   function launch(inst) {
     const ob = inst.st.ob; ob.launchN = 0; inst.render();
     let signup = null;
-    if (REAL()) {
+    if (SETUP()) {
+      signup = BB.api.call(BB.BOOT.setupUrl, { property: buildData(ob), listing: ob.url, domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
+        .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
+    } else if (REAL()) {
       const a = ob.acct || {};
       signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url,
         domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
@@ -9959,7 +9969,7 @@ body.p-lock { overflow: hidden; }
       ['Domain', ob.domain ? esc(ob.domain) : null, ob.step > 4],
       ['Connected', ob.step >= 5 ? (conns.length ? conns.join(', ') : 'Nothing yet') + (ob.addon ? '<em>+ Calendar sync add-on</em>' : '') : null, ob.step > 5],
       ['Plan', ob.step >= 6 ? p.name + ' \xB7 \xA3' + (perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0)) + '/mo' + (ob.annual ? '<em>billed yearly</em>' : '') : null, ob.step > 6],
-    ];
+    ].filter(r => !SETUP() || (r[0] !== 'Connected' && r[0] !== 'Plan'));
     return '<aside class="s-rail" aria-label="Your setup so far"><p class="eyebrow">Your site so far</p>' +
       miniSite({ theme: ob.theme, name: d.name || 'Your home', domain: ob.domain || (d.name ? slug(d.name) + '.co.uk' : 'yourhome.co.uk'), price: +d.nightly || null, save: d.nightly ? Math.round(+d.nightly * 3 * 0.142) : 0, cls: 's-rail-browser s-compact' }) +
       '<ul class="s-rail-list">' + rows.map(([k, v, done]) => '<li class="' + (done ? 'done' : '') + '"><i>' + (done ? icon('check') : '') + '</i><span>' + k + '</span><b>' + (v || '<span class="muted">Not yet</span>') + '</b></li>').join('') + '</ul>' +
@@ -10035,7 +10045,7 @@ body.p-lock { overflow: hidden; }
           (ready ? '' : '<p class="s-fine">Connect Stripe so guests can pay you. It is the one thing a booking site needs.</p>') +
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
       }
-      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">\xA3200 a month, with no setup fee. Cancel anytime, prices include VAT.</p>' +
+      case 6: return '<h1 class="s-ob-h">Choose a plan.</h1><p class="s-ob-sub">\xA3197 a month, with no setup fee. Cancel anytime, prices include VAT.</p>' +
         '<div class="s-obplans" role="radiogroup" aria-label="Plan">' + PLANS.map(p => '<button class="s-obplan' + (ob.plan === p.id ? ' on' : '') + '" role="radio" aria-checked="' + (ob.plan === p.id) + '" data-pick-plan="' + p.id + '">' +
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
           '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' No setup fee.</span>' +
@@ -10052,10 +10062,10 @@ body.p-lock { overflow: hidden; }
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' \xB7 ' + $(+d.nightly) + ' a night \xB7 sleeps ' + esc(d.sleeps) + ' \xB7 ' + esc(d.bedrooms) + ' bedrooms \xB7 ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
             '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : buying(ob) ? 'We register it in your name once your first payment goes through. ' + domainNote() : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
-            '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
-            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
+            (SETUP() ? '' : '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
+            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>') +
           '</dl>' +
-          '<form data-form="launch" class="s-ob-form" novalidate>' + (REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (REAL() && BB.BOOT.payFirst ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
+          '<form data-form="launch" class="s-ob-form" novalidate>' + (SETUP() ? (buying(ob) || ob.acctErr ? '<div class="s-acct">' + (buying(ob) ? regFields(inst) : '') + (ob.acctErr ? '<p class="s-err" role="alert">' + esc(ob.acctErr) + '</p>' : '') + '</div>' : '') : REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (PAYFIRST() ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
       }
     }
     return '';
@@ -10063,7 +10073,7 @@ body.p-lock { overflow: hidden; }
   function acctFields(inst) {
     const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', ref: inst.ref || '', terms: false }), u = inst.uid;
     const f = (k, label, type, ac, ph) => '<label class="s-f"><span>' + label + '</span><input id="s-ac-' + k + '-' + u + '" data-ac="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(a[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
-    return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
+    return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (PAYFIRST() ? 'You pay on the next screen with Stripe, then set up your site straight after. No setup fee.' : 'No setup fee.') + '</p>' +
       '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + f('ref', 'Referral code (optional)', 'text', 'off', 'If someone recommended us') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
       (buying(inst.st.ob) ? regFields(inst) : '') +
@@ -10113,16 +10123,45 @@ body.p-lock { overflow: hidden; }
       '</div></div>';
   }
 
+  // Pay first: one screen with the plan and the account, then Stripe Checkout. Setting up the site comes after payment.
+  function payStart(inst) {
+    const ob = inst.st.ob, p = plan(ob.plan), total = perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0), u = inst.uid;
+    const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Billing">' + [['m', 'Monthly'], ['y', 'Yearly, 2 months free']].map(([k, t]) => '<button type="button" role="tab" aria-selected="' + (ob.annual === (k === 'y')) + '" data-obbill="' + k + '">' + t + '</button>').join('') + '</div>';
+    return '<div class="s-ob s-ob-pay"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
+      '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Back to the home page</span><span class="s-exit-s">Exit</span></button></div></header>' +
+      '<div class="s-w s-ob-body"><main class="s-ob-main" id="s-ob-main-' + u + '">' +
+        '<h1 class="s-ob-h">Start your booking site.</h1><p class="s-ob-sub">Create your account and pay your first ' + (ob.annual ? 'year' : 'month') + '. Straight after, we help you set up your site: import your listing, choose a look and pick a domain. It takes about five minutes.</p>' +
+        tabs +
+        '<div class="s-obplans"><div class="s-obplan on"><span class="s-obplan-h"><b>' + p.name + '</b></span>' +
+          '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + (ob.annual ? 'Billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee. Cancel anytime.</span>' +
+          '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></div></div>' +
+        '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional \xB7 \xA3' + ADDON.price + ' a month</span></b><em>Only if you also take bookings on Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
+          '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + ob.addon + '" aria-label="' + ADDON.name + '"></button></div></div>' +
+        '<form data-form="pay" class="s-ob-form" novalidate>' + acctFields(inst) +
+          '<div class="s-ob-nav"><span></span><button class="btn primary lg s-glow" type="submit"' + (ob.paying ? ' disabled' : '') + '>' + icon('lock') + (ob.paying ? 'Opening Stripe\u2026' : 'Pay \xA3' + (ob.annual ? (p.price * 10 + (ob.addon ? ADDON.price * 12 : 0)).toLocaleString('en-GB') + ' and start' : total + ' and start')) + '</button></div>' +
+          '<p class="s-fine">' + icon('lock') + 'You pay securely with Stripe. ' + (ob.annual ? 'The plan renews every year.' : 'The plan renews every month.') + ' Prices include VAT.</p></form>' +
+      '</main></div></div>';
+  }
+  function payNow(inst) {
+    const ob = inst.st.ob, a = ob.acct || {}, e = acctError(a);
+    if (e) { ob.acctErr = e; inst.render(); return; }
+    ob.paying = true; inst.render();
+    BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon })
+      .then(j => { location.href = j.redirect || '/app/pay'; }, er => { ob.paying = false; ob.acctErr = er.message; inst.render(); });
+  }
+
   function onboard(inst) {
     const ob = inst.st.ob;
     if (ob.step === 8) return obSuccess(inst);
-    const pctDone = Math.round(100 * (ob.step - 1) / STEPS.length);
+    if (PAYFIRST()) return payStart(inst);
+    const flow = FLOW(), at = Math.max(0, flow.indexOf(ob.step)), names = flow.map(n => STEPS[n - 1]);
+    const pctDone = Math.round(100 * at / flow.length);
     const enter = inst._obStep !== ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0); inst._obStep = ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0);
     return '<div class="s-ob"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
-      '<span class="s-ob-count num">Step ' + ob.step + ' of ' + STEPS.length + '<em> \xB7 ' + STEPS[ob.step - 1] + '</em></span>' +
-      '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Save and exit</span><span class="s-exit-s">Exit</span></button></div>' +
+      '<span class="s-ob-count num">Step ' + (at + 1) + ' of ' + flow.length + '<em> \xB7 ' + names[at] + '</em></span>' +
+      (SETUP() ? '<a class="btn ghost sm" href="/app/account"><span class="s-exit-l">Your account</span><span class="s-exit-s">Account</span></a></div>' : '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Save and exit</span><span class="s-exit-s">Exit</span></button></div>') +
       '<div class="s-ob-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pctDone + '" aria-label="Setup progress"><i style="width:' + pctDone + '%"></i></div>' +
-      '<div class="s-w"><ol class="s-ob-steps">' + STEPS.map((t, i) => '<li class="' + (i + 1 < ob.step ? 'done' : i + 1 === ob.step ? 'on' : '') + '"><span class="num">' + (i + 1 < ob.step ? icon('check') : i + 1) + '</span>' + t + '</li>').join('') + '</ol></div></header>' +
+      '<div class="s-w"><ol class="s-ob-steps">' + names.map((t, i) => '<li class="' + (i < at ? 'done' : i === at ? 'on' : '') + '"><span class="num">' + (i < at ? icon('check') : i + 1) + '</span>' + t + '</li>').join('') + '</ol></div></header>' +
       '<div class="s-w s-ob-body"><main class="s-ob-main" id="s-ob-main-' + inst.uid + '">' + obStep(inst) + '</main>' + obRail(ob) + '</div></div>';
   }
 
@@ -10147,7 +10186,7 @@ body.p-lock { overflow: hidden; }
     create(root, opts, inst) {
       inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = []; inst.ref = opts.ref || '';
       Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
-        ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
+        ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: !!opts.annual, addon: !!opts.addon },
           opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', ref: opts.ref || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
       root.classList.add('x-site');
@@ -10166,9 +10205,10 @@ body.p-lock { overflow: hidden; }
         const a = el.dataset.act, ob = inst.st.ob;
         if (a === 'start') { inst.st.menu = false; startOnboarding(inst, el.dataset.plan); }
         else if (a === 'menu') inst.set({ menu: !inst.st.menu });
+        else if (a === 'home' && SETUP()) return; // after payment there is no marketing page to go back to
         else if (a === 'home') { clearTimers(inst); if (ob.launchN >= 0 && ob.step === 7) ob.launchN = -1; BB.go('site', { view: 'home' }); }
         else if (a === 'sample') { ob.url = SAMPLES.airbnb.url; ob.urlErr = ''; ob.source = 'airbnb'; ob.step = 2; startImport(inst); inst.render(); }
-        else if (a === 'back') { clearTimers(inst); if (ob.step === 2 && !ob.imported) ob.importedFrom = ''; ob.dState = ob.dState === 'checking' ? 'idle' : ob.dState; ob.conn = mapConn(ob.conn); ob.step = Math.max(1, ob.step - 1); inst.render(); scrollTopOb(); }
+        else if (a === 'back') { clearTimers(inst); if (ob.step === 2 && !ob.imported) ob.importedFrom = ''; ob.dState = ob.dState === 'checking' ? 'idle' : ob.dState; ob.conn = mapConn(ob.conn); ob.step = prevStep(ob.step); inst.render(); scrollTopOb(); }
         else if (a === 'pets') { ob.d.pets = !ob.d.pets; inst.render(); }
         else if (a === 'addon') { ob.addon = !ob.addon; inst.render(); }
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
@@ -10222,10 +10262,11 @@ body.p-lock { overflow: hidden; }
         if (kind === 'next') {
           if (ob.step === 4 && !ob.domain) return;
           if (ob.step === 5 && ob.conn.stripe !== 'on') return;
-          ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
+          ob.step = nextStep(ob.step); if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
-        if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct) || (buying(ob) ? regError(ob.reg2) : ''); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
+        if (kind === 'pay') { if (!ob.paying) payNow(inst); return; }
+        if (kind === 'launch') { if (REAL()) { const e = (SETUP() ? '' : acctError(ob.acct)) || (buying(ob) ? regError(ob.reg2) : ''); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
       });
       function scrollTopOb() { window.scrollTo({ top: 0 }); }
       function mapConn(c) { const o = {}; Object.keys(c).forEach(k => o[k] = c[k] === 'on' ? 'on' : 'off'); return o; }
@@ -12772,7 +12813,7 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">We build your booking site in a week</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Your own domain, instant booking, Stripe payments in GBP and damage deposits. You send a listing link, we do the rest.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;border-bottom:1px solid #E3E7F5;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#2747F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#FFFFFF;">02</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Guests find you without the middleman</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Local SEO pages and AI search fixes so <span style="white-space:nowrap;"><img src="../assets/ai/chatgpt.png" width="16" height="16" alt="" style="display:inline-block;width:16px;height:16px;border:0;outline:none;vertical-align:-3px;">&nbsp;ChatGPT</span> and <span style="white-space:nowrap;"><img src="../assets/ai/google.png" width="16" height="16" alt="" style="display:inline-block;width:16px;height:16px;border:0;outline:none;vertical-align:-3px;">&nbsp;Google</span> recommend your home, with a link to book direct.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#2747F5;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#FFFFFF;">03</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Past guests come back direct</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">We email and text your guest list with return-stay offers and gap-night deals. No commission on any of it.</p></td></tr></table></td></tr></table>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#E4E9FF;border-radius:14px;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:25px;color:#0F1630;font-weight:400;text-align:left;">Growth is <strong style="color:#0F1630;">&pound;200 a month</strong> (inc VAT), with no setup fee. At your numbers, <span style="background-color:#FFC42E;color:#0F1630;padding:0 4px;border-radius:4px;">{{payback_share}} of bookings going direct</span> covers the monthly fee. Cancel any time.</p></td></tr></table><div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{signup_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my booking site</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See the live demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#5A6386;font-weight:400;text-align:left;">Figures are estimates from the numbers you gave us and Airbnb's published fee rates. Your own payout reports will show the exact amount.</p></td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#E4E9FF;border-radius:14px;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:25px;color:#0F1630;font-weight:400;text-align:left;">Growth is <strong style="color:#0F1630;">&pound;197 a month</strong> (inc VAT), with no setup fee. At your numbers, <span style="background-color:#FFC42E;color:#0F1630;padding:0 4px;border-radius:4px;">{{payback_share}} of bookings going direct</span> covers the monthly fee. Cancel any time.</p></td></tr></table><div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{signup_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my booking site</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See the live demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;color:#5A6386;font-weight:400;text-align:left;">Figures are estimates from the numbers you gave us and Airbnb's published fee rates. Your own payout reports will show the exact amount.</p></td></tr></table>
 
   </td></tr>
   <tr><td class="px" style="padding:28px 32px 0 32px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5A6386;" align="center">
@@ -12876,7 +12917,7 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Answer the questions guests actually ask</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Pages on your own site for pets, parking, hot tub, walks from the door. AI tools quote pages that answer clearly.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;border-bottom:1px solid #E3E7F5;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#E4E9FF;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#2747F5;">02</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;border-bottom:1px solid #E3E7F5;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Make your facts consistent everywhere</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">Same name, address and amenities on your site, Google Business Profile and listings, so assistants trust them.</p></td></tr><tr><td width="44" valign="top" style="padding:16px 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="32" align="center" valign="middle" style="width:32px;height:32px;border-radius:16px;background-color:#E4E9FF;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:13px;font-weight:500;color:#2747F5;">03</td></tr></table></td>
 <td valign="top" style="padding:16px 0 16px 4px;"><p style="margin:0 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:17px;line-height:22px;font-weight:700;letter-spacing:-0.2px;color:#0F1630;">Give assistants a place to send people</p><p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#5A6386;">A booking site on your domain, so the link in the answer goes to you, not to a platform charging 15%.</p></td></tr></table></td></tr></table>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{ai_report_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my full AI visibility report</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See it in the demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">On Growth (&pound;200 a month inc VAT, no setup fee) we track this weekly and make the fixes for you.</p></td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" class="full" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" style="padding:0 10px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{ai_report_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Get my full AI visibility report</a></td></tr></table></td><td class="stack" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#FFFFFF" style="border-radius:12px;background-color:#FFFFFF;border:1.5px solid #C9D0EE;mso-padding-alt:15px 26px;"><a href="{{demo_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#0F1630;text-decoration:none;border-radius:12px;">See it in the demo</a></td></tr></table></td></tr></table><div style="height:18px;line-height:18px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">On Growth (&pound;197 a month inc VAT, no setup fee) we track this weekly and make the fixes for you.</p></td></tr></table>
 
   </td></tr>
   <tr><td class="px" style="padding:28px 32px 0 32px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5A6386;" align="center">
@@ -13178,10 +13219,10 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 28px 40px;"><h2 class="h2" style="margin:0 0 10px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:24px;line-height:30px;font-weight:800;letter-spacing:-0.6px;color:#0F1630;">Your plan, paid yearly</h2><p style="margin:0 0 16px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:21px;color:#5A6386;font-weight:400;text-align:left;">Price includes VAT. No setup fee.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="stack stack-gap" width="100%" valign="top" style="padding:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#0F1630;border:1.5px solid #0F1630;border-radius:16px;"><tr><td style="padding:18px 18px 20px 18px;"><span style="display:inline-block;font-family:'Geist Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:11px;line-height:14px;letter-spacing:1px;text-transform:uppercase;color:#0F1630;background-color:#FFC42E;border-radius:999px;padding:5px 10px;">One plan</span>
 <p style="margin:12px 0 4px 0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:20px;line-height:24px;font-weight:800;color:#FFFFFF;letter-spacing:-0.4px;">Growth</p>
 <p style="margin:0 0 10px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;color:#C9D0EE;">Done for you: your booking site, local SEO pages, AI fixes and guest campaigns.</p>
-<p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;color:#C9D0EE;"><s>&pound;2,400 a year</s></p>
-<p style="margin:0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:28px;line-height:32px;font-weight:800;color:#FFFFFF;letter-spacing:-1px;">&pound;2,000 a year</p>
+<p style="margin:0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;color:#C9D0EE;"><s>&pound;2,364 a year</s></p>
+<p style="margin:0;font-family:'Bricolage Grotesque', Helvetica, Arial, sans-serif;font-size:28px;line-height:32px;font-weight:800;color:#FFFFFF;letter-spacing:-1px;">&pound;1,970 a year</p>
 <p style="margin:2px 0 0 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:18px;color:#FFC42E;font-weight:600;">You save &pound;400</p></td></tr></table></td></tr></table></td></tr></table></td></tr></table>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#E4E9FF;border-radius:14px;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#0F1630;font-weight:400;text-align:left;"><strong style="color:#0F1630;">Put it in context.</strong> One direct week at &pound;1,200 keeps about &pound;186 that would have gone in host fees. Eleven such weeks keep about &pound;2,050, more than a year of Growth paid yearly (&pound;2,000).</p></td></tr></table><div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{offer_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Claim 2 months free</a></td></tr></table><div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">Already with us on monthly? Reply to this email and we will switch you to yearly.</p></td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="px" style="padding:0 40px 36px 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#E4E9FF;border-radius:14px;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:15px;line-height:23px;color:#0F1630;font-weight:400;text-align:left;"><strong style="color:#0F1630;">Put it in context.</strong> One direct week at &pound;1,200 keeps about &pound;186 that would have gone in host fees. Eleven such weeks keep about &pound;2,050, more than a year of Growth paid yearly (&pound;1,970).</p></td></tr></table><div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div><table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-full" style="margin:0;border-collapse:separate;"><tr><td align="center" bgcolor="#2747F5" style="border-radius:12px;background-color:#2747F5;mso-padding-alt:15px 26px;"><a href="{{offer_url}}" target="_blank" style="display:inline-block;padding:15px 26px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">Claim 2 months free</a></td></tr></table><div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div><p style="margin:0 0 0px 0;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#5A6386;font-weight:400;text-align:left;">Already with us on monthly? Reply to this email and we will switch you to yearly.</p></td></tr></table>
 
   </td></tr>
   <tr><td class="px" style="padding:28px 32px 0 32px;font-family:'Geist', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;color:#5A6386;" align="center">
@@ -13219,7 +13260,7 @@ Images in guest-img/ are stand-ins for {{property_hero_image}} (the host's own p
     {{company_number}} = 00000000
     {{vat_number}} = GB 000 0000 00
     {{plan_name}} = Growth
-    {{plan_price}} = &pound;200 a month
+    {{plan_price}} = &pound;197 a month
     {{go_live_date}} = Fri 16 Oct
     {{setup_lead_name}} = Priya Shah
     {{setup_lead_initials}} = PS
@@ -15260,7 +15301,7 @@ var require_answers = __commonJS({
           ["How it works", "<ol><li><strong>Paste your listing link.</strong> We copy your photos, reviews and house rules from Airbnb or Vrbo. Nothing there is changed.</li><li><strong>We build and tune it.</strong> Your site is live the same day on a free address. Your own domain, SEO pages and guest list take about a week.</li><li><strong>Bookings come direct.</strong> Guests find you on Google and in AI answers, pay you, and are invited back next season.</li></ol>"]
         ],
         faq: [
-          ["Is a direct booking website worth it for one holiday let?", "Usually, yes, once a home takes more than about \xA313,000 a year through Airbnb: at the 15.5% host-only fee that is roughly \xA32,000 in fees, the cost of a year of Bookingbooster on annual billing. Every direct stay after that is money you keep."],
+          ["Is a direct booking website worth it for one holiday let?", "Usually, yes, once a home takes more than about \xA313,000 a year through Airbnb: at the 15.5% host-only fee that is roughly \xA32,000 in fees, more than a year of Bookingbooster on annual billing (\xA31,970). Every direct stay after that is money you keep."],
           ["Do I have to leave Airbnb to take direct bookings?", "No. Most hosts keep their listings and move repeat guests and search traffic to their own site over time. The calendar sync add-on blocks dates booked on the platforms so you never double book."],
           ["Does Bookingbooster take commission?", "No. " + PRICE_LINE + " Guests pay you directly through your own Stripe account."],
           ["How long does it take to set up?", "Your site can be live the same day on a free address. Connecting your own domain, local SEO pages and importing your guest list takes about a week."]
@@ -15358,20 +15399,20 @@ var require_answers = __commonJS({
 var require_marketing = __commonJS({
   "server/marketing.js"(exports, module) {
     var { esc } = require_pages();
-    var PRICE = { setup: 0, month: 200, year: 2e3, addon: 15, homes: 3, aiCredit: 50 };
+    var PRICE = { setup: 0, month: 197, year: 1970, addon: 15, homes: 3, aiCredit: 50 };
     var FAQ = [
       ["Do I have to leave Airbnb or Vrbo?", "No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there."],
       ["How do guests pay?", "By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout."],
       ["What is AI visibility?", "How often your holiday let shows up in ChatGPT, Gemini, Perplexity and Google when travellers ask where to stay. We check the questions guests ask about your area every week and fix the gaps."],
       ["How long does setup take?", "Paste your listing link and your site is live the same day on a free address. Connecting your own .co.uk domain, SEO pages and your guest list takes us about a week."],
       ["Who owns the guest list?", "You do. Every guest who books direct, and every past guest you import, is yours to export at any time. We handle their data under UK GDPR."],
-      ["Do prices include VAT?", "Yes. Every price on this page includes VAT. It is \xA3200 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours."]
+      ["Do prices include VAT?", "Yes. Every price on this page includes VAT. It is \xA3197 a month, with no setup fee. There is no contract, and you can cancel from your console at any time. Your domain stays yours."]
     ];
     var MORE = [
       ["What is Bookingbooster?", "Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission."],
-      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3200 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking."],
+      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3197 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking."],
       ["Is Bookingbooster a channel manager?", "No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (\xA315 a month) keeps your calendars in step so you never double book."],
-      ["Is there a yearly plan?", "Yes. The plan is \xA3200 a month, or \xA32,000 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT."],
+      ["Is there a yearly plan?", "Yes. The plan is \xA3197 a month, or \xA31,970 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT."],
       ["What AI credit is included?", "Every plan includes \xA350 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from \xA310, and top-ups never expire."],
       ["Does Bookingbooster do SEO and AI search optimisation?", "Yes. Every site is built for Google, Google Maps and AI assistants: structured data, an image sitemap, llms.txt, AI crawler access and IndexNow are automatic. A Search health score for each home covers on-page, technical, local, content, image, AEO, GEO, LLMO and Google AI Overviews, drafts the writing from your facts, and checks real answers in ChatGPT, Gemini, Perplexity and Google every week."],
       ["Who is Bookingbooster for?", "Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in the UK who want more bookings direct and fewer platform fees. One plan covers up to 3 homes; for more, talk to us."]
@@ -15389,7 +15430,7 @@ var require_marketing = __commonJS({
       ["Bookings come direct", "Guests find you on Google and in AI answers, pay you, check in on your app, and are invited back next season."]
     ];
     var TITLE = "Bookingbooster \xB7 Direct booking websites for UK holiday lets";
-    var DESCRIPTION = "Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. \xA3200 a month, with no setup fee. No commission.";
+    var DESCRIPTION = "Your own booking website for your UK holiday let, found on Google and in AI answers, with payments, guest check-in and email marketing in one place. \xA3197 a month, with no setup fee. No commission.";
     var allFaq = () => FAQ.concat(MORE);
     var SOCIAL = [["Instagram", "https://www.instagram.com/bookingbooster_1/"], ["Facebook", "https://www.facebook.com/1300137993193053"], ["TikTok", "https://www.tiktok.com/@bookingbooster"], ["YouTube", "https://www.youtube.com/channel/UC1jo2BbolkHDSDcFCwnV3PA"]];
     function jsonLd(base, co) {
@@ -16695,10 +16736,10 @@ var require_lead_emails = __commonJS({
               key: "E5",
               when: (c) => t.dayAt(c.start, 7),
               subject: "Your direct booking site, live in 7 days",
-              preview: "Growth: we build it, get it found and fill it. \xA3200 a month, no setup fee.",
+              preview: "Growth: we build it, get it found and fill it. \xA3197 a month, no setup fee.",
               body: (v) => [
                 v.fee_leak ? "If your fee leak was " + v.fee_leak + " a year, here is the simplest way to win part of it back." : "Here is the simplest way to win back part of what platform fees cost you.",
-                "Growth: \xA3200 a month, no setup fee. We build your booking site on your own domain and set up payments, deposits and check-in. Then every month we write new local SEO pages, fix your AI visibility gaps and write and send your guest campaigns.",
+                "Growth: \xA3197 a month, no setup fee. We build your booking site on your own domain and set up payments, deposits and check-in. Then every month we write new local SEO pages, fix your AI visibility gaps and write and send your guest campaigns.",
                 { list: ["Setup done for you", "Cancel anytime", "Up to 3 homes", "Set up for you in a week"] }
               ],
               cta: () => growth
@@ -16713,7 +16754,7 @@ var require_lead_emails = __commonJS({
                 "Every month a booking goes through a platform, around 15% of it goes with it. Not a disaster. But it compounds, and the guest you paid to win is a guest you can reach again for free.",
                 "If you want your own site, Google pages and guest campaigns done for you, Growth is ready when you are."
               ],
-              cta: () => ({ label: "Start Growth for \xA3200 a month", href: growth.href }),
+              cta: () => ({ label: "Start Growth for \xA3197 a month", href: growth.href }),
               after: ["Either way, thanks for reading."]
             }
           ].concat(TIPS.map((tip, i) => ({
@@ -16785,10 +16826,10 @@ var require_lead_emails = __commonJS({
               key: "E5B",
               when: (c) => c.callBooked ? false : t.dayAt(c.sent.E2, 8),
               subject: "Want us to just do the fixes?",
-              preview: "Your site, Google and AI fixes, done for you. \xA3200 a month.",
+              preview: "Your site, Google and AI fixes, done for you. \xA3197 a month.",
               body: () => [
                 "Last note about your audit.",
-                "If you would rather not do the fixes yourself, Growth does them for you: your own booking site in 7 days, Google Business Profile, new local pages every month and AI visibility tracking. \xA3200 a month, no setup fee, cancel anytime."
+                "If you would rather not do the fixes yourself, Growth does them for you: your own booking site in 7 days, Google Business Profile, new local pages every month and AI visibility tracking. \xA3197 a month, no setup fee, cancel anytime."
               ],
               cta: () => growth
             }
@@ -16833,7 +16874,7 @@ var require_lead_emails = __commonJS({
               preview: "The proposal, the 90-day plan and the price. No surprises.",
               body: () => ["Thanks for your time today. As promised, here is your proposal. It covers where you are now, what we do in the first 90 days, and what it costs."],
               cta: (v) => ({ label: "Read my proposal", href: v.proposal_url }),
-              after: ["Short version: Growth is \xA3200 a month with no setup fee, cancel anytime. Your site goes live in 7 days and we start on your fix list in week 2.", "Any questions, just reply."]
+              after: ["Short version: Growth is \xA3197 a month with no setup fee, cancel anytime. Your site goes live in 7 days and we start on your fix list in week 2.", "Any questions, just reply."]
             }
           ]
         },
@@ -16887,7 +16928,7 @@ var require_lead_emails = __commonJS({
               cta: (v) => ({ label: "Watch the replay", href: v.replay_url }),
               after: [
                 "If you want us to do it for your home: the 7-day launch. Your site live in a week, payments and check-in on, Google and AI set up, and your first email to past guests sent.",
-                "Growth: \xA3200 a month, no setup fee. Cancel anytime."
+                "Growth: \xA3197 a month, no setup fee. Cancel anytime."
               ]
             },
             {
@@ -16911,7 +16952,7 @@ var require_lead_emails = __commonJS({
                 "<b>Do I keep Airbnb?</b> Yes. Use it for first-time guests. Your site is for the second booking and for Google.",
                 "<b>Can I email past guests?</b> Usually yes, under the PECR soft opt-in if they booked with you and were offered an opt-out. Every email has a one-click unsubscribe. We set it up properly.",
                 "<b>I do not have a domain.</b> We help you pick one on day 1.",
-                "<b>Is there a contract?</b> No. Cancel anytime. It is \xA3200 a month, with no setup fee."
+                "<b>Is there a contract?</b> No. Cancel anytime. It is \xA3197 a month, with no setup fee."
               ],
               cta: () => ({ label: "See the 7-day launch", href: t.app("/pricing") })
             },
@@ -16989,13 +17030,13 @@ I came across {property_name} and wanted to ask one question. When a guest books
 
 Booking Booster builds and runs a direct booking website for your holiday let, on your own domain. Guests see live availability, book instantly and pay you directly by card. We take no commission on any booking.
 
-It is \xA3200 a month including VAT, with no setup fee and no contract.
+It is \xA3197 a month including VAT, with no setup fee and no contract.
 
 Would it be worth a look? You can see how it works here: {link}
 
 {sender_name}
 Booking Booster` },
-          { key: "A2", day: 4, subject: "What the \xA3200 a month covers", body: `Hi {first_name},
+          { key: "A2", day: 4, subject: "What the \xA3197 a month covers", body: `Hi {first_name},
 
 A fair question about any monthly fee is what you get for it. For Booking Booster it is this:
 
@@ -17024,7 +17065,7 @@ Details are here: {link}
 
 I have written a few times about a direct booking site for {property_name}, and I don't want to keep filling your inbox.
 
-If the timing is wrong, no problem at all, and this is my last email. If you would like to see it, the page is here: {link}. It is \xA3200 a month, or \xA32,000 if paid yearly, which works out as two months free.
+If the timing is wrong, no problem at all, and this is my last email. If you would like to see it, the page is here: {link}. It is \xA3197 a month, or \xA31,970 if paid yearly, which works out as two months free.
 
 Either way, I wish you a full calendar.
 
@@ -17045,7 +17086,7 @@ It is called Booking Booster. It gives your property its own booking website, on
 
 Nothing changes with your {brand} listing. This sits alongside it, so the guests who look for you directly have somewhere to book.
 
-It is \xA3200 a month including VAT, with no setup fee and no contract. Have a look: {link}
+It is \xA3197 a month including VAT, with no setup fee and no contract. Have a look: {link}
 
 {sender_name}` },
           { key: "B2", day: 5, subject: "Your guests, your list", body: `Hi {first_name},
@@ -17061,7 +17102,7 @@ One plan covers up to 3 properties. Details are here: {link}
 
 This is my last email about Booking Booster, so I will keep it short.
 
-Your own booking site, no commission, guests pay you directly. \xA3200 a month, or \xA32,000 if paid yearly, which works out as two months free. Cancel any time.
+Your own booking site, no commission, guests pay you directly. \xA3197 a month, or \xA31,970 if paid yearly, which works out as two months free. Cancel any time.
 
 If you want it, start here: {link}. If you have a question first, just reply to this email and I will answer it myself.
 
@@ -18254,7 +18295,7 @@ var require_campaigns = __commonJS({
     var crypto = __require("crypto");
     var AUDIENCE_SEQS = ["fee", "audit", "webinar", "call"];
     var AIRBNB_GUEST_FEE = 0.14;
-    var GROWTH_YEAR = 200 * 12;
+    var GROWTH_YEAR = 197 * 12;
     var pounds = (n) => "\xA3" + Math.round(n).toLocaleString("en-GB");
     var esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
     var AUDIENCES = {
@@ -18391,7 +18432,7 @@ var require_campaigns = __commonJS({
           key: "yearly-offer",
           tpl: "host-m05-offer",
           name: "Yearly offer: 2 months free",
-          about: "Pay yearly for Growth: \xA32,000 instead of \xA32,400. No setup fee.",
+          about: "Pay yearly for Growth: \xA31,970 instead of \xA32,364. No setup fee.",
           audience: "All leads",
           when: "About 7 days before the offer ends. Make sure the yearly Stripe price is set up first.",
           subject: "2 months free if you go yearly (ends {{offer_end_date}})",
@@ -19466,7 +19507,7 @@ var require_admin_content = __commonJS({
         winter_rate: "\xA3150",
         next_release_month: "January",
         plan_name: "Growth",
-        plan_price: "\xA3200 a month",
+        plan_price: "\xA3197 a month",
         go_live_date: "today",
         setup_lead_name: "The Bookingbooster team",
         setup_lead_initials: "BB",
@@ -19490,7 +19531,7 @@ var require_admin_content = __commonJS({
         guest_list_count: "146",
         automation_intro: "Here is what is still switched off on Fellside Barn:",
         automation_block: '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + rows([["Gap night offers", "Spot empty nights. Offer them to past guests first."], ["Come back next year", "Ask last year\u2019s guests before the dates go on the platforms."]], ([name, desc]) => fill(PART.o05_row, { name, desc })) + "</table>",
-        amount_due: "\xA3200.00",
+        amount_due: "\xA3197.00",
         decline_reason: "Your bank declined the payment",
         failed_date: "14 November",
         next_retry_date: "17 November",
@@ -19767,7 +19808,7 @@ var require_admin_users = __commonJS({
           return (!fb || (a.billing_status || "trial") === fb) && (!term || [a.email, a.name, a.slug, s.business, s.owner].some((x) => String(x || "").toLowerCase().includes(term)));
         });
         const paying = accts.filter((a) => a.billing_status === "active").length, fails = accts.filter((a) => a.billing_status === "past_due").length;
-        const mrr = paying * 200, recent = accts.filter((a) => a.created_at > Date.now() - 30 * 864e5).length, active7 = accts.filter((a) => a.last_seen > Date.now() - 7 * 864e5).length;
+        const mrr = paying * 197, recent = accts.filter((a) => a.created_at > Date.now() - 30 * 864e5).length, active7 = accts.filter((a) => a.last_seen > Date.now() - 7 * 864e5).length;
         const row = (a) => {
           const s = sums.get(a.id) || {}, left = creditLeft(a);
           return '<tr><td><a href="/admin/hosts/' + E(a.id) + '" style="color:inherit;text-decoration:none"><b>' + E(s.business || a.slug) + "</b></a><small>" + E(a.name || s.owner || "") + " \xB7 " + E(a.email || "no login") + (a.email && !a.verified ? " \xB7 email not confirmed" : "") + "</small></td><td>" + bill(a.billing_status) + "<small>" + E(a.plan || "No plan") + '</small></td><td class="num"><b>' + (s.live || 0) + "</b> of " + (s.props || []).length + " live" + (s.domains && s.domains.length ? "<small>" + E(s.domains[0]) + "</small>" : "") + '</td><td class="num"><b>' + (s.bookings || 0) + "</b><small>" + (s.direct || 0) + " direct \xB7 " + gbp(s.revenue) + '</small></td><td class="num">' + (left == null ? "<small>Not used yet</small>" : credits.money(left)) + "<small>" + credits.money(Number(a.ai_used || 0) / credits.UNIT) + ' used, 30 days</small></td><td class="num">' + d(a.created_at) + "<small>Seen " + ago(a.last_seen) + '</small></td><td><a class="btn sm" href="/admin/hosts/' + E(a.id) + '">Open</a></td></tr>';
@@ -19836,23 +19877,12 @@ var require_stripe_auto = __commonJS({
   "server/stripe-auto.js"(exports, module) {
     var crypto = __require("crypto");
     var PLANS = [
-      ["GROWTH", "Bookingbooster Growth", 200],
+      ["GROWTH", "Bookingbooster Growth", 197],
       ["CALENDAR_SYNC", "Bookingbooster calendar sync add-on", 15]
     ];
     var PLATFORM_EVENTS = ["checkout.session.completed", "checkout.session.expired", "customer.subscription.updated", "customer.subscription.deleted", "invoice.payment_failed", "invoice.paid", "charge.refunded", "charge.dispute.closed"];
     var CONNECT_EVENTS = ["account.updated"];
     async function setup(stripe, baseUrl, { recreate } = {}) {
-      async function price(env, product2, amount, interval) {
-        const lookup = "bb_" + env.toLowerCase() + "_" + interval + "_" + amount;
-        const found = await stripe.api("GET", "/prices", { lookup_keys: [lookup], active: true, limit: 1 });
-        if (found.data && found.data[0]) return found.data[0].id;
-        return (await stripe.api("POST", "/prices", Object.assign({ product: product2, currency: "gbp", unit_amount: amount * 100, tax_behavior: "inclusive", lookup_key: lookup, nickname: lookup }, interval === "once" ? {} : { recurring: { interval } }))).id;
-      }
-      async function product(env, name) {
-        const prods = await stripe.api("GET", "/products", { active: true, limit: 100 });
-        const prod = (prods.data || []).find((p) => p.metadata && p.metadata.bb_plan === env);
-        return prod || stripe.api("POST", "/products", { name, tax_code: "txcd_10103001", metadata: { bb_plan: env } });
-      }
       async function endpoint(url2, events, connect) {
         const description = connect ? "Bookingbooster Connect events" : "Bookingbooster platform events";
         const all = await stripe.api("GET", "/webhook_endpoints", { limit: 100 });
@@ -19865,15 +19895,31 @@ var require_stripe_auto = __commonJS({
         const e = await stripe.api("POST", "/webhook_endpoints", Object.assign({ url: url2, enabled_events: events, description }, connect ? { connect: true } : {}));
         return { id: e.id, secret: e.secret };
       }
+      const prices = await makePrices(stripe);
+      const url = baseUrl + "/webhooks/stripe";
+      const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
+      return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
+    }
+    var AMOUNTS = PLANS.map((x) => x[0] + "=" + x[2]).join(",");
+    async function makePrices(stripe) {
+      async function price(env, product2, amount, interval) {
+        const lookup = "bb_" + env.toLowerCase() + "_" + interval + "_" + amount;
+        const found = await stripe.api("GET", "/prices", { lookup_keys: [lookup], active: true, limit: 1 });
+        if (found.data && found.data[0]) return found.data[0].id;
+        return (await stripe.api("POST", "/prices", Object.assign({ product: product2, currency: "gbp", unit_amount: amount * 100, tax_behavior: "inclusive", lookup_key: lookup, nickname: lookup }, interval === "once" ? {} : { recurring: { interval } }))).id;
+      }
+      async function product(env, name) {
+        const prods = await stripe.api("GET", "/products", { active: true, limit: 100 });
+        const prod = (prods.data || []).find((p) => p.metadata && p.metadata.bb_plan === env);
+        return prod || stripe.api("POST", "/products", { name, tax_code: "txcd_10103001", metadata: { bb_plan: env } });
+      }
       const prices = {};
       for (const [env, name, monthly] of PLANS) {
         const prod = await product(env, name);
         prices["STRIPE_PRICE_" + env] = await price(env, prod.id, monthly, "month");
         prices["STRIPE_PRICE_" + env + "_ANNUAL"] = await price(env, prod.id, env === "CALENDAR_SYNC" ? monthly * 12 : monthly * 10, "year");
       }
-      const url = baseUrl + "/webhooks/stripe";
-      const a = await endpoint(url, PLATFORM_EVENTS, false), b = await endpoint(url, CONNECT_EVENTS, true);
-      return { prices, webhookSecret: a.secret, connectWebhookSecret: b.secret, endpoints: [a.id, b.id] };
+      return prices;
     }
     function auto({ cfg, stripe, db, log }) {
       const get = db.prepare("SELECT v FROM kv WHERE k = ?"), set = db.prepare("INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)");
@@ -19965,6 +20011,18 @@ var require_stripe_auto = __commonJS({
               log("stripe archive", e.message);
             }
           }
+          if (s.amounts !== AMOUNTS) {
+            try {
+              const was = s.prices, now = await makePrices(stripe);
+              for (const [k, name] of Object.entries(P)) if (cfg.stripe.prices[name] && cfg.stripe.prices[name] === was[k]) delete cfg.stripe.prices[name];
+              s.prices = Object.assign({}, was, now);
+              s.amounts = AMOUNTS;
+              await set.run(KEY, JSON.stringify(s));
+              log("stripe", "New plan prices set up: " + AMOUNTS);
+            } catch (e) {
+              log("stripe prices", e.message);
+            }
+          }
           if (s.events !== PLATFORM_EVENTS.join(",") && s.endpoints && s.endpoints[0]) {
             try {
               await stripe.api("POST", "/webhook_endpoints/" + s.endpoints[0], { enabled_events: PLATFORM_EVENTS });
@@ -19982,7 +20040,7 @@ var require_stripe_auto = __commonJS({
         if (envDone) return null;
         try {
           const r = await setup(stripe, cfg.baseUrl, { recreate: true });
-          const saved = { fp: fp(), mode: mode(), at: t, events: PLATFORM_EVENTS.join(","), prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
+          const saved = { fp: fp(), mode: mode(), at: t, amounts: AMOUNTS, events: PLATFORM_EVENTS.join(","), prices: r.prices, webhookSecret: r.webhookSecret, connectWebhookSecret: r.connectWebhookSecret, endpoints: r.endpoints };
           await set.run(KEY, JSON.stringify(saved));
           apply(saved);
           log("stripe", "Prices and webhooks set up in " + mode() + " mode" + (cfg.stripe.keyName ? ", key from " + cfg.stripe.keyName : ""));
@@ -20135,7 +20193,7 @@ var require_flows = __commonJS({
               preview: "Everything we covered, and how to get your site live in 7 days.",
               body: [
                 "Thanks for your time on the call. A quick recap of how it works from here:",
-                { list: ["Growth is \xA3200 a month, no setup fee, cancel anytime", "Your direct booking site goes live within 7 days", "Guests pay you directly by card, and the money lands in your bank, not ours", "We start on your AI search and Google fix list in week 2"] },
+                { list: ["Growth is \xA3197 a month, no setup fee, cancel anytime", "Your direct booking site goes live within 7 days", "Guests pay you directly by card, and the money lands in your bank, not ours", "We start on your AI search and Google fix list in week 2"] },
                 "It takes about 5 minutes to start. Any questions, just reply to this email."
               ],
               cta: () => ({ label: "Start my site", href: app("/start?plan=Growth") })
@@ -20187,7 +20245,7 @@ var require_flows = __commonJS({
               body: [
                 "Yesterday you started your Bookingbooster account. Here is what opens up once your plan is started:",
                 { list: ["Your own booking website, live within 7 days", "Guests pay you directly, with no platform fees", "Calendar sync with Airbnb and Booking.com, so nothing double books", "Help to show up in Google and AI assistants like ChatGPT"] },
-                "Growth is \xA3200 a month, with no setup fee and no contract."
+                "Growth is \xA3197 a month, with no setup fee and no contract."
               ],
               cta: () => ({ label: "Start my plan", href: app("/app/pay") })
             },
@@ -22222,11 +22280,11 @@ var require_affiliates = __commonJS({
       }
       const commStatus = (c, t) => c.reversed >= c.amount ? c.note || "Refunded" : (c.reversed ? "Part refunded, " : "") + (c.clears_at > t ? "on hold until " + date(c.clears_at) : "cleared");
       const page = (title, inner, wide) => h.authPage(title + " \xB7 Bookingbooster partners", inner, wide);
-      const terms = '<div class="card"><b>How it works</b><ul style="margin:8px 0 0;padding-left:20px;color:var(--mut)"><li>You get your own link and a code. Hosts who sign up through either are yours for life.</li><li>You earn <b>' + pct + "</b> of every plan or package payment they make to us, monthly or yearly, for as long as they keep paying.</li><li>Your link is remembered for " + A.cookieDays + " days. If a host clicks someone else's link later, the latest link counts. A code typed at sign-up always counts.</li><li>Each commission is held for " + A.holdDays + " days in case of a refund, then it is yours. If a payment is refunded, the same share of the commission is taken back.</li><li>We pay by bank transfer at the start of each month once you have " + money(A.minPayout) + " or more cleared.</li><li>You cannot refer yourself. No spam, no bidding on our name in search ads, and no promising things we do not offer. We can close an account that breaks these rules.</li></ul></div>";
+      const terms = '<div class="card"><b>How it works</b><ul style="margin:8px 0 0;padding-left:20px;color:var(--mut)"><li>You get your own link and a code. Hosts who sign up through either are yours for life.</li><li>You earn <b>' + pct + "</b> of every plan payment they make to us, monthly or yearly, for as long as they keep paying.</li><li>Your link is remembered for " + A.cookieDays + " days. If a host clicks someone else's link later, the latest link counts. A code typed at sign-up always counts.</li><li>Each commission is held for " + A.holdDays + " days in case of a refund, then it is yours. If a payment is refunded, the same share of the commission is taken back.</li><li>We pay by bank transfer at the start of each month once you have " + money(A.minPayout) + " or more cleared.</li><li>You cannot refer yourself. No spam, no bidding on our name in search ads, and no promising things we do not offer. We can close an account that breaks these rules.</li></ul></div>";
       function landing(o) {
         o = o || {};
         const inp = (l, n, t, ac, v) => "<label>" + l + '<input name="' + n + '" type="' + t + '" autocomplete="' + ac + '" value="' + E(v || "") + '" required></label>';
-        return page("Partner programme", "<h1>Earn " + pct + " for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. You earn " + pct + " of every plan and package payment, for as long as they stay with us.</p>" + terms + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + '<form class="card" method="post" action="/partners/join"><b>Join the programme</b>' + inp("Your name", "name", "text", "name", o.name) + inp("Email", "email", "email", "email", o.email) + inp("Password (at least 10 characters)", "password", "password", "new-password") + '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="agree" required style="margin-top:4px">I agree to the programme rules above and the <a href="/terms" target="_blank">terms</a>.</label><button>Get my link</button></form><div class="links"><a href="/partners/login">Partner sign in</a><a href="/">About Bookingbooster</a></div>');
+        return page("Partner programme", "<h1>Earn " + pct + " for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. You earn " + pct + " of every plan payment, for as long as they stay with us.</p>" + terms + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + '<form class="card" method="post" action="/partners/join"><b>Join the programme</b>' + inp("Your name", "name", "text", "name", o.name) + inp("Email", "email", "email", "email", o.email) + inp("Password (at least 10 characters)", "password", "password", "new-password") + '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="agree" required style="margin-top:4px">I agree to the programme rules above and the <a href="/terms" target="_blank">terms</a>.</label><button>Get my link</button></form><div class="links"><a href="/partners/login">Partner sign in</a><a href="/">About Bookingbooster</a></div>');
       }
       function loginPage(o) {
         o = o || {};
@@ -25010,7 +25068,7 @@ var require_legal = __commonJS({
         "Bookingbooster is not a channel manager. The only sync is the optional calendar sync add-on, which reads calendar links (iCal) from your channel manager, Airbnb, Vrbo or Booking.com to block dates. It moves dates only. Those sites can be slow to update their own calendar links, so you remain responsible for avoiding double bookings."
       ) + sec(
         "Plans and payment",
-        "Bookingbooster costs \xA3200 a month, or \xA32,000 a year. There is no setup fee. The calendar sync add-on is \xA315 a month (\xA3180 a year). All prices include VAT. There is no minimum term.",
+        "Bookingbooster costs \xA3197 a month, or \xA31,970 a year. There is no setup fee. The calendar sync add-on is \xA315 a month (\xA3180 a year). All prices include VAT. There is no minimum term.",
         "Your first month (or year) is paid when you sign up, before you start setting up your account.",
         "We take payment monthly in advance through Stripe. If a payment fails, we will email you and may pause your account until it is paid. We will give you at least 30 days' notice of any price change.",
         "You can cancel at any time from your console. Your plan runs to the end of the month you have paid for. We do not refund part periods, except where the law says we must."
@@ -25653,48 +25711,17 @@ var require_server = __commonJS({
       if (await auth.userByEmail(email)) throw err(409, "There is already an account for that email. Sign in instead.");
       const ref = await aff.forSignup(req, b.ref, email);
       const plan = "Growth";
-      const buyDomain = registrar.enabled() && b.domainMode === "new" && b.property && String(b.property.domain || "").toLowerCase().trim();
-      const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith("." + cfg.sitesDomain)) && !ws.isOurs(buyDomain);
-      if (wantsBuy) {
-        const bad = registrar.problem(buyDomain);
-        if (bad) throw err(400, bad);
-        const c = registrar.contact({ name, email }, b.registrant || {});
-        if (c.err) throw err(400, c.err);
-        let s = null;
-        try {
-          s = await registrar.search([buyDomain]);
-        } catch (e) {
-          log("signup domain search", e.message);
-        }
-        if (s && s[0] && !s[0].ok) throw err(409, buyDomain + " has just been taken. Go back to the domain step and pick another.");
-      }
+      const wantsBuy = await domainToBuy(b, { name, email });
       const business = String(a.business || "").trim().slice(0, 80) || name.split(" ")[0] + "'s holiday lets";
       const wid = await ws.createLive({ business, owner: name, email, plan });
       const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
-      if (b.property && b.property.name) {
-        const p = {};
-        PROP_KEYS.forEach((k) => {
-          if (b.property[k] !== void 0) p[k] = b.property[k];
-        });
-        p.name = String(p.name).slice(0, 80);
-        p.nightly = Math.max(30, Math.min(3e3, +p.nightly || 120));
-        p.maxGuests = Math.max(1, Math.min(24, +p.maxGuests || 2));
-        p.reviews = 0;
-        p.rating = 0;
-        p.domain = String(p.domain || "").toLowerCase().replace(/[^a-z0-9.-]/g, "").slice(0, 80);
-        await ws.act(wid, "addProperty", [p]);
-        if (wantsBuy) {
-          const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
-          const o = await registrar.order(wid, pid, buyDomain, { name, email }, Object.assign({ organisation: a.business }, b.registrant || {}));
-          if (o.err) log("signup domain", wid, buyDomain, o.err);
-        }
-        if (b.addon || b.annual) await ws.withWs(wid, (BB) => {
-          const a2 = BB.store.get().account;
-          if (b.addon) a2.addon = true;
-          if (b.annual) a2.annual = true;
-          BB.store.commit({});
-        });
-      }
+      if (b.property && b.property.name) await addFirstHome(wid, b, { name, email, business: a.business }, wantsBuy);
+      if (b.addon || b.annual) await ws.withWs(wid, (BB) => {
+        const a2 = BB.store.get().account;
+        if (b.addon) a2.addon = true;
+        if (b.annual) a2.annual = true;
+        BB.store.commit({});
+      });
       await ws.setMeta(wid, { plan, billing_status: "trial" });
       await aff.attach(wid, ref);
       const token = await auth.startSession(uid), set = { "set-cookie": cookie("bb_s", token, 30 * 86400) };
@@ -25711,6 +25738,55 @@ var require_server = __commonJS({
       if (wantsBuy) ws.defer(registrar.due(wid), "domain");
       json(res, { ok: true, redirect: "/app?welcome=1" }, 200, set);
     }
+    async function domainToBuy(b, who) {
+      const buyDomain = registrar.enabled() && b.domainMode === "new" && b.property && String(b.property.domain || "").toLowerCase().trim();
+      const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith("." + cfg.sitesDomain)) && !ws.isOurs(buyDomain) ? buyDomain : "";
+      if (wantsBuy) {
+        const bad = registrar.problem(wantsBuy);
+        if (bad) throw err(400, bad);
+        const c = registrar.contact(who, b.registrant || {});
+        if (c.err) throw err(400, c.err);
+        let s = null;
+        try {
+          s = await registrar.search([wantsBuy]);
+        } catch (e) {
+          log("signup domain search", e.message);
+        }
+        if (s && s[0] && !s[0].ok) throw err(409, wantsBuy + " has just been taken. Go back to the domain step and pick another.");
+      }
+      return wantsBuy;
+    }
+    async function addFirstHome(wid, b, who, wantsBuy) {
+      const p = {};
+      PROP_KEYS.forEach((k) => {
+        if (b.property[k] !== void 0) p[k] = b.property[k];
+      });
+      p.name = String(p.name).slice(0, 80);
+      p.nightly = Math.max(30, Math.min(3e3, +p.nightly || 120));
+      p.maxGuests = Math.max(1, Math.min(24, +p.maxGuests || 2));
+      p.reviews = 0;
+      p.rating = 0;
+      p.domain = String(p.domain || "").toLowerCase().replace(/[^a-z0-9.-]/g, "").slice(0, 80);
+      await ws.act(wid, "addProperty", [p]);
+      if (wantsBuy) {
+        const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
+        const o = await registrar.order(wid, pid, wantsBuy, { name: who.name, email: who.email }, Object.assign({ organisation: who.business }, b.registrant || {}));
+        if (o.err) log("signup domain", wid, wantsBuy, o.err);
+      }
+    }
+    async function setupHome(req, res, w) {
+      if (w.kind !== "live") throw err(400, "Setup is for live accounts.");
+      if (w.state.properties.length) return json(res, { ok: true, redirect: "/app" });
+      const b = await jsonBody(req, 5e4);
+      if (!b.property || !String(b.property.name || "").trim()) throw err(400, "Add your home\u2019s name.");
+      const who = { name: w.state.account.owner, email: w.state.account.email, business: w.state.account.business };
+      const wantsBuy = await domainToBuy(b, who);
+      await addFirstHome(w.id, b, who, wantsBuy);
+      ws.defer(welcome(w.id), "welcome");
+      if (wantsBuy) ws.defer(registrar.due(w.id), "domain");
+      json(res, { ok: true, redirect: "/app?welcome=1" });
+    }
+    var needsSetup = async (req, w) => w.kind === "live" && !w.state.properties.length && !await isAdmin(req);
     async function planCheckout(w) {
       const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
       return stripe.subscribe({ customer: r.stripe_customer || void 0, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + "/app/pay/done?session={CHECKOUT_SESSION_ID}", cancelUrl: cfg.baseUrl + "/app/pay", meta: { workspace: w.id, kind: "plan", plan } });
@@ -25725,7 +25801,7 @@ var require_server = __commonJS({
         a.billing = "active";
         BB.store.commit({});
       });
-      if (first) {
+      if (first && (await ws.open(wid)).state.properties.length) {
         ws.defer(welcome(wid), "welcome");
         ws.defer(effects.siteLive(wid), "site-live");
       }
@@ -25739,7 +25815,7 @@ var require_server = __commonJS({
       return !await isAdmin(req);
     }
     function payPage(w, note) {
-      const s = w.state, price = 200, ended = (w.row || {}).billing_status === "cancelled";
+      const s = w.state, price = 197, ended = (w.row || {}).billing_status === "cancelled";
       const due = s.account.annual ? "\xA3" + price * 10 + (ended ? " for the year" : " for your first year") : "\xA3" + price + (ended ? " for the month" : " for your first month");
       return authPage(ended ? "Restart your plan" : "Start your plan", (ended ? "<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay " + due + " to restart your plan. Everything you set up is still here.</p>" : "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>") + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
     }
@@ -25747,7 +25823,7 @@ var require_server = __commonJS({
       const w = await ws.open(wid);
       const s = w.state;
       const p = s.properties[0];
-      const v = { first_name: s.account.owner.split(" ")[0], plan_name: s.account.plan, plan_price: "\xA3200 a month", property_name: p ? p.name : "your home", go_live_date: "today", site_url: p ? urls.site(w, p) : cfg.baseUrl, dashboard_url: cfg.baseUrl + "/app", account_url: cfg.baseUrl + "/app", setup_url: cfg.baseUrl + "/app", help_url: cfg.baseUrl + "/help", setup_lead_name: "The Bookingbooster team", setup_lead_initials: "BB", company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + "/privacy", unsubscribe_url: cfg.baseUrl + "/app", preferences_url: cfg.baseUrl + "/app" };
+      const v = { first_name: s.account.owner.split(" ")[0], plan_name: s.account.plan, plan_price: "\xA3197 a month", property_name: p ? p.name : "your home", go_live_date: "today", site_url: p ? urls.site(w, p) : cfg.baseUrl, dashboard_url: cfg.baseUrl + "/app", account_url: cfg.baseUrl + "/app", setup_url: cfg.baseUrl + "/app", help_url: cfg.baseUrl + "/help", setup_lead_name: "The Bookingbooster team", setup_lead_initials: "BB", company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + "/privacy", unsubscribe_url: cfg.baseUrl + "/app", preferences_url: cfg.baseUrl + "/app" };
       await msg.sendEmail({ workspaceId: wid, to: s.account.email, subject: "Welcome to Bookingbooster", text: "Welcome, " + v.first_name + ". Your console: " + v.dashboard_url, html: msg.template("host-o01-welcome", v), meta: { template: "welcome" } });
     }
     var CLEAR_OFFLINE = '<script>try{caches.keys().then(function(k){k.forEach(function(n){if(n.indexOf("bb-app")===0)caches.delete(n)})})}catch(e){}</script>';
@@ -26280,8 +26356,18 @@ Disallow: /
               log("pay done", e.message);
             }
           }
-          return redirect(res, await mustPay(req, w) ? "/app/pay?msg=pending" : "/app?welcome=1");
+          return redirect(res, await mustPay(req, w) ? "/app/pay?msg=pending" : (await ws.open(w.id)).state.properties.length ? "/app?welcome=1" : "/app/setup");
         }
+        if (p === "/app/setup" && m === "GET") {
+          if (!await needsSetup(req, w)) return redirect(res, "/app");
+          return send(res, 200, pages.page({
+            title: "Set up your site \xB7 Bookingbooster",
+            robots: "noindex",
+            boot: { mode: "marketing", setup: true, setupUrl: "/api/setup", state: marketing(), opts: { view: "onboard" }, company: publicCompany(), dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: "/api/domains/search", loggedIn: true }
+          }), "text/html; charset=utf-8", { "cache-control": "no-store" });
+        }
+        if (p === "/api/setup" && m === "POST") return await setupHome(req, res, w);
+        if ((p === "/app" || p === "/app/phone") && await needsSetup(req, w)) return redirect(res, "/app/setup");
         if (w.catchUp()) ws.persist(w, { rollover: true });
         if (p === "/app" || p === "/app/phone") {
           flows.seen(w.id).catch(() => {
@@ -26767,7 +26853,7 @@ Disallow: /
     async function billingPage(w, sp) {
       const r = await ws.row(w.id);
       const s = w.state;
-      const price = 200;
+      const price = 197;
       const status = { trial: "Not paid yet. Your booking site goes live to guests once your plan is paid", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
       return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === "cancelled" ? "Restart your plan" : "Start your plan") + "</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
     }

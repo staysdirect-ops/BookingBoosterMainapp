@@ -349,36 +349,19 @@ async function signup(req, res) {
   if (pw.length < 10) throw err(400, 'Use a password of at least 10 characters.');
   if (await auth.userByEmail(email)) throw err(409, 'There is already an account for that email. Sign in instead.');
   const ref = await aff.forSignup(req, b.ref, email); // the partner who referred them, if any
-  const plan = 'Growth'; // one plan: £200 a month, paid upfront, no setup fee
-  // A new domain to buy for them: check it and the registration contact before anything is created.
-  const buyDomain = registrar.enabled() && b.domainMode === 'new' && b.property && String(b.property.domain || '').toLowerCase().trim();
-  const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith('.' + cfg.sitesDomain)) && !ws.isOurs(buyDomain);
-  if (wantsBuy) {
-    const bad = registrar.problem(buyDomain); if (bad) throw err(400, bad);
-    const c = registrar.contact({ name, email }, b.registrant || {}); if (c.err) throw err(400, c.err);
-    let s = null; try { s = await registrar.search([buyDomain]); } catch (e) { log('signup domain search', e.message); }
-    if (s && s[0] && !s[0].ok) throw err(409, buyDomain + ' has just been taken. Go back to the domain step and pick another.');
-  }
+  const plan = 'Growth'; // one plan: £197 a month, paid upfront, no setup fee
+  const wantsBuy = await domainToBuy(b, { name, email });
   const business = String(a.business || '').trim().slice(0, 80) || name.split(' ')[0] + "'s holiday lets";
   const wid = await ws.createLive({ business, owner: name, email, plan });
   const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
-  if (b.property && b.property.name) {
-    const p = {}; PROP_KEYS.forEach(k => { if (b.property[k] !== undefined) p[k] = b.property[k]; });
-    p.name = String(p.name).slice(0, 80); p.nightly = Math.max(30, Math.min(3000, +p.nightly || 120)); p.maxGuests = Math.max(1, Math.min(24, +p.maxGuests || 2));
-    p.reviews = 0; p.rating = 0; // reviews are earned here, never copied in
-    p.domain = String(p.domain || '').toLowerCase().replace(/[^a-z0-9.-]/g, '').slice(0, 80);
-    await ws.act(wid, 'addProperty', [p]);
-    if (wantsBuy) {
-      const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
-      const o = await registrar.order(wid, pid, buyDomain, { name, email }, Object.assign({ organisation: a.business }, b.registrant || {}));
-      if (o.err) log('signup domain', wid, buyDomain, o.err);
-    }
-    if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
-  }
+  if (b.property && b.property.name) await addFirstHome(wid, b, { name, email, business: a.business }, wantsBuy);
+  // Pay first sends only the account: the plan choices still go to checkout.
+  if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
   await aff.attach(wid, ref);
   const token = await auth.startSession(uid), set = { 'set-cookie': cookie('bb_s', token, 30 * 86400) };
-  // Pay first: with card billing on, the new host goes straight to Stripe Checkout and gets into setup once it is paid.
+  // Pay first: with card billing on, the new host goes straight to Stripe Checkout from the account form, and sets up
+  // their site at /app/setup once it is paid. Nothing in the console opens before that.
   if (stripe.enabled) {
     let to = '/app/pay';
     try { to = (await planCheckout(await ws.open(wid))).url; } catch (e) { log('signup checkout', e.message); }
@@ -388,6 +371,46 @@ async function signup(req, res) {
   if (wantsBuy) ws.defer(registrar.due(wid), 'domain'); // no card billing on this server: buy it now
   json(res, { ok: true, redirect: '/app?welcome=1' }, 200, set);
 }
+// A new domain to buy for them: check it and the registration contact before anything is created. Returns the domain, or ''.
+async function domainToBuy(b, who) {
+  const buyDomain = registrar.enabled() && b.domainMode === 'new' && b.property && String(b.property.domain || '').toLowerCase().trim();
+  const wantsBuy = buyDomain && !(cfg.sitesDomain && buyDomain.endsWith('.' + cfg.sitesDomain)) && !ws.isOurs(buyDomain) ? buyDomain : '';
+  if (wantsBuy) {
+    const bad = registrar.problem(wantsBuy); if (bad) throw err(400, bad);
+    const c = registrar.contact(who, b.registrant || {}); if (c.err) throw err(400, c.err);
+    let s = null; try { s = await registrar.search([wantsBuy]); } catch (e) { log('signup domain search', e.message); }
+    if (s && s[0] && !s[0].ok) throw err(409, wantsBuy + ' has just been taken. Go back to the domain step and pick another.');
+  }
+  return wantsBuy;
+}
+// The first home, from the setup steps (after payment) or from a sign-up on a server without card billing.
+async function addFirstHome(wid, b, who, wantsBuy) {
+  const p = {}; PROP_KEYS.forEach(k => { if (b.property[k] !== undefined) p[k] = b.property[k]; });
+  p.name = String(p.name).slice(0, 80); p.nightly = Math.max(30, Math.min(3000, +p.nightly || 120)); p.maxGuests = Math.max(1, Math.min(24, +p.maxGuests || 2));
+  p.reviews = 0; p.rating = 0; // reviews are earned here, never copied in
+  p.domain = String(p.domain || '').toLowerCase().replace(/[^a-z0-9.-]/g, '').slice(0, 80);
+  await ws.act(wid, 'addProperty', [p]);
+  if (wantsBuy) {
+    const pid = (await ws.open(wid)).state.properties.slice(-1)[0].id;
+    const o = await registrar.order(wid, pid, wantsBuy, { name: who.name, email: who.email }, Object.assign({ organisation: who.business }, b.registrant || {}));
+    if (o.err) log('signup domain', wid, wantsBuy, o.err);
+  }
+}
+// After payment: the setup steps send the first home here. Only once, and only for a paid account (mustPay guards /api/).
+async function setupHome(req, res, w) {
+  if (w.kind !== 'live') throw err(400, 'Setup is for live accounts.');
+  if (w.state.properties.length) return json(res, { ok: true, redirect: '/app' });
+  const b = await jsonBody(req, 5e4); if (!b.property || !String(b.property.name || '').trim()) throw err(400, 'Add your home’s name.');
+  const who = { name: w.state.account.owner, email: w.state.account.email, business: w.state.account.business };
+  const wantsBuy = await domainToBuy(b, who);
+  await addFirstHome(w.id, b, who, wantsBuy); // with the plan paid, this also sends the "site is live" email
+  ws.defer(welcome(w.id), 'welcome');
+  if (wantsBuy) ws.defer(registrar.due(w.id), 'domain');
+  json(res, { ok: true, redirect: '/app?welcome=1' });
+}
+// Paid, live, and no home yet: setup is the only thing to do. The team can still look around.
+const needsSetup = async (req, w) => w.kind === 'live' && !w.state.properties.length && !await isAdmin(req);
+
 // Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
 async function planCheckout(w) {
   const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
@@ -398,7 +421,8 @@ async function planPaid(wid, customer, plan) {
   const r = await ws.row(wid); const first = !r || !r.billing_status || r.billing_status === 'trial';
   await ws.setMeta(wid, { billing_status: 'active', stripe_customer: customer, plan });
   await ws.withWs(wid, BB => { const a = BB.store.get().account; if (plan) a.plan = plan; a.billing = 'active'; BB.store.commit({}); });
-  if (first) { ws.defer(welcome(wid), 'welcome'); ws.defer(effects.siteLive(wid), 'site-live'); } // the "site is live" email waits for payment too
+  // The "site is live" email waits for payment too. A host who paid before setting up gets both when setup is done.
+  if (first && (await ws.open(wid)).state.properties.length) { ws.defer(welcome(wid), 'welcome'); ws.defer(effects.siteLive(wid), 'site-live'); }
   ws.defer(registrar.due(wid), 'domain'); // a new domain chosen at sign-up is only bought once the plan is paid
 }
 // Hosts who have not paid yet only see the payment page, their billing and their account. Team members are let through.
@@ -409,7 +433,7 @@ async function mustPay(req, w) {
   return !await isAdmin(req);
 }
 function payPage(w, note) {
-  const s = w.state, price = 200, ended = (w.row || {}).billing_status === 'cancelled';
+  const s = w.state, price = 197, ended = (w.row || {}).billing_status === 'cancelled';
   const due = s.account.annual ? '£' + price * 10 + (ended ? ' for the year' : ' for your first year') : '£' + price + (ended ? ' for the month' : ' for your first month');
   return authPage(ended ? 'Restart your plan' : 'Start your plan', (ended ? '<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay ' + due + ' to restart your plan. Everything you set up is still here.</p>'
     : '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>') +
@@ -421,7 +445,7 @@ function payPage(w, note) {
 }
 async function welcome(wid) {
   const w = await ws.open(wid); const s = w.state; const p = s.properties[0];
-  const v = { first_name: s.account.owner.split(' ')[0], plan_name: s.account.plan, plan_price: '£200 a month', property_name: p ? p.name : 'your home', go_live_date: 'today', site_url: p ? urls.site(w, p) : cfg.baseUrl, dashboard_url: cfg.baseUrl + '/app', account_url: cfg.baseUrl + '/app', setup_url: cfg.baseUrl + '/app', help_url: cfg.baseUrl + '/help', setup_lead_name: 'The Bookingbooster team', setup_lead_initials: 'BB', company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + '/privacy', unsubscribe_url: cfg.baseUrl + '/app', preferences_url: cfg.baseUrl + '/app' };
+  const v = { first_name: s.account.owner.split(' ')[0], plan_name: s.account.plan, plan_price: '£197 a month', property_name: p ? p.name : 'your home', go_live_date: 'today', site_url: p ? urls.site(w, p) : cfg.baseUrl, dashboard_url: cfg.baseUrl + '/app', account_url: cfg.baseUrl + '/app', setup_url: cfg.baseUrl + '/app', help_url: cfg.baseUrl + '/help', setup_lead_name: 'The Bookingbooster team', setup_lead_initials: 'BB', company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + '/privacy', unsubscribe_url: cfg.baseUrl + '/app', preferences_url: cfg.baseUrl + '/app' };
   await msg.sendEmail({ workspaceId: wid, to: s.account.email, subject: 'Welcome to Bookingbooster', text: 'Welcome, ' + v.first_name + '. Your console: ' + v.dashboard_url, html: msg.template('host-o01-welcome', v), meta: { template: 'welcome' } });
 }
 
@@ -795,8 +819,15 @@ async function route(req, res) {
         try { const cs = await stripe.api('GET', '/checkout/sessions/' + sid); const md = cs.metadata || {};
           if (cs.status === 'complete' && md.kind === 'plan' && md.workspace === w.id) await planPaid(w.id, cs.customer, md.plan); } catch (e) { log('pay done', e.message); }
       }
-      return redirect(res, await mustPay(req, w) ? '/app/pay?msg=pending' : '/app?welcome=1');
+      return redirect(res, await mustPay(req, w) ? '/app/pay?msg=pending' : (await ws.open(w.id)).state.properties.length ? '/app?welcome=1' : '/app/setup');
     }
+    if (p === '/app/setup' && m === 'GET') {
+      if (!await needsSetup(req, w)) return redirect(res, '/app');
+      return send(res, 200, pages.page({ title: 'Set up your site · Bookingbooster', robots: 'noindex',
+        boot: { mode: 'marketing', setup: true, setupUrl: '/api/setup', state: marketing(), opts: { view: 'onboard' }, company: publicCompany(), dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: '/api/domains/search', loggedIn: true } }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
+    }
+    if (p === '/api/setup' && m === 'POST') return await setupHome(req, res, w);
+    if ((p === '/app' || p === '/app/phone') && await needsSetup(req, w)) return redirect(res, '/app/setup');
     if (w.catchUp()) ws.persist(w, { rollover: true });
     if (p === '/app' || p === '/app/phone') { flows.seen(w.id).catch(() => {}); } // for the quiet-host check
     if (p === '/app' || p === '/app/phone') return send(res, 200, pages.page({ title: w.state.account.business + ' · Bookingbooster', robots: 'noindex', app: true, boot: await hostBoot(w, p === '/app/phone' ? 'mobile' : 'app'), banner: testNotes().length && u.searchParams.get('welcome') ? '<b>Test mode</b> ' + E(testNotes().join(', ')) + ' are not switched on for this server yet.' : (await isAdmin(req) ? '<b>Team</b> <a href="/admin">Open the team admin</a>: leads and outreach, email campaigns and templates, host accounts, Stripe.' : null) }), 'text/html; charset=utf-8', { 'cache-control': 'no-store' });
@@ -1152,7 +1183,7 @@ async function deleteWorkspace(wid) {
   for (const dir of ['uploads', 'media']) await files.delPrefix(dir + '/' + wid);
 }
 async function billingPage(w, sp) {
-  const r = await ws.row(w.id); const s = w.state; const price = 200;
+  const r = await ws.row(w.id); const s = w.state; const price = 197;
   const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
   return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking.</p></div>' +
     (stripe.enabled ? (r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === 'cancelled' ? 'Restart your plan' : 'Start your plan') + '</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
