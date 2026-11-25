@@ -1,5 +1,5 @@
-// Partner programme: anyone joins at /partners, their link or code credits the hosts they send, and they earn 25% of
-// every payment those hosts make (the first plan payment and every renewal), with refunds taken back and payouts marked by the team.
+// Partner programme: anyone joins at /partners, their link or code credits the hosts they send, and they earn a one-off
+// £50 bonus on each host's first plan payment, with refunds taken back and payouts marked by the team.
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');
@@ -34,7 +34,9 @@ test('anyone can join and gets their own link and code', async () => {
   partner = setCookie(r, 'bb_aff'); assert.ok(partner);
   const dash = await (await raw('/partners/dashboard', { headers: { cookie: partner } })).text();
   code = dash.match(/\/r\/([a-z0-9]+)/)[1]; assert.match(code, /^priya\d{3}$/);
-  assert.match(dash, /25%/); assert.match(dash, /Nobody yet/);
+  assert.match(dash, /£50/); assert.doesNotMatch(dash, /25%/); assert.match(dash, /Nobody yet/);
+  assert.match(dash, /Add where we pay you/, 'asks for payout details until they are saved');
+  assert.match(await (await raw('/sitemap.xml')).text(), /\/partners</, 'the programme page is in the sitemap');
   assert.equal((await t.sql("SELECT count(*)::int AS n FROM outbox WHERE recipient = 'priya@example.com'"))[0].n, 1, 'welcome email with the link');
   assert.equal((await post('/partners/join', { name: 'Priya', email: 'PRIYA@example.com', password: 'partnerpass1', agree: 'on' })).status, 400, 'one account per email');
   assert.equal((await raw('/partners/dashboard')).headers.get('location'), '/partners/login', 'signed in only');
@@ -46,8 +48,10 @@ test('the link is remembered for 90 days and credits the host who signs up', asy
   const r = await raw('/r/' + code + '?to=/pricing');
   assert.equal(r.status, 302); assert.equal(r.headers.get('location'), '/pricing');
   const ref = r.headers.getSetCookie().find(c => c.startsWith('bb_ref=')); assert.match(ref, /Max-Age=7776000/); assert.match(ref, /HttpOnly/);
-  await raw('/r/' + code); // the same visitor again the same day: one click
-  assert.equal((await t.sql('SELECT sum(n)::int AS n FROM aff_clicks'))[0].n, 1);
+  await raw('/r/' + code); // the same visitor again the same day: one click, two views
+  assert.deepEqual((await t.sql('SELECT sum(n)::int AS n, sum(views)::int AS v FROM aff_clicks'))[0], { n: 1, v: 2 });
+  const d = (await (await raw('/partners/dashboard', { headers: { cookie: partner } })).text()).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.match(d, /2 link views/); assert.match(d, /1 clicks \(people\)/); assert.match(d, /Link views per day/);
   const q = await raw('/start?plan=growth&ref=' + code.toUpperCase()); assert.equal(q.headers.get('location'), '/start?plan=growth'); assert.ok(setCookie(q, 'bb_ref'));
   assert.equal(setCookie(await raw('/r/nobody123'), 'bb_ref'), '', 'an unknown code sets nothing');
   const startPage = await (await raw('/start', { headers: { cookie: 'bb_ref=' + code } })).text(); assert.match(startPage, new RegExp('"ref":"' + code + '"'), 'the code shows on the sign-up form');
@@ -56,6 +60,9 @@ test('the link is remembered for 90 days and credits the host who signs up', asy
   const [row] = await t.sql('SELECT r.how, a.code FROM referrals r JOIN affiliates a ON a.id = r.affiliate_id WHERE r.workspace_id = ?', hostA);
   assert.deepEqual(row, { how: 'link', code });
   assert.ok((await t.sql("SELECT subject FROM outbox WHERE recipient = 'priya@example.com'")).some(m => /referred just joined/.test(m.subject)));
+  // The sign-up form fills in the link's code, so the browser sends it back as typed: still the link.
+  assert.equal((await hostSignup('a2@example.co.uk', 'bb_ref=' + code, code)).status, 200);
+  assert.equal((await t.sql('SELECT how FROM referrals WHERE workspace_id = ?', await wsOf('a2@example.co.uk')))[0].how, 'link');
 });
 
 test('a typed code wins over the cookie, a mistyped one is refused, and nobody can refer themselves', async () => {
@@ -68,35 +75,42 @@ test('a typed code wins over the cookie, a mistyped one is refused, and nobody c
   assert.equal((await t.sql('SELECT * FROM referrals WHERE workspace_id = ?', await wsOf('priya@example.com'))).length, 0, 'no self-referral');
 });
 
-test('25% of the first payment and of every plan payment after it, recorded once', async () => {
+test('a one-off £50 bonus on the first plan payment, recorded once, and nothing for later payments', async () => {
   await hook({ type: 'invoice.paid', data: { object: { id: 'in_setup', amount_paid: 20000, billing_reason: 'subscription_create', customer: 'cus_a', charge: 'ch_setup', subscription_details: { metadata: { workspace: hostA, kind: 'plan' } } } } });
   await hook({ type: 'invoice.paid', data: { object: { id: 'in_setup', amount_paid: 20000, billing_reason: 'subscription_create', customer: 'cus_a', charge: 'ch_setup', subscription_details: { metadata: { workspace: hostA, kind: 'plan' } } } } }); // Stripe retries
-  const c = await comm('stripe:in_setup'); assert.equal(c.amount, 5000); assert.equal(c.kind, 'plan'); assert.equal(c.gross, 20000);
+  const c = await comm('stripe:in_setup'); assert.equal(c.amount, 5000); assert.equal(c.kind, 'bonus'); assert.equal(c.gross, 20000);
   // checkout completes and links the Stripe customer; later invoices carry only the customer
   await hook({ type: 'checkout.session.completed', data: { object: { id: 'cs_a', customer: 'cus_a', metadata: { workspace: hostA, kind: 'plan', plan: 'Growth' } } } });
   await hook({ type: 'invoice.paid', data: { object: { id: 'in_m1', amount_paid: 20000, billing_reason: 'subscription_cycle', customer: 'cus_a', charge: 'ch_m1' } } });
   await hook({ type: 'invoice.paid', data: { object: { id: 'in_new', amount_paid: 20000, billing_reason: 'subscription_cycle', customer: 'cus_a', parent: { subscription_details: { metadata: { workspace: hostA } } } } } });
-  assert.equal((await comm('stripe:in_m1')).amount, 5000); assert.equal((await comm('stripe:in_m1')).kind, 'plan');
-  assert.equal((await comm('stripe:in_new')).amount, 5000, 'newer Stripe API shape');
+  assert.equal(await comm('stripe:in_m1'), undefined, 'one bonus per host'); assert.equal(await comm('stripe:in_new'), undefined);
+  assert.equal((await t.sql('SELECT count(*)::int AS n FROM commissions'))[0].n, 1);
   await hook({ type: 'invoice.paid', data: { object: { id: 'in_free', amount_paid: 0, billing_reason: 'subscription_cycle', customer: 'cus_a' } } });
   await hook({ type: 'invoice.paid', data: { object: { id: 'in_team', amount_paid: 99700, billing_reason: 'subscription_create', subscription_details: { metadata: { workspace: await wsOf('host@example.co.uk') } } } } });
   assert.equal(await comm('stripe:in_free'), undefined); assert.equal(await comm('stripe:in_team'), undefined, 'hosts nobody referred earn nothing');
 });
 
-test('refunds and lost chargebacks take the same share back', async () => {
-  await hook({ type: 'charge.refunded', data: { object: { id: 'ch_m1', invoice: 'in_m1', amount: 20000, amount_refunded: 10000 } } });
-  let c = await comm('stripe:in_m1'); assert.equal(c.reversed, 2500); assert.equal(c.note, 'Part refunded');
-  await hook({ type: 'charge.refunded', data: { object: { id: 'ch_m1', invoice: 'in_m1', amount: 20000, amount_refunded: 20000 } } });
-  assert.equal((await comm('stripe:in_m1')).reversed, 5000);
-  await hook({ type: 'charge.refunded', data: { object: { id: 'ch_x', payment_intent: 'pi_new', amount: 20000, amount_refunded: 20000 } } }); // no invoice on the charge
+test('refunds and lost chargebacks take the same share of the bonus back, and a full refund lets the next payment earn it', async () => {
+  // a second referred host, newer Stripe API shape: the charge has no invoice, so the refund is matched by payment intent
+  const hostA2 = await wsOf('a2@example.co.uk');
+  await hook({ type: 'invoice.paid', data: { object: { id: 'in_new', amount_paid: 20000, billing_reason: 'subscription_create', parent: { subscription_details: { metadata: { workspace: hostA2 } } } } } });
+  assert.equal((await comm('stripe:in_new')).amount, 5000, 'newer Stripe API shape');
+  await hook({ type: 'charge.refunded', data: { object: { id: 'ch_x', payment_intent: 'pi_new', amount: 20000, amount_refunded: 10000 } } });
+  let c = await comm('stripe:in_new'); assert.equal(c.reversed, 2500); assert.equal(c.note, 'Part refunded');
+  await hook({ type: 'charge.refunded', data: { object: { id: 'ch_x', payment_intent: 'pi_new', amount: 20000, amount_refunded: 20000 } } });
   assert.equal((await comm('stripe:in_new')).reversed, 5000);
+  await hook({ type: 'invoice.paid', data: { object: { id: 'in_new2', amount_paid: 20000, billing_reason: 'subscription_cycle', parent: { subscription_details: { metadata: { workspace: hostA2 } } } } } });
+  assert.equal((await comm('stripe:in_new2')).amount, 5000, 'they paid again after a full refund');
+  await hook({ type: 'invoice.paid', data: { object: { id: 'in_small', amount_paid: 1500, billing_reason: 'subscription_create', customer: 'cus_b', subscription_details: { metadata: { workspace: await wsOf('b@example.co.uk') } } } } });
+  assert.equal(await comm('stripe:in_small'), undefined, 'a payment under £50 earns no bonus');
   await hook({ type: 'charge.dispute.closed', data: { object: { id: 'dp_1', charge: 'ch_setup', amount: 20000, status: 'won' } } });
   assert.equal((await comm('stripe:in_setup')).reversed, 0, 'a won dispute changes nothing');
+  await t.sql("DELETE FROM commissions WHERE workspace_id = ?", hostA2); // keep the rest of the story about host A
 });
 
 test('commission is on hold for 30 days, then the team pays it and marks it paid', async () => {
   let dash = await (await raw('/partners/dashboard', { headers: { cookie: partner } })).text();
-  assert.match(dash, /£50\.00 on hold|£50\.00<\/div><small[^>]*>on hold/); assert.match(dash, /on hold until/); assert.match(dash, /Host 1/); assert.doesNotMatch(dash, /Ref Host|a@example\.co\.uk/, 'no host names');
+  assert.match(dash, /£50\.00<\/div><small[^>]*>pending \(on hold\)/); assert.match(dash, /on hold until/); assert.match(dash, /Host 1/); assert.doesNotMatch(dash, /Ref Host|a@example\.co\.uk/, 'no host names');
   assert.equal((await raw('/admin/affiliates', { headers: { cookie: partner } })).status, 404, 'team only');
   await t.sql('UPDATE commissions SET clears_at = ?', Date.now() - DAY);
   const page = await (await raw('/admin/affiliates', { headers: { cookie: admin } })).text();
@@ -111,12 +125,15 @@ test('commission is on hold for 30 days, then the team pays it and marks it paid
   assert.match(await (await raw('/admin/affiliates', { headers: { cookie: admin } })).text(), /12-34-56 12345678/);
 });
 
-test('bank transfers the team records earn commission too, and a refund after payout comes off the next one', async () => {
-  assert.equal((await post('/admin/affiliates/bank', { workspace: hostA, amount: '200.00', kind: 'plan', reference: 'HOSTA-DEC' }, admin)).status, 200);
-  assert.equal((await post('/admin/affiliates/bank', { workspace: hostA, amount: '200.00', kind: 'plan', reference: 'HOSTA-DEC' }, admin)).status, 200);
-  const rows = await t.sql("SELECT * FROM commissions WHERE source = 'bank'"); assert.equal(rows.length, 1); assert.equal(rows[0].amount, 5000);
-  // the setup payment, already paid out, is refunded in full
+test('bank transfers the team records can earn the bonus too, once per host, and a refund after payout comes off the next one', async () => {
+  // host A already earned the bonus by card, so a bank payment from them records nothing
+  assert.match(await (await post('/admin/affiliates/bank', { workspace: hostA, amount: '200.00', kind: 'plan', reference: 'HOSTA-DEC' }, admin)).text(), /already earned the bonus/);
+  // the card payment, already paid out, is refunded in full: the bonus comes off the next payout
   await hook({ type: 'charge.refunded', data: { object: { id: 'ch_setup', amount: 20000, amount_refunded: 20000 } } });
+  assert.equal((await post('/admin/affiliates/bank', { workspace: hostA, amount: '200.00', kind: 'plan', reference: 'HOSTA-JAN' }, admin)).status, 200);
+  assert.equal((await post('/admin/affiliates/bank', { workspace: hostA, amount: '200.00', kind: 'plan', reference: 'HOSTA-JAN' }, admin)).status, 200);
+  const rows = await t.sql("SELECT * FROM commissions WHERE source = 'bank'"); assert.equal(rows.length, 1); assert.equal(rows[0].amount, 5000);
+  await post('/admin/affiliates/reverse', { id: rows[0].id }, admin);
   const id = (await t.sql('SELECT id FROM affiliates WHERE code = ?', code))[0].id;
   assert.match(await (await raw('/admin/affiliates', { headers: { cookie: admin } })).text(), /Due -£50\.00/);
   assert.equal((await post('/admin/affiliates/reverse', { id: rows[0].id }, admin)).status, 200);

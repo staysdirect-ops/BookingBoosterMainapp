@@ -80,6 +80,7 @@ module.exports = {
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
   // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
   // is held for refunds, and the smallest payout (pence).
-  affiliate: { rate: Math.max(0, Math.min(100, +(E.AFFILIATE_RATE || 25))), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
+  // The bonus is capped at £50: a referred host must never cost more than £50 to win.
+  affiliate: { bonus: Math.round(Math.max(0, Math.min(50, +(E.AFFILIATE_BONUS || 50))) * 100), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
   icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
 };

@@ -709,7 +709,7 @@ async function route(req, res) {
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
   if (p === '/sitemap.xml') {
     // Privacy and terms join the sitemap once a solicitor has reviewed them (LEGAL_REVIEWED); until then they say Draft and stay out of search.
-    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }].concat(answers.list().map(x => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
+    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }, { loc: cfg.baseUrl + '/partners' }].concat(answers.list().map(x => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
     for (const id of await ws.liveIds()) { const w = await ws.open(id); if (unpaid(w)) continue; for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }
@@ -1145,7 +1145,7 @@ async function accountPage(w, sess, note, err) {
     '<div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div>' +
     '<form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' +
     inp('Type DELETE to confirm', 'confirm', '', 'text', ' required autocomplete="off"') + inp('Your password', 'password', '', 'password', ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form>' +
-    '<div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn ' + cfg.affiliate.rate + '% of everything hosts you refer pay us, for as long as they stay. <a href="/partners">Get your partner link</a></p></div>' +
+    '<div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn £' + cfg.affiliate.bonus / 100 + ' for every host you refer, once they make their first payment. <a href="/partners">Get your partner link</a></p></div>' +
     '<div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
 }
 async function accountPost(req, res, p, w, sess) {
