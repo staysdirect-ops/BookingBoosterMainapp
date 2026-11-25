@@ -20,13 +20,14 @@ const I = {
   x: '<path d="M6 6l12 12M18 6L6 18"/>',
   doc: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
   share: '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
   pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
 };
 const icon = (k, cls) => '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (I[k] || I.spark) + '</svg>';
 const MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 const NAV = [
-  ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['hosts', '/admin/hosts', 'home', 'Users'], ['partners', '/admin/affiliates', 'share', 'Partners']]],
+  ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['outreach', '/admin/outreach', 'phone', 'Outreach'], ['hosts', '/admin/hosts', 'home', 'Users'], ['partners', '/admin/affiliates', 'share', 'Partners']]],
   ['Marketing', [['flows', '/admin/flows', 'spark', 'Sales flows'], ['campaigns', '/admin/campaigns', 'mail', 'Email campaigns'], ['emails', '/admin/emails', 'doc', 'Email templates'], ['social', '/admin/social', 'share', 'Social posts']]],
   ['Settings', [['settings', '/admin/settings', 'gear', 'Stripe, links and backups']]],
 ];

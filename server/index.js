@@ -69,6 +69,7 @@ const signin = require('./signin')({ cfg, auth, msg, log });
 const campaigns = require('./campaigns')({ db, cfg, msg, auth, leads, hostMail, log });
 const campaignsAdmin = require('./campaigns-admin');
 const flowsAdmin = require('./flows-admin');
+const outreachAdmin = require('./outreach-admin');
 const adminUi = require('./admin-shell');
 const social = require('./social')({ db });
 const adminContent = require('./admin-content');
@@ -716,6 +717,7 @@ async function route(req, res) {
     }
     return notFound(res);
   }
+  if (p === '/admin/outreach' || p.startsWith('/admin/outreach/')) { if (!await isAdmin(req)) return notFound(res); if (await outreachAdmin({ db, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody })(req, res, p, m, u) === false) return notFound(res); return; }
   if (p === '/admin/flows/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await flows.run(+b.at || Date.now(), true) }); } // test servers only
   if (p === '/admin/flows' || p.startsWith('/admin/flows/')) { if (!await isAdmin(req)) return notFound(res); return await flowsAdmin({ flows, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody })(req, res, p, m); }
   if (p === '/admin/campaigns/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await campaigns.run(+b.at || Date.now()) }); } // test servers only
@@ -1010,7 +1012,7 @@ async function adminPage(req, res, note, section, err) {
     '<label>CSV file<input type="file" name="file" accept=".csv,text/csv" required></label>' +
     '<label>Source<select name="source" required><option value="">Choose…</option>' + leadImport.SOURCES.map(x => '<option value="' + x + '">' + x + '</option>').join('') + '</select></label>' +
     '<label class="row"><input type="checkbox" name="dry_run" value="1" checked> Check only, do not save</label><div class="row"><button class="btn primary sm">Import</button></div></form>');
-  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms and imports. Website leads get their follow-up emails by themselves; imported leads get none; anything marked “Waiting for you” needs a person.',
+  if (section === 'leads') return shell({ title: 'Leads', active: 'leads', sub: leadRows.length + ' leads from the website forms and imports. Website leads get their follow-up emails by themselves; imported leads get none; anything marked “Waiting for you” needs a person. Imported hosts to phone are worked through on the <a href="/admin/outreach">Outreach</a> page.',
     body: '<details class="adm-x" style="margin-bottom:16px"><summary>' + A.icon('plus') + 'Import leads from a CSV</summary>' + importCard + '</details><section class="a-card a-flush">' + A.table(LEAD_HEADS, leadRows.map(leadRow), 'No leads yet. They arrive here from the forms on the website.') + '</section>' });
   if (section === 'hosts') return shell({ title: 'Host accounts', active: 'hosts', sub: accts.length + ' host accounts · AI credit: each plan includes ' + credits.money(cfg.credits.monthly) + ' a month' + (cfg.credits.markup !== 1 ? ', usage charged at ' + cfg.credits.markup + '× cost' : ', usage charged at cost') + '.',
     body: '<div class="adm-kpis">' + A.kpi('Host accounts', accts.length) + A.kpi('Paying', accts.filter(a => a.billing_status === 'active').length) + A.kpi('Not paid yet', accts.filter(a => !a.billing_status || a.billing_status === 'trial').length) + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' +
