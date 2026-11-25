@@ -27,7 +27,7 @@ test('sign-up goes straight to Stripe Checkout, and setup stays locked until it 
   const app = await t.call('/app'); assert.equal(app.status, 302); assert.equal(app.headers.get('location'), '/app/pay');
   assert.equal((await t.call('/api/state')).status, 402);
   assert.equal((await t.call('/api/act', { body: { name: 'addProperty', args: [{ name: 'Sneaky' }] } })).status, 402);
-  const pay = await t.call('/app/pay'); assert.equal(pay.status, 200); assert.match(pay.body, /One step left/); assert.match(pay.body, /£2000 for your first year/); assert.doesNotMatch(pay.body, /997|setup fee today/);
+  const pay = await t.call('/app/pay'); assert.equal(pay.status, 200); assert.match(pay.body, /One step left/); assert.match(pay.body, /£1970 for your first year/); assert.doesNotMatch(pay.body, /997|setup fee today/);
   assert.equal((await t.call('/app/account')).status, 200, 'the account page stays open, so they can delete it');
   // back from Checkout before the webhook: an unfinished session keeps the lock
   const early = await t.call('/app/pay/done?session=cs_open'); assert.equal(early.headers.get('location'), '/app/pay?msg=pending');
@@ -35,7 +35,7 @@ test('sign-up goes straight to Stripe Checkout, and setup stays locked until it 
 test.after(() => { t.stop(); mock.close(); });
 
 test('a yearly sign-up is billed yearly', async () => {
-  assert.match((await t.call('/app/billing')).body, /£2000 a year/);
+  assert.match((await t.call('/app/billing')).body, /£1970 a year/);
   const r = await t.call('/app/billing/start', { body: '', headers: { 'content-type': 'application/x-www-form-urlencoded' } });
   assert.equal(r.status, 302); assert.equal(r.headers.get('location'), 'https://checkout.stripe.test/cs_1');
   const b = bodies[1]; assert.equal(b.get('line_items[0][price]'), 'price_g_y'); assert.equal(b.get('line_items[1][price]'), 'price_a_y'); assert.equal(b.get('line_items[2][price]'), null, 'no setup fee'); assert.equal(b.get('subscription_data[trial_period_days]'), null, 'no free month');

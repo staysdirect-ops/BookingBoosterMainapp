@@ -25,7 +25,7 @@
 const crypto = require('crypto');
 
 const AUDIENCE_SEQS = ['fee', 'audit', 'webinar', 'call'];
-const AIRBNB_GUEST_FEE = 0.14, GROWTH_YEAR = 200 * 12;
+const AIRBNB_GUEST_FEE = 0.14, GROWTH_YEAR = 197 * 12;
 const pounds = n => '£' + Math.round(n).toLocaleString('en-GB');
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -116,7 +116,7 @@ module.exports = function ({ db, cfg, msg, auth, leads, hostMail, log }) {
       needs: [['issue_number', 'Issue number', '1'], ['issue_month', 'Issue month', 'November 2026'], ['story_url', 'Link for “Read the full playbook”', app('/guides/direct-booking-playbook.pdf')], ['changelog_url', 'Link for “See what is new”', app('/demo')]],
       fit: () => false },
     { key: 'yearly-offer', tpl: 'host-m05-offer', name: 'Yearly offer: 2 months free',
-      about: 'Pay yearly for Growth: £2,000 instead of £2,400. No setup fee.',
+      about: 'Pay yearly for Growth: £1,970 instead of £2,364. No setup fee.',
       audience: 'All leads',
       when: 'About 7 days before the offer ends. Make sure the yearly Stripe price is set up first.',
       subject: '2 months free if you go yearly (ends {{offer_end_date}})', preview: 'Pay yearly for Growth and get 2 months free. Ends {{offer_end_date}} at 23:59.',

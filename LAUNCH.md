@@ -100,7 +100,7 @@ STRIPE_SECRET_KEY=sk_live_... BASE_URL=https://booking-booster.co.uk npm run str
 ```
 
 This creates:
-- the plan prices (£200 a month, or £2,000 a year, which is 2 months free), paid upfront at sign-up (no setup fee, no free month);
+- the plan prices (£197 a month, or £1,970 a year, which is 2 months free), paid upfront at sign-up (no setup fee, no free month);
 - the £15 add-on;
 - both webhooks.
 

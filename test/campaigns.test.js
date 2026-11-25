@@ -35,9 +35,9 @@ test('the designed campaigns load as drafts, with current pricing and domain, an
   }
   const fee = await t.call('/admin/campaigns/fee-check/preview'); fee.body = fee.body.replace(/&pound;/g, '£');
   assert.match(fee.body, /£9,523/, 'uses the lead’s own calculator numbers');
-  assert.match(fee.body, /£200 a month/); assert.doesNotMatch(fee.body, /£997/);
+  assert.match(fee.body, /£197 a month/); assert.doesNotMatch(fee.body, /£997/);
   const offer = await t.call('/admin/campaigns/yearly-offer/preview'); offer.body = offer.body.replace(/&pound;/g, '£');
-  assert.match(offer.body, /£2,000 a year/); assert.doesNotMatch(offer.body, /£997/); assert.match(offer.body, /No setup fee/);
+  assert.match(offer.body, /£1,970 a year/); assert.doesNotMatch(offer.body, /£997/); assert.match(offer.body, /No setup fee/);
   assert.equal(mails.length, before, 'loading and previewing sends nothing');
 });
 
