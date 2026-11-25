@@ -534,6 +534,13 @@
     };
   }
   const REAL = () => !!(BB.BOOT && BB.BOOT.mode === 'marketing');
+  // Pay first (card billing on): /start is only the account and the payment. The site setup runs after payment, at /app/setup,
+  // where SETUP() is true: the same steps without Connect and Plan, and no account form.
+  const SETUP = () => REAL() && !!BB.BOOT.setup;
+  const PAYFIRST = () => REAL() && !!BB.BOOT.payFirst && !SETUP();
+  const FLOW = () => SETUP() ? [1, 2, 3, 4, 7] : [1, 2, 3, 4, 5, 6, 7];
+  const nextStep = n => { const f = FLOW(), i = f.indexOf(n); return i < 0 ? n + 1 : f[Math.min(f.length - 1, i + 1)]; };
+  const prevStep = n => { const f = FLOW(), i = f.indexOf(n); return i <= 0 ? 1 : f[i - 1]; };
   function acctError(a) {
     if (!a || String(a.name || '').trim().length < 2) return 'Enter your name.';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(a.email || '').trim())) return 'Enter your email address.';
@@ -544,7 +551,10 @@
   function launch(inst) {
     const ob = inst.st.ob; ob.launchN = 0; inst.render();
     let signup = null;
-    if (REAL()) {
+    if (SETUP()) {
+      signup = BB.api.call(BB.BOOT.setupUrl, { property: buildData(ob), listing: ob.url, domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
+        .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
+    } else if (REAL()) {
       const a = ob.acct || {};
       signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url,
         domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
@@ -580,7 +590,7 @@
       ['Domain', ob.domain ? esc(ob.domain) : null, ob.step > 4],
       ['Connected', ob.step >= 5 ? (conns.length ? conns.join(', ') : 'Nothing yet') + (ob.addon ? '<em>+ Calendar sync add-on</em>' : '') : null, ob.step > 5],
       ['Plan', ob.step >= 6 ? p.name + ' · £' + (perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0)) + '/mo' + (ob.annual ? '<em>billed yearly</em>' : '') : null, ob.step > 6],
-    ];
+    ].filter(r => !SETUP() || (r[0] !== 'Connected' && r[0] !== 'Plan'));
     return '<aside class="s-rail" aria-label="Your setup so far"><p class="eyebrow">Your site so far</p>' +
       miniSite({ theme: ob.theme, name: d.name || 'Your home', domain: ob.domain || (d.name ? slug(d.name) + '.co.uk' : 'yourhome.co.uk'), price: +d.nightly || null, save: d.nightly ? Math.round(+d.nightly * 3 * 0.142) : 0, cls: 's-rail-browser s-compact' }) +
       '<ul class="s-rail-list">' + rows.map(([k, v, done]) => '<li class="' + (done ? 'done' : '') + '"><i>' + (done ? icon('check') : '') + '</i><span>' + k + '</span><b>' + (v || '<span class="muted">Not yet</span>') + '</b></li>').join('') + '</ul>' +
@@ -673,10 +683,10 @@
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' · ' + $(+d.nightly) + ' a night · sleeps ' + esc(d.sleeps) + ' · ' + esc(d.bedrooms) + ' bedrooms · ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
             '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\.site$/.test(ob.domain) ? 'Free address' : buying(ob) ? 'We register it in your name once your first payment goes through. ' + domainNote() : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
-            '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
-            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>' +
+            (SETUP() ? '' : '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
+            '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>') +
           '</dl>' +
-          '<form data-form="launch" class="s-ob-form" novalidate>' + (REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (REAL() && BB.BOOT.payFirst ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
+          '<form data-form="launch" class="s-ob-form" novalidate>' + (SETUP() ? (buying(ob) || ob.acctErr ? '<div class="s-acct">' + (buying(ob) ? regFields(inst) : '') + (ob.acctErr ? '<p class="s-err" role="alert">' + esc(ob.acctErr) + '</p>' : '') + '</div>' : '') : REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (PAYFIRST() ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
       }
     }
     return '';
@@ -684,7 +694,7 @@
   function acctFields(inst) {
     const a = inst.st.ob.acct || (inst.st.ob.acct = { name: '', email: '', password: '', business: '', ref: inst.ref || '', terms: false }), u = inst.uid;
     const f = (k, label, type, ac, ph) => '<label class="s-f"><span>' + label + '</span><input id="s-ac-' + k + '-' + u + '" data-ac="' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(a[k]) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></label>';
-    return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (BB.BOOT.payFirst ? 'Next you pay your first month securely with Stripe, and your console opens straight after. No setup fee.' : 'No setup fee.') + '</p>' +
+    return '<div class="s-acct"><h2 class="s-acct-h">Create your account</h2><p class="s-ob-sub">You will sign in with this to run your bookings. ' + (PAYFIRST() ? 'You pay on the next screen with Stripe, then set up your site straight after. No setup fee.' : 'No setup fee.') + '</p>' +
       '<div class="s-grid2">' + f('name', 'Your name', 'text', 'name') + f('business', 'Business name (optional)', 'text', 'organization', 'For example, Fell & Harbour Stays') + f('email', 'Email', 'email', 'email') + f('password', 'Password', 'password', 'new-password', 'At least 10 characters') + f('ref', 'Referral code (optional)', 'text', 'off', 'If someone recommended us') + '</div>' +
       '<label class="s-terms"><input type="checkbox" id="s-ac-terms-' + u + '" data-ac="terms"' + (a.terms ? ' checked' : '') + '> <span>I accept the <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy notice</a>.</span></label>' +
       (buying(inst.st.ob) ? regFields(inst) : '') +
@@ -734,16 +744,45 @@
       '</div></div>';
   }
 
+  // Pay first: one screen with the plan and the account, then Stripe Checkout. Setting up the site comes after payment.
+  function payStart(inst) {
+    const ob = inst.st.ob, p = plan(ob.plan), total = perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0), u = inst.uid;
+    const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Billing">' + [['m', 'Monthly'], ['y', 'Yearly, 2 months free']].map(([k, t]) => '<button type="button" role="tab" aria-selected="' + (ob.annual === (k === 'y')) + '" data-obbill="' + k + '">' + t + '</button>').join('') + '</div>';
+    return '<div class="s-ob s-ob-pay"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
+      '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Back to the home page</span><span class="s-exit-s">Exit</span></button></div></header>' +
+      '<div class="s-w s-ob-body"><main class="s-ob-main" id="s-ob-main-' + u + '">' +
+        '<h1 class="s-ob-h">Start your booking site.</h1><p class="s-ob-sub">Create your account and pay your first ' + (ob.annual ? 'year' : 'month') + '. Straight after, we help you set up your site: import your listing, choose a look and pick a domain. It takes about five minutes.</p>' +
+        tabs +
+        '<div class="s-obplans"><div class="s-obplan on"><span class="s-obplan-h"><b>' + p.name + '</b></span>' +
+          '<span class="s-amt"><b class="num">£' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + (ob.annual ? 'Billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee. Cancel anytime.</span>' +
+          '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></div></div>' +
+        '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional · £' + ADDON.price + ' a month</span></b><em>Only if you also take bookings on Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
+          '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + ob.addon + '" aria-label="' + ADDON.name + '"></button></div></div>' +
+        '<form data-form="pay" class="s-ob-form" novalidate>' + acctFields(inst) +
+          '<div class="s-ob-nav"><span></span><button class="btn primary lg s-glow" type="submit"' + (ob.paying ? ' disabled' : '') + '>' + icon('lock') + (ob.paying ? 'Opening Stripe…' : 'Pay £' + (ob.annual ? (p.price * 10 + (ob.addon ? ADDON.price * 12 : 0)).toLocaleString('en-GB') + ' and start' : total + ' and start')) + '</button></div>' +
+          '<p class="s-fine">' + icon('lock') + 'You pay securely with Stripe. ' + (ob.annual ? 'The plan renews every year.' : 'The plan renews every month.') + ' Prices include VAT.</p></form>' +
+      '</main></div></div>';
+  }
+  function payNow(inst) {
+    const ob = inst.st.ob, a = ob.acct || {}, e = acctError(a);
+    if (e) { ob.acctErr = e; inst.render(); return; }
+    ob.paying = true; inst.render();
+    BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon })
+      .then(j => { location.href = j.redirect || '/app/pay'; }, er => { ob.paying = false; ob.acctErr = er.message; inst.render(); });
+  }
+
   function onboard(inst) {
     const ob = inst.st.ob;
     if (ob.step === 8) return obSuccess(inst);
-    const pctDone = Math.round(100 * (ob.step - 1) / STEPS.length);
+    if (PAYFIRST()) return payStart(inst);
+    const flow = FLOW(), at = Math.max(0, flow.indexOf(ob.step)), names = flow.map(n => STEPS[n - 1]);
+    const pctDone = Math.round(100 * at / flow.length);
     const enter = inst._obStep !== ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0); inst._obStep = ob.step + ':' + ob.imported + ':' + (ob.launchN >= 0);
     return '<div class="s-ob"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
-      '<span class="s-ob-count num">Step ' + ob.step + ' of ' + STEPS.length + '<em> · ' + STEPS[ob.step - 1] + '</em></span>' +
-      '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Save and exit</span><span class="s-exit-s">Exit</span></button></div>' +
+      '<span class="s-ob-count num">Step ' + (at + 1) + ' of ' + flow.length + '<em> · ' + names[at] + '</em></span>' +
+      (SETUP() ? '<a class="btn ghost sm" href="/app/account"><span class="s-exit-l">Your account</span><span class="s-exit-s">Account</span></a></div>' : '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Save and exit</span><span class="s-exit-s">Exit</span></button></div>') +
       '<div class="s-ob-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pctDone + '" aria-label="Setup progress"><i style="width:' + pctDone + '%"></i></div>' +
-      '<div class="s-w"><ol class="s-ob-steps">' + STEPS.map((t, i) => '<li class="' + (i + 1 < ob.step ? 'done' : i + 1 === ob.step ? 'on' : '') + '"><span class="num">' + (i + 1 < ob.step ? icon('check') : i + 1) + '</span>' + t + '</li>').join('') + '</ol></div></header>' +
+      '<div class="s-w"><ol class="s-ob-steps">' + names.map((t, i) => '<li class="' + (i < at ? 'done' : i === at ? 'on' : '') + '"><span class="num">' + (i < at ? icon('check') : i + 1) + '</span>' + t + '</li>').join('') + '</ol></div></header>' +
       '<div class="s-w s-ob-body"><main class="s-ob-main" id="s-ob-main-' + inst.uid + '">' + obStep(inst) + '</main>' + obRail(ob) + '</div></div>';
   }
 
@@ -768,7 +807,7 @@
     create(root, opts, inst) {
       inst.uid = Math.random().toString(36).slice(2, 7); inst.timers = []; inst.ref = opts.ref || '';
       Object.assign(inst.st, { view: opts.view || 'home', anim: true, menu: false, rev: 80000, share: 30, tour: 'console', annual: false, faq: 0,
-        ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: false, addon: !!opts.addon },
+        ai: { town: 'Keswick', type: 'cabin', phase: 'idle', step: 0, err: '' }, ob: Object.assign(newOb(opts.plan), { annual: !!opts.annual, addon: !!opts.addon },
           opts.email || opts.name || opts.business ? { acct: { name: opts.name || '', email: opts.email || '', password: '', business: opts.business || '', ref: opts.ref || '', terms: false } } : {}) });
       if (opts.view === 'pricing') inst.pendingScroll = 'pricing';
       root.classList.add('x-site');
@@ -787,9 +826,10 @@
         const a = el.dataset.act, ob = inst.st.ob;
         if (a === 'start') { inst.st.menu = false; startOnboarding(inst, el.dataset.plan); }
         else if (a === 'menu') inst.set({ menu: !inst.st.menu });
+        else if (a === 'home' && SETUP()) return; // after payment there is no marketing page to go back to
         else if (a === 'home') { clearTimers(inst); if (ob.launchN >= 0 && ob.step === 7) ob.launchN = -1; BB.go('site', { view: 'home' }); }
         else if (a === 'sample') { ob.url = SAMPLES.airbnb.url; ob.urlErr = ''; ob.source = 'airbnb'; ob.step = 2; startImport(inst); inst.render(); }
-        else if (a === 'back') { clearTimers(inst); if (ob.step === 2 && !ob.imported) ob.importedFrom = ''; ob.dState = ob.dState === 'checking' ? 'idle' : ob.dState; ob.conn = mapConn(ob.conn); ob.step = Math.max(1, ob.step - 1); inst.render(); scrollTopOb(); }
+        else if (a === 'back') { clearTimers(inst); if (ob.step === 2 && !ob.imported) ob.importedFrom = ''; ob.dState = ob.dState === 'checking' ? 'idle' : ob.dState; ob.conn = mapConn(ob.conn); ob.step = prevStep(ob.step); inst.render(); scrollTopOb(); }
         else if (a === 'pets') { ob.d.pets = !ob.d.pets; inst.render(); }
         else if (a === 'addon') { ob.addon = !ob.addon; inst.render(); }
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
@@ -843,10 +883,11 @@
         if (kind === 'next') {
           if (ob.step === 4 && !ob.domain) return;
           if (ob.step === 5 && ob.conn.stripe !== 'on') return;
-          ob.step++; if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
+          ob.step = nextStep(ob.step); if (ob.step === 4 && !ob.dRes && ob.dMode !== 'own') { ob.dq = ob.dq || slug(ob.d.name) + '.co.uk'; inst.render(); checkDomain(inst); } else inst.render();
           scrollTopOb(); return;
         }
-        if (kind === 'launch') { if (REAL()) { const e = acctError(ob.acct) || (buying(ob) ? regError(ob.reg2) : ''); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
+        if (kind === 'pay') { if (!ob.paying) payNow(inst); return; }
+        if (kind === 'launch') { if (REAL()) { const e = (SETUP() ? '' : acctError(ob.acct)) || (buying(ob) ? regError(ob.reg2) : ''); if (e) { ob.acctErr = e; inst.render(); return; } } if (ob.launchN < 0) launch(inst); }
       });
       function scrollTopOb() { window.scrollTo({ top: 0 }); }
       function mapConn(c) { const o = {}; Object.keys(c).forEach(k => o[k] = c[k] === 'on' ? 'on' : 'off'); return o; }
