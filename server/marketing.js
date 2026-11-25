@@ -97,7 +97,7 @@ function content(base, co) {
     li(INCLUDED) + '<p>Optional calendar sync add-on: £' + PRICE.addon + ' a month.</p>' +
     '<h2>Questions hosts ask</h2>' + allFaq().map(([q, a]) => '<h3>' + esc(q) + '</h3><p>' + esc(a) + '</p>').join('') +
     '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p>' +
-    '<p><a href="/direct-booking-website">Direct booking websites</a> · <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> · <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> · <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> · <a href="/guides">Free guides</a> · <a href="/help">Help</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>' +
+    '<p><a href="/direct-booking-website">Direct booking websites</a> · <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> · <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> · <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> · <a href="/guides">Free guides</a> · <a href="/help">Help</a> · <a href="/partners">Partner programme</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>' +
     '<p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + '</a>').join(' · ') + '</p>' +
     '</article>';
 }

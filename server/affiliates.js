@@ -91,11 +91,12 @@ module.exports = function ({ db, cfg, auth, msg, stripe, log, h }) {
   }
   const cookieCode = req => cleanCode(h.cookies(req).bb_ref);
   // At sign-up, before the account is made: a typed code wins over the cookie. A typed code we do not know is an error
-  // (so a typo does not lose the partner their commission), unless it is just the cookie's code shown back.
+  // (so a typo does not lose the partner their commission), unless it is just the cookie's code shown back. The sign-up form
+  // fills in the cookie's code, so a typed code that matches the cookie is recorded as the link.
   async function forSignup(req, typed, email) {
     const t = cleanCode(typed), c = cookieCode(req);
     let a = null, how = '';
-    if (t) { a = await active(t); how = 'code'; if (!a && t !== c) throw Object.assign(new Error('We could not find that referral code. Check it, or leave it empty.'), { status: 400 }); }
+    if (t) { a = await active(t); how = t === c ? 'link' : 'code'; if (!a && t !== c) throw Object.assign(new Error('We could not find that referral code. Check it, or leave it empty.'), { status: 400 }); }
     if (!a && c) { a = await active(c); how = 'link'; }
     if (!a || a.email.toLowerCase() === String(email || '').toLowerCase()) return null;
     return { a, how };
@@ -184,7 +185,7 @@ module.exports = function ({ db, cfg, auth, msg, stripe, log, h }) {
     const stat = (n, l) => '<div><div style="font:600 24px/1.1 \'Bricolage Grotesque\',sans-serif">' + n + '</div><small style="color:var(--mut)">' + l + '</small></div>';
     const tbl = (head, rows, empty) => rows.length ? '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px"><tr>' + head.map(x => '<th align="left">' + x + '</th>').join('') + '</tr>' + rows.map(r => '<tr style="border-top:1px solid var(--line)">' + r.map(x => '<td>' + x + '</td>').join('') + '</tr>').join('') + '</table>' : '<p style="margin:8px 0 0">' + empty + '</p>';
     return page('Your partner account', '<h1>Hi ' + E(a.name.split(' ')[0]) + '</h1>' + (note ? '<p class="ok">' + E(note) + '</p>' : '') + (a.status !== 'active' ? '<p class="err">Your partner account is paused, so new payments do not earn commission. Email ' + E(cfg.company.support) + ' to talk about it.</p>' : '') +
-      '<div class="card"><b>Your link</b><p style="margin:6px 0 4px"><input readonly value="' + E(link(a)) + '" style="width:100%" onclick="this.select()"></p><p style="margin:0"><small>Or hosts can type your code <b>' + E(a.code) + '</b> when they sign up. Send people to a page with <code>?ref=' + E(a.code) + '</code> on the end, or to <code>' + E(link(a)) + '?to=/pricing</code>.</small></p></div>' +
+      (a.payout ? '' : '<div class="card"><b>One more step</b><p style="margin:6px 0 0">Add where we pay you under Your details below, so we can send your commission.</p></div>') + '<div class="card"><b>Your link</b><p style="margin:6px 0 4px"><input readonly value="' + E(link(a)) + '" style="width:100%" onclick="this.select()"></p><p style="margin:0"><small>Or hosts can type your code <b>' + E(a.code) + '</b> when they sign up. Send people to a page with <code>?ref=' + E(a.code) + '</code> on the end, or to <code>' + E(link(a)) + '?to=/pricing</code>.</small></p></div>' +
       '<div class="card" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">' + stat(s.clicks30, 'clicks, last 30 days') + stat(s.refs.length, 'hosts signed up') + stat(s.paying, 'paying now') + stat(money(s.earned), 'earned in total') + stat(money(s.hold), 'on hold') + stat(money(Math.max(0, s.due)), 'ready to pay') + stat(money(s.paid), 'paid to you') + '</div>' +
       (s.due < 0 ? '<p><small>A refund took back ' + money(-s.due) + ' that was already paid to you. It comes off your next payout.</small></p>' : s.due > 0 && s.due < A.minPayout ? '<p><small>We pay out once ' + money(A.minPayout) + ' has cleared.</small></p>' : '') +
       '<div class="card"><b>Hosts you referred</b>' + tbl(['', 'Joined', 'Status'], s.refs.map((r, i) => ['Host ' + (i + 1), date(r.created_at), E(r.slug ? STATUS[r.billing_status] || 'Signed up' : 'Account closed')]), 'Nobody yet. Share your link to get started.') + '<p style="margin:8px 0 0"><small>To protect their privacy we do not show hosts\' names.</small></p></div>' +

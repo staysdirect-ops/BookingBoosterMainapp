@@ -685,7 +685,7 @@ async function route(req, res) {
   if (p === '/robots.txt') return send(res, 200, seo.robots(cfg.baseUrl + '/sitemap.xml'), 'text/plain; charset=utf-8');
   if (p === '/sitemap.xml') {
     // Privacy and terms join the sitemap once a solicitor has reviewed them (LEGAL_REVIEWED); until then they say Draft and stay out of search.
-    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }].concat(answers.list().map(x => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
+    const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }, { loc: cfg.baseUrl + '/partners' }].concat(answers.list().map(x => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
     for (const id of await ws.liveIds()) { const w = await ws.open(id); if (unpaid(w)) continue; for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }

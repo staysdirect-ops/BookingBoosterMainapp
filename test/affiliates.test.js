@@ -35,6 +35,8 @@ test('anyone can join and gets their own link and code', async () => {
   const dash = await (await raw('/partners/dashboard', { headers: { cookie: partner } })).text();
   code = dash.match(/\/r\/([a-z0-9]+)/)[1]; assert.match(code, /^priya\d{3}$/);
   assert.match(dash, /25%/); assert.match(dash, /Nobody yet/);
+  assert.match(dash, /Add where we pay you/, 'asks for payout details until they are saved');
+  assert.match(await (await raw('/sitemap.xml')).text(), /\/partners</, 'the programme page is in the sitemap');
   assert.equal((await t.sql("SELECT count(*)::int AS n FROM outbox WHERE recipient = 'priya@example.com'"))[0].n, 1, 'welcome email with the link');
   assert.equal((await post('/partners/join', { name: 'Priya', email: 'PRIYA@example.com', password: 'partnerpass1', agree: 'on' })).status, 400, 'one account per email');
   assert.equal((await raw('/partners/dashboard')).headers.get('location'), '/partners/login', 'signed in only');
@@ -56,6 +58,9 @@ test('the link is remembered for 90 days and credits the host who signs up', asy
   const [row] = await t.sql('SELECT r.how, a.code FROM referrals r JOIN affiliates a ON a.id = r.affiliate_id WHERE r.workspace_id = ?', hostA);
   assert.deepEqual(row, { how: 'link', code });
   assert.ok((await t.sql("SELECT subject FROM outbox WHERE recipient = 'priya@example.com'")).some(m => /referred just joined/.test(m.subject)));
+  // The sign-up form fills in the link's code, so the browser sends it back as typed: still the link.
+  assert.equal((await hostSignup('a2@example.co.uk', 'bb_ref=' + code, code)).status, 200);
+  assert.equal((await t.sql('SELECT how FROM referrals WHERE workspace_id = ?', await wsOf('a2@example.co.uk')))[0].how, 'link');
 });
 
 test('a typed code wins over the cookie, a mistyped one is refused, and nobody can refer themselves', async () => {
