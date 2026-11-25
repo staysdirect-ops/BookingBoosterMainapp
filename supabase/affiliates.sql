@@ -7,6 +7,7 @@ create table if not exists affiliates (
 create unique index if not exists affiliates_email_lower on affiliates (lower(email));
 create table if not exists aff_sessions (token text primary key, affiliate_id text not null references affiliates(id) on delete cascade, expires_at bigint not null);
 create table if not exists aff_clicks (affiliate_id text not null, day text not null, n integer not null default 0, primary key (affiliate_id, day));
+alter table aff_clicks add column if not exists views integer not null default 0;
 create table if not exists referrals (workspace_id text primary key, affiliate_id text not null references affiliates(id), how text not null, created_at bigint not null);
 create table if not exists commissions (
   id text primary key, affiliate_id text not null references affiliates(id), workspace_id text not null, kind text not null, source text not null,

@@ -14221,7 +14221,8 @@ var require_config = __commonJS({
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
       // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
       // is held for refunds, and the smallest payout (pence).
-      affiliate: { rate: Math.max(0, Math.min(100, +(E.AFFILIATE_RATE || 25))), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
+      // The bonus is capped at £50: a referred host must never cost more than £50 to win.
+      affiliate: { bonus: Math.round(Math.max(0, Math.min(50, +(E.AFFILIATE_BONUS || 50))) * 100), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
       icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10)
     };
   }
@@ -14272,6 +14273,7 @@ create table if not exists affiliates (
 create unique index if not exists affiliates_email_lower on affiliates (lower(email));
 create table if not exists aff_sessions (token text primary key, affiliate_id text not null references affiliates(id) on delete cascade, expires_at bigint not null);
 create table if not exists aff_clicks (affiliate_id text not null, day text not null, n integer not null default 0, primary key (affiliate_id, day));
+alter table aff_clicks add column if not exists views integer not null default 0;
 create table if not exists referrals (workspace_id text primary key, affiliate_id text not null references affiliates(id), how text not null, created_at bigint not null);
 create table if not exists commissions (
   id text primary key, affiliate_id text not null references affiliates(id), workspace_id text not null, kind text not null, source text not null,
@@ -22060,7 +22062,8 @@ var require_affiliates = __commonJS({
         delSess: db.prepare("DELETE FROM aff_sessions WHERE token = ?"),
         delSessFor: db.prepare("DELETE FROM aff_sessions WHERE affiliate_id = ?"),
         click: db.prepare("INSERT INTO aff_clicks (affiliate_id, day, n) VALUES (?, ?, 1) ON CONFLICT (affiliate_id, day) DO UPDATE SET n = aff_clicks.n + 1"),
-        clicks: db.prepare("SELECT day, n FROM aff_clicks WHERE affiliate_id = ?"),
+        view: db.prepare("INSERT INTO aff_clicks (affiliate_id, day, n, views) VALUES (?, ?, 0, 1) ON CONFLICT (affiliate_id, day) DO UPDATE SET views = aff_clicks.views + 1"),
+        clicks: db.prepare("SELECT * FROM aff_clicks WHERE affiliate_id = ?"),
         referral: db.prepare("SELECT * FROM referrals WHERE workspace_id = ?"),
         addRef: db.prepare("INSERT OR IGNORE INTO referrals (workspace_id, affiliate_id, how, created_at) VALUES (?, ?, ?, ?)"),
         refsFor: db.prepare("SELECT r.*, w.billing_status, w.slug FROM referrals r LEFT JOIN workspaces w ON w.id = r.workspace_id WHERE r.affiliate_id = ? ORDER BY r.created_at"),
@@ -22069,6 +22072,7 @@ var require_affiliates = __commonJS({
         comm: db.prepare("SELECT * FROM commissions WHERE id = ?"),
         commByRef: db.prepare("SELECT * FROM commissions WHERE source = 'stripe' AND refs LIKE ?"),
         commsFor: db.prepare("SELECT * FROM commissions WHERE affiliate_id = ? ORDER BY created_at DESC"),
+        commsForWs: db.prepare("SELECT * FROM commissions WHERE workspace_id = ?"),
         recentComms: db.prepare("SELECT c.*, a.code, w.slug FROM commissions c JOIN affiliates a ON a.id = c.affiliate_id LEFT JOIN workspaces w ON w.id = c.workspace_id ORDER BY c.created_at DESC LIMIT 200"),
         setReversed: db.prepare("UPDATE commissions SET reversed = ?, note = ?, updated_at = ? WHERE id = ?"),
         addPayout: db.prepare("INSERT INTO aff_payouts (affiliate_id, amount, reference, created_at) VALUES (?, ?, ?, ?)"),
@@ -22085,9 +22089,9 @@ var require_affiliates = __commonJS({
       const date = (t) => new Date(t).toLocaleDateString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", year: "numeric" });
       const cleanCode = (c) => String(c || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 24);
       const validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
-      const KIND = { setup: "Package", plan: "Plan payment", other: "Other payment" };
+      const KIND = { bonus: "Referral bonus", setup: "Package", plan: "Plan payment", other: "Other payment" };
       const STATUS = { trial: "Signed up, not paid yet", active: "Paying", past_due: "Payment failed", cancelled: "Cancelled" };
-      const pct = A.rate + "%";
+      const bonus = () => money(A.bonus).replace(/\.00$/, "");
       async function newCode(name) {
         const base = String(name).split(/\s+/)[0].toLowerCase().normalize("NFKD").replace(/[^a-z]/g, "").slice(0, 10) || "partner";
         for (let i = 0; i < 30; i++) {
@@ -22134,7 +22138,16 @@ var require_affiliates = __commonJS({
         const a = await active(code), headers = {};
         if (a) {
           headers["set-cookie"] = h.cookie("bb_ref", a.code, A.cookieDays * 86400);
-          if (auth.limit("affclick:" + h.ip(req) + ":" + a.code, 1, DAY)) await q.click.run(a.id, day(now()));
+          try {
+            if (auth.limit("affclick:" + h.ip(req) + ":" + a.code, 1, DAY)) await q.click.run(a.id, day(now()));
+          } catch (e) {
+            log("partner click", e.message);
+          }
+          try {
+            await q.view.run(a.id, day(now()));
+          } catch (e) {
+            log("partner view", e.message);
+          }
         }
         h.redirect(res, to, headers);
         return true;
@@ -22159,7 +22172,7 @@ var require_affiliates = __commonJS({
         if (!ref) return;
         const r = await q.addRef.run(wid, ref.a.id, ref.how, now());
         if (!r.changes) return;
-        msg.sendEmail({ to: ref.a.email, subject: "Someone you referred just joined Bookingbooster", text: "Hi " + ref.a.name.split(" ")[0] + ",\n\nA host you referred has just created a Bookingbooster account. You earn " + pct + " of everything they pay us, starting with their first payment, for as long as they stay.\n\nSee your referrals: " + cfg.baseUrl + "/partners/dashboard\n\n" + cfg.leads.signoff, meta: { affiliate: ref.a.id } });
+        msg.sendEmail({ to: ref.a.email, subject: "Someone you referred just joined Bookingbooster", text: "Hi " + ref.a.name.split(" ")[0] + ",\n\nA host you referred has just created a Bookingbooster account. You earn a " + bonus() + " bonus when they make their first plan payment.\n\nSee your referrals: " + cfg.baseUrl + "/partners/dashboard\n\n" + cfg.leads.signoff, meta: { affiliate: ref.a.id } });
       }
       async function record({ workspaceId, id, kind, source, gross, refs, note }) {
         if (!workspaceId || !(gross > 0)) return null;
@@ -22167,8 +22180,10 @@ var require_affiliates = __commonJS({
         if (!r) return null;
         const a = await q.byId.get(r.affiliate_id);
         if (!a || a.status !== "active") return null;
-        const amount = Math.round(gross * A.rate / 100), t = now();
-        const res = await q.addComm.run(id, a.id, workspaceId, KIND[kind] ? kind : "other", source, Math.round(gross), amount, " " + (refs || []).filter(Boolean).join(" ") + " ", String(note || "").slice(0, 200), t + A.holdDays * DAY, t, t);
+        if (!["plan", "setup"].includes(kind) || gross < A.bonus) return { code: a.code, amount: 0, created: false, why: "This payment is not a plan payment of " + bonus() + " or more, so it earns no bonus." };
+        if ((await q.commsForWs.all(workspaceId)).some((c) => c.id !== id && c.amount > c.reversed)) return { code: a.code, amount: 0, created: false, why: a.code + " has already earned the bonus for this host." };
+        const amount = A.bonus, t = now();
+        const res = await q.addComm.run(id, a.id, workspaceId, "bonus", source, Math.round(gross), amount, " " + (refs || []).filter(Boolean).join(" ") + " ", String(note || "").slice(0, 200), t + A.holdDays * DAY, t, t);
         if (res.changes) log("partner", a.code, kind, money(amount));
         return { code: a.code, amount, created: !!res.changes };
       }
@@ -22218,15 +22233,21 @@ var require_affiliates = __commonJS({
           else cleared += net;
         }
         const paid = payouts.reduce((s, p) => s + Number(p.amount), 0), since = day(t - 30 * DAY);
-        return { comms, payouts, refs, hold, earned, paid, due: cleared - paid, clicks: clicks.reduce((s, c) => s + Number(c.n), 0), clicks30: clicks.filter((c) => c.day >= since).reduce((s, c) => s + Number(c.n), 0), paying: refs.filter((r) => r.billing_status === "active").length };
+        const sum = (rows, k) => rows.reduce((s, c) => s + Number(c[k] || 0), 0), recent = clicks.filter((c) => c.day >= since);
+        const daily = [];
+        for (let i = 29; i >= 0; i--) {
+          const d = day(t - i * DAY), c = clicks.find((x) => x.day === d);
+          daily.push({ day: d, views: c ? Number(c.views || 0) : 0, clicks: c ? Number(c.n) : 0 });
+        }
+        return { comms, payouts, refs, hold, earned, paid, due: cleared - paid, clicks: sum(clicks, "n"), clicks30: sum(recent, "n"), views: sum(clicks, "views"), views30: sum(recent, "views"), daily, paying: refs.filter((r) => r.billing_status === "active").length };
       }
       const commStatus = (c, t) => c.reversed >= c.amount ? c.note || "Refunded" : (c.reversed ? "Part refunded, " : "") + (c.clears_at > t ? "on hold until " + date(c.clears_at) : "cleared");
       const page = (title, inner, wide) => h.authPage(title + " \xB7 Bookingbooster partners", inner, wide);
-      const terms = '<div class="card"><b>How it works</b><ul style="margin:8px 0 0;padding-left:20px;color:var(--mut)"><li>You get your own link and a code. Hosts who sign up through either are yours for life.</li><li>You earn <b>' + pct + "</b> of every plan or package payment they make to us, monthly or yearly, for as long as they keep paying.</li><li>Your link is remembered for " + A.cookieDays + " days. If a host clicks someone else's link later, the latest link counts. A code typed at sign-up always counts.</li><li>Each commission is held for " + A.holdDays + " days in case of a refund, then it is yours. If a payment is refunded, the same share of the commission is taken back.</li><li>We pay by bank transfer at the start of each month once you have " + money(A.minPayout) + " or more cleared.</li><li>You cannot refer yourself. No spam, no bidding on our name in search ads, and no promising things we do not offer. We can close an account that breaks these rules.</li></ul></div>";
+      const terms = '<div class="card"><b>How it works</b><ul style="margin:8px 0 0;padding-left:20px;color:var(--mut)"><li>You get your own link and a code. Hosts who sign up through either are yours.</li><li>You earn a one-off <b>' + bonus() + " bonus</b> for each of them, as soon as they make their first plan payment.</li><li>Your link is remembered for " + A.cookieDays + " days. If a host clicks someone else's link later, the latest link counts. A code typed at sign-up always counts.</li><li>Each bonus is held for " + A.holdDays + " days in case of a refund, then it is yours. If that payment is refunded, the same share of the bonus is taken back.</li><li>We pay by bank transfer at the start of each month once you have " + money(A.minPayout) + " or more cleared.</li><li>You cannot refer yourself. No spam, no bidding on our name in search ads, and no promising things we do not offer. We can close an account that breaks these rules.</li></ul></div>";
       function landing(o) {
         o = o || {};
         const inp = (l, n, t, ac, v) => "<label>" + l + '<input name="' + n + '" type="' + t + '" autocomplete="' + ac + '" value="' + E(v || "") + '" required></label>';
-        return page("Partner programme", "<h1>Earn " + pct + " for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. You earn " + pct + " of every plan and package payment, for as long as they stay with us.</p>" + terms + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + '<form class="card" method="post" action="/partners/join"><b>Join the programme</b>' + inp("Your name", "name", "text", "name", o.name) + inp("Email", "email", "email", "email", o.email) + inp("Password (at least 10 characters)", "password", "password", "new-password") + '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="agree" required style="margin-top:4px">I agree to the programme rules above and the <a href="/terms" target="_blank">terms</a>.</label><button>Get my link</button></form><div class="links"><a href="/partners/login">Partner sign in</a><a href="/">About Bookingbooster</a></div>');
+        return page("Partner programme", "<h1>Earn " + bonus() + " for every host you send us</h1><p>Recommend Bookingbooster to holiday let hosts. When a host you sent makes their first payment, you earn " + bonus() + ". Your dashboard shows your link views, clicks, sign-ups and earnings.</p>" + terms + (o.err ? '<p class="err" role="alert">' + E(o.err) + "</p>" : "") + '<form class="card" method="post" action="/partners/join"><b>Join the programme</b>' + inp("Your name", "name", "text", "name", o.name) + inp("Email", "email", "email", "email", o.email) + inp("Password (at least 10 characters)", "password", "password", "new-password") + '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="agree" required style="margin-top:4px">I agree to the programme rules above and the <a href="/terms" target="_blank">terms</a>.</label><button>Get my link</button></form><div class="links"><a href="/partners/login">Partner sign in</a><a href="/">About Bookingbooster</a></div>');
       }
       function loginPage(o) {
         o = o || {};
@@ -22238,8 +22259,18 @@ var require_affiliates = __commonJS({
           num[r.workspace_id] = i + 1;
         });
         const stat = (n, l) => `<div><div style="font:600 24px/1.1 'Bricolage Grotesque',sans-serif">` + n + '</div><small style="color:var(--mut)">' + l + "</small></div>";
+        const top = Math.max(1, ...s.daily.map((d) => d.views));
+        const chart = '<div aria-label="Link views per day, last 30 days" style="display:flex;align-items:flex-end;gap:2px;height:48px;margin-top:14px">' + s.daily.map((d) => '<span title="' + date(Date.parse(d.day)) + ": " + d.views + " views, " + d.clicks + ' clicks" style="flex:1;min-width:2px;border-radius:2px 2px 0 0;background:' + (d.views ? "var(--p,#3355FF)" : "var(--line,#E4E7F0)") + ";height:" + Math.max(4, Math.round(100 * d.views / top)) + '%"></span>').join("") + '</div><small style="color:var(--mut)">Link views per day</small>';
+        const bonusFor = {};
+        s.comms.forEach((c) => {
+          if (c.amount > c.reversed) bonusFor[c.workspace_id] = c;
+        });
+        const bonusStatus = (r) => {
+          const c = bonusFor[r.workspace_id];
+          return c ? money(c.amount - c.reversed) + ", " + commStatus(c, t) : "Not yet: earned on their first payment";
+        };
         const tbl = (head, rows, empty) => rows.length ? '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px"><tr>' + head.map((x) => '<th align="left">' + x + "</th>").join("") + "</tr>" + rows.map((r) => '<tr style="border-top:1px solid var(--line)">' + r.map((x) => "<td>" + x + "</td>").join("") + "</tr>").join("") + "</table>" : '<p style="margin:8px 0 0">' + empty + "</p>";
-        return page("Your partner account", "<h1>Hi " + E(a.name.split(" ")[0]) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (a.status !== "active" ? '<p class="err">Your partner account is paused, so new payments do not earn commission. Email ' + E(cfg.company.support) + " to talk about it.</p>" : "") + (a.payout ? "" : '<div class="card"><b>One more step</b><p style="margin:6px 0 0">Add where we pay you under Your details below, so we can send your commission.</p></div>') + '<div class="card"><b>Your link</b><p style="margin:6px 0 4px"><input readonly value="' + E(link(a)) + '" style="width:100%" onclick="this.select()"></p><p style="margin:0"><small>Or hosts can type your code <b>' + E(a.code) + "</b> when they sign up. Send people to a page with <code>?ref=" + E(a.code) + "</code> on the end, or to <code>" + E(link(a)) + '?to=/pricing</code>.</small></p></div><div class="card" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">' + stat(s.clicks30, "clicks, last 30 days") + stat(s.refs.length, "hosts signed up") + stat(s.paying, "paying now") + stat(money(s.earned), "earned in total") + stat(money(s.hold), "on hold") + stat(money(Math.max(0, s.due)), "ready to pay") + stat(money(s.paid), "paid to you") + "</div>" + (s.due < 0 ? "<p><small>A refund took back " + money(-s.due) + " that was already paid to you. It comes off your next payout.</small></p>" : s.due > 0 && s.due < A.minPayout ? "<p><small>We pay out once " + money(A.minPayout) + " has cleared.</small></p>" : "") + '<div class="card"><b>Hosts you referred</b>' + tbl(["", "Joined", "Status"], s.refs.map((r, i) => ["Host " + (i + 1), date(r.created_at), E(r.slug ? STATUS[r.billing_status] || "Signed up" : "Account closed")]), "Nobody yet. Share your link to get started.") + `<p style="margin:8px 0 0"><small>To protect their privacy we do not show hosts' names.</small></p></div><div class="card"><b>Commission</b>` + tbl(["Date", "Host", "For", "They paid", "You earn", "Status"], s.comms.map((c) => [date(c.created_at), "Host " + (num[c.workspace_id] || "?"), KIND[c.kind] || c.kind, money(c.gross), money(c.amount - c.reversed), E(commStatus(c, t))]), "Commission shows here as soon as a host you referred pays.") + '</div><div class="card"><b>Payouts</b>' + tbl(["Date", "Amount", "Reference"], s.payouts.map((p) => [date(p.created_at), money(p.amount), E(p.reference || "")]), "No payouts yet.") + '</div><form class="card" method="post" action="/partners/details"><b>Your details</b><label>Your name<input name="name" value="' + E(a.name) + '" required></label><label>Where we pay you<textarea name="payout" rows="3" style="font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF" placeholder="Account name, sort code and account number (or IBAN)">' + E(a.payout) + '</textarea></label><p style="margin:0"><small>Signed in as ' + E(a.email) + ". Only the Bookingbooster team sees these details.</small></p><button>Save</button></form>" + terms + '<form method="post" action="/partners/logout" style="margin-top:18px"><button class="sec" style="background:transparent;color:var(--p);border:1px solid var(--line)">Sign out</button></form>', "read");
+        return page("Your partner account", "<h1>Hi " + E(a.name.split(" ")[0]) + "</h1>" + (note ? '<p class="ok">' + E(note) + "</p>" : "") + (a.status !== "active" ? '<p class="err">Your partner account is paused, so new payments do not earn commission. Email ' + E(cfg.company.support) + " to talk about it.</p>" : "") + (a.payout ? "" : '<div class="card"><b>One more step</b><p style="margin:6px 0 0">Add where we pay you under Your details below, so we can send your commission.</p></div>') + '<div class="card"><b>Your link</b><p style="margin:6px 0 4px"><input readonly value="' + E(link(a)) + '" style="width:100%" onclick="this.select()"></p><p style="margin:0"><small>Or hosts can type your code <b>' + E(a.code) + "</b> when they sign up. Send people to a page with <code>?ref=" + E(a.code) + "</code> on the end, or to <code>" + E(link(a)) + '?to=/pricing</code>.</small></p></div><div class="card"><b>Your link, last 30 days</b><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;margin-top:10px">' + stat(s.views30, "link views") + stat(s.clicks30, "clicks (people)") + stat(s.refs.length, "hosts signed up, all time") + stat(s.paying, "paying now") + "</div>" + chart + '<p style="margin:8px 0 0"><small>All time: ' + s.views + " link views, " + s.clicks + " clicks. Views count every time your link is opened; clicks count each person once a day." + (s.clicks && s.refs.length <= s.clicks ? " " + Math.round(100 * s.refs.length / s.clicks) + "% of clicks became a sign-up." : "") + '</small></p></div><div class="card"><b>Your earnings</b><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;margin-top:10px">' + stat(money(s.hold), "pending (on hold)") + stat(money(Math.max(0, s.due)), "ready to pay") + stat(money(s.paid), "paid to you") + stat(money(s.earned), "earned in total") + '</div><p style="margin:8px 0 0"><small>You earn ' + bonus() + " when a host you sent makes their first payment. It is pending for " + A.holdDays + " days in case of a refund, then ready to pay.</small></p></div>" + (s.due < 0 ? "<p><small>A refund took back " + money(-s.due) + " that was already paid to you. It comes off your next payout.</small></p>" : s.due > 0 && s.due < A.minPayout ? "<p><small>We pay out once " + money(A.minPayout) + " has cleared.</small></p>" : "") + '<div class="card"><b>Hosts you referred</b>' + tbl(["", "Joined", "Status", "Your bonus"], s.refs.map((r, i) => ["Host " + (i + 1), date(r.created_at), E(r.slug ? STATUS[r.billing_status] || "Signed up" : "Account closed"), E(bonusStatus(r))]), "Nobody yet. Share your link to get started.") + `<p style="margin:8px 0 0"><small>To protect their privacy we do not show hosts' names.</small></p></div><div class="card"><b>Bonuses</b>` + tbl(["Date", "Host", "For", "They paid", "You earn", "Status"], s.comms.map((c) => [date(c.created_at), "Host " + (num[c.workspace_id] || "?"), KIND[c.kind] || c.kind, money(c.gross), money(c.amount - c.reversed), E(commStatus(c, t))]), "Your bonus shows here as soon as a host you referred makes their first payment.") + '</div><div class="card"><b>Payouts</b>' + tbl(["Date", "Amount", "Reference"], s.payouts.map((p) => [date(p.created_at), money(p.amount), E(p.reference || "")]), "No payouts yet.") + '</div><form class="card" method="post" action="/partners/details"><b>Your details</b><label>Your name<input name="name" value="' + E(a.name) + '" required></label><label>Where we pay you<textarea name="payout" rows="3" style="font:inherit;padding:12px 14px;border-radius:10px;border:1px solid #D6D5CF" placeholder="Account name, sort code and account number (or IBAN)">' + E(a.payout) + '</textarea></label><p style="margin:0"><small>Signed in as ' + E(a.email) + ". Only the Bookingbooster team sees these details.</small></p><button>Save</button></form>" + terms + '<form method="post" action="/partners/logout" style="margin-top:18px"><button class="sec" style="background:transparent;color:var(--p);border:1px solid var(--line)">Sign out</button></form>', "read");
       }
       async function route(req, res, u, p, m) {
         if (await capture(req, res, u)) return true;
@@ -22266,7 +22297,7 @@ var require_affiliates = __commonJS({
           if (!f.agree) return back("Tick the box to agree to the programme rules.");
           if (await q.byEmail.get(email)) return back("There is already a partner account for that email. Sign in instead.");
           const a2 = await create({ name, email, password: pw });
-          msg.sendEmail({ to: a2.email, subject: "Your Bookingbooster partner link", text: "Hi " + name.split(" ")[0] + ",\n\nWelcome to the Bookingbooster partner programme. Your link is " + link(a2) + " and your code is " + a2.code + ".\n\nYou earn " + pct + " of everything the hosts you refer pay us, for as long as they stay. Your account: " + cfg.baseUrl + "/partners/dashboard\n\n" + cfg.leads.signoff, meta: { affiliate: a2.id } });
+          msg.sendEmail({ to: a2.email, subject: "Your Bookingbooster partner link", text: "Hi " + name.split(" ")[0] + ",\n\nWelcome to the Bookingbooster partner programme. Your link is " + link(a2) + " and your code is " + a2.code + ".\n\nYou earn " + bonus() + " for every host who signs up through you and makes their first payment. Your dashboard shows your link views, clicks, sign-ups and earnings: " + cfg.baseUrl + "/partners/dashboard\n\n" + cfg.leads.signoff, meta: { affiliate: a2.id } });
           h.redirect(res, "/partners/dashboard", { "set-cookie": h.cookie("bb_aff", await startSession(a2.id), 30 * 86400) });
           return true;
         }
@@ -22343,7 +22374,7 @@ var require_affiliates = __commonJS({
           email: who,
           note,
           err,
-          sub: "Partners earn " + pct + " of every payment from hosts they referred, for life. Commission clears after " + A.holdDays + " days; pay anyone due " + money(A.minPayout) + ' or more by bank transfer, then mark it paid here. Sign-up page: <a href="/partners">/partners</a>',
+          sub: "Partners earn a one-off " + bonus() + " bonus for each referred host, on that host's first plan payment. Bonuses clear after " + A.holdDays + " days; pay anyone due " + money(A.minPayout) + ' or more by bank transfer, then mark it paid here. Sign-up page: <a href="/partners">/partners</a>',
           body: '<div class="adm-kpis">' + ui.kpi("Partners", list.length, "", refs.length + " hosts referred") + ui.kpi("Due now", money(Math.max(0, tot("due"))), "", "cleared, not paid yet", true) + ui.kpi("On hold", money(tot("hold")), "", "clears within " + A.holdDays + " days") + ui.kpi("Paid out", money(tot("paid")), "", "all time") + "</div>" + ui.card("Partners", "", ui.table(["Partner", "Referrals", "Commission", "Pay to", ""], prow, "Nobody has joined yet. Share /partners.")) + '<div class="adm-cols">' + ui.card("Record a bank transfer from a referred host", "", bank) + ui.card("Link a host to a partner", "", linkf) + "</div>" + ui.card("Commission", "", '<p class="adm-help">Card refunds and lost chargebacks come back from Stripe by themselves. Use Refunded for a bank transfer you paid back.</p>' + ui.table(["Date", "Partner", "Host", "For", "Paid", "Commission", "Status", ""], crow, "No commission yet."))
         }), "text/html; charset=utf-8");
         return true;
@@ -22374,7 +22405,7 @@ var require_affiliates = __commonJS({
           if (!(amt > 0) || !ref) return adminPage(res, null, "Enter the amount and the bank reference.");
           const r = await record({ workspaceId: String(f.workspace || ""), id: "bank:" + sha(f.workspace + "|" + ref).slice(0, 20), kind: f.kind, source: "bank", gross: amt, refs: [], note: "Bank ref " + ref });
           if (!r) return adminPage(res, null, "That host has no active partner, so there is no commission to record.");
-          return adminPage(res, r.created ? "Recorded. " + r.code + " earns " + money(r.amount) + "." : "That bank reference was already recorded for this host.");
+          return adminPage(res, r.created ? "Recorded. " + r.code + " earns " + money(r.amount) + "." : r.why ? "Recorded nothing. " + r.why : "That bank reference was already recorded for this host.");
         }
         if (p === "/admin/affiliates/reverse") {
           const c = await q.comm.get(String(f.id));
@@ -26715,7 +26746,7 @@ Disallow: /
       const inp = (label, name, val, type, extra) => "<label>" + label + '<input name="' + name + '" value="' + E(val || "") + '" type="' + (type || "text") + '"' + (extra || "") + "></label>";
       const msgs = { saved: "Saved.", password: "Password changed. Other devices have been signed out.", emails: "Email choices saved." };
       const pr = await hostMail.prefs(w.id), box = (name, on, label) => '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="' + name + '"' + (on ? " checked" : "") + ' style="margin-top:4px">' + label + "</label>";
-      return authPage("Account", "<h1>Your account</h1><p>" + E(a.business) + "</p>" + (err2 ? '<p class="err" role="alert">' + E(err2) + "</p>" : "") + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + "</p>" : "") + '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp("Your name", "owner", a.owner, "text", ' required autocomplete="name"') + inp("Business name", "business", a.business, "text", " required") + inp("Email you sign in with", "email", sess.email, "email", ' required autocomplete="email"') + '<button>Save details</button></form><form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp("Current password", "current", "", "password", ' required autocomplete="current-password"') + inp("New password (at least 10 characters)", "next", "", "password", ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form><form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box("report", pr.report, "The Monday report: last week\u2019s bookings, direct revenue and site visits") + box("setup", pr.setup, "Setup tips in your first month") + box("news", pr.news, "News and offers from Bookingbooster, now and then") + '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form><div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div><form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' + inp("Type DELETE to confirm", "confirm", "", "text", ' required autocomplete="off"') + inp("Your password", "password", "", "password", ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form><div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn ' + cfg.affiliate.rate + '% of everything hosts you refer pay us, for as long as they stay. <a href="/partners">Get your partner link</a></p></div><div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
+      return authPage("Account", "<h1>Your account</h1><p>" + E(a.business) + "</p>" + (err2 ? '<p class="err" role="alert">' + E(err2) + "</p>" : "") + (msgs[note] ? '<p class="ok">' + E(msgs[note]) + "</p>" : "") + '<form class="card" method="post" action="/app/account/profile"><b>Details</b>' + inp("Your name", "owner", a.owner, "text", ' required autocomplete="name"') + inp("Business name", "business", a.business, "text", " required") + inp("Email you sign in with", "email", sess.email, "email", ' required autocomplete="email"') + '<button>Save details</button></form><form class="card" method="post" action="/app/account/password"><b>Password</b>' + inp("Current password", "current", "", "password", ' required autocomplete="current-password"') + inp("New password (at least 10 characters)", "next", "", "password", ' required minlength="10" autocomplete="new-password"') + '<button>Change password</button></form><form class="card" id="emails" method="post" action="/app/account/emails"><b>Emails from us</b>' + box("report", pr.report, "The Monday report: last week\u2019s bookings, direct revenue and site visits") + box("setup", pr.setup, "Setup tips in your first month") + box("news", pr.news, "News and offers from Bookingbooster, now and then") + '<p style="margin:0"><small>Booking, billing and security emails always arrive.</small></p><button>Save email choices</button></form><div class="card"><b>Your data</b><p style="margin:6px 0 10px">Download everything in your account: homes, bookings, guests, messages and campaigns. Your guest list is yours to take with you.</p><div class="links" style="margin:0"><a href="/app/account/export">Download all data (JSON)</a><a href="/app/account/guests.csv">Download guest list (CSV)</a></div></div><form class="card" method="post" action="/app/account/delete"><b>Delete account</b><p style="margin:6px 0 10px">This deletes your booking sites, bookings, guest list, messages, photos and ID uploads straight away, and ends your Bookingbooster subscription. It cannot be undone. Download your data first.</p>' + inp("Type DELETE to confirm", "confirm", "", "text", ' required autocomplete="off"') + inp("Your password", "password", "", "password", ' required autocomplete="current-password"') + '<button style="background:#C62828">Delete my account</button></form><div class="card"><b>Refer other hosts</b><p style="margin:6px 0 0">Earn \xA3' + cfg.affiliate.bonus / 100 + ' for every host you refer, once they make their first payment. <a href="/partners">Get your partner link</a></p></div><div class="links"><a href="/app">Back to your console</a><a href="/app/billing">Plan and billing</a></div>');
     }
     async function accountPost(req, res, p, w, sess) {
       const f = await formBody(req);
