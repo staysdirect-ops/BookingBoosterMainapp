@@ -25035,6 +25035,45 @@ var require_lead_import = __commonJS({
   }
 });
 
+// server/preflight.js
+var require_preflight = __commonJS({
+  "server/preflight.js"(exports, module) {
+    function check(cfg, E) {
+      const out = [];
+      const add = (area, ok, need, must = true) => out.push({ area, ok: !!ok, need, must });
+      const https = /^https:\/\//.test(cfg.baseUrl);
+      add("Web address", https && !/localhost/.test(cfg.baseUrl), "BASE_URL set to the https address, e.g. https://booking-booster.co.uk");
+      add("Secret", (E.APP_SECRET || "").length >= 32, "APP_SECRET set to a long random value (64 hex characters)");
+      add("Team access", cfg.admins.length, "ADMIN_EMAILS with at least one team email");
+      add("Company", !/to be confirmed/i.test(cfg.company.address) && cfg.company.number, "COMPANY_ADDRESS and COMPANY_NUMBER (shown in email footers and the legal pages)");
+      add("VAT", cfg.company.vat, "VAT_NUMBER, if you are VAT registered (prices are shown inc. VAT)", false);
+      add("Email", cfg.email.provider, "RESEND_API_KEY or POSTMARK_TOKEN, with your sending domain verified there");
+      add("Stripe", cfg.stripe.key && /^sk_live_/.test(cfg.stripe.key), "STRIPE_SECRET_KEY (a live sk_live_ key)");
+      add("Stripe webhooks", cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret, "STRIPE_WEBHOOK_SECRET and STRIPE_CONNECT_WEBHOOK_SECRET (npm run stripe-setup prints both)");
+      const p = cfg.stripe.prices;
+      add("Plan prices", p.Growth && p.addon, "STRIPE_PRICE_GROWTH and STRIPE_PRICE_CALENDAR_SYNC (npm run stripe-setup creates them)");
+      add("Annual prices", p.GrowthAnnual && p.addonAnnual, "STRIPE_PRICE_*_ANNUAL for the yearly option the pricing page offers (npm run stripe-setup creates them)");
+      add("No commission", !cfg.stripe.feePct, "STRIPE_APPLICATION_FEE_PCT left at 0, because the site and billing page promise no commission");
+      add("Texts", cfg.sms.sid && cfg.sms.token && cfg.sms.from, "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM, for text messages to guests", false);
+      add("Free site addresses", cfg.sitesDomain, "SITES_DOMAIN, e.g. bookingbooster.site, with a wildcard DNS record", false);
+      add("Own domains", cfg.domains.flyToken && cfg.domains.flyApp ? true : !E.FLY_APP_NAME, "FLY_API_TOKEN and FLY_APP_NAME, so hosts' own domains get certificates", false);
+      add("Legal review", cfg.legalReviewed, "LEGAL_REVIEWED=YYYY-MM-DD once a solicitor has signed off /privacy and /terms");
+      add("AI checks", cfg.ai.openai || cfg.ai.gemini || cfg.ai.perplexity || cfg.ai.serpapi, "At least one of OPENAI_API_KEY, GEMINI_API_KEY, PERPLEXITY_API_KEY or SERPAPI_KEY", false);
+      add("Reply drafts", cfg.ai.anthropic, "ANTHROPIC_API_KEY, for suggested replies in the inbox", false);
+      return out;
+    }
+    if (__require.main === module) {
+      const cfg = require_config();
+      const rows = check(cfg, process.env);
+      for (const r of rows) console.log((r.ok ? "  ok   " : r.must ? "  NEED " : "  opt  ") + r.area.padEnd(20) + (r.ok ? "" : r.need));
+      const missing = rows.filter((r) => r.must && !r.ok).length;
+      console.log(missing ? "\n" + missing + " required setting" + (missing === 1 ? "" : "s") + " missing. See LAUNCH.md." : "\nReady for launch.");
+      process.exitCode = missing ? 1 : 0;
+    }
+    module.exports = { check };
+  }
+});
+
 // server/legal.js
 var require_legal = __commonJS({
   "server/legal.js"(exports, module) {
@@ -25140,45 +25179,6 @@ var require_legal = __commonJS({
       ) + sec("Law", "These terms are governed by the law of England and Wales, and the courts of England and Wales can hear any dispute. Questions? Email " + mail + ".") + draft;
       return { privacy, terms };
     };
-  }
-});
-
-// server/preflight.js
-var require_preflight = __commonJS({
-  "server/preflight.js"(exports, module) {
-    function check(cfg, E) {
-      const out = [];
-      const add = (area, ok, need, must = true) => out.push({ area, ok: !!ok, need, must });
-      const https = /^https:\/\//.test(cfg.baseUrl);
-      add("Web address", https && !/localhost/.test(cfg.baseUrl), "BASE_URL set to the https address, e.g. https://booking-booster.co.uk");
-      add("Secret", (E.APP_SECRET || "").length >= 32, "APP_SECRET set to a long random value (64 hex characters)");
-      add("Team access", cfg.admins.length, "ADMIN_EMAILS with at least one team email");
-      add("Company", !/to be confirmed/i.test(cfg.company.address) && cfg.company.number, "COMPANY_ADDRESS and COMPANY_NUMBER (shown in email footers and the legal pages)");
-      add("VAT", cfg.company.vat, "VAT_NUMBER, if you are VAT registered (prices are shown inc. VAT)", false);
-      add("Email", cfg.email.provider, "RESEND_API_KEY or POSTMARK_TOKEN, with your sending domain verified there");
-      add("Stripe", cfg.stripe.key && /^sk_live_/.test(cfg.stripe.key), "STRIPE_SECRET_KEY (a live sk_live_ key)");
-      add("Stripe webhooks", cfg.stripe.webhookSecret && cfg.stripe.connectWebhookSecret, "STRIPE_WEBHOOK_SECRET and STRIPE_CONNECT_WEBHOOK_SECRET (npm run stripe-setup prints both)");
-      const p = cfg.stripe.prices;
-      add("Plan prices", p.Growth && p.addon, "STRIPE_PRICE_GROWTH and STRIPE_PRICE_CALENDAR_SYNC (npm run stripe-setup creates them)");
-      add("Annual prices", p.GrowthAnnual && p.addonAnnual, "STRIPE_PRICE_*_ANNUAL for the yearly option the pricing page offers (npm run stripe-setup creates them)");
-      add("No commission", !cfg.stripe.feePct, "STRIPE_APPLICATION_FEE_PCT left at 0, because the site and billing page promise no commission");
-      add("Texts", cfg.sms.sid && cfg.sms.token && cfg.sms.from, "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM, for text messages to guests", false);
-      add("Free site addresses", cfg.sitesDomain, "SITES_DOMAIN, e.g. bookingbooster.site, with a wildcard DNS record", false);
-      add("Own domains", cfg.domains.flyToken && cfg.domains.flyApp ? true : !E.FLY_APP_NAME, "FLY_API_TOKEN and FLY_APP_NAME, so hosts' own domains get certificates", false);
-      add("Legal review", cfg.legalReviewed, "LEGAL_REVIEWED=YYYY-MM-DD once a solicitor has signed off /privacy and /terms");
-      add("AI checks", cfg.ai.openai || cfg.ai.gemini || cfg.ai.perplexity || cfg.ai.serpapi, "At least one of OPENAI_API_KEY, GEMINI_API_KEY, PERPLEXITY_API_KEY or SERPAPI_KEY", false);
-      add("Reply drafts", cfg.ai.anthropic, "ANTHROPIC_API_KEY, for suggested replies in the inbox", false);
-      return out;
-    }
-    if (__require.main === module) {
-      const cfg = require_config();
-      const rows = check(cfg, process.env);
-      for (const r of rows) console.log((r.ok ? "  ok   " : r.must ? "  NEED " : "  opt  ") + r.area.padEnd(20) + (r.ok ? "" : r.need));
-      const missing = rows.filter((r) => r.must && !r.ok).length;
-      console.log(missing ? "\n" + missing + " required setting" + (missing === 1 ? "" : "s") + " missing. See LAUNCH.md." : "\nReady for launch.");
-      process.exitCode = missing ? 1 : 0;
-    }
-    module.exports = { check };
   }
 });
 
@@ -26741,6 +26741,7 @@ Disallow: /
       }
       const since = Date.now() - 30 * 864e5;
       const hour = +(/* @__PURE__ */ new Date()).toLocaleString("en-GB", { timeZone: "Europe/London", hour: "2-digit", hour12: false });
+      const launch = await launchCard(A);
       const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + "</section>" : '<div class="a-empty">' + A.icon("check") + "<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>";
       return shell({
         title: "Overview",
@@ -26748,8 +26749,22 @@ Disallow: /
         active: "overview",
         sub: "Leads and accounts \xB7 " + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.",
         actions: '<a class="btn sm" href="/admin/leads">' + A.icon("users") + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon("mail") + "Email campaigns</a>",
-        body: '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email || l.phone || "") + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
+        body: launch + '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email || l.phone || "") + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
       });
+    }
+    async function launchCard(A) {
+      const E2 = Object.assign({}, process.env, { APP_SECRET: cfg.secret });
+      const rows = require_preflight().check(cfg, E2), miss = rows.filter((r) => r.must && !r.ok), opt = rows.filter((r) => !r.must && !r.ok);
+      const held = await db.prepare("SELECT channel, count(*) AS n, max(created_at) AS last FROM outbox WHERE status = 'test' GROUP BY channel").all();
+      const heldN = held.reduce((a, x) => a + Number(x.n || 0), 0);
+      if (!miss.length) return "";
+      const heldTxt = held.map((x) => Number(x.n) + " " + (x.channel === "sms" ? "text" : x.channel) + (Number(x.n) === 1 ? "" : "s")).join(" and ");
+      const list = (l) => '<div class="adm-list">' + l.map((r) => "<div><span><b>" + E(r.area) + "</b><small>" + E(r.need) + "</small></span>" + A.pill(r.must ? "bad" : "muted", r.must ? "Needed" : "Optional") + "</div>").join("") + "</div>";
+      return '<div style="margin-bottom:18px">' + A.card(
+        "Not ready for paying hosts yet",
+        miss.length + " of " + rows.filter((r) => r.must).length + " required settings missing",
+        (!cfg.email.provider ? '<p class="adm-help" style="margin:0 0 12px"><b>Email is not switched on.</b> Booking confirmations, check-in links, door codes, password resets and host emails are kept in the outbox and never delivered' + (heldN ? ": " + heldTxt + " held so far." : ".") + " Set RESEND_API_KEY on the server, with the sending domain verified in Resend.</p>" : heldN ? '<p class="adm-help" style="margin:0 0 12px">' + heldTxt + " were kept in the outbox before sending was switched on. They were not delivered.</p>" : "") + list(miss) + (opt.length ? '<details class="adm-x" style="margin-top:10px"><summary>' + opt.length + " optional</summary>" + list(opt) + "</details>" : "")
+      ) + "</div>";
     }
     async function marketingRow(A) {
       const sp = await social.posts().catch(() => ({ posts: [] })), now = Date.now(), at = (x) => Date.parse(x.at + "Z");
