@@ -3228,6 +3228,7 @@ var require_bb_embedded_files = __commonJS({
         if (st.view === 'inbox') { st.ib_open = !!st.id; st.ib_draft = ''; inst._scrollMsgs = true; }
         if (st.view === 'calendar' && st.id && String(st.id).startsWith('home:')) { st.cal_pid = st.id.slice(5); st.id = null; }
         if (st.view === 'inbox' && st.id) BB.act.markRead(st.id);
+        if (st.view === 'website' && st.id) { if (BB.q.property(st.id)) st.ws_pid = st.id; st.id = null; } // open on that home
         inst.render();
         if (inst.compact) { const r = root.getBoundingClientRect(); if (r.top < 0) root.scrollIntoView({ block: 'start' }); }
         else window.scrollTo({ top: 0 });
@@ -3455,8 +3456,28 @@ var require_bb_embedded_files = __commonJS({
     const g = BB.q.guest(t.guestId) || { name: 'Guest' }, last = threadLast(t);
     return '<button class="a-row" data-a="nav" data-view="inbox" data-id="' + t.id + '">' + BB.avatar(g.name) + '<span class="a-row-t"><b>' + esc(g.name) + ' sent a message</b><span>\u201C' + esc(last ? last.text : '') + '\u201D</span></span><span class="a-row-m">' + BB.pill('warn', 'Reply') + '</span></button>';
   }
+  // Setup steps for a real account, the same ones as the day-2 checklist email (server/host-emails.js). They stay in
+  // "Needs you" until done, so a new host never sees "All clear" while guests cannot pay or the site shows drawings.
+  function setupItems() {
+    const s = S(), out = []; if (!s.live) return out;
+    const one = s.properties.length > 1;
+    if (s.properties.length && !BB.q.connected('stripe')) out.push({ tone: 'bad', icon: 'card', title: 'Connect payouts so guests can pay',
+      sub: 'Until Stripe is connected, guests can only send booking requests. Takes about 5 minutes with your UK bank details.', open: 'data-a="nav" data-view="connections"',
+      btn: '<button class="btn sm" data-a="nav" data-view="connections">' + ic('card') + 'Connect</button>' });
+    s.properties.forEach(p => {
+      const where = one ? p.short + ': ' : '', go = 'data-a="nav" data-view="website" data-id="' + esc(p.id) + '"', n = (p.photos || []).length;
+      if (n < 10) out.push({ tone: n ? 'warn' : 'bad', icon: 'web', title: where + (n ? 'Add ' + plural(10 - n, 'more photo') : 'Add your photos'),
+        sub: n ? n + ' of 10 added. Homes with 10 or more photos get more bookings.' : 'Your site shows a drawing of a home until you add your own photos.', open: go,
+        btn: '<button class="btn sm" ' + go + '>' + ic('web') + 'Add photos</button>' });
+      if (String(p.about || '').trim().length <= 40) out.push({ tone: 'warn', icon: 'web', title: where + 'Describe your home',
+        sub: 'A few lines on the home and what it offers. Google and AI assistants read this.', open: go, btn: '<button class="btn sm" ' + go + '>Write it</button>' });
+      if (!String(p.address || '').trim() || !String(p.entry || '').trim()) out.push({ tone: 'warn', icon: 'key', title: where + 'Add the address and how guests get in',
+        sub: 'Guests see these in their trip app after check-in.', open: go, btn: '<button class="btn sm" ' + go + '>Add details</button>' });
+    });
+    return out;
+  }
   function needItems() {
-    const s = S(), t = s.today, out = [];
+    const s = S(), t = s.today, out = setupItems();
     needsCheckin().sort(byIn).forEach(b => {
       const g = gOf(b), c = b.checkin, onlyDep = c.id && c.selfie && c.agreement && !c.deposit, r = remindedAt(b.id);
       out.push({ tone: b.checkIn === t ? 'bad' : 'warn', icon: onlyDep ? 'card' : 'key', title: g.name + (onlyDep ? ': deposit pending' : ': check-in unfinished'),
@@ -6812,7 +6833,7 @@ body.p-lock { overflow: hidden; }
       minNights: p.minNights || 1, maxGuests: sleeps, bedrooms: beds, baths: p.baths || 1,
       rating: p.reviews ? (p.rating || 0) : 0, reviews: p.reviews || 0,
       accent: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : ACCENT[theme],
-      parking: p.parking || 'On site',
+      parking: p.parking || (S().live ? '' : 'On site'), // a real home shows parking only once the host has said what it is
     });
   }
 
@@ -6950,10 +6971,13 @@ body.p-lock { overflow: hidden; }
     const x = ph[i % ph.length];
     return '<div class="p-art p-photo ' + (extra || '') + '"><img src="' + esc(x.url) + '" alt="' + esc(x.cap || p.name) + '"' + (i ? ' loading="lazy"' : '') + ' decoding="async"></div>';
   }
-  const capsOf = (p, th) => { const ph = photosOf(p); return ph.length ? ph.map((x, i) => x.cap || (i ? 'Photo ' + (i + 1) : p.name)) : SCENES[th].map(x => x[0]); };
+  // On a real home the drawings are placeholders: their demo captions (a hot tub, a named valley) must not read as this home's features.
+  const DRAWN = 'Illustration \xB7 photos coming soon';
+  const capsOf = (p, th) => { const ph = photosOf(p); return ph.length ? ph.map((x, i) => x.cap || (i ? 'Photo ' + (i + 1) : p.name)) : (SCENES[th] || SCENES.cabin).map(x => S().live ? DRAWN : x[0]); };
+  const cardsOn = () => !S().live || BB.q.connected('stripe');
   function art(theme, i, extra) {
     const s = (SCENES[theme] || SCENES.cabin)[i % 5];
-    return '<div class="p-art ' + (extra || '') + '" role="img" aria-label="' + esc(s[0]) + '" style="background:' + s[1] + '">' + s[2]() + '</div>';
+    return '<div class="p-art ' + (extra || '') + '" role="img" aria-label="' + esc(S().live ? DRAWN : s[0]) + '" style="background:' + s[1] + '">' + s[2]() + '</div>';
   }
 
   /* ---------- extra icons for amenities ---------- */
@@ -7003,9 +7027,9 @@ body.p-lock { overflow: hidden; }
       [p.petsAllowed ? 'Can I bring my dog?' : 'Can I bring a pet?', p.petsAllowed ? 'Yes. One well-behaved dog is welcome for a ' + money(p.petFee || 0) + ' fee per stay. Add your dog in the guest picker when you book.' : 'Sorry, ' + p.short + ' cannot host pets. Assistance dogs are always welcome.'],
       ['What time is check-in and checkout?', 'Check-in is from ' + p.checkinTime + ' and checkout is by ' + p.checkoutTime + '. Message ' + host + ' if you need a little flexibility and we will do our best.'],
       ['How does check-in work?', (S().live ? 'After you book, you get a link to check in online in a few minutes: ID and the house rules' + (BB.q.connected('stripe') ? ', plus a refundable deposit hold' : '') + '. ' + ((S().integrations.find(i => i.id === 'lock') || {}).connected ? 'Your door code arrives on arrival day.' : 'Your host sends arrival details before you come.') : 'After you book, you get a link to check in online in about 3 minutes: ID, the rental agreement and a refundable deposit hold. Your door code arrives on arrival day.')],
-      ['Is there parking?', 'Yes. ' + p.parking + '.'],
-      ['Why book direct?', 'You skip the platform service fee, get the same secure card checkout, and talk to ' + host + ' directly before and during your stay.'],
-    ];
+      p.parking ? ['Is there parking?', 'Yes. ' + p.parking + '.'] : null,
+      ['Why book direct?', 'You skip the platform service fee, ' + (cardsOn() ? 'get the same secure card checkout, ' : '') + 'and talk to ' + host + ' directly before and during your stay.'],
+    ].filter(Boolean);
   }
 
   function defaultSel(pid) {
@@ -7174,11 +7198,11 @@ body.p-lock { overflow: hidden; }
 
     const loc = '<section class="p-sec" id="' + ID(inst, 'loc') + '">' + sh('06', 'Location', 'Where you will stay') +
       '<div class="p-loc"><div class="p-map" aria-hidden="true"><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="w"></i><i class="pk"></i><span class="p-pin">' + BB.icon('home') + '</span></div>' +
-      '<div class="p-loc-b"><b>' + esc(p.address) + '</b><span>' + esc(p.area) + '</span><p>' + BB.icon('car') + 'Parking: ' + esc(p.parking) + '</p><p>' + BB.icon('key') + 'Self check-in with a door code from ' + esc(p.checkinTime) + '</p>' +
+      '<div class="p-loc-b"><b>' + esc(p.address) + '</b><span>' + esc(p.area) + '</span><p>' + BB.icon('car') + (p.parking ? 'Parking: ' + esc(p.parking) + '</p><p>' + BB.icon('key') : '') + (!S().live || BB.q.connected('lock') ? 'Self check-in with a door code from ' : 'Check-in from ') + esc(p.checkinTime) + '</p>' +
       '<button class="p-btn ghost sm" data-x="copyaddr">' + BB.icon('pin') + 'Copy address</button></div></div></section>';
 
     const direct = sq ? '<section class="p-direct"><div class="p-w p-direct-in"><div class="p-direct-t"><p class="p-eb">Why book direct</p><h2>Skip the platform fee. Keep ' + money(sq.guestSaves) + ' on a 3-night stay.</h2>' +
-      '<ul><li>' + BB.icon('tag') + '<span><b>No service fee.</b> Airbnb adds about 14% to your total. We don\u2019t.</span></li><li>' + BB.icon('sms') + '<span><b>Talk to ' + esc(host) + ' directly.</b> Questions answered by the people who own the home.</span></li><li>' + BB.icon('lock') + '<span><b>Secure checkout.</b> Cards, Apple Pay and Google Pay through Stripe.</span></li></ul></div>' +
+      '<ul><li>' + BB.icon('tag') + '<span><b>No service fee.</b> Airbnb adds about 14% to your total. We don\u2019t.</span></li><li>' + BB.icon('sms') + '<span><b>Talk to ' + esc(host) + ' directly.</b> Questions answered by the people who own the home.</span></li>' + (cardsOn() ? '<li>' + BB.icon('lock') + '<span><b>Secure checkout.</b> Cards, Apple Pay and Google Pay through Stripe.</span></li>' : '') + '</ul></div>' +
       '<div class="p-cmp"><p class="p-eb">Sample stay \xB7 ' + D.fmt(sampleA) + ' \u2013 ' + D.fmt(D.add(sampleA, 3)) + ', 2 guests</p>' +
       '<div class="p-cmp-r"><span>On Airbnb</span><s class="num">' + money(sq.airbnb) + '</s></div>' +
       '<div class="p-cmp-r p-cmp-me"><span>Here, direct</span><b class="num">' + money(sq.total) + '</b></div>' +
