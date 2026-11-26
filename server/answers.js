@@ -58,7 +58,7 @@ const CHECKLIST = [
   ['Check AI answers every week.', 'Ask ChatGPT, Perplexity, Gemini and Google the questions guests ask, and note who they name and cite.', 'GEO, AIO'],
 ];
 
-const PRICE_LINE = '£' + P.month + ' a month, or £' + P.year.toLocaleString('en-GB') + ' a year, with no setup fee and no commission on bookings. Prices include VAT and cover up to ' + P.homes + ' homes. Every plan includes £' + P.aiCredit + ' of AI credit a month.';
+const PRICE_LINE = '£' + P.month + ' a month, or £' + P.year.toLocaleString('en-GB') + ' a year, with no setup fee and no commission on bookings (guest card fees are passed on at Stripe’s cost, about 1.5% + 20p). Prices include VAT and cover up to ' + P.homes + ' homes. Every plan includes £' + P.aiCredit + ' of AI credit a month.';
 
 const PAGES = {
   '/direct-booking-website': {

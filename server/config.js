@@ -68,7 +68,10 @@ module.exports = {
   email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? 'resend' : E.POSTMARK_TOKEN ? 'postmark' : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || 'Bookingbooster <hello@booking-booster.co.uk>', guestFromDomain: E.GUEST_EMAIL_DOMAIN || 'mail.booking-booster.co.uk' },
   sms: { apiBase: E.SMS_API_BASE, sid: E.TWILIO_ACCOUNT_SID, token: E.TWILIO_AUTH_TOKEN, from: E.TWILIO_FROM },
   stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : undefined, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: { Growth: E.STRIPE_PRICE_GROWTH, addon: E.STRIPE_PRICE_CALENDAR_SYNC,
-    GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL, addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
+    GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL, addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0),
+    // Guest card fees, passed to the host at cost: on destination charges Stripe takes its fee from the platform.
+    // Standard UK card pricing; STRIPE_PASS_CARD_FEES=0 switches it off.
+    passFees: E.STRIPE_PASS_CARD_FEES !== '0', cardFeePct: +(E.STRIPE_CARD_FEE_PCT || 1.5), cardFeePence: +(E.STRIPE_CARD_FEE_PENCE || 20) },
   ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || 'gpt-4o-mini', gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || 'gemini-2.0-flash', perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || 'sonar', anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || 'claude-sonnet-5-5', studioModel: E.ANTHROPIC_STUDIO_MODEL || 'claude-opus-5-5', studioEffort: E.ANTHROPIC_STUDIO_EFFORT || 'medium', serpapi: E.SERPAPI_KEY },
   // Event ads: our own event finder reads public what's-on and course pages in the background (server/studio/crawler.js).
   events: { crawl: E.EVENT_CRAWL !== 'off', seeds: E.EVENT_SEEDS || '' }, // EVENT_SEEDS: off, or a path to another starter list
