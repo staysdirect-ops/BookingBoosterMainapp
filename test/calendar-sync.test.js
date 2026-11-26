@@ -85,3 +85,9 @@ test('channel manager keys are checked on the server', async () => {
   assert.equal(r.status, 400); assert.match(r.body.error, /Smoobu needs your api key/);
   assert.equal((await t.act('toggleIntegration', 'beds24')).status, 400, 'an API connection cannot be switched on without a key');
 });
+
+test('a calendar export with trailing spaces or a byte-order mark still blocks its dates', () => {
+  const ical = require('../server/ical');
+  const t = '﻿BEGIN:VCALENDAR\r\nBEGIN:VEVENT \r\nDTSTART;VALUE=DATE:20261210 \r\nDTEND;VALUE=DATE:20261212\r\nSUMMARY:Reserved \r\nEND:VEVENT \r\nEND:VCALENDAR\r\n';
+  assert.deepEqual(ical.parse(t), [{ from: '2026-12-10', to: '2026-12-12' }]);
+});

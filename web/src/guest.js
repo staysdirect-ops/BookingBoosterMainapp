@@ -342,7 +342,7 @@
       const who = m.from === 'guest' ? 'me' : m.from === 'auto' ? 'auto' : 'host';
       return sep + '<div class="g-msg ' + who + '">' + (who === 'auto' ? '<small>' + BB.icon('bolt') + 'Automatic message</small>' : '') + '<p>' + esc(m.text) + '</p><time>' + esc(m.at.split('T')[1]) + '</time></div>';
     }).join('');
-    const body = '<div class="g-host">' + BB.avatar(host) + '<span><b>' + esc(host) + '</b><small>Your host · usually replies within 10 minutes</small></span></div>' +
+    const body = '<div class="g-host">' + BB.avatar(host) + '<span><b>' + esc(host) + '</b><small>Your host' + (S().live ? '' : ' · usually replies within 10 minutes') + '</small></span></div>' +
       '<div class="g-thread" aria-live="polite">' + (list || '<p class="g-empty">Ask ' + esc(first(host)) + ' anything about your stay. Replies also arrive by text.</p>') + '</div>';
     const quick = ['What is the Wi-Fi password?', 'Can we check in early?', 'Is there parking for two cars?'];
     const cta = '<div class="g-qr" id="gQr-' + inst.uid + '">' + quick.map(q => '<button type="button" data-g="quick" data-t="' + esc(q) + '">' + esc(q) + '</button>').join('') + '</div>' +
@@ -354,21 +354,24 @@
   function guideView(inst, p, b) {
     const extras = EXTRAS[p.theme] || EXTRAS.cabin; const bought = b.extras || []; const ask = inst.st.extraAsk;
     const body = '<p class="g-step">' + esc(p.short) + '</p><h2 class="g-h">Your stay guide</h2>' + wifiCard(p, inst) +
-      '<p class="g-step">House manual</p><div class="g-tiles">' + (p.amenities || []).map(a => { const [ic, t] = manual(a, p); return '<div class="g-tile"><span class="g-ri">' + BB.icon(ic) + '</span><b>' + esc(a) + '</b><span>' + esc(t) + '</span></div>'; }).join('') + '</div>' +
+      ((p.amenities || []).length ? '<p class="g-step">House manual</p><div class="g-tiles">' + p.amenities.map(a => { const [ic, t] = manual(a, p); return '<div class="g-tile"><span class="g-ri">' + BB.icon(ic) + '</span><b>' + esc(a) + '</b><span>' + esc(t) + '</span></div>'; }).join('') + '</div>' : '') +
       '<p class="g-step">Host picks nearby</p><div class="g-list">' + (PICKS[p.id] || [['Ask your host', 'Message for local tips']]).map(x => row('pin', esc(x[0]), esc(x[1]))).join('') + '</div>' +
-      '<p class="g-step">Add to your stay</p><div class="g-list">' + extras.map(([n, pr, sub]) => {
+      // Paid extras are demo only: on a real home nothing takes the card, so the guest must not be told they were charged.
+      (S().live ? '' : '<p class="g-step">Add to your stay</p><div class="g-list">' + extras.map(([n, pr, sub]) => {
         const has = bought.some(x => x.name === n);
         if (has) return '<div class="g-ext done"><span class="g-rt"><b>' + esc(n) + '</b><span>Added · ' + money(pr) + ' charged to •••• 4242</span></span>' + okDot(true) + '</div>';
         if (ask === n) return '<div class="g-ext ask"><span class="g-rt"><b>' + esc(n) + '</b><span>' + money(pr) + ' goes on your card ending 4242.</span></span><span class="g-ext-a"><button type="button" class="g-mini ghost" data-g="extra-no">Cancel</button><button type="button" class="g-mini" data-g="extra-buy" data-n="' + esc(n) + '" data-p="' + pr + '">Add for ' + money(pr) + '</button></span></div>';
         return '<button type="button" class="g-ext" data-g="extra" data-n="' + esc(n) + '"><span class="g-rt"><b>' + esc(n) + '</b><span>' + esc(sub) + '</span></span><span class="g-price">' + money(pr) + '</span></button>';
-      }).join('') + '</div>' + powered();
+      }).join('') + '</div>') + powered();
     return { body };
   }
 
   /* ---------- F. checkout ---------- */
   function checkoutView(inst, p, b) {
     const st = inst.st, g = BB.q.guest(b.guestId); const code = first(g.name).toUpperCase().replace(/[^A-Z]/g, '') + '10'; const hasCode = !!S().promos[code];
-    const items = (CHECKOUT[p.theme] || CHECKOUT.cabin).concat(['Lock the door. Your code stops at ' + p.checkoutTime]);
+    // A real home gets plain steps that fit any home; the themed ones (hot tub, kayaks) belong to the demo homes.
+    const items = S().live ? ['Take all your belongings, and check the bedrooms and bathroom', 'Close the windows', lockOn() ? 'Lock the door. Your code stops at ' + p.checkoutTime : 'Lock up and leave the keys as your host asked']
+      : (CHECKOUT[p.theme] || CHECKOUT.cabin).concat(['Lock the door. Your code stops at ' + p.checkoutTime]);
     const stars = b.review ? b.review.stars : st.stars;
     const body = '<p class="g-step">' + (b.checkOut === S().today ? 'Checkout today by ' + esc(p.checkoutTime) : 'Checkout ' + esc(longDate(b.checkOut)) + ', ' + esc(p.checkoutTime)) + '</p><h2 class="g-h">Before you go</h2>' +
       '<div class="g-list">' + items.map((x, i) => check(st.out[i], esc(x), 'data-g="out" data-i="' + i + '"')).join('') + '</div>' +

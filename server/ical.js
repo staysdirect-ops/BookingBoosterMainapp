@@ -5,7 +5,9 @@
 const dns = require('dns').promises;
 const net = require('net');
 
-function unfold(text) { return String(text).replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '').split(/\r?\n/); }
+// Trailing spaces and a byte-order mark are dropped too: some calendar exports add them, and an "END:VEVENT " line
+// would otherwise lose that booking without a word (and leave the dates open to a double booking).
+function unfold(text) { return String(text).replace(/^\uFEFF/, '').replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '').split(/\r?\n/).map(l => l.trimEnd()); }
 function toIso(v) {
   // 20261114 or 20261114T150000Z / 20261114T150000
   const m = String(v).match(/(\d{4})(\d{2})(\d{2})/); return m ? m[1] + '-' + m[2] + '-' + m[3] : null;
