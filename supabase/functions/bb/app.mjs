@@ -4896,7 +4896,7 @@ button { cursor: pointer; }
       const who = m.from === 'guest' ? 'me' : m.from === 'auto' ? 'auto' : 'host';
       return sep + '<div class="g-msg ' + who + '">' + (who === 'auto' ? '<small>' + BB.icon('bolt') + 'Automatic message</small>' : '') + '<p>' + esc(m.text) + '</p><time>' + esc(m.at.split('T')[1]) + '</time></div>';
     }).join('');
-    const body = '<div class="g-host">' + BB.avatar(host) + '<span><b>' + esc(host) + '</b><small>Your host \xB7 usually replies within 10 minutes</small></span></div>' +
+    const body = '<div class="g-host">' + BB.avatar(host) + '<span><b>' + esc(host) + '</b><small>Your host' + (S().live ? '' : ' \xB7 usually replies within 10 minutes') + '</small></span></div>' +
       '<div class="g-thread" aria-live="polite">' + (list || '<p class="g-empty">Ask ' + esc(first(host)) + ' anything about your stay. Replies also arrive by text.</p>') + '</div>';
     const quick = ['What is the Wi-Fi password?', 'Can we check in early?', 'Is there parking for two cars?'];
     const cta = '<div class="g-qr" id="gQr-' + inst.uid + '">' + quick.map(q => '<button type="button" data-g="quick" data-t="' + esc(q) + '">' + esc(q) + '</button>').join('') + '</div>' +
@@ -4908,21 +4908,24 @@ button { cursor: pointer; }
   function guideView(inst, p, b) {
     const extras = EXTRAS[p.theme] || EXTRAS.cabin; const bought = b.extras || []; const ask = inst.st.extraAsk;
     const body = '<p class="g-step">' + esc(p.short) + '</p><h2 class="g-h">Your stay guide</h2>' + wifiCard(p, inst) +
-      '<p class="g-step">House manual</p><div class="g-tiles">' + (p.amenities || []).map(a => { const [ic, t] = manual(a, p); return '<div class="g-tile"><span class="g-ri">' + BB.icon(ic) + '</span><b>' + esc(a) + '</b><span>' + esc(t) + '</span></div>'; }).join('') + '</div>' +
+      ((p.amenities || []).length ? '<p class="g-step">House manual</p><div class="g-tiles">' + p.amenities.map(a => { const [ic, t] = manual(a, p); return '<div class="g-tile"><span class="g-ri">' + BB.icon(ic) + '</span><b>' + esc(a) + '</b><span>' + esc(t) + '</span></div>'; }).join('') + '</div>' : '') +
       '<p class="g-step">Host picks nearby</p><div class="g-list">' + (PICKS[p.id] || [['Ask your host', 'Message for local tips']]).map(x => row('pin', esc(x[0]), esc(x[1]))).join('') + '</div>' +
-      '<p class="g-step">Add to your stay</p><div class="g-list">' + extras.map(([n, pr, sub]) => {
+      // Paid extras are demo only: on a real home nothing takes the card, so the guest must not be told they were charged.
+      (S().live ? '' : '<p class="g-step">Add to your stay</p><div class="g-list">' + extras.map(([n, pr, sub]) => {
         const has = bought.some(x => x.name === n);
         if (has) return '<div class="g-ext done"><span class="g-rt"><b>' + esc(n) + '</b><span>Added \xB7 ' + money(pr) + ' charged to \u2022\u2022\u2022\u2022 4242</span></span>' + okDot(true) + '</div>';
         if (ask === n) return '<div class="g-ext ask"><span class="g-rt"><b>' + esc(n) + '</b><span>' + money(pr) + ' goes on your card ending 4242.</span></span><span class="g-ext-a"><button type="button" class="g-mini ghost" data-g="extra-no">Cancel</button><button type="button" class="g-mini" data-g="extra-buy" data-n="' + esc(n) + '" data-p="' + pr + '">Add for ' + money(pr) + '</button></span></div>';
         return '<button type="button" class="g-ext" data-g="extra" data-n="' + esc(n) + '"><span class="g-rt"><b>' + esc(n) + '</b><span>' + esc(sub) + '</span></span><span class="g-price">' + money(pr) + '</span></button>';
-      }).join('') + '</div>' + powered();
+      }).join('') + '</div>') + powered();
     return { body };
   }
 
   /* ---------- F. checkout ---------- */
   function checkoutView(inst, p, b) {
     const st = inst.st, g = BB.q.guest(b.guestId); const code = first(g.name).toUpperCase().replace(/[^A-Z]/g, '') + '10'; const hasCode = !!S().promos[code];
-    const items = (CHECKOUT[p.theme] || CHECKOUT.cabin).concat(['Lock the door. Your code stops at ' + p.checkoutTime]);
+    // A real home gets plain steps that fit any home; the themed ones (hot tub, kayaks) belong to the demo homes.
+    const items = S().live ? ['Take all your belongings, and check the bedrooms and bathroom', 'Close the windows', lockOn() ? 'Lock the door. Your code stops at ' + p.checkoutTime : 'Lock up and leave the keys as your host asked']
+      : (CHECKOUT[p.theme] || CHECKOUT.cabin).concat(['Lock the door. Your code stops at ' + p.checkoutTime]);
     const stars = b.review ? b.review.stars : st.stars;
     const body = '<p class="g-step">' + (b.checkOut === S().today ? 'Checkout today by ' + esc(p.checkoutTime) : 'Checkout ' + esc(longDate(b.checkOut)) + ', ' + esc(p.checkoutTime)) + '</p><h2 class="g-h">Before you go</h2>' +
       '<div class="g-list">' + items.map((x, i) => check(st.out[i], esc(x), 'data-g="out" data-i="' + i + '"')).join('') + '</div>' +
@@ -5722,8 +5725,18 @@ button { cursor: pointer; }
   }
 
   /* ---------- Today ---------- */
+  // Setup steps for a real account, as in the console's Needs you (web/src/app.js setupItems): they open the console.
+  function setupNeeds() {
+    const s = S(), out = []; if (!s.live || !s.properties.length) return out;
+    if (!BB.q.connected('stripe')) out.push({ tone: 'bad', icon: 'card', title: 'Connect payouts so guests can pay', sub: 'Until then guests can only send booking requests', m: 'console', id: 'connections' });
+    const ps = s.properties, few = ps.filter(p => (p.photos || []).length < 10), none = few.filter(p => !(p.photos || []).length);
+    if (few.length) out.push({ tone: none.length ? 'bad' : 'warn', icon: 'web', title: none.length ? 'Add your photos' : 'Add more photos', sub: none.length ? 'Your site shows a drawing until you do' : '10 or more per home get more bookings', m: 'console', id: 'website' });
+    if (ps.some(p => String(p.about || '').trim().length <= 40)) out.push({ tone: 'warn', icon: 'web', title: 'Describe your home', sub: 'Google and AI assistants read this', m: 'console', id: 'website' });
+    if (ps.some(p => !String(p.address || '').trim() || !String(p.entry || '').trim())) out.push({ tone: 'warn', icon: 'key', title: 'Add the address and how guests get in', sub: 'Guests see these after check-in', m: 'console', id: 'website' });
+    return out;
+  }
   function needs() {
-    const s = S(), t = s.today, out = [];
+    const s = S(), t = s.today, out = setupNeeds();
     s.threads.filter(x => x.unread > 0).forEach(x => {
       const g = BB.q.guest(x.guestId); const m = [...x.messages].reverse().find(y => y.from === 'guest');
       const pets = m && /dog|pet|cat/i.test(m.text);
@@ -15694,7 +15707,7 @@ var require_ical = __commonJS({
     var dns = __require("dns").promises;
     var net = __require("net");
     function unfold(text) {
-      return String(text).replace(/\r\n[ \t]/g, "").replace(/\n[ \t]/g, "").split(/\r?\n/);
+      return String(text).replace(/^\uFEFF/, "").replace(/\r\n[ \t]/g, "").replace(/\n[ \t]/g, "").split(/\r?\n/).map((l) => l.trimEnd());
     }
     function toIso(v) {
       const m = String(v).match(/(\d{4})(\d{2})(\d{2})/);
@@ -25448,6 +25461,7 @@ var require_server = __commonJS({
     async function autoIndex(w, o) {
       const s = w.state, out = [], now = (/* @__PURE__ */ new Date()).toISOString();
       for (const prop of s.properties.filter((x) => x.published !== false)) {
+        if (!(o && o.force) && !(prop.photos || []).some((x) => x && x.url)) continue;
         const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
         if (google.enabled) {
           try {
@@ -25653,6 +25667,7 @@ var require_server = __commonJS({
         args = [b.id, Math.max(1, Math.min(5, +args[1] || 5)), String(args[2] || "").slice(0, 1500), args[3] === true];
       } else if (name === "joinList") args = [b.guestId];
       else if (name === "buyExtra") {
+        if (w.kind === "live") throw err(400, "Extras cannot be added here yet. Message your host.");
         const EXTRAS = { "Early check-in": 25, "Late checkout": 25, "Firewood basket": 15, "Welcome hamper": 35, "Breakfast box": 18 };
         const n = String(args[1]);
         const price = EXTRAS[n] != null ? EXTRAS[n] : +args[2];
