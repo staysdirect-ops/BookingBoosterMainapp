@@ -457,7 +457,7 @@ async function welcome(wid) {
 const CLEAR_OFFLINE = '<script>try{caches.keys().then(function(k){k.forEach(function(n){if(n.indexOf("bb-app")===0)caches.delete(n)})})}catch(e){}</script>';
 const authPage = (title, inner, wide, index) => pages.plain({ title, body: inner, wide, index });
 // Company details we show in public. Placeholders such as "to be confirmed" are left out.
-const publicCompany = () => { const c = cfg.company; return { name: c.name, number: c.number || '', vat: c.vat || '', address: /to be confirmed/i.test(c.address || '') ? '' : (c.address || ''), support: c.support }; };
+const publicCompany = () => { const c = cfg.company; return { name: c.name, number: c.number || '', vat: c.vat || '', address: /to be confirmed/i.test(c.address || '') ? '' : (c.address || ''), support: c.support, profiles: cfg.profileLinks }; };
 const E = pages.esc;
 function loginForm(o) {
   o = o || {};
@@ -705,7 +705,7 @@ async function route(req, res) {
       annual: q('annual') === '1', addon: q('addon') === '1', ref: aff.cookieCode(req), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
-      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
+      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
       boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: '/api/domains/search', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (m === 'GET' && Object.hasOwn(answers.PAGES, p)) { const a = answers.render(cfg.baseUrl, p); return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: 'read', index: true }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' }); }

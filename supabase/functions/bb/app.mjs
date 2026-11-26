@@ -14276,6 +14276,10 @@ var require_config = __commonJS({
       storage: SB_URL && SB_KEY && (SERVERLESS || E.USE_SUPABASE_STORAGE === "1") ? { url: SB_URL, key: SB_KEY, bucket: E.STORAGE_BUCKET || "files" } : null,
       jobsKey: E.JOBS_KEY || "",
       secret: secret(),
+      // Bing Webmaster Tools meta tag code for the marketing site (Bing results feed ChatGPT search and Copilot).
+      bingVerification: String(E.BING_SITE_VERIFICATION || "").replace(/[^\w-]/g, ""),
+      // Comma-separated https profile URLs added to the company's sameAs in structured data.
+      profileLinks: String(E.PROFILE_LINKS || "").split(",").map((x) => x.trim()).filter((x) => /^https:\/\/[^\s"<>]+$/.test(x)),
       secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? "https:" : "")),
       outreachTestOn: E.ALLOW_TEST_CLOCK === "1" ? String(E.OUTREACH_TEST_ON || "").split(",").map((x) => x.trim()).filter(Boolean) : [],
       // tests only: switch outreach drafts on
@@ -15289,16 +15293,16 @@ var require_seo = __commonJS({
       const faqs = faqsOf(s, p);
       return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + (seoOf(p).summary ? "\n## In short\n\n" + seoOf(p).summary + "\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + (guideOf(p).length || seoOf(p).areaIntro ? "\n\n## Nearby\n\n" + (seoOf(p).areaIntro ? seoOf(p).areaIntro.trim() + "\n\n" : "") + guideOf(p).map((g) => "- " + g[0] + (g[1] ? ": " + g[1] : "") + (g[2] ? ". " + g[2] : "")).join("\n") : "") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + (reviewsOf(s, p).length ? "\n\n## What guests say\n\n" + reviewsOf(s, p).slice(0, 3).map((r) => "> " + r.text.replace(/\s+/g, " ") + " (" + r.name + ", " + r.stars + " stars)").join("\n\n") : "") + ((seoOf(p).sameAs || []).length || seoOf(p).videoUrl ? "\n\n## Elsewhere\n\n" + (seoOf(p).sameAs || []).map((u) => "- " + u).join("\n") + (seoOf(p).videoUrl ? "\n- Video tour: " + seoOf(p).videoUrl : "") : "") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
     }
+    var PRIVATE = ["Disallow: /app", "Disallow: /trip/", "Disallow: /api/"];
+    var AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot"];
     function robots(sitemapUrl) {
       return [
         "User-agent: *",
         "Allow: /",
-        "Disallow: /app",
-        "Disallow: /trip/",
-        "Disallow: /api/",
+        ...PRIVATE,
         "",
         "# AI search and assistants are welcome to read and cite this site",
-        ...["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot"].map((b) => "User-agent: " + b + "\nAllow: /"),
+        ...AI_BOTS.map((b) => ["User-agent: " + b, "Allow: /", ...PRIVATE].join("\n")),
         "",
         "Sitemap: " + sitemapUrl,
         ""
@@ -15530,7 +15534,7 @@ var require_marketing = __commonJS({
         areaServed: { "@type": "Country", name: "United Kingdom" },
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: co.support, areaServed: "GB", availableLanguage: "en-GB" }
       };
-      org.sameAs = SOCIAL.map((x) => x[1]);
+      org.sameAs = SOCIAL.map((x) => x[1]).concat(co.profiles || []);
       org.knowsAbout = ["Direct booking websites", "Holiday lets", "Short-term lets", "Search engine optimisation", "Local SEO", "Answer engine optimisation", "Generative engine optimisation", "Google AI Overviews", "Guest email marketing"];
       org.slogan = "Fill your calendar without the 15% fee.";
       if (co.name) org.legalName = co.name;
@@ -26014,7 +26018,7 @@ var require_server = __commonJS({
     var authPage = (title, inner, wide, index) => pages.plain({ title, body: inner, wide, index });
     var publicCompany = () => {
       const c = cfg.company;
-      return { name: c.name, number: c.number || "", vat: c.vat || "", address: /to be confirmed/i.test(c.address || "") ? "" : c.address || "", support: c.support };
+      return { name: c.name, number: c.number || "", vat: c.vat || "", address: /to be confirmed/i.test(c.address || "") ? "" : c.address || "", support: c.support, profiles: cfg.profileLinks };
     };
     var E = pages.esc;
     function loginForm(o) {
@@ -26332,7 +26336,7 @@ Disallow: /
         return send(res, 200, pages.page({
           title: p === "/start" ? "Start your booking site \xB7 Bookingbooster" : mkt.TITLE,
           description: mkt.DESCRIPTION,
-          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") : ""),
+          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : "") : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
           boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: "/api/domains/search", payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });

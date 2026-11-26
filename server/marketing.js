@@ -47,7 +47,8 @@ function jsonLd(base, co) {
   const org = { '@type': 'Organization', '@id': url + '#org', name: 'Bookingbooster', url, logo: base + '/assets/icons/icon-512.png', email: co.support,
     description: 'Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.', areaServed: { '@type': 'Country', name: 'United Kingdom' },
     contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: co.support, areaServed: 'GB', availableLanguage: 'en-GB' } };
-  org.sameAs = SOCIAL.map(x => x[1]);
+  // PROFILE_LINKS adds the profiles AI answers check a business against (Trustpilot, LinkedIn, Bing Places, Google Business Profile, Companies House).
+  org.sameAs = SOCIAL.map(x => x[1]).concat(co.profiles || []);
   org.knowsAbout = ['Direct booking websites', 'Holiday lets', 'Short-term lets', 'Search engine optimisation', 'Local SEO', 'Answer engine optimisation', 'Generative engine optimisation', 'Google AI Overviews', 'Guest email marketing'];
   org.slogan = 'Fill your calendar without the 15% fee.';
   if (co.name) org.legalName = co.name;

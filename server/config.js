@@ -50,6 +50,10 @@ module.exports = {
   storage: SB_URL && SB_KEY && (SERVERLESS || E.USE_SUPABASE_STORAGE === '1') ? { url: SB_URL, key: SB_KEY, bucket: E.STORAGE_BUCKET || 'files' } : null,
   jobsKey: E.JOBS_KEY || '',
   secret: secret(),
+  // Bing Webmaster Tools meta tag code for the marketing site (Bing results feed ChatGPT search and Copilot).
+  bingVerification: String(E.BING_SITE_VERIFICATION || '').replace(/[^\w-]/g, ''),
+  // Comma-separated https profile URLs added to the company's sameAs in structured data.
+  profileLinks: String(E.PROFILE_LINKS || '').split(',').map(x => x.trim()).filter(x => /^https:\/\/[^\s"<>]+$/.test(x)),
   secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? 'https:' : '')),
   outreachTestOn: E.ALLOW_TEST_CLOCK === '1' ? String(E.OUTREACH_TEST_ON || '').split(',').map(x => x.trim()).filter(Boolean) : [], // tests only: switch outreach drafts on
   testClock: E.ALLOW_TEST_CLOCK === '1', // tests only: lets /admin/leads/run move the lead-email clock forward
