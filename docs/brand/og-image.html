@@ -1,0 +1,75 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Geist:wght@400;500;600;700&display=block" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1200px;height:630px;overflow:hidden}
+body{font-family:Geist,sans-serif;color:#0A0F2C;background:#F4F6FF;position:relative}
+.bg{position:absolute;inset:0;background:
+ radial-gradient(600px 420px at 1010px 120px,rgba(51,85,255,.16),transparent 70%),
+ radial-gradient(420px 320px at 820px 610px,rgba(255,194,51,.18),transparent 70%)}
+.grid{position:absolute;inset:0;background-image:radial-gradient(#C9CEE8 1.2px,transparent 1.3px);background-size:26px 26px;opacity:.55;
+ -webkit-mask-image:linear-gradient(90deg,transparent 45%,#000 75%)}
+.left{position:absolute;left:68px;top:58px;width:600px}
+.logo{display:flex;align-items:center;gap:14px;font-family:'Bricolage Grotesque';font-weight:800;font-size:34px;letter-spacing:-.8px}
+.logo svg{width:50px;height:50px}
+.eyebrow{margin-top:46px;font-weight:700;font-size:17px;letter-spacing:3px;color:#3355FF}
+h1{margin-top:14px;font-family:'Bricolage Grotesque';font-weight:800;font-size:62px;line-height:1.02;letter-spacing:-2px}
+h1 .hl{background:linear-gradient(transparent 62%,#FFC233 62%,#FFC233 92%,transparent 92%);padding:0 4px;margin:0 -4px}
+.feats{margin-top:32px;display:flex;flex-direction:column;gap:13px}
+.f{display:flex;align-items:center;gap:13px;font-size:23px;font-weight:500;color:#2A3050}
+.tick{width:30px;height:30px;border-radius:50%;background:#3355FF;display:grid;place-items:center;flex:none}
+.url{position:absolute;left:68px;bottom:44px;font-size:21px;font-weight:600;color:#5B6178;display:flex;gap:14px;align-items:center}
+.url b{color:#0A0F2C}
+.url i{width:5px;height:5px;border-radius:50%;background:#A9B0D3}
+/* right stage */
+.card{position:absolute;left:722px;top:58px;width:420px;background:#fff;border-radius:22px;box-shadow:0 30px 60px -20px rgba(10,15,44,.28),0 0 0 1px rgba(10,15,44,.05);overflow:hidden}
+.photo{height:150px;background:linear-gradient(160deg,#ffcf6b 0%,#ff9a62 38%,#6d5bd0 72%,#24306e 100%);position:relative}
+.photo:after{content:'';position:absolute;left:0;right:0;bottom:0;height:70px;background:
+ linear-gradient(135deg,transparent 49.5%,#1b2252 50%) left bottom/50% 100% no-repeat,
+ linear-gradient(225deg,transparent 49.5%,#1b2252 50%) right bottom/50% 100% no-repeat}
+.cabin{position:absolute;left:160px;bottom:18px;width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;border-bottom:78px solid #0f1535;z-index:2}
+.win{position:absolute;left:198px;bottom:20px;width:24px;height:30px;background:#FFC233;border-radius:3px 3px 0 0;z-index:3;box-shadow:0 0 22px 6px rgba(255,194,51,.55)}
+.chip{position:absolute;left:16px;top:14px;background:rgba(255,255,255,.92);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;z-index:3}
+.cb{padding:18px 22px 22px}
+.ct{display:flex;justify-content:space-between;align-items:baseline}
+.ct h3{font-family:'Bricolage Grotesque';font-weight:800;font-size:25px;letter-spacing:-.5px}
+.ct span{font-size:15px;color:#5B6178;font-weight:500}
+.cal{margin-top:14px;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.d{height:30px;border-radius:7px;background:#F1F3FA;font-size:13px;font-weight:600;color:#5B6178;display:grid;place-items:center}
+.d.b{background:#3355FF;color:#fff}.d.p{background:#E3E7FB;color:#8C95C4}
+.btn{margin-top:16px;height:48px;border-radius:999px;background:#3355FF;color:#fff;font-weight:700;font-size:18px;display:grid;place-items:center}
+.toast{position:absolute;left:668px;top:392px;width:300px;background:#0A0F2C;color:#fff;border-radius:18px;padding:18px 22px;box-shadow:0 24px 40px -14px rgba(10,15,44,.5)}
+.toast small{display:block;color:#FFC233;font-weight:700;font-size:15px}
+.toast b{display:block;margin-top:4px;font-family:'Bricolage Grotesque';font-size:30px;letter-spacing:-.5px}
+.toast em{font-style:normal;font-size:14px;color:#A9B0D3;font-weight:500}
+.ai{position:absolute;left:890px;top:462px;width:270px;background:#fff;border-radius:18px;padding:15px 18px;box-shadow:0 24px 40px -14px rgba(10,15,44,.3),0 0 0 1px rgba(10,15,44,.05)}
+.ai .h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#3355FF;letter-spacing:.4px}
+.ai p{margin-top:6px;font-size:15px;line-height:1.35;color:#2A3050;font-weight:500}
+.ai p b{color:#0A0F2C}
+</style></head><body>
+<div class="bg"></div><div class="grid"></div>
+<div class="left">
+ <div class="logo"><svg viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>bookingbooster</div>
+ <div class="eyebrow">FOR AIRBNB &amp; VRBO HOSTS</div>
+ <h1>Fill your calendar<br>without the <span class="hl">15% fee.</span></h1>
+ <div class="feats">
+  <div class="f"><span class="tick"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your own direct booking website</div>
+  <div class="f"><span class="tick"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Found on Google and in AI answers</div>
+  <div class="f"><span class="tick"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Guest emails that bring them back</div>
+ </div>
+</div>
+<div class="url"><b>booking-booster.co.uk</b><i></i>No commission<i></i>Set up for you</div>
+
+<div class="card">
+ <div class="photo"><div class="chip">★ 4.97 · Lakeside A-Frame</div><div class="cabin"></div><div class="win"></div></div>
+ <div class="cb">
+  <div class="ct"><h3>Book direct</h3><span>from £165 / night</span></div>
+  <div class="cal">
+   <div class="d">1</div><div class="d">2</div><div class="d p">3</div><div class="d p">4</div><div class="d b">5</div><div class="d b">6</div><div class="d b">7</div>
+   <div class="d b">8</div><div class="d">9</div><div class="d">10</div><div class="d b">11</div><div class="d b">12</div><div class="d b">13</div><div class="d b">14</div>
+  </div>
+ </div>
+</div>
+<div class="toast"><small>New direct booking</small><b>£1,180 · 4 nights</b><em>0% platform fee · paid to you</em></div>
+<div class="ai"><div class="h"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2l2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2z" fill="#3355FF"/></svg>AI SEARCH</div><p>“For a lakeside stay, I’d recommend <b>Lakeside A-Frame</b>. You can book direct on its website.”</p></div>
+</body></html>

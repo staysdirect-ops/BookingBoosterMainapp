@@ -16,7 +16,7 @@ const FAQ = [
 // Extra answers for search engines and AI assistants. They are true of the product today.
 const MORE = [
   ['What is Bookingbooster?', 'Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission.'],
-  ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £197 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking.'],
+  ['Does Bookingbooster take commission on bookings?', 'No. You pay a flat £197 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking. The only deduction is the card fee, passed on at Stripe’s cost (about 1.5% + 20p per payment), with nothing added.'],
   ['Is Bookingbooster a channel manager?', 'No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (£15 a month) keeps your calendars in step so you never double book.'],
   ['Is there a yearly plan?', 'Yes. The plan is £197 a month, or £1,970 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT.'],
   ['What AI credit is included?', 'Every plan includes £50 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from £10, and top-ups never expire.'],
@@ -78,8 +78,8 @@ function head(base, path) {
   const url = base + '/';
   return '<link rel="canonical" href="' + esc(url) + '">' +
     '<meta property="og:type" content="website"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(TITLE) + '"><meta property="og:description" content="' + esc(DESCRIPTION) + '">' +
-    '<meta property="og:url" content="' + esc(url) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + '/assets/icons/og.png') + '"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Bookingbooster: your rental\u2019s own booking engine">' +
-    '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(TITLE) + '"><meta name="twitter:description" content="' + esc(DESCRIPTION) + '"><meta name="twitter:image" content="' + esc(base + '/assets/icons/og.png') + '"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">' +
+    '<meta property="og:url" content="' + esc(url) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + '/assets/icons/og.png?v=2') + '"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Bookingbooster: fill your calendar without the 15% fee. Your own booking website, found on Google and in AI answers.">' +
+    '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(TITLE) + '"><meta name="twitter:description" content="' + esc(DESCRIPTION) + '"><meta name="twitter:image" content="' + esc(base + '/assets/icons/og.png?v=2') + '"><meta name="theme-color" content="#3355FF"><link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">' +
     '<link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(base + '/llms.txt') + '">';
 }
 const ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, '\\u003c') + '</script>';
@@ -109,7 +109,7 @@ function llms(base, co) {
     '- Website: ' + base + '/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd’s huts)\n' +
     '- Price: £' + PRICE.month + ' a month, no setup fee. Or £' + PRICE.year.toLocaleString('en-GB') + ' a year paid yearly (two months free). All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
     '- AI credit: £' + PRICE.aiCredit + ' a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from £10 never expire.\n' +
-    '- Calendar sync add-on: £' + PRICE.addon + ' a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
+    '- Calendar sync add-on: £' + PRICE.addon + ' a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
     '## What is included\n\n' + INCLUDED.map(x => '- ' + x).join('\n') + '\n\n' +
     '## How it works\n\n' + STEPS.map(([h, p], i) => (i + 1) + '. ' + h + ': ' + p).join('\n') + '\n\n' +
     '## Questions\n\n' + allFaq().map(([q, a]) => '### ' + q + '\n\n' + a).join('\n\n') + '\n\n' +

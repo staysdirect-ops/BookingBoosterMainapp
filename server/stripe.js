@@ -32,6 +32,13 @@ module.exports = function (cfg) {
   }
   const pence = n => Math.round(Number(n) * 100);
 
+  // What the platform keeps from a guest payment: any commission (STRIPE_APPLICATION_FEE_PCT, normally 0) plus
+  // Stripe's card fee passed through at cost, which Stripe takes from the platform on destination charges.
+  function appFee(amountPence) {
+    const S = cfg.stripe, commission = S.feePct ? Math.round(amountPence * S.feePct / 100) : 0;
+    const card = S.passFees ? Math.round(amountPence * S.cardFeePct / 100) + S.cardFeePence : 0;
+    const fee = Math.min(amountPence, commission + card); return fee > 0 ? fee : undefined;
+  }
   return {
     get enabled() { return !!keyOf(); }, api,
     async connect({ email, business, accountId, returnUrl, refreshUrl }) {
@@ -41,7 +48,7 @@ module.exports = function (cfg) {
     },
     async account(id) { const a = await api('GET', '/accounts/' + id); return { id: a.id, charges: !!a.charges_enabled, payouts: !!a.payouts_enabled, details: !!a.details_submitted, bank: a.external_accounts && a.external_accounts.data && a.external_accounts.data[0] ? (a.external_accounts.data[0].bank_name || 'Bank') + ' ••' + a.external_accounts.data[0].last4 : null }; },
     async checkoutBooking({ account, booking, property, email, successUrl, cancelUrl, meta }) {
-      const fee = cfg.stripe.feePct ? Math.round(pence(booking.total) * cfg.stripe.feePct / 100) : undefined;
+      const fee = appFee(pence(booking.total));
       const s = await api('POST', '/checkout/sessions', {
         mode: 'payment', customer_email: email, success_url: successUrl, cancel_url: cancelUrl, expires_at: Math.floor(Date.now() / 1000) + 31 * 60,
         line_items: [{ quantity: 1, price_data: { currency: 'gbp', unit_amount: pence(booking.total), product_data: { name: property.name + ', ' + booking.checkIn + ' to ' + booking.checkOut, description: 'Direct booking ' + booking.id } } }],
@@ -53,7 +60,7 @@ module.exports = function (cfg) {
     async checkoutCharge({ account, name, amount, email, successUrl, cancelUrl, meta }) {
       const s = await api('POST', '/checkout/sessions', { mode: 'payment', customer_email: email, success_url: successUrl, cancel_url: cancelUrl,
         line_items: [{ quantity: 1, price_data: { currency: 'gbp', unit_amount: pence(amount), product_data: { name } } }],
-        payment_intent_data: { on_behalf_of: account, transfer_data: { destination: account }, metadata: meta }, metadata: meta });
+        payment_intent_data: { on_behalf_of: account, transfer_data: { destination: account }, application_fee_amount: appFee(pence(amount)), metadata: meta }, metadata: meta });
       return { id: s.id, url: s.url };
     },
     // Damage deposit: the card is saved (not charged) so the host can charge up to the deposit if something is broken.
@@ -61,7 +68,8 @@ module.exports = function (cfg) {
       const s = await api('POST', '/checkout/sessions', { mode: 'setup', currency: 'gbp', customer_creation: 'always', customer_email: email, success_url: successUrl, cancel_url: cancelUrl, setup_intent_data: { metadata: meta, description: 'Damage deposit card on file' }, metadata: meta });
       return { id: s.id, url: s.url };
     },
-    async refund(paymentIntent, amount) { return api('POST', '/refunds', { payment_intent: paymentIntent, amount: amount ? pence(amount) : undefined, reverse_transfer: true, refund_application_fee: true }); },
+    async refund(paymentIntent, amount) { return api('POST', '/refunds', { payment_intent: paymentIntent, amount: amount ? pence(amount) : undefined, reverse_transfer: true, refund_application_fee: !cfg.stripe.passFees }); }, // Stripe keeps its card fee on a refund, so the pass-through stays too
+    appFee,
     async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
       // Annual billing (2 months free) uses the yearly prices; the add-on then bills yearly too, at 12 × £15.
       // No setup fee and no free month: the first month (or year) is paid at checkout, before the host sets anything up.

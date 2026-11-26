@@ -183,6 +183,7 @@
         if (st.view === 'inbox') { st.ib_open = !!st.id; st.ib_draft = ''; inst._scrollMsgs = true; }
         if (st.view === 'calendar' && st.id && String(st.id).startsWith('home:')) { st.cal_pid = st.id.slice(5); st.id = null; }
         if (st.view === 'inbox' && st.id) BB.act.markRead(st.id);
+        if (st.view === 'website' && st.id) { if (BB.q.property(st.id)) st.ws_pid = st.id; st.id = null; } // open on that home
         inst.render();
         if (inst.compact) { const r = root.getBoundingClientRect(); if (r.top < 0) root.scrollIntoView({ block: 'start' }); }
         else window.scrollTo({ top: 0 });
@@ -410,8 +411,28 @@
     const g = BB.q.guest(t.guestId) || { name: 'Guest' }, last = threadLast(t);
     return '<button class="a-row" data-a="nav" data-view="inbox" data-id="' + t.id + '">' + BB.avatar(g.name) + '<span class="a-row-t"><b>' + esc(g.name) + ' sent a message</b><span>“' + esc(last ? last.text : '') + '”</span></span><span class="a-row-m">' + BB.pill('warn', 'Reply') + '</span></button>';
   }
+  // Setup steps for a real account, the same ones as the day-2 checklist email (server/host-emails.js). They stay in
+  // "Needs you" until done, so a new host never sees "All clear" while guests cannot pay or the site shows drawings.
+  function setupItems() {
+    const s = S(), out = []; if (!s.live) return out;
+    const one = s.properties.length > 1;
+    if (s.properties.length && !BB.q.connected('stripe')) out.push({ tone: 'bad', icon: 'card', title: 'Connect payouts so guests can pay',
+      sub: 'Until Stripe is connected, guests can only send booking requests. Takes about 5 minutes with your UK bank details.', open: 'data-a="nav" data-view="connections"',
+      btn: '<button class="btn sm" data-a="nav" data-view="connections">' + ic('card') + 'Connect</button>' });
+    s.properties.forEach(p => {
+      const where = one ? p.short + ': ' : '', go = 'data-a="nav" data-view="website" data-id="' + esc(p.id) + '"', n = (p.photos || []).length;
+      if (n < 10) out.push({ tone: n ? 'warn' : 'bad', icon: 'web', title: where + (n ? 'Add ' + plural(10 - n, 'more photo') : 'Add your photos'),
+        sub: n ? n + ' of 10 added. Homes with 10 or more photos get more bookings.' : 'Your site shows a drawing of a home until you add your own photos.', open: go,
+        btn: '<button class="btn sm" ' + go + '>' + ic('web') + 'Add photos</button>' });
+      if (String(p.about || '').trim().length <= 40) out.push({ tone: 'warn', icon: 'web', title: where + 'Describe your home',
+        sub: 'A few lines on the home and what it offers. Google and AI assistants read this.', open: go, btn: '<button class="btn sm" ' + go + '>Write it</button>' });
+      if (!String(p.address || '').trim() || !String(p.entry || '').trim()) out.push({ tone: 'warn', icon: 'key', title: where + 'Add the address and how guests get in',
+        sub: 'Guests see these in their trip app after check-in.', open: go, btn: '<button class="btn sm" ' + go + '>Add details</button>' });
+    });
+    return out;
+  }
   function needItems() {
-    const s = S(), t = s.today, out = [];
+    const s = S(), t = s.today, out = setupItems();
     needsCheckin().sort(byIn).forEach(b => {
       const g = gOf(b), c = b.checkin, onlyDep = c.id && c.selfie && c.agreement && !c.deposit, r = remindedAt(b.id);
       out.push({ tone: b.checkIn === t ? 'bad' : 'warn', icon: onlyDep ? 'card' : 'key', title: g.name + (onlyDep ? ': deposit pending' : ': check-in unfinished'),
@@ -903,7 +924,7 @@
       }).join('');
       const deps = s.bookings.filter(b => b.status !== 'cancelled' && ['held', 'releasing', 'released'].includes(b.deposit)).sort((a, b) => ({ held: 0, releasing: 1, released: 2 }[a.deposit] - { held: 0, releasing: 1, released: 2 }[b.deposit]) || b.checkIn.localeCompare(a.checkIn)).slice(0, 8);
       const held = s.bookings.filter(b => b.status !== 'cancelled' && b.deposit === 'held').length;
-      return vh('Payments', (S().live ? 'Guests pay you directly through Stripe, and Stripe pays out to your bank. No commission on any booking.' : 'Guests pay you directly. Payouts reach your bank 2 days after booking, with no platform fees'), '<button class="btn sm" data-a="nav" data-view="connections">' + ic('plug') + 'Payment settings</button>') +
+      return vh('Payments', (S().live ? 'Guests pay you directly through Stripe, and Stripe pays out to your bank. No commission on any booking. Guest card fees are passed on at Stripe’s cost (about 1.5% + 20p per payment), with nothing added.' : 'Guests pay you directly. Payouts reach your bank 2 days after booking, with no platform fees'), '<button class="btn sm" data-a="nav" data-view="connections">' + ic('plug') + 'Payment settings</button>') +
         '<div class="a-stripe' + (on ? '' : ' off') + '"><span class="a-ico">' + ic('card') + '</span><div class="a-row-t"><b>Stripe ' + (on ? 'is connected' : 'is disconnected') + '</b><span>' + (on ? esc(stripe.detail || '') + ' · last sync ' + esc(BB.ago(stripe.lastSync || t + 'T00:00')) : (S().live && !stripe.lastSync ? 'Connect Stripe to take card payments. Until then your sites take booking requests.' : 'Guests cannot pay online and new direct bookings are paused. Reconnect to take payments again.')) + '</span></div>' + (on ? BB.pill('good', 'Live') : '<button class="btn sm primary" data-a="nav" data-view="connections">' + (S().live && !stripe.lastSync ? 'Connect Stripe' : 'Reconnect Stripe') + '</button>') + '</div>' +
         '<div class="a-grid">' +
           '<div class="a-s3"><div class="a-kpi"><span>Paid out, last 30 days</span><b class="num">' + BB.money(paidMonth) + '</b><small>' + plural(paid30.length, 'payout') + (S().live ? '' : ' to Barclays ••4410') + '</small></div></div>' +

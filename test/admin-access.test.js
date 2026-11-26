@@ -24,3 +24,14 @@ test('a team member lands on the team page, with campaigns, and has a link back 
   assert.equal((await t.call('/admin/campaigns')).status, 200);
   assert.match((await t.call('/app')).body, /Open the team admin/);
 });
+
+test('the team overview says what is missing before launch, and that emails are being held, not sent', async () => {
+  await t.sql("INSERT INTO kv (k, v) VALUES ('config:admins', 'host@example.co.uk') ON CONFLICT (k) DO UPDATE SET v = excluded.v");
+  await login('host@example.co.uk');
+  const held = (await t.sql("SELECT count(*) AS n FROM outbox WHERE status = 'test'"))[0].n;
+  const admin = (await t.call('/admin')).body;
+  assert.match(admin, /Not ready for paying hosts yet/);
+  assert.match(admin, /Email is not switched on/);
+  if (+held) assert.match(admin, new RegExp(held + ' emails? held so far'));
+  assert.match(admin, /<b>Stripe<\/b>/);
+});

@@ -58,7 +58,7 @@ const CHECKLIST = [
   ['Check AI answers every week.', 'Ask ChatGPT, Perplexity, Gemini and Google the questions guests ask, and note who they name and cite.', 'GEO, AIO'],
 ];
 
-const PRICE_LINE = '£' + P.month + ' a month, or £' + P.year.toLocaleString('en-GB') + ' a year, with no setup fee and no commission on bookings. Prices include VAT and cover up to ' + P.homes + ' homes. Every plan includes £' + P.aiCredit + ' of AI credit a month.';
+const PRICE_LINE = '£' + P.month + ' a month, or £' + P.year.toLocaleString('en-GB') + ' a year, with no setup fee and no commission on bookings (guest card fees are passed on at Stripe’s cost, about 1.5% + 20p). Prices include VAT and cover up to ' + P.homes + ' homes. Every plan includes £' + P.aiCredit + ' of AI credit a month.';
 
 const PAGES = {
   '/direct-booking-website': {
@@ -158,7 +158,8 @@ const NAV = [['/', 'Home and pricing'], ['/direct-booking-website', 'Direct book
 function render(base, path) {
   const pg = PAGES[path]; if (!pg) return null;
   const head = '<meta name="description" content="' + esc(pg.description) + '"><link rel="canonical" href="' + esc(base + path) + '">' +
-    '<meta property="og:type" content="article"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(pg.h1) + '"><meta property="og:description" content="' + esc(pg.description) + '"><meta property="og:url" content="' + esc(base + path) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + '/assets/icons/icon-512.png') + '">' +
+    '<meta property="og:type" content="article"><meta property="og:site_name" content="Bookingbooster"><meta property="og:title" content="' + esc(pg.h1) + '"><meta property="og:description" content="' + esc(pg.description) + '"><meta property="og:url" content="' + esc(base + path) + '"><meta property="og:locale" content="en_GB"><meta property="og:image" content="' + esc(base + '/assets/icons/og.png?v=2') + '"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Bookingbooster: fill your calendar without the 15% fee">' +
+    '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(pg.h1) + '"><meta name="twitter:description" content="' + esc(pg.description) + '"><meta name="twitter:image" content="' + esc(base + '/assets/icons/og.png?v=2') + '">' +
     '<link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(base + '/llms.txt') + '">' +
     '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, path, pg)).replace(/</g, '\\u003c') + '</script>';
   const body = '<article><h1>' + esc(pg.h1) + '</h1><p>' + esc(pg.lead) + '</p>' +
