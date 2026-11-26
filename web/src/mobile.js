@@ -128,8 +128,18 @@
   }
 
   /* ---------- Today ---------- */
+  // Setup steps for a real account, as in the console's Needs you (web/src/app.js setupItems): they open the console.
+  function setupNeeds() {
+    const s = S(), out = []; if (!s.live || !s.properties.length) return out;
+    if (!BB.q.connected('stripe')) out.push({ tone: 'bad', icon: 'card', title: 'Connect payouts so guests can pay', sub: 'Until then guests can only send booking requests', m: 'console', id: 'connections' });
+    const ps = s.properties, few = ps.filter(p => (p.photos || []).length < 10), none = few.filter(p => !(p.photos || []).length);
+    if (few.length) out.push({ tone: none.length ? 'bad' : 'warn', icon: 'web', title: none.length ? 'Add your photos' : 'Add more photos', sub: none.length ? 'Your site shows a drawing until you do' : '10 or more per home get more bookings', m: 'console', id: 'website' });
+    if (ps.some(p => String(p.about || '').trim().length <= 40)) out.push({ tone: 'warn', icon: 'web', title: 'Describe your home', sub: 'Google and AI assistants read this', m: 'console', id: 'website' });
+    if (ps.some(p => !String(p.address || '').trim() || !String(p.entry || '').trim())) out.push({ tone: 'warn', icon: 'key', title: 'Add the address and how guests get in', sub: 'Guests see these after check-in', m: 'console', id: 'website' });
+    return out;
+  }
   function needs() {
-    const s = S(), t = s.today, out = [];
+    const s = S(), t = s.today, out = setupNeeds();
     s.threads.filter(x => x.unread > 0).forEach(x => {
       const g = BB.q.guest(x.guestId); const m = [...x.messages].reverse().find(y => y.from === 'guest');
       const pets = m && /dog|pet|cat/i.test(m.text);
