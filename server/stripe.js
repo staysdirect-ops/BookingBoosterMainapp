@@ -61,15 +61,6 @@ module.exports = function (cfg) {
       const s = await api('POST', '/checkout/sessions', { mode: 'setup', currency: 'gbp', customer_creation: 'always', customer_email: email, success_url: successUrl, cancel_url: cancelUrl, setup_intent_data: { metadata: meta, description: 'Damage deposit card on file' }, metadata: meta });
       return { id: s.id, url: s.url };
     },
-    // Damage: charge the card the guest saved at check-in (on our account), paid out to the host's account like a booking.
-    async chargeDamage({ setupIntent, account, amount, description, meta, idem }) {
-      const si = await api('GET', '/setup_intents/' + setupIntent);
-      const pm = si.payment_method && (si.payment_method.id || si.payment_method), customer = si.customer && (si.customer.id || si.customer);
-      if (!pm || !customer) throw new Error('The guest’s card was not saved, so it cannot be charged.');
-      const p = pence(amount), fee = this.appFee ? this.appFee(p) : (cfg.stripe.feePct ? Math.round(p * cfg.stripe.feePct / 100) : undefined);
-      return api('POST', '/payment_intents', { amount: p, currency: 'gbp', customer, payment_method: pm, off_session: true, confirm: true, description,
-        on_behalf_of: account, transfer_data: { destination: account }, application_fee_amount: fee, metadata: meta }, { idem });
-    },
     async refund(paymentIntent, amount) { return api('POST', '/refunds', { payment_intent: paymentIntent, amount: amount ? pence(amount) : undefined, reverse_transfer: true, refund_application_fee: true }); },
     async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
       // Annual billing (2 months free) uses the yearly prices; the add-on then bills yearly too, at 12 × £15.
@@ -92,6 +83,15 @@ module.exports = function (cfg) {
     async cancelSubscriptions(customer) {
       const list = await api('GET', '/subscriptions', { customer, status: 'all', limit: 100 });
       for (const sub of list.data || []) if (!['canceled', 'incomplete_expired'].includes(sub.status)) await api('DELETE', '/subscriptions/' + sub.id);
+    },
+    // Damage: charge the card the guest saved at check-in (on our account), paid out to the host's account like a booking.
+    async chargeDamage({ setupIntent, account, amount, description, meta, idem }) {
+      const si = await api('GET', '/setup_intents/' + setupIntent);
+      const pm = si.payment_method && (si.payment_method.id || si.payment_method), customer = si.customer && (si.customer.id || si.customer);
+      if (!pm || !customer) throw new Error('The guest’s card was not saved, so it cannot be charged.');
+      const p = pence(amount), fee = this.appFee ? this.appFee(p) : (cfg.stripe.feePct ? Math.round(p * cfg.stripe.feePct / 100) : undefined);
+      return api('POST', '/payment_intents', { amount: p, currency: 'gbp', customer, payment_method: pm, off_session: true, confirm: true, description,
+        on_behalf_of: account, transfer_data: { destination: account }, application_fee_amount: fee, metadata: meta }, { idem });
     },
     async portal(customer, returnUrl) { const s = await api('POST', '/billing_portal/sessions', { customer, return_url: returnUrl }); return s.url; },
     verify(payload, header) {
