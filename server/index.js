@@ -1067,14 +1067,30 @@ async function adminPage(req, res, note, section, err) {
   // overview
   const since = Date.now() - 30 * 864e5;
   const hour = +new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hour12: false });
+  const launch = await launchCard(A);
   const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + '</section>' : '<div class="a-empty">' + A.icon('check') + '<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>';
   return shell({ title: 'Overview', heading: (hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening') + ', team', active: 'overview',
     sub: 'Leads and accounts · ' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.',
     actions: '<a class="btn sm" href="/admin/leads">' + A.icon('users') + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon('mail') + 'Email campaigns</a>',
-    body: '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
+    body: launch + '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
       A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' + await marketingRow(A) +
       '<div class="a-grid adm-top"><div class="a-s8">' + A.card('Waiting for you', waiting.length + ' lead' + (waiting.length === 1 ? '' : 's'), needs, waiting.length ? 'a-flush' : '').replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div>' +
       '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email || l.phone || '') + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
+}
+// Launch status on the admin overview: the preflight checks against this server's real settings, and how many
+// messages were kept in the outbox instead of being sent. Shown until every required setting is in place.
+async function launchCard(A) {
+  const E2 = Object.assign({}, process.env, { APP_SECRET: cfg.secret }); // on Supabase the secret is derived, not set
+  const rows = require('./preflight').check(cfg, E2), miss = rows.filter(r => r.must && !r.ok), opt = rows.filter(r => !r.must && !r.ok);
+  const held = await db.prepare("SELECT channel, count(*) AS n, max(created_at) AS last FROM outbox WHERE status = 'test' GROUP BY channel").all();
+  const heldN = held.reduce((a, x) => a + Number(x.n || 0), 0);
+  if (!miss.length) return '';
+  const heldTxt = held.map(x => Number(x.n) + ' ' + (x.channel === 'sms' ? 'text' : x.channel) + (Number(x.n) === 1 ? '' : 's')).join(' and ');
+  const list = l => '<div class="adm-list">' + l.map(r => '<div><span><b>' + E(r.area) + '</b><small>' + E(r.need) + '</small></span>' + A.pill(r.must ? 'bad' : 'muted', r.must ? 'Needed' : 'Optional') + '</div>').join('') + '</div>';
+  return '<div style="margin-bottom:18px">' + A.card('Not ready for paying hosts yet', miss.length + ' of ' + rows.filter(r => r.must).length + ' required settings missing',
+    (!cfg.email.provider ? '<p class="adm-help" style="margin:0 0 12px"><b>Email is not switched on.</b> Booking confirmations, check-in links, door codes, password resets and host emails are kept in the outbox and never delivered' + (heldN ? ': ' + heldTxt + ' held so far.' : '.') + ' Set RESEND_API_KEY on the server, with the sending domain verified in Resend.</p>'
+      : heldN ? '<p class="adm-help" style="margin:0 0 12px">' + heldTxt + ' were kept in the outbox before sending was switched on. They were not delivered.</p>' : '') +
+    list(miss) + (opt.length ? '<details class="adm-x" style="margin-top:10px"><summary>' + opt.length + ' optional</summary>' + list(opt) + '</details>' : '')) + '</div>';
 }
 // the overview's marketing row: write an email, what is going out on social, and the email library
 async function marketingRow(A) {
