@@ -123,13 +123,20 @@
       : g.state === 'error' ? row('Google Search Console', 'warn', 'Google said: ' + esc(g.error || 'not yet') + '. We retry daily.')
       : files.google ? row('Google Search Console', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
       : row('Google Search Console', 'warn', 'Automatic submission is not switched on for this server yet. Google still finds your sitemap through robots.txt.');
+    const b = ix.bing || {};
+    const bRow = !live ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'auto', 'Verified and submitted for you in a real account, with no Bing login.')
+      : b.state === 'submitted' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'ok', 'Verified and sitemap submitted ' + when(b.at) + '. We resubmit daily.')
+      : b.state === 'verifying' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Bing is checking your site. We submit the sitemap as soon as it is verified.')
+      : b.state === 'error' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Bing said: ' + esc(b.error || 'not yet') + '. We retry daily.')
+      : files.bing ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
+      : null;
     const nRow = !live ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'auto', 'Pinged whenever your page changes.')
       : n.state === 'sent' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'ok', 'Told about your latest changes ' + when(n.at) + '.')
       : n.state === 'error' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', esc(n.message || 'Not accepted yet') + ' We retry when the page changes.')
       : row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', 'Goes out tonight, or press Submit now.');
     const pf = perf ? '<div class="sh-perf"><span class="eyebrow">Google search, ' + esc(perf.from) + ' to ' + esc(perf.to) + '</span><div class="sh-perf-k"><div><small>Clicks</small><b class="num">' + perf.clicks.toLocaleString('en-GB') + '</b></div><div><small>Impressions</small><b class="num">' + perf.impressions.toLocaleString('en-GB') + '</b></div><div><small>Click rate</small><b class="num">' + perf.ctr + '%</b></div><div><small>Avg position</small><b class="num">' + (perf.position || '–') + '</b></div></div>' +
       (perf.queries.length ? '<table class="tbl sh-q"><thead><tr><th>Top searches</th><th>Clicks</th><th>Shown</th><th>Pos.</th></tr></thead><tbody>' + perf.queries.map(q => '<tr><td>' + esc(q.q) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + q.position + '</td></tr>').join('') + '</tbody></table>' : '<p class="muted">No searches yet. New sites usually show up within 2 to 4 weeks.</p>') + '</div>' : '';
-    return '<ul class="sh-checks sh-ixl">' + gRow + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
+    return '<ul class="sh-checks sh-ixl">' + gRow + (bRow || '') + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
   }
   function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
   const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';

@@ -2033,13 +2033,20 @@ var require_bb_embedded_files = __commonJS({
       : g.state === 'error' ? row('Google Search Console', 'warn', 'Google said: ' + esc(g.error || 'not yet') + '. We retry daily.')
       : files.google ? row('Google Search Console', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
       : row('Google Search Console', 'warn', 'Automatic submission is not switched on for this server yet. Google still finds your sitemap through robots.txt.');
+    const b = ix.bing || {};
+    const bRow = !live ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'auto', 'Verified and submitted for you in a real account, with no Bing login.')
+      : b.state === 'submitted' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'ok', 'Verified and sitemap submitted ' + when(b.at) + '. We resubmit daily.')
+      : b.state === 'verifying' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Bing is checking your site. We submit the sitemap as soon as it is verified.')
+      : b.state === 'error' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Bing said: ' + esc(b.error || 'not yet') + '. We retry daily.')
+      : files.bing ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
+      : null;
     const nRow = !live ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'auto', 'Pinged whenever your page changes.')
       : n.state === 'sent' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'ok', 'Told about your latest changes ' + when(n.at) + '.')
       : n.state === 'error' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', esc(n.message || 'Not accepted yet') + ' We retry when the page changes.')
       : row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', 'Goes out tonight, or press Submit now.');
     const pf = perf ? '<div class="sh-perf"><span class="eyebrow">Google search, ' + esc(perf.from) + ' to ' + esc(perf.to) + '</span><div class="sh-perf-k"><div><small>Clicks</small><b class="num">' + perf.clicks.toLocaleString('en-GB') + '</b></div><div><small>Impressions</small><b class="num">' + perf.impressions.toLocaleString('en-GB') + '</b></div><div><small>Click rate</small><b class="num">' + perf.ctr + '%</b></div><div><small>Avg position</small><b class="num">' + (perf.position || '\u2013') + '</b></div></div>' +
       (perf.queries.length ? '<table class="tbl sh-q"><thead><tr><th>Top searches</th><th>Clicks</th><th>Shown</th><th>Pos.</th></tr></thead><tbody>' + perf.queries.map(q => '<tr><td>' + esc(q.q) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + q.position + '</td></tr>').join('') + '</tbody></table>' : '<p class="muted">No searches yet. New sites usually show up within 2 to 4 weeks.</p>') + '</div>' : '';
-    return '<ul class="sh-checks sh-ixl">' + gRow + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
+    return '<ul class="sh-checks sh-ixl">' + gRow + (bRow || '') + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
   }
   function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
   const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';
@@ -7882,11 +7889,12 @@ body.p-lock { overflow: hidden; }
     return n;
   };
 
-  // Results from the server's search engine submissions (Google Search Console, IndexNow). Server only.
+  // Results from the server's search engine submissions (Google Search Console, Bing Webmaster Tools, IndexNow). Server only.
   BB.act.setIndexing = function (pid, patch) {
     const p = BB.q.property(pid); if (!p || !patch) return;
     const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
     if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    if (patch.bing && patch.bing.state === 'submitted' && (was.bing || {}).state !== 'submitted') BB.log('site', 'Search health', 'Submitted ' + p.domain + ' and its sitemap to Bing, which feeds ChatGPT search and Copilot.', pid, ['Search health', 'Bing']);
     BB.store.commit({ type: 'property', id: pid, quiet: true });
   };
   // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
@@ -14344,6 +14352,7 @@ var require_config = __commonJS({
       credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
       // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
       google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
+      bing: { apiKey: E.BING_WEBMASTER_API_KEY, apiBase: E.BING_API_BASE },
       nuki: { token: E.NUKI_API_TOKEN },
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
       // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
@@ -15294,7 +15303,7 @@ var require_seo = __commonJS({
       return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + (seoOf(p).summary ? "\n## In short\n\n" + seoOf(p).summary + "\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + (guideOf(p).length || seoOf(p).areaIntro ? "\n\n## Nearby\n\n" + (seoOf(p).areaIntro ? seoOf(p).areaIntro.trim() + "\n\n" : "") + guideOf(p).map((g) => "- " + g[0] + (g[1] ? ": " + g[1] : "") + (g[2] ? ". " + g[2] : "")).join("\n") : "") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + (reviewsOf(s, p).length ? "\n\n## What guests say\n\n" + reviewsOf(s, p).slice(0, 3).map((r) => "> " + r.text.replace(/\s+/g, " ") + " (" + r.name + ", " + r.stars + " stars)").join("\n\n") : "") + ((seoOf(p).sameAs || []).length || seoOf(p).videoUrl ? "\n\n## Elsewhere\n\n" + (seoOf(p).sameAs || []).map((u) => "- " + u).join("\n") + (seoOf(p).videoUrl ? "\n- Video tour: " + seoOf(p).videoUrl : "") : "") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
     }
     var PRIVATE = ["Disallow: /app", "Disallow: /trip/", "Disallow: /api/"];
-    var AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot"];
+    var AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot", "GoogleOther", "Gemini-Deep-Research", "Google-CloudVertexBot", "YouBot", "cohere-ai", "CCBot", "PhindBot", "AI2Bot"];
     function robots(sitemapUrl) {
       return [
         "User-agent: *",
@@ -16596,6 +16605,84 @@ var require_google_search = __commonJS({
         return { from: d(start), to: d(end), clicks: tot.clicks || 0, impressions: tot.impressions || 0, ctr: r1(100 * (tot.ctr || 0)), position: r1(tot.position), queries: q.map((x) => ({ q: String(x.keys[0]).slice(0, 100), clicks: x.clicks || 0, impressions: x.impressions || 0, position: r1(x.position) })) };
       }
       return { enabled, metaTag, submit, performance, account: enabled ? sa.client_email : null };
+    };
+  }
+});
+
+// server/bing-webmaster.js
+var require_bing_webmaster = __commonJS({
+  "server/bing-webmaster.js"(exports, module) {
+    module.exports = function(cfg, kv, log) {
+      const B = cfg.bing || {};
+      const apiKey = String(B.apiKey || "").trim(), enabled = !!apiKey;
+      const API = (B.apiBase || "https://ssl.bing.com/webmaster/api.svc/json").replace(/\/$/, "");
+      async function call(method, name, body) {
+        const r = await fetch(API + "/" + name + "?apikey=" + encodeURIComponent(apiKey), {
+          method,
+          signal: AbortSignal.timeout(2e4),
+          headers: { "content-type": "application/json; charset=utf-8" },
+          body: body ? JSON.stringify(body) : void 0
+        });
+        const t = await r.text();
+        let j = {};
+        try {
+          j = t ? JSON.parse(t) : {};
+        } catch (_) {
+        }
+        if (!r.ok) {
+          const e = new Error(j.Message || j.message || "Bing answered " + r.status);
+          e.status = r.status;
+          e.code = j.ErrorCode;
+          throw e;
+        }
+        return j.d !== void 0 ? j.d : j;
+      }
+      const norm = (u) => String(u || "").toLowerCase().replace(/\/+$/, "");
+      const key = (origin) => "bsv:" + origin;
+      const memo = /* @__PURE__ */ new Map();
+      async function codeFor(origin) {
+        if (!enabled) return "";
+        if (memo.has(origin)) return memo.get(origin);
+        const row = await kv.get(key(origin));
+        const v = row ? row.v : "";
+        if (v) memo.set(origin, v);
+        return v;
+      }
+      async function metaTag(origin) {
+        const v = await codeFor(origin);
+        return v ? '<meta name="msvalidate.01" content="' + v.replace(/[^\w-]/g, "") + '">' : "";
+      }
+      async function find(origin) {
+        return (await call("GET", "GetUserSites") || []).find((x) => norm(x.Url) === norm(origin));
+      }
+      async function submit(origin, sitemapUrl, pages) {
+        const siteUrl = origin + "/";
+        let site = await find(origin);
+        if (!site) {
+          try {
+            await call("POST", "AddSite", { siteUrl });
+          } catch (e) {
+            if (!/exist/i.test(e.message)) throw e;
+          }
+          site = await find(origin);
+        }
+        if (!site) throw new Error("Bing did not add the site");
+        if (site.AuthenticationCode && site.AuthenticationCode !== await codeFor(origin)) {
+          await kv.set(key(origin), site.AuthenticationCode);
+          memo.set(origin, site.AuthenticationCode);
+        }
+        if (!site.IsVerified && !await call("POST", "VerifySite", { siteUrl })) return { state: "verifying" };
+        await call("POST", "SubmitFeed", { siteUrl, feedUrl: sitemapUrl });
+        if (pages && pages.length) {
+          try {
+            await call("POST", "SubmitUrlBatch", { siteUrl, urlList: pages.slice(0, 10) });
+          } catch (e) {
+            log && log("bing urls", origin, e.message);
+          }
+        }
+        return { state: "submitted" };
+      }
+      return { enabled, metaTag, submit };
     };
   }
 });
@@ -25408,6 +25495,7 @@ var require_server = __commonJS({
     var assist = require_assist()(cfg);
     var seoTools = require_seo_tools()(cfg);
     var google = require_google_search()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
+    var bing = require_bing_webmaster()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
@@ -25596,6 +25684,16 @@ var require_server = __commonJS({
             out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' });
           }
         }
+        if (bing.enabled) {
+          try {
+            const r = await bing.submit(origin, sm, [site]);
+            patch.bing = { state: r.state, sitemap: sm, at: now };
+            out.push({ ok: true, message: prop.name + ": " + (r.state === "submitted" ? "sitemap submitted to Bing." : "Bing is checking the site. We submit the sitemap once it is verified.") });
+          } catch (e) {
+            patch.bing = { state: "error", sitemap: sm, at: now, error: String(e.message).slice(0, 200) };
+            out.push({ ok: false, message: prop.name + ': Bing said "' + patch.bing.error + '".' });
+          }
+        }
         const sig = crypto.createHash("sha1").update(seo.llms(s, prop, site)).digest("hex").slice(0, 16);
         if (o && o.force || (cur.indexnow || {}).sig !== sig) {
           const key = seo.indexNowKey(cfg.secret, w.id), onPath = site.includes("/s/" + w.slug + "/");
@@ -25630,7 +25728,8 @@ var require_server = __commonJS({
           description: seo.descOf(prop),
           writer: live && seoTools.enabled,
           indexNow: live,
-          google: live && google.enabled
+          google: live && google.enabled,
+          bing: live && bing.enabled
         }, 200, headers);
       }
       if (p === "/api/seo/write" && m === "POST") {
@@ -25674,7 +25773,7 @@ var require_server = __commonJS({
     async function sitePage(res, w, p, canonical, host, req) {
       const s = w.state;
       if (req && w.kind === "live") visits.count(req, w.id, p.id, s.today);
-      const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : "";
+      const gsv = host ? (google.enabled ? await google.metaTag(new URL(canonical).origin) : "") + (bing.enabled ? await bing.metaTag(new URL(canonical).origin) : "") : "";
       const built = studio.publishedSite(w, p, canonical);
       if (built) return send(res, 200, gsv ? built.replace("<head>", "<head>" + gsv) : built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
       const st = pub.siteState(s, p.id);
@@ -26336,7 +26435,7 @@ Disallow: /
         return send(res, 200, pages.page({
           title: p === "/start" ? "Start your booking site \xB7 Bookingbooster" : mkt.TITLE,
           description: mkt.DESCRIPTION,
-          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : "") : ""),
+          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") + (bing.enabled ? await bing.metaTag(new URL(cfg.baseUrl).origin) : "") + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : "") : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
           boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: "/api/domains/search", payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
@@ -27154,6 +27253,7 @@ Disallow: /
         bg("demos", ws.cleanupDemos(7));
         bg("ids", purgeIds());
         bg("indexnow", pingOwnPages());
+        bg("bing", submitOwnSite());
       }
       if (!cfg.serverless) bg("backup", backup.run(t));
       await Promise.all(jobs);
@@ -27176,6 +27276,16 @@ Disallow: /
       const r = await fetch("https://api.indexnow.org/indexnow", { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/json; charset=utf-8" }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + "/" + ownIndexKey() + ".txt", urlList: urls2 }) });
       log("indexnow", "own pages", r.status);
       if (r.status === 200 || r.status === 202) await kvSet.run("indexnow:own", sig);
+    }
+    async function submitOwnSite() {
+      const u = new URL(cfg.baseUrl);
+      if (!bing.enabled || u.protocol !== "https:" || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+      try {
+        const r = await bing.submit(u.origin, cfg.baseUrl + "/sitemap.xml", [cfg.baseUrl + "/"]);
+        log("bing", "own site", r.state);
+      } catch (e) {
+        log("bing", "own site", e.message);
+      }
     }
     async function purgeIds() {
       const cut = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);

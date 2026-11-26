@@ -119,7 +119,7 @@ function llms(s, p, url) {
 
 // A crawler that matches a named group ignores the * group, so every group repeats the private paths.
 const PRIVATE = ['Disallow: /app', 'Disallow: /trip/', 'Disallow: /api/'];
-const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'Bingbot', 'DuckAssistBot', 'MistralAI-User', 'Meta-ExternalAgent', 'Amazonbot'];
+const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'Bingbot', 'DuckAssistBot', 'MistralAI-User', 'Meta-ExternalAgent', 'Amazonbot', 'GoogleOther', 'Gemini-Deep-Research', 'Google-CloudVertexBot', 'YouBot', 'cohere-ai', 'CCBot', 'PhindBot', 'AI2Bot'];
 function robots(sitemapUrl) {
   return ['User-agent: *', 'Allow: /', ...PRIVATE, '', '# AI search and assistants are welcome to read and cite this site',
     ...AI_BOTS.map(b => ['User-agent: ' + b, 'Allow: /', ...PRIVATE].join('\n')), '', 'Sitemap: ' + sitemapUrl, ''].join('\n');

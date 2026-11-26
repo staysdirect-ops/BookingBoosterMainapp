@@ -83,6 +83,7 @@ module.exports = {
   credits: { enabled: E.AI_CREDITS !== 'off', monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
   // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
   google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
+  bing: { apiKey: E.BING_WEBMASTER_API_KEY, apiBase: E.BING_API_BASE },
   nuki: { token: E.NUKI_API_TOKEN },
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
   // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission

@@ -59,6 +59,7 @@ const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
 const seoTools = require('./seo-tools')(cfg);
 const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
+const bing = require('./bing-webmaster')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
@@ -171,6 +172,12 @@ async function autoIndex(w, o) {
         out.push({ ok: true, message: prop.name + ': sitemap submitted to Google.' }); }
       catch (e) { patch.google = { state: 'error', sitemap: sm, at: now, error: String(e.message).slice(0, 200) }; out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' }); }
     }
+    // Bing feeds ChatGPT search, Copilot, DuckDuckGo and other assistants. A site on our own address is part of our verified site.
+    if (bing.enabled) {
+      try { const r = await bing.submit(origin, sm, [site]); patch.bing = { state: r.state, sitemap: sm, at: now };
+        out.push({ ok: true, message: prop.name + ': ' + (r.state === 'submitted' ? 'sitemap submitted to Bing.' : 'Bing is checking the site. We submit the sitemap once it is verified.') }); }
+      catch (e) { patch.bing = { state: 'error', sitemap: sm, at: now, error: String(e.message).slice(0, 200) }; out.push({ ok: false, message: prop.name + ': Bing said "' + patch.bing.error + '".' }); }
+    }
     // IndexNow only when the page's words changed, as the protocol asks.
     const sig = crypto.createHash('sha1').update(seo.llms(s, prop, site)).digest('hex').slice(0, 16);
     if ((o && o.force) || (cur.indexnow || {}).sig !== sig) {
@@ -195,7 +202,7 @@ async function seoApi(req, res, p, m, w, live, headers) {
   const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : root + key + '.txt';
   if (p === '/api/seo/files' && m === 'GET') {
     return json(res, { site, sitemap: onPath ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : root + 'sitemap.xml', robots: root + 'robots.txt', llmsUrl: onPath ? site + '/llms.txt' : root + 'llms.txt', keyUrl,
-      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled }, 200, headers);
+      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled, bing: live && bing.enabled }, 200, headers);
   }
   if (p === '/api/seo/write' && m === 'POST') {
     const what = String(j.what || ''); if (!['summary', 'area', 'meta', 'faqs'].includes(what)) throw err(400, 'Unknown draft');
@@ -224,7 +231,7 @@ async function seoApi(req, res, p, m, w, live, headers) {
 async function sitePage(res, w, p, canonical, host, req) {
   const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today);
   // A site on its own address carries our Google verification tag on its home page, so we can submit it to Search Console.
-  const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : '';
+  const gsv = host ? (google.enabled ? await google.metaTag(new URL(canonical).origin) : '') + (bing.enabled ? await bing.metaTag(new URL(canonical).origin) : '') : '';
   const built = studio.publishedSite(w, p, canonical); // a site designed and published in the Site builder
   if (built) return send(res, 200, gsv ? built.replace('<head>', '<head>' + gsv) : built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   const st = pub.siteState(s, p.id);
@@ -705,7 +712,7 @@ async function route(req, res) {
       annual: q('annual') === '1', addon: q('addon') === '1', ref: aff.cookieCode(req), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
-      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
+      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') + (bing.enabled ? await bing.metaTag(new URL(cfg.baseUrl).origin) : '') + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
       boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: '/api/domains/search', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (m === 'GET' && Object.hasOwn(answers.PAGES, p)) { const a = answers.render(cfg.baseUrl, p); return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: 'read', index: true }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' }); }
@@ -1282,7 +1289,7 @@ async function runTick(t) {
   if (last.domains === t) { bg('domains', checkDomains()); bg('registrar', registrar.due()); }
   if (daily) bg('renewals', registrar.renewals(t));
   if (last.events === t && cfg.events.crawl) bg('events', eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 100e3 : 240e3));
-  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
+  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); bg('bing', submitOwnSite()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists
   await Promise.all(jobs); await ws.settle();
   return { ok: true, ical, daily };
@@ -1299,6 +1306,13 @@ async function pingOwnPages() {
   const row = await kvGet.get('indexnow:own'); if (row && row.v === sig) return;
   const r = await fetch('https://api.indexnow.org/indexnow', { method: 'POST', signal: AbortSignal.timeout(15000), headers: { 'content-type': 'application/json; charset=utf-8' }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + '/' + ownIndexKey() + '.txt', urlList: urls }) });
   log('indexnow', 'own pages', r.status); if (r.status === 200 || r.status === 202) await kvSet.run('indexnow:own', sig);
+}
+
+// Our own site in Bing Webmaster Tools: verified with the same API key, sitemap submitted daily. It covers every
+// host site on our address (/s/<slug>/), which our sitemap lists.
+async function submitOwnSite() {
+  const u = new URL(cfg.baseUrl); if (!bing.enabled || u.protocol !== 'https:' || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+  try { const r = await bing.submit(u.origin, cfg.baseUrl + '/sitemap.xml', [cfg.baseUrl + '/']); log('bing', 'own site', r.state); } catch (e) { log('bing', 'own site', e.message); }
 }
 
 // ID photos are deleted 30 days after checkout (or when the booking is cancelled).

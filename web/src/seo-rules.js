@@ -284,11 +284,12 @@
     return n;
   };
 
-  // Results from the server's search engine submissions (Google Search Console, IndexNow). Server only.
+  // Results from the server's search engine submissions (Google Search Console, Bing Webmaster Tools, IndexNow). Server only.
   BB.act.setIndexing = function (pid, patch) {
     const p = BB.q.property(pid); if (!p || !patch) return;
     const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
     if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    if (patch.bing && patch.bing.state === 'submitted' && (was.bing || {}).state !== 'submitted') BB.log('site', 'Search health', 'Submitted ' + p.domain + ' and its sitemap to Bing, which feeds ChatGPT search and Copilot.', pid, ['Search health', 'Bing']);
     BB.store.commit({ type: 'property', id: pid, quiet: true });
   };
   // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
