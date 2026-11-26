@@ -151,6 +151,35 @@ module.exports = function (ctx) {
     try { await stripe.refund(p.provider_ref); await ws.withWs(w.id, BB => { BB.log('payment', 'Stripe', 'Refund for ' + d.bookingId + ' sent to the guest’s card.', d.bookingId); BB.store.commit({}); }); }
     catch (e) { await ws.withWs(w.id, BB => { BB.notify('Refund needs attention', d.bookingId + ': ' + e.message, d.bookingId); BB.store.commit({}); }); }
   }
+  // The host charges the guest's saved card for damage (BB.act.chargeDamage). The result goes back on the booking.
+  const depQ = db.prepare("SELECT * FROM payments WHERE workspace_id = ? AND booking_id = ? AND kind = 'deposit' ORDER BY created_at DESC LIMIT 1");
+  const damageIns = db.prepare('INSERT OR REPLACE INTO payments (id, workspace_id, booking_id, kind, amount, status, provider_ref, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+  async function damage(w, d) {
+    const s = w.state, b = s.bookings.find(x => x.id === d.bookingId), it = b && (b.damage || []).find(x => x.n === d.n);
+    if (!it || it.status !== 'charging') return;
+    const g = s.guests.find(x => x.id === b.guestId) || {}, p = s.properties.find(x => x.id === b.propertyId) || s.properties[0];
+    const done = (status, extra, text, alert) => ws.withWs(w.id, BB => { const x = BB.q.booking(d.bookingId), y = x && (x.damage || []).find(z => z.n === d.n); if (!y) return;
+      Object.assign(y, { status }, extra); BB.log('payment', 'Stripe', text, d.bookingId, ['Stripe']); if (alert) BB.notify('Damage charge failed · ' + money(it.amount), text, d.bookingId); BB.store.commit({ type: 'booking', id: d.bookingId }); });
+    let pi;
+    try {
+      const dep = await depQ.get(w.id, b.id), row = await ws.row(w.id);
+      if (!stripe.enabled || !row || !row.stripe_account) throw new Error('Stripe is not connected.');
+      if (!dep || !dep.provider_ref) throw new Error('No card was saved for this stay.');
+      pi = await stripe.chargeDamage({ setupIntent: dep.provider_ref, account: row.stripe_account, amount: it.amount, description: p.name + ' damage, booking ' + b.id + ': ' + it.reason,
+        meta: { workspace: w.id, booking: b.id, kind: 'damage' }, idem: 'dmg-' + w.id + '-' + b.id + '-' + d.n });
+      if (pi.status !== 'succeeded') throw Object.assign(new Error('The card needs the guest to approve it.'), { stripe: { code: 'authentication_required' } });
+    } catch (e) {
+      const why = e.stripe && e.stripe.code === 'authentication_required' ? 'The guest’s bank wants them to approve it, so it could not be taken automatically. Email them a payment link instead.' : e.message;
+      log('damage', w.id, b.id, e.message);
+      return done('failed', { error: why }, 'Could not charge ' + money(it.amount) + ' for damage to ' + first(g.name) + '’s card. ' + why, true);
+    }
+    await damageIns.run(pi.id, w.id, b.id, 'damage', Math.round(it.amount * 100), 'paid', pi.id, Date.now(), Date.now());
+    await done('paid', { intent: pi.id }, 'Charged ' + money(it.amount) + ' to ' + first(g.name) + '’s saved card for damage: ' + it.reason + '. It pays out to your bank like a booking.');
+    if (g.email && !/@example\.(com|org)$/.test(g.email)) {
+      const v = vars(w, b, p, g), text = 'Hi ' + first(g.name) + ', ' + v.host_name + ' has charged ' + money(it.amount) + ' to the card you saved at check-in for your stay at ' + p.name + ' (' + b.id + '), for: ' + it.reason + '. If you have any questions, reply to this email.';
+      await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: 'A charge for damage at ' + p.name, text, html: simple(p, v, text), from: fromFor(w), replyTo: s.account.email, meta: { bookingId: b.id, template: 'damage-charge' } });
+    }
+  }
   async function paymentLink(w, d) {
     const s = w.state; const b = s.bookings.find(x => x.id === d.bookingId); if (!b) return; const g = s.guests.find(x => x.id === b.guestId); const p = s.properties.find(x => x.id === b.propertyId);
     const url = await ctx.payUrl(w, b).catch(e => { log('payment link', e.message); return null; });
@@ -207,6 +236,7 @@ module.exports = function (ctx) {
         else if (f.type === 'ai.check') await aiCheck(w);
         else if (f.type === 'payment.refund') await refund(w, d);
         else if (f.type === 'payment.link') await paymentLink(w, d);
+        else if (f.type === 'payment.damage') await damage(w, d);
         else if (f.type === 'payment.invoice') await invoiceEmail(w, d);
         else if (f.type === 'lock.code') await lockCode(w, d);
         else if (f.type === 'email.host') await hostAlert(w, d);

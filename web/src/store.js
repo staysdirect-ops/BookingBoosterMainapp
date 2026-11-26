@@ -648,6 +648,7 @@
     s.bookings.forEach(b => {
       if (b.status === 'confirmed' && b.checkOut <= s.today) { b.status = 'completed'; log('booking', 'Bookingbooster', BB.q.guest(b.guestId).name + ' checked out of ' + BB.q.property(b.propertyId).short + '.', b.id); runAutomations('stay.checkout', b); if (b.deposit === 'held') b.deposit = 'releasing'; if (BB.q.connected('cleaner')) log('system', 'Turno', 'Scheduled a clean at ' + BB.q.property(b.propertyId).short + ' for 11 am.', b.id); }
     });
+    s.bookings.forEach(b => { if (b.deposit === 'releasing' && D.add(b.checkOut, 3) < s.today) b.deposit = 'released'; }); // the damage window closes 3 days after checkout
     s.bookings.filter(b => b.status === 'confirmed' && b.checkIn === D.add(s.today, 3) && !b.checkin.done).forEach(b => runAutomations('arrival.minus3', b));
     s.bookings.filter(b => b.status === 'confirmed' && b.checkIn === s.today).forEach(b => notify(BB.q.guest(b.guestId).name.split(' ')[0] + ' arrives today', BB.q.property(b.propertyId).short + (b.checkin.done ? ' · checked in, code active from ' + BB.q.property(b.propertyId).checkinTime : ' · check-in not finished'), b.id));
     s.campaigns.filter(c => c.status === 'scheduled' && c.sentAt <= s.today).forEach(c => A.sendCampaign(c.id));
