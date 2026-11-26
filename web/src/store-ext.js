@@ -183,6 +183,25 @@
     BB.store.commit({ type: 'booking', id }); return true;
   };
   // Host sends a payment link for an unpaid booking (request, or a booking taken by phone).
+  // Damage deposit: the guest saved a card at check-in (nothing is charged then). The host can charge up to the deposit
+  // for damage, until 3 days after checkout. The server takes it from the saved card and pays it out to the host.
+  BB.DEPOSIT = 200;
+  BB.damageLeft = b => Math.max(0, BB.DEPOSIT - (b.damage || []).filter(x => x.status !== 'failed').reduce((t, x) => t + x.amount, 0));
+  BB.canChargeDamage = b => !!(b && b.checkin && b.checkin.deposit && ['held', 'releasing'].includes(b.deposit) && b.status !== 'cancelled' && b.status !== 'request' &&
+    D.add(b.checkOut, 3) >= S().today && BB.damageLeft(b) > 0);
+  BB.act.chargeDamage = function (id, amount, reason) {
+    const b = BB.q.booking(id); if (!BB.canChargeDamage(b)) return { ok: false, error: 'There is no saved card to charge for this stay.' };
+    if ((b.damage || []).some(x => x.status === 'charging')) return { ok: false, error: 'A charge for this stay is still going through. Try again in a minute.' };
+    amount = Math.round(Number(amount) * 100) / 100; reason = String(reason || '').trim().slice(0, 200);
+    const left = BB.damageLeft(b);
+    if (!(amount >= 1 && amount <= left)) return { ok: false, error: 'Enter an amount from £1 to ' + money(left) + '.' };
+    if (!reason) return { ok: false, error: 'Say what the charge is for. The guest sees this.' };
+    const n = (b.damage = b.damage || []).length + 1, live = S().live;
+    b.damage.push({ n, amount, reason, at: stamp(), status: live ? 'charging' : 'paid' });
+    BB.log('payment', 'Host console', (live ? 'Charging ' : 'Charged ') + money(amount) + ' to ' + first(gOf(b).name) + '’s saved card for damage: ' + reason + '.', id, ['Host console', 'Stripe']);
+    if (live) BB.fx('payment.damage', { bookingId: id, n });
+    BB.store.commit({ type: 'booking', id }); return { ok: true };
+  };
   BB.act.sendPaymentLink = function (id) {
     const b = BB.q.booking(id); if (!b || b.paid) return false;
     BB.log('payment', 'Host console', 'Sent ' + gOf(b).name + ' a secure payment link for ' + money(b.total) + '.', id, ['Host console', 'Email', 'Stripe']);

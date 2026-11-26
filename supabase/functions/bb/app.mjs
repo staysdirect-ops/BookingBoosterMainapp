@@ -3705,7 +3705,9 @@ var require_bb_embedded_files = __commonJS({
         b.paid ? ['good', 'Paid by card', 'Charged ' + D.fmt(b.createdAt) + ' through Stripe. Payout ' + (D.add(b.createdAt, 2) <= t ? 'landed ' : 'lands ') + D.fmt(D.add(b.createdAt, 2)) + '.'] :
         b.status === 'request' ? ['warn', 'Not paid yet', BB.q.connected('stripe') ? 'Accept the request and the guest gets a Stripe payment link.' : 'Accept the request, then take payment your usual way. Connect Stripe to send a card payment link instead.'] :
         ['warn', 'Not paid yet', S().live ? 'Record the payment when it arrives.' : 'Booked by phone or by hand. Record the payment when it arrives.'];
-      const depTxt = { none: c.deposit ? 'Hold placed' : 'No hold yet. The guest adds it during check-in.', held: BB.money(DEP) + ' held on the guest\u2019s card. Released 3 days after checkout, ' + D.fmt(D.add(b.checkOut, 3)) + '.', releasing: 'Releasing now. Back on the card within 3 days.', released: BB.money(DEP) + ' hold released.' }[b.deposit] || '';
+      const dmgUntil = D.fmt(D.add(b.checkOut, 3));
+      const depTxt = S().live ? ({ held: 'Card saved at check-in. Nothing is charged unless you charge it for damage, up to ' + BB.money(BB.damageLeft(b)) + ', until ' + dmgUntil + '.', releasing: 'Card saved. You can still charge it for damage, up to ' + BB.money(BB.damageLeft(b)) + ', until ' + dmgUntil + '.', released: 'The damage window has closed. The card can no longer be charged.' }[b.deposit] || (c.deposit ? 'Card saved' : 'No card yet. The guest adds it during check-in.'))
+        : { none: c.deposit ? 'Hold placed' : 'No hold yet. The guest adds it during check-in.', held: BB.money(DEP) + ' held on the guest\u2019s card. Released 3 days after checkout, ' + D.fmt(D.add(b.checkOut, 3)) + '.', releasing: 'Releasing now. Back on the card within 3 days.', released: BB.money(DEP) + ' hold released.' }[b.deposit] || '';
       const depPill = { none: BB.pill('muted', 'None'), held: BB.pill('good', 'Held'), releasing: BB.pill('info', 'Releasing'), released: BB.pill('muted', 'Released') }[b.deposit] || '';
       // check-in steps
       const steps = (S().live ? [['id', 'ID photo', c.id ? 'Uploaded. Open it below.' : 'Photo ID for the lead guest', c.id]] : [['id', 'ID verified', 'Photo ID for the lead guest', c.id], ['selfie', 'Selfie match', 'Matches the photo ID', c.selfie]]).concat([['guests', 'Guest names', (b.adults + b.children) + ' guests' + (b.pets ? ' and a dog' : ''), c.guests], ['agreement', 'Rental agreement', c.signature ? 'Signed by ' + g.name : 'House rules e-signature', c.agreement], ['deposit', 'Security deposit', BB.money(DEP) + ' card hold', c.deposit], ['arrival', 'Arrival time', c.arrival ? 'Arriving ' + c.arrival : 'Not shared yet', !!c.arrival]]);
@@ -3746,7 +3748,13 @@ var require_bb_embedded_files = __commonJS({
               '<button class="btn sm block" data-a="nav" data-view="guest" data-id="' + g.id + '">Open guest profile' + ic('arrow') + '</button>') +
             card('Price', b.channel === 'direct' ? 'Direct' : BB.CHANNEL[b.channel], price) +
             card('Payment', '', '<div class="a-pay"><div class="a-trow"><span>' + payLine[1] + '<em>' + esc(payLine[2]) + '</em></span>' + BB.pill(payLine[0], payLine[0] === 'good' ? 'Paid' : payLine[0] === 'bad' ? 'Refunded' : 'Unpaid') + '</div>' +
-              '<div class="a-trow"><span>Security deposit<em>' + esc(depTxt) + '</em></span>' + depPill + '</div></div>' +
+              '<div class="a-trow"><span>Security deposit<em>' + esc(depTxt) + '</em></span>' + depPill + '</div>' +
+              (b.damage || []).map(x => '<div class="a-trow"><span>Damage charge ' + BB.money(x.amount) + '<em>' + esc(x.reason) + (x.status === 'failed' ? '. Not charged: ' + esc(x.error || 'the card was declined') : x.status === 'charging' ? '. Charging the card now.' : '. Charged to the saved card.') + '</em></span>' +
+                BB.pill(x.status === 'paid' ? 'good' : x.status === 'failed' ? 'bad' : 'info', x.status === 'paid' ? 'Charged' : x.status === 'failed' ? 'Failed' : 'Charging') + '</div>').join('') + '</div>' +
+              (BB.canChargeDamage(b) ? (st.dmg === b.id ? '<div class="a-decl"><label for="a-dmg-amt">Amount to charge (up to ' + BB.money(BB.damageLeft(b)) + ')</label><input id="a-dmg-amt" type="number" min="1" max="' + BB.damageLeft(b) + '" step="0.01" inputmode="decimal">' +
+                '<label for="a-dmg-why">What it is for (the guest sees this)</label><input id="a-dmg-why" type="text" maxlength="200" placeholder="Broken lamp in the living room">' +
+                '<div class="a-acts"><button class="btn sm" data-dmgkeep>Back</button><button class="btn sm primary" data-dmggo="' + b.id + '">Charge the card</button></div></div>'
+                : '<button class="btn sm block" data-dmgask>' + ic('card') + 'Charge for damage</button>') : '') +
               (b.status === 'request' ? '<button class="btn sm block primary" data-accept="' + b.id + '">' + ic('check') + 'Accept request</button><button class="btn sm block" data-decline="' + b.id + '">Decline</button>' : '') +
               (!b.paid && b.status === 'confirmed' ? (b.payBy === 'transfer' ? '<button class="btn sm block primary" data-paid="' + b.id + '">' + ic('check') + 'Bank transfer received</button>' : '') +
                 (S().live && b.payBy !== 'transfer' ? '<button class="btn sm block primary" data-paylink="' + b.id + '">' + ic('send') + 'Email a payment link</button>' : '') +
@@ -3760,6 +3768,10 @@ var require_bb_embedded_files = __commonJS({
       const t = ev.target, st = inst.st;
       if (t.closest('[data-bkask]')) return inst.set({ bk_cancel: st.id });
       if (t.closest('[data-bkkeep]')) return inst.set({ bk_cancel: null });
+      if (t.closest('[data-dmgask]')) return inst.set({ dmg: st.id });
+      if (t.closest('[data-dmgkeep]')) return inst.set({ dmg: null });
+      const dmg = t.closest('[data-dmggo]'); if (dmg) { const f = dmg.closest('.a-decl'); const r = BB.act.chargeDamage(dmg.dataset.dmggo, f.querySelector('#a-dmg-amt').value, f.querySelector('#a-dmg-why').value);
+        if (!r.ok) { BB.toast(r.error); return; } st.dmg = null; BB.toast(S().live ? 'Charging the card. You will see the result here in a moment.' : 'Charged to the saved card', 'good'); return; }
       const cx = t.closest('[data-bkcancel]'); if (cx) { st.bk_cancel = null; BB.act.cancelBooking(cx.dataset.bkcancel, 'Host console'); BB.toast('Cancelled and refunded. Nights reopened everywhere.', 'good'); return; }
       const m = t.closest('[data-bkmsg]'); if (m) { const b = BB.q.booking(m.dataset.bkmsg); const th = BB.act.openThread(b.guestId, b.id); return inst.nav('inbox', th.id); }
       const r = t.closest('[data-remind]'); if (r) { if (BB.act.remindCheckin(r.dataset.remind)) BB.toast('Reminder sent', 'good'); return; }
@@ -10478,6 +10490,25 @@ body.p-lock { overflow: hidden; }
     BB.store.commit({ type: 'booking', id }); return true;
   };
   // Host sends a payment link for an unpaid booking (request, or a booking taken by phone).
+  // Damage deposit: the guest saved a card at check-in (nothing is charged then). The host can charge up to the deposit
+  // for damage, until 3 days after checkout. The server takes it from the saved card and pays it out to the host.
+  BB.DEPOSIT = 200;
+  BB.damageLeft = b => Math.max(0, BB.DEPOSIT - (b.damage || []).filter(x => x.status !== 'failed').reduce((t, x) => t + x.amount, 0));
+  BB.canChargeDamage = b => !!(b && b.checkin && b.checkin.deposit && ['held', 'releasing'].includes(b.deposit) && b.status !== 'cancelled' && b.status !== 'request' &&
+    D.add(b.checkOut, 3) >= S().today && BB.damageLeft(b) > 0);
+  BB.act.chargeDamage = function (id, amount, reason) {
+    const b = BB.q.booking(id); if (!BB.canChargeDamage(b)) return { ok: false, error: 'There is no saved card to charge for this stay.' };
+    if ((b.damage || []).some(x => x.status === 'charging')) return { ok: false, error: 'A charge for this stay is still going through. Try again in a minute.' };
+    amount = Math.round(Number(amount) * 100) / 100; reason = String(reason || '').trim().slice(0, 200);
+    const left = BB.damageLeft(b);
+    if (!(amount >= 1 && amount <= left)) return { ok: false, error: 'Enter an amount from \xA31 to ' + money(left) + '.' };
+    if (!reason) return { ok: false, error: 'Say what the charge is for. The guest sees this.' };
+    const n = (b.damage = b.damage || []).length + 1, live = S().live;
+    b.damage.push({ n, amount, reason, at: stamp(), status: live ? 'charging' : 'paid' });
+    BB.log('payment', 'Host console', (live ? 'Charging ' : 'Charged ') + money(amount) + ' to ' + first(gOf(b).name) + '\u2019s saved card for damage: ' + reason + '.', id, ['Host console', 'Stripe']);
+    if (live) BB.fx('payment.damage', { bookingId: id, n });
+    BB.store.commit({ type: 'booking', id }); return { ok: true };
+  };
   BB.act.sendPaymentLink = function (id) {
     const b = BB.q.booking(id); if (!b || b.paid) return false;
     BB.log('payment', 'Host console', 'Sent ' + gOf(b).name + ' a secure payment link for ' + money(b.total) + '.', id, ['Host console', 'Email', 'Stripe']);
@@ -11418,6 +11449,7 @@ body.p-lock { overflow: hidden; }
     s.bookings.forEach(b => {
       if (b.status === 'confirmed' && b.checkOut <= s.today) { b.status = 'completed'; log('booking', 'Bookingbooster', BB.q.guest(b.guestId).name + ' checked out of ' + BB.q.property(b.propertyId).short + '.', b.id); runAutomations('stay.checkout', b); if (b.deposit === 'held') b.deposit = 'releasing'; if (BB.q.connected('cleaner')) log('system', 'Turno', 'Scheduled a clean at ' + BB.q.property(b.propertyId).short + ' for 11 am.', b.id); }
     });
+    s.bookings.forEach(b => { if (b.deposit === 'releasing' && D.add(b.checkOut, 3) < s.today) b.deposit = 'released'; }); // the damage window closes 3 days after checkout
     s.bookings.filter(b => b.status === 'confirmed' && b.checkIn === D.add(s.today, 3) && !b.checkin.done).forEach(b => runAutomations('arrival.minus3', b));
     s.bookings.filter(b => b.status === 'confirmed' && b.checkIn === s.today).forEach(b => notify(BB.q.guest(b.guestId).name.split(' ')[0] + ' arrives today', BB.q.property(b.propertyId).short + (b.checkin.done ? ' \xB7 checked in, code active from ' + BB.q.property(b.propertyId).checkinTime : ' \xB7 check-in not finished'), b.id));
     s.campaigns.filter(c => c.status === 'scheduled' && c.sentAt <= s.today).forEach(c => A.sendCampaign(c.id));
@@ -15986,6 +16018,26 @@ var require_stripe = __commonJS({
         async checkoutDeposit({ email, successUrl, cancelUrl, meta }) {
           const s = await api("POST", "/checkout/sessions", { mode: "setup", currency: "gbp", customer_creation: "always", customer_email: email, success_url: successUrl, cancel_url: cancelUrl, setup_intent_data: { metadata: meta, description: "Damage deposit card on file" }, metadata: meta });
           return { id: s.id, url: s.url };
+        },
+        // Damage: charge the card the guest saved at check-in (on our account), paid out to the host's account like a booking.
+        async chargeDamage({ setupIntent, account, amount, description, meta, idem }) {
+          const si = await api("GET", "/setup_intents/" + setupIntent);
+          const pm = si.payment_method && (si.payment_method.id || si.payment_method), customer = si.customer && (si.customer.id || si.customer);
+          if (!pm || !customer) throw new Error("The guest\u2019s card was not saved, so it cannot be charged.");
+          const p = pence(amount), fee = this.appFee ? this.appFee(p) : cfg.stripe.feePct ? Math.round(p * cfg.stripe.feePct / 100) : void 0;
+          return api("POST", "/payment_intents", {
+            amount: p,
+            currency: "gbp",
+            customer,
+            payment_method: pm,
+            off_session: true,
+            confirm: true,
+            description,
+            on_behalf_of: account,
+            transfer_data: { destination: account },
+            application_fee_amount: fee,
+            metadata: meta
+          }, { idem });
         },
         async refund(paymentIntent, amount) {
           return api("POST", "/refunds", { payment_intent: paymentIntent, amount: amount ? pence(amount) : void 0, reverse_transfer: true, refund_application_fee: true });
@@ -21392,6 +21444,46 @@ var require_effects = __commonJS({
           });
         }
       }
+      const depQ = db.prepare("SELECT * FROM payments WHERE workspace_id = ? AND booking_id = ? AND kind = 'deposit' ORDER BY created_at DESC LIMIT 1");
+      const damageIns = db.prepare("INSERT OR REPLACE INTO payments (id, workspace_id, booking_id, kind, amount, status, provider_ref, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      async function damage(w, d) {
+        const s = w.state, b = s.bookings.find((x) => x.id === d.bookingId), it = b && (b.damage || []).find((x) => x.n === d.n);
+        if (!it || it.status !== "charging") return;
+        const g = s.guests.find((x) => x.id === b.guestId) || {}, p = s.properties.find((x) => x.id === b.propertyId) || s.properties[0];
+        const done = (status, extra, text, alert) => ws.withWs(w.id, (BB) => {
+          const x = BB.q.booking(d.bookingId), y = x && (x.damage || []).find((z) => z.n === d.n);
+          if (!y) return;
+          Object.assign(y, { status }, extra);
+          BB.log("payment", "Stripe", text, d.bookingId, ["Stripe"]);
+          if (alert) BB.notify("Damage charge failed \xB7 " + money(it.amount), text, d.bookingId);
+          BB.store.commit({ type: "booking", id: d.bookingId });
+        });
+        let pi;
+        try {
+          const dep = await depQ.get(w.id, b.id), row = await ws.row(w.id);
+          if (!stripe.enabled || !row || !row.stripe_account) throw new Error("Stripe is not connected.");
+          if (!dep || !dep.provider_ref) throw new Error("No card was saved for this stay.");
+          pi = await stripe.chargeDamage({
+            setupIntent: dep.provider_ref,
+            account: row.stripe_account,
+            amount: it.amount,
+            description: p.name + " damage, booking " + b.id + ": " + it.reason,
+            meta: { workspace: w.id, booking: b.id, kind: "damage" },
+            idem: "dmg-" + w.id + "-" + b.id + "-" + d.n
+          });
+          if (pi.status !== "succeeded") throw Object.assign(new Error("The card needs the guest to approve it."), { stripe: { code: "authentication_required" } });
+        } catch (e) {
+          const why = e.stripe && e.stripe.code === "authentication_required" ? "The guest\u2019s bank wants them to approve it, so it could not be taken automatically. Email them a payment link instead." : e.message;
+          log("damage", w.id, b.id, e.message);
+          return done("failed", { error: why }, "Could not charge " + money(it.amount) + " for damage to " + first(g.name) + "\u2019s card. " + why, true);
+        }
+        await damageIns.run(pi.id, w.id, b.id, "damage", Math.round(it.amount * 100), "paid", pi.id, Date.now(), Date.now());
+        await done("paid", { intent: pi.id }, "Charged " + money(it.amount) + " to " + first(g.name) + "\u2019s saved card for damage: " + it.reason + ". It pays out to your bank like a booking.");
+        if (g.email && !/@example\.(com|org)$/.test(g.email)) {
+          const v = vars(w, b, p, g), text = "Hi " + first(g.name) + ", " + v.host_name + " has charged " + money(it.amount) + " to the card you saved at check-in for your stay at " + p.name + " (" + b.id + "), for: " + it.reason + ". If you have any questions, reply to this email.";
+          await msg.sendEmail({ workspaceId: w.id, to: g.email, subject: "A charge for damage at " + p.name, text, html: simple(p, v, text), from: fromFor(w), replyTo: s.account.email, meta: { bookingId: b.id, template: "damage-charge" } });
+        }
+      }
       async function paymentLink(w, d) {
         const s = w.state;
         const b = s.bookings.find((x) => x.id === d.bookingId);
@@ -21484,6 +21576,7 @@ var require_effects = __commonJS({
             else if (f.type === "ai.check") await aiCheck(w);
             else if (f.type === "payment.refund") await refund(w, d);
             else if (f.type === "payment.link") await paymentLink(w, d);
+            else if (f.type === "payment.damage") await damage(w, d);
             else if (f.type === "payment.invoice") await invoiceEmail(w, d);
             else if (f.type === "lock.code") await lockCode(w, d);
             else if (f.type === "email.host") await hostAlert(w, d);

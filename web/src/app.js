@@ -660,7 +660,9 @@
         b.paid ? ['good', 'Paid by card', 'Charged ' + D.fmt(b.createdAt) + ' through Stripe. Payout ' + (D.add(b.createdAt, 2) <= t ? 'landed ' : 'lands ') + D.fmt(D.add(b.createdAt, 2)) + '.'] :
         b.status === 'request' ? ['warn', 'Not paid yet', BB.q.connected('stripe') ? 'Accept the request and the guest gets a Stripe payment link.' : 'Accept the request, then take payment your usual way. Connect Stripe to send a card payment link instead.'] :
         ['warn', 'Not paid yet', S().live ? 'Record the payment when it arrives.' : 'Booked by phone or by hand. Record the payment when it arrives.'];
-      const depTxt = { none: c.deposit ? 'Hold placed' : 'No hold yet. The guest adds it during check-in.', held: BB.money(DEP) + ' held on the guest’s card. Released 3 days after checkout, ' + D.fmt(D.add(b.checkOut, 3)) + '.', releasing: 'Releasing now. Back on the card within 3 days.', released: BB.money(DEP) + ' hold released.' }[b.deposit] || '';
+      const dmgUntil = D.fmt(D.add(b.checkOut, 3));
+      const depTxt = S().live ? ({ held: 'Card saved at check-in. Nothing is charged unless you charge it for damage, up to ' + BB.money(BB.damageLeft(b)) + ', until ' + dmgUntil + '.', releasing: 'Card saved. You can still charge it for damage, up to ' + BB.money(BB.damageLeft(b)) + ', until ' + dmgUntil + '.', released: 'The damage window has closed. The card can no longer be charged.' }[b.deposit] || (c.deposit ? 'Card saved' : 'No card yet. The guest adds it during check-in.'))
+        : { none: c.deposit ? 'Hold placed' : 'No hold yet. The guest adds it during check-in.', held: BB.money(DEP) + ' held on the guest’s card. Released 3 days after checkout, ' + D.fmt(D.add(b.checkOut, 3)) + '.', releasing: 'Releasing now. Back on the card within 3 days.', released: BB.money(DEP) + ' hold released.' }[b.deposit] || '';
       const depPill = { none: BB.pill('muted', 'None'), held: BB.pill('good', 'Held'), releasing: BB.pill('info', 'Releasing'), released: BB.pill('muted', 'Released') }[b.deposit] || '';
       // check-in steps
       const steps = (S().live ? [['id', 'ID photo', c.id ? 'Uploaded. Open it below.' : 'Photo ID for the lead guest', c.id]] : [['id', 'ID verified', 'Photo ID for the lead guest', c.id], ['selfie', 'Selfie match', 'Matches the photo ID', c.selfie]]).concat([['guests', 'Guest names', (b.adults + b.children) + ' guests' + (b.pets ? ' and a dog' : ''), c.guests], ['agreement', 'Rental agreement', c.signature ? 'Signed by ' + g.name : 'House rules e-signature', c.agreement], ['deposit', 'Security deposit', BB.money(DEP) + ' card hold', c.deposit], ['arrival', 'Arrival time', c.arrival ? 'Arriving ' + c.arrival : 'Not shared yet', !!c.arrival]]);
@@ -701,7 +703,13 @@
               '<button class="btn sm block" data-a="nav" data-view="guest" data-id="' + g.id + '">Open guest profile' + ic('arrow') + '</button>') +
             card('Price', b.channel === 'direct' ? 'Direct' : BB.CHANNEL[b.channel], price) +
             card('Payment', '', '<div class="a-pay"><div class="a-trow"><span>' + payLine[1] + '<em>' + esc(payLine[2]) + '</em></span>' + BB.pill(payLine[0], payLine[0] === 'good' ? 'Paid' : payLine[0] === 'bad' ? 'Refunded' : 'Unpaid') + '</div>' +
-              '<div class="a-trow"><span>Security deposit<em>' + esc(depTxt) + '</em></span>' + depPill + '</div></div>' +
+              '<div class="a-trow"><span>Security deposit<em>' + esc(depTxt) + '</em></span>' + depPill + '</div>' +
+              (b.damage || []).map(x => '<div class="a-trow"><span>Damage charge ' + BB.money(x.amount) + '<em>' + esc(x.reason) + (x.status === 'failed' ? '. Not charged: ' + esc(x.error || 'the card was declined') : x.status === 'charging' ? '. Charging the card now.' : '. Charged to the saved card.') + '</em></span>' +
+                BB.pill(x.status === 'paid' ? 'good' : x.status === 'failed' ? 'bad' : 'info', x.status === 'paid' ? 'Charged' : x.status === 'failed' ? 'Failed' : 'Charging') + '</div>').join('') + '</div>' +
+              (BB.canChargeDamage(b) ? (st.dmg === b.id ? '<div class="a-decl"><label for="a-dmg-amt">Amount to charge (up to ' + BB.money(BB.damageLeft(b)) + ')</label><input id="a-dmg-amt" type="number" min="1" max="' + BB.damageLeft(b) + '" step="0.01" inputmode="decimal">' +
+                '<label for="a-dmg-why">What it is for (the guest sees this)</label><input id="a-dmg-why" type="text" maxlength="200" placeholder="Broken lamp in the living room">' +
+                '<div class="a-acts"><button class="btn sm" data-dmgkeep>Back</button><button class="btn sm primary" data-dmggo="' + b.id + '">Charge the card</button></div></div>'
+                : '<button class="btn sm block" data-dmgask>' + ic('card') + 'Charge for damage</button>') : '') +
               (b.status === 'request' ? '<button class="btn sm block primary" data-accept="' + b.id + '">' + ic('check') + 'Accept request</button><button class="btn sm block" data-decline="' + b.id + '">Decline</button>' : '') +
               (!b.paid && b.status === 'confirmed' ? (b.payBy === 'transfer' ? '<button class="btn sm block primary" data-paid="' + b.id + '">' + ic('check') + 'Bank transfer received</button>' : '') +
                 (S().live && b.payBy !== 'transfer' ? '<button class="btn sm block primary" data-paylink="' + b.id + '">' + ic('send') + 'Email a payment link</button>' : '') +
@@ -715,6 +723,10 @@
       const t = ev.target, st = inst.st;
       if (t.closest('[data-bkask]')) return inst.set({ bk_cancel: st.id });
       if (t.closest('[data-bkkeep]')) return inst.set({ bk_cancel: null });
+      if (t.closest('[data-dmgask]')) return inst.set({ dmg: st.id });
+      if (t.closest('[data-dmgkeep]')) return inst.set({ dmg: null });
+      const dmg = t.closest('[data-dmggo]'); if (dmg) { const f = dmg.closest('.a-decl'); const r = BB.act.chargeDamage(dmg.dataset.dmggo, f.querySelector('#a-dmg-amt').value, f.querySelector('#a-dmg-why').value);
+        if (!r.ok) { BB.toast(r.error); return; } st.dmg = null; BB.toast(S().live ? 'Charging the card. You will see the result here in a moment.' : 'Charged to the saved card', 'good'); return; }
       const cx = t.closest('[data-bkcancel]'); if (cx) { st.bk_cancel = null; BB.act.cancelBooking(cx.dataset.bkcancel, 'Host console'); BB.toast('Cancelled and refunded. Nights reopened everywhere.', 'good'); return; }
       const m = t.closest('[data-bkmsg]'); if (m) { const b = BB.q.booking(m.dataset.bkmsg); const th = BB.act.openThread(b.guestId, b.id); return inst.nav('inbox', th.id); }
       const r = t.closest('[data-remind]'); if (r) { if (BB.act.remindCheckin(r.dataset.remind)) BB.toast('Reminder sent', 'good'); return; }
