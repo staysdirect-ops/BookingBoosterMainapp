@@ -161,6 +161,9 @@ function sitemapOf(w, site) { return site.includes('/s/' + w.slug + '/') ? cfg.b
 async function autoIndex(w, o) {
   const s = w.state, out = [], now = new Date().toISOString();
   for (const prop of s.properties.filter(x => x.published !== false)) {
+    // The daily run waits for the host's own photos: a site still showing drawings is not worth a first crawl.
+    // Submit now in the console still sends it straight away.
+    if (!(o && o.force) && !(prop.photos || []).some(x => x && x.url)) continue;
     const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
     if (google.enabled) {
       try { await google.submit(origin, sm); patch.google = { state: 'submitted', sitemap: sm, at: now, account: google.account };
@@ -291,7 +294,7 @@ async function tripAct(w, b, name, args) {
   else if (name === 'sendMessage') { if (!t || args[0] !== t.id) throw err(403, 'Not allowed.'); args = [t.id, 'guest', String(args[2] || '').slice(0, 2000), 'Guest app']; }
   else if (name === 'rateStay' || name === 'review') { if (b.status !== 'completed' && b.checkOut > s.today) throw err(400, 'You can rate your stay after checkout.'); args = [b.id, Math.max(1, Math.min(5, +args[1] || 5)), String(args[2] || '').slice(0, 1500), args[3] === true]; }
   else if (name === 'joinList') args = [b.guestId];
-  else if (name === 'buyExtra') { const EXTRAS = { 'Early check-in': 25, 'Late checkout': 25, 'Firewood basket': 15, 'Welcome hamper': 35, 'Breakfast box': 18 }; const n = String(args[1]); const price = EXTRAS[n] != null ? EXTRAS[n] : +args[2]; if (!(price >= 0 && price <= 200)) throw err(400, 'Not allowed.'); args = [b.id, n.slice(0, 60), price]; }
+  else if (name === 'buyExtra') { if (w.kind === 'live') throw err(400, 'Extras cannot be added here yet. Message your host.'); /* nothing would take the card */ const EXTRAS = { 'Early check-in': 25, 'Late checkout': 25, 'Firewood basket': 15, 'Welcome hamper': 35, 'Breakfast box': 18 }; const n = String(args[1]); const price = EXTRAS[n] != null ? EXTRAS[n] : +args[2]; if (!(price >= 0 && price <= 200)) throw err(400, 'Not allowed.'); args = [b.id, n.slice(0, 60), price]; }
   else if (name === 'openThread') args = [b.guestId, b.id];
   return await ws.act(w.id, name, args);
 }
