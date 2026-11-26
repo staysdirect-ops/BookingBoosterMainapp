@@ -3936,7 +3936,7 @@ var require_bb_embedded_files = __commonJS({
       }).join('');
       const deps = s.bookings.filter(b => b.status !== 'cancelled' && ['held', 'releasing', 'released'].includes(b.deposit)).sort((a, b) => ({ held: 0, releasing: 1, released: 2 }[a.deposit] - { held: 0, releasing: 1, released: 2 }[b.deposit]) || b.checkIn.localeCompare(a.checkIn)).slice(0, 8);
       const held = s.bookings.filter(b => b.status !== 'cancelled' && b.deposit === 'held').length;
-      return vh('Payments', (S().live ? 'Guests pay you directly through Stripe, and Stripe pays out to your bank. No commission on any booking.' : 'Guests pay you directly. Payouts reach your bank 2 days after booking, with no platform fees'), '<button class="btn sm" data-a="nav" data-view="connections">' + ic('plug') + 'Payment settings</button>') +
+      return vh('Payments', (S().live ? 'Guests pay you directly through Stripe, and Stripe pays out to your bank. No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added.' : 'Guests pay you directly. Payouts reach your bank 2 days after booking, with no platform fees'), '<button class="btn sm" data-a="nav" data-view="connections">' + ic('plug') + 'Payment settings</button>') +
         '<div class="a-stripe' + (on ? '' : ' off') + '"><span class="a-ico">' + ic('card') + '</span><div class="a-row-t"><b>Stripe ' + (on ? 'is connected' : 'is disconnected') + '</b><span>' + (on ? esc(stripe.detail || '') + ' \xB7 last sync ' + esc(BB.ago(stripe.lastSync || t + 'T00:00')) : (S().live && !stripe.lastSync ? 'Connect Stripe to take card payments. Until then your sites take booking requests.' : 'Guests cannot pay online and new direct bookings are paused. Reconnect to take payments again.')) + '</span></div>' + (on ? BB.pill('good', 'Live') : '<button class="btn sm primary" data-a="nav" data-view="connections">' + (S().live && !stripe.lastSync ? 'Connect Stripe' : 'Reconnect Stripe') + '</button>') + '</div>' +
         '<div class="a-grid">' +
           '<div class="a-s3"><div class="a-kpi"><span>Paid out, last 30 days</span><b class="num">' + BB.money(paidMonth) + '</b><small>' + plural(paid30.length, 'payout') + (S().live ? '' : ' to Barclays \u2022\u20224410') + '</small></div></div>' +
@@ -14244,12 +14244,25 @@ var require_config = __commonJS({
       company: { name: E.COMPANY_NAME || "Bookingbooster Ltd", address: E.COMPANY_ADDRESS || "Registered address to be confirmed", number: E.COMPANY_NUMBER || "", vat: E.VAT_NUMBER || "", support: E.SUPPORT_EMAIL || "help@booking-booster.co.uk" },
       email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? "resend" : E.POSTMARK_TOKEN ? "postmark" : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || "Bookingbooster <hello@booking-booster.co.uk>", guestFromDomain: E.GUEST_EMAIL_DOMAIN || "mail.booking-booster.co.uk" },
       sms: { apiBase: E.SMS_API_BASE, sid: E.TWILIO_ACCOUNT_SID, token: E.TWILIO_AUTH_TOKEN, from: E.TWILIO_FROM },
-      stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : void 0, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: {
-        Growth: E.STRIPE_PRICE_GROWTH,
-        addon: E.STRIPE_PRICE_CALENDAR_SYNC,
-        GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL,
-        addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
-      }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0) },
+      stripe: {
+        apiBase: E.STRIPE_API_BASE,
+        key: stripeKeyName ? String(E[stripeKeyName]).trim() : void 0,
+        keyName: stripeKeyName,
+        webhookSecret: E.STRIPE_WEBHOOK_SECRET,
+        connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET,
+        prices: {
+          Growth: E.STRIPE_PRICE_GROWTH,
+          addon: E.STRIPE_PRICE_CALENDAR_SYNC,
+          GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL,
+          addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
+        },
+        feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0),
+        // Guest card fees, passed to the host at cost: on destination charges Stripe takes its fee from the platform.
+        // Standard UK card pricing; STRIPE_PASS_CARD_FEES=0 switches it off.
+        passFees: E.STRIPE_PASS_CARD_FEES !== "0",
+        cardFeePct: +(E.STRIPE_CARD_FEE_PCT || 1.5),
+        cardFeePence: +(E.STRIPE_CARD_FEE_PENCE || 20)
+      },
       ai: { openai: E.OPENAI_API_KEY, openaiModel: E.OPENAI_MODEL || "gpt-4o-mini", gemini: E.GEMINI_API_KEY, geminiModel: E.GEMINI_MODEL || "gemini-2.0-flash", perplexity: E.PERPLEXITY_API_KEY, perplexityModel: E.PERPLEXITY_MODEL || "sonar", anthropic: E.ANTHROPIC_API_KEY, anthropicBase: E.ANTHROPIC_API_BASE, anthropicModel: E.ANTHROPIC_MODEL || "claude-sonnet-5-5", studioModel: E.ANTHROPIC_STUDIO_MODEL || "claude-opus-5-5", studioEffort: E.ANTHROPIC_STUDIO_EFFORT || "medium", serpapi: E.SERPAPI_KEY },
       // Event ads: our own event finder reads public what's-on and course pages in the background (server/studio/crawler.js).
       events: { crawl: E.EVENT_CRAWL !== "off", seeds: E.EVENT_SEEDS || "" },
@@ -15289,7 +15302,7 @@ var require_answers = __commonJS({
       ["Get mentioned locally.", "Your tourism board, local blogs and press. These are the sites AI answers cite.", "Off-page, LLMO"],
       ["Check AI answers every week.", "Ask ChatGPT, Perplexity, Gemini and Google the questions guests ask, and note who they name and cite.", "GEO, AIO"]
     ];
-    var PRICE_LINE = "\xA3" + P.month + " a month, or \xA3" + P.year.toLocaleString("en-GB") + " a year, with no setup fee and no commission on bookings. Prices include VAT and cover up to " + P.homes + " homes. Every plan includes \xA3" + P.aiCredit + " of AI credit a month.";
+    var PRICE_LINE = "\xA3" + P.month + " a month, or \xA3" + P.year.toLocaleString("en-GB") + " a year, with no setup fee and no commission on bookings (guest card fees are passed on at Stripe\u2019s cost, about 1.5% + 20p). Prices include VAT and cover up to " + P.homes + " homes. Every plan includes \xA3" + P.aiCredit + " of AI credit a month.";
     var PAGES = {
       "/direct-booking-website": {
         title: "Direct booking website for UK holiday lets \xB7 Bookingbooster",
@@ -15412,7 +15425,7 @@ var require_marketing = __commonJS({
     ];
     var MORE = [
       ["What is Bookingbooster?", "Bookingbooster builds and runs direct booking websites for UK holiday let and short-term let owners. You get your own website on your own domain, with live availability, card payments, online check-in, guest email and text marketing, local SEO pages and AI search visibility, all in one place. Guests book and pay you directly, with no commission."],
-      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3197 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking."],
+      ["Does Bookingbooster take commission on bookings?", "No. You pay a flat \xA3197 a month, with no setup fee. Guests pay you directly through your own Stripe account, and you keep every booking. The only deduction is the card fee, passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added."],
       ["Is Bookingbooster a channel manager?", "No. It is a direct booking website with marketing built in. If you also list on Airbnb, Vrbo or Booking.com, the optional Calendar sync add-on (\xA315 a month) keeps your calendars in step so you never double book."],
       ["Is there a yearly plan?", "Yes. The plan is \xA3197 a month, or \xA31,970 a year if you pay yearly, which is two months free. There is no setup fee either way, and prices include VAT."],
       ["What AI credit is included?", "Every plan includes \xA350 of AI credit a month for the AI site builder, funnels and guest reply drafts. It resets each billing month. If you use more, you can top up from \xA310, and top-ups never expire."],
@@ -15507,7 +15520,7 @@ var require_marketing = __commonJS({
       return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/direct-booking-website">Direct booking websites</a> \xB7 <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> \xB7 <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> \xB7 <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> \xB7 <a href="/guides">Free guides</a> \xB7 <a href="/help">Help</a> \xB7 <a href="/partners">Partner programme</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
     }
     module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
@@ -15942,6 +15955,12 @@ var require_stripe = __commonJS({
         return j;
       }
       const pence = (n) => Math.round(Number(n) * 100);
+      function appFee(amountPence) {
+        const S = cfg.stripe, commission = S.feePct ? Math.round(amountPence * S.feePct / 100) : 0;
+        const card = S.passFees ? Math.round(amountPence * S.cardFeePct / 100) + S.cardFeePence : 0;
+        const fee = Math.min(amountPence, commission + card);
+        return fee > 0 ? fee : void 0;
+      }
       return {
         get enabled() {
           return !!keyOf();
@@ -15957,7 +15976,7 @@ var require_stripe = __commonJS({
           return { id: a.id, charges: !!a.charges_enabled, payouts: !!a.payouts_enabled, details: !!a.details_submitted, bank: a.external_accounts && a.external_accounts.data && a.external_accounts.data[0] ? (a.external_accounts.data[0].bank_name || "Bank") + " \u2022\u2022" + a.external_accounts.data[0].last4 : null };
         },
         async checkoutBooking({ account, booking, property, email, successUrl, cancelUrl, meta }) {
-          const fee = cfg.stripe.feePct ? Math.round(pence(booking.total) * cfg.stripe.feePct / 100) : void 0;
+          const fee = appFee(pence(booking.total));
           const s = await api("POST", "/checkout/sessions", {
             mode: "payment",
             customer_email: email,
@@ -15977,7 +15996,7 @@ var require_stripe = __commonJS({
             success_url: successUrl,
             cancel_url: cancelUrl,
             line_items: [{ quantity: 1, price_data: { currency: "gbp", unit_amount: pence(amount), product_data: { name } } }],
-            payment_intent_data: { on_behalf_of: account, transfer_data: { destination: account }, metadata: meta },
+            payment_intent_data: { on_behalf_of: account, transfer_data: { destination: account }, application_fee_amount: appFee(pence(amount)), metadata: meta },
             metadata: meta
           });
           return { id: s.id, url: s.url };
@@ -15988,8 +16007,10 @@ var require_stripe = __commonJS({
           return { id: s.id, url: s.url };
         },
         async refund(paymentIntent, amount) {
-          return api("POST", "/refunds", { payment_intent: paymentIntent, amount: amount ? pence(amount) : void 0, reverse_transfer: true, refund_application_fee: true });
+          return api("POST", "/refunds", { payment_intent: paymentIntent, amount: amount ? pence(amount) : void 0, reverse_transfer: true, refund_application_fee: !cfg.stripe.passFees });
         },
+        // Stripe keeps its card fee on a refund, so the pass-through stays too
+        appFee,
         async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
           const P = cfg.stripe.prices, yearly = annual && P[plan + "Annual"];
           const price = yearly ? P[plan + "Annual"] : P[plan];
@@ -25848,7 +25869,7 @@ var require_server = __commonJS({
     function payPage(w, note) {
       const s = w.state, price = 197, ended = (w.row || {}).billing_status === "cancelled";
       const due = s.account.annual ? "\xA3" + price * 10 + (ended ? " for the year" : " for your first year") : "\xA3" + price + (ended ? " for the month" : " for your first month");
-      return authPage(ended ? "Restart your plan" : "Start your plan", (ended ? "<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay " + due + " to restart your plan. Everything you set up is still here.</p>" : "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>") + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
+      return authPage(ended ? "Restart your plan" : "Start your plan", (ended ? "<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay " + due + " to restart your plan. Everything you set up is still here.</p>" : "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>") + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
     }
     async function welcome(wid) {
       const w = await ws.open(wid);
@@ -26886,7 +26907,7 @@ Disallow: /
       const s = w.state;
       const price = 197;
       const status = { trial: "Not paid yet. Your booking site goes live to guests once your plan is paid", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
-      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking.</p></div>" + (stripe.enabled ? r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === "cancelled" ? "Restart your plan" : "Start your plan") + "</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added.</p></div>" + (stripe.enabled ? r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === "cancelled" ? "Restart your plan" : "Start your plan") + "</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
     }
     async function creditCard(w, sp) {
       const c = await credits.summary(w.id), rows = await credits.recent(w.id, 12), M = credits.money;

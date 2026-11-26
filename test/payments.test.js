@@ -53,6 +53,9 @@ test('a guest booking goes to Stripe Checkout and holds the dates', async () => 
   session = 'cs_test_' + (seen.indexOf(call) + 1); WS = call.body.get('metadata[workspace]');
   assert.equal(call.body.get('payment_intent_data[transfer_data][destination]'), 'acct_test1', 'money goes to the host');
   assert.equal(call.body.get('line_items[0][price_data][currency]'), 'gbp');
+  // Stripe takes its card fee from us on destination charges: the host pays it at cost (1.5% + 20p), never more.
+  const amt = +call.body.get('line_items[0][price_data][unit_amount]');
+  assert.equal(+call.body.get('payment_intent_data[application_fee_amount]'), Math.round(amt * 0.015) + 20);
   const b = (await t.call('/api/state')).body.state.bookings.find(x => x.id === bookingId);
   assert.equal(b.status, 'pending'); assert.equal(b.paid, false);
 });
@@ -73,4 +76,5 @@ test('cancelling a paid booking refunds the card', async () => {
   const r = await t.act('cancelBooking', bookingId); assert.equal(r.status, 200);
   const refund = await t.until(async () => seen.find(x => x.path === '/v1/refunds'));
   assert.ok(refund, 'refund requested from Stripe'); assert.equal(refund.body.get('payment_intent'), 'pi_123');
+  assert.equal(refund.body.get('reverse_transfer'), 'true'); assert.equal(refund.body.get('refund_application_fee'), 'false', 'Stripe keeps its card fee on a refund, so the pass-through stays');
 });
