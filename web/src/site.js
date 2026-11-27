@@ -13,7 +13,16 @@
     // One plan: a monthly price including VAT. No setup fee.
     { id: 'growth', name: 'Growth', price: 197, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
   ];
-  const ADDON = { name: 'Calendar sync add-on', price: 15 };
+  const ADDON = { name: 'All channels add-on', price: 15, all: 29 };
+  // What the add-on adds a month: £15 for dates on every site, £29 with prices and minimum stays too (instead, not on top).
+  const addonP = ob => ob.addon ? (ob.allCh ? ADDON.all : ADDON.price) : 0;
+  function addonCard(ob, u) {
+    const opt = (v, t, price, d) => '<button type="button" class="s-allch' + (ob.addon && !!ob.allCh === (v === 'prices') ? ' on' : '') + '" data-act="allch" data-v="' + v + '" aria-pressed="' + (ob.addon && !!ob.allCh === (v === 'prices')) + '"><b>' + t + ' <em>£' + price + '/mo</em></b><small>' + d + '</small></button>';
+    return '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional · from £' + ADDON.price + ' a month</span></b><em>List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites. A booking anywhere closes the dates everywhere, and every booking lands in your console. No channel manager to pay for.</em></span>' +
+      '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + !!ob.addon + '" aria-label="' + ADDON.name + '"></button></div>' +
+      (ob.addon ? '<div class="s-allchs">' + opt('dates', 'Dates on every site', ADDON.price, 'Open dates kept in step everywhere, plus calendar links.') + opt('prices', 'Dates and prices', ADDON.all, 'Also sends your prices and minimum stays to every site.') + '</div>' +
+        '<p class="s-addon-note">' + icon('check') + 'Added for £' + addonP(ob) + ' a month. Your homes are set up for every site automatically; you link Airbnb, Booking.com or Vrbo in your console.</p>' : '') + '</div>';
+  }
   const plan = id => PLANS.find(p => p.id === id) || PLANS[0];
   const perMonth = (p, annual) => annual ? Math.round(p.price * 10 / 12) : p.price;
   const gbp = n => '£' + n;
@@ -23,7 +32,7 @@
     lake: { label: 'Harbour cottage', note: 'Sea blues, clean type, harbour views', color: '#0F6E8C' },
     city: { label: 'Georgian townhouse', note: 'Honey stone, elegant type, city calm', color: '#8A5A2B' },
   };
-  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['google', 'Google AI Overviews']];
+  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['claude', 'Claude'], ['google', 'Google AI Overviews']];
   const STAY_TYPES = [['cabin', 'Cabin or lodge'], ['cottage', 'Country cottage'], ['beach', 'Seaside cottage'], ['city', 'City apartment'], ['farm', 'Barn conversion'], ['hut', 'Shepherd’s hut']];
   const FAQ = [
     ['Do I have to leave Airbnb or Vrbo?', 'No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (£15 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there.'],
@@ -366,7 +375,7 @@
         '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' No setup fee.</p>' +
         '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul>' +
         '<button class="btn ' + (p.hot ? 'accent' : '') + ' block lg" data-act="start" data-plan="' + p.id + '">' + p.cta + '</button></article>').join('') + '</div>' +
-      '<div class="s-addon"><span class="s-addon-ic">' + icon('sync') + '</span><div><b>Optional: ' + ADDON.name + ' <em>+£' + ADDON.price + ' a month</em></b><p>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Paste the calendar link and dates booked there are blocked on your site, so you never double book. Most hosts never need it.</p></div></div>' +
+      '<div class="s-addon"><span class="s-addon-ic">' + icon('sync') + '</span><div><b>Optional: ' + ADDON.name + ' <em>+£' + ADDON.price + ' a month, or £' + ADDON.all + ' with price sync</em></b><p>List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from your console. A booking anywhere closes the dates everywhere, so you never double book, and every booking lands in one calendar. With price sync, change your price once and every site updates. No channel manager to pay for.</p></div></div>' +
       '</div></section>';
   }
 
@@ -556,7 +565,7 @@
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     } else if (REAL()) {
       const a = ob.acct || {};
-      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url,
+      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, allChannels: ob.addon ? (ob.allCh ? 'prices' : 'dates') : '', property: buildData(ob), listing: ob.url,
         domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     }
@@ -573,7 +582,7 @@
         const data = buildData(ob);
         const on = CONNECT.filter(c => ob.conn[c[0]] === 'on').map(c => c[2]);
         if (on.length) BB.log('sync', 'Onboarding', 'Connected ' + on.join(' and ') + ' for ' + data.name + '.', null, ['Onboarding', 'Integrations']);
-        if (ob.addon) BB.log('system', 'Onboarding', 'Added the Calendar sync add-on (£15 a month) for ' + data.name + '. Paste a calendar link from your channel manager, Airbnb, Vrbo or Booking.com in Connections to block its dates.', null, ['Onboarding', 'Add-ons']);
+        if (ob.addon) { BB.log('system', 'Onboarding', 'Added the All channels add-on (£' + addonP(ob) + ' a month) for ' + data.name + '. Link Airbnb, Booking.com or Vrbo in Connections and every site stays in step.', null, ['Onboarding', 'Add-ons']); if (BB.act.joinAllChannels) BB.act.joinAllChannels(!!ob.allCh); }
         const p = BB.act.addProperty(data);
         ob.launched = p.id; ob.step = 8; inst.render(); window.scrollTo({ top: 0 });
       } else { t(); inst.render(); }
@@ -588,8 +597,8 @@
       ['Home', d.name ? esc(d.name) + (d.area ? '<em>' + esc(d.area) + '</em>' : '') : null, ob.step > 2],
       ['Look', ob.step > 3 || ob.step === 3 ? THEMES[ob.theme].label + ' theme' : null, ob.step > 3],
       ['Domain', ob.domain ? esc(ob.domain) : null, ob.step > 4],
-      ['Connected', ob.step >= 5 ? (conns.length ? conns.join(', ') : 'Nothing yet') + (ob.addon ? '<em>+ Calendar sync add-on</em>' : '') : null, ob.step > 5],
-      ['Plan', ob.step >= 6 ? p.name + ' · £' + (perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0)) + '/mo' + (ob.annual ? '<em>billed yearly</em>' : '') : null, ob.step > 6],
+      ['Connected', ob.step >= 5 ? (conns.length ? conns.join(', ') : 'Nothing yet') + (ob.addon ? '<em>+ All channels add-on</em>' : '') : null, ob.step > 5],
+      ['Plan', ob.step >= 6 ? p.name + ' · £' + (perMonth(p, ob.annual) + addonP(ob)) + '/mo' + (ob.annual ? '<em>billed yearly</em>' : '') : null, ob.step > 6],
     ].filter(r => !SETUP() || (r[0] !== 'Connected' && r[0] !== 'Plan'));
     return '<aside class="s-rail" aria-label="Your setup so far"><p class="eyebrow">Your site so far</p>' +
       miniSite({ theme: ob.theme, name: d.name || 'Your home', domain: ob.domain || (d.name ? slug(d.name) + '.co.uk' : 'yourhome.co.uk'), price: +d.nightly || null, save: d.nightly ? Math.round(+d.nightly * 3 * 0.142) : 0, cls: 's-rail-browser s-compact' }) +
@@ -659,9 +668,7 @@
                 '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">' + (REAL() ? 'You connect your real account securely from your console once you have signed up.' : 'Simulated sign-in for the demo.') + '</p></div>' : '') +
               '</div>';
           }).join('') +
-          '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional · £' + ADDON.price + ' a month</span></b><em>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
-            '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + ob.addon + '" aria-label="' + ADDON.name + '"></button></div>' +
-            (ob.addon ? '<p class="s-addon-note">' + icon('check') + 'Added for £' + ADDON.price + ' a month. Paste your calendar link in your console after launch.</p>' : '') + '</div>' +
+          addonCard(ob, u) +
           '</div>' +
           (ready ? '' : '<p class="s-fine">Connect Stripe so guests can pay you. It is the one thing a booking site needs.</p>') +
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
@@ -671,10 +678,10 @@
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
           '<span class="s-amt"><b class="num">£' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' No setup fee.</span>' +
           '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></button>').join('') + '</div>' +
-        (ob.addon ? '<p class="s-addon-note">' + icon('sync') + 'Plus the Calendar sync add-on, £' + ADDON.price + ' a month.</p>' : '') +
+        (ob.addon ? '<p class="s-addon-note">' + icon('sync') + 'Plus the ' + (ob.allCh ? 'All channels add-on with price sync' : 'All channels add-on') + ', £' + addonP(ob) + ' a month.</p>' : '') +
         '<form data-form="next" class="s-ob-form">' + navRow('Continue with ' + plan(ob.plan).name) + '</form>';
       case 7: {
-        const p = plan(ob.plan), on = CONNECT.filter(c => ob.conn[c[0]] === 'on'), total = perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0);
+        const p = plan(ob.plan), on = CONNECT.filter(c => ob.conn[c[0]] === 'on'), total = perMonth(p, ob.annual) + addonP(ob);
         if (ob.launchN >= 0) return '<h1 class="s-ob-h">Launching ' + esc(d.name) + '…</h1><p class="s-ob-sub">Hang tight. This is the part we do for you.</p>' +
           '<ul class="s-imp">' + LAUNCH.map((t, i) => '<li class="' + (i < ob.launchN ? 'done' : i === ob.launchN ? 'on' : '') + '"><span class="s-imp-ic">' + (i < ob.launchN ? icon('check') : i === ob.launchN ? '<i class="s-spin"></i>' : icon('spark')) + '</span><span><b>' + t + '</b><em>' + (i < ob.launchN ? 'Done' : i === ob.launchN ? 'Working…' : 'Waiting') + '</em></span></li>').join('') + '</ul>' +
           '<div class="s-prog s-prog-lg"><i style="width:' + (100 * ob.launchN / LAUNCH.length) + '%"></i></div>';
@@ -683,7 +690,7 @@
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' · ' + $(+d.nightly) + ' a night · sleeps ' + esc(d.sleeps) + ' · ' + esc(d.bedrooms) + ' bedrooms · ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
             '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\.site$/.test(ob.domain) ? 'Free address' : buying(ob) ? 'We register it in your name once your first payment goes through. ' + domainNote() : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
-            (SETUP() ? '' : '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
+            (SETUP() ? '' : '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the All channels add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' · £' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>') +
           '</dl>' +
           '<form data-form="launch" class="s-ob-form" novalidate>' + (SETUP() ? (buying(ob) || ob.acctErr ? '<div class="s-acct">' + (buying(ob) ? regFields(inst) : '') + (ob.acctErr ? '<p class="s-err" role="alert">' + esc(ob.acctErr) + '</p>' : '') + '</div>' : '') : REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (PAYFIRST() ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
@@ -731,7 +738,7 @@
       ['key', on('lock') ? 'Creates a unique door code when a guest finishes check-in' : 'Door codes start when you connect your lock', on('lock')],
       ['spark', 'Checks ChatGPT, Gemini, Perplexity and Google for ' + town(p.area) + ' every week', true, 'ai'],
       ['users', 'Adds every guest to your list after checkout and invites them back', true],
-    ].concat(ob.addon ? [['sync', 'Blocks dates booked elsewhere once you add your calendar link (Calendar sync add-on)', false]] : []);
+    ].concat(ob.addon ? [['sync', 'Sets your homes up for Airbnb, Booking.com, Vrbo and 70+ more sites (All channels add-on)', false]] : []);
     return '<div class="s-ob s-done"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home">' + BB.lockup() + '</button><span class="s-done-tag">' + BB.pill('good', 'Live') + '</span></div></header>' +
       '<div class="s-w s-done-in">' +
         '<div class="s-done-copy"><span class="s-burst">' + icon('check') + '</span><p class="eyebrow">' + esc(p.name) + '</p><h1 class="s-ob-h s-done-h">Your site is live.</h1>' +
@@ -746,7 +753,7 @@
 
   // Pay first: one screen with the plan and the account, then Stripe Checkout. Setting up the site comes after payment.
   function payStart(inst) {
-    const ob = inst.st.ob, p = plan(ob.plan), total = perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0), u = inst.uid;
+    const ob = inst.st.ob, p = plan(ob.plan), total = perMonth(p, ob.annual) + addonP(ob), u = inst.uid;
     const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Billing">' + [['m', 'Monthly'], ['y', 'Yearly, 2 months free']].map(([k, t]) => '<button type="button" role="tab" aria-selected="' + (ob.annual === (k === 'y')) + '" data-obbill="' + k + '">' + t + '</button>').join('') + '</div>';
     return '<div class="s-ob s-ob-pay"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
       '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Back to the home page</span><span class="s-exit-s">Exit</span></button></div></header>' +
@@ -756,10 +763,9 @@
         '<div class="s-obplans"><div class="s-obplan on"><span class="s-obplan-h"><b>' + p.name + '</b></span>' +
           '<span class="s-amt"><b class="num">£' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + (ob.annual ? 'Billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee. Cancel anytime.</span>' +
           '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></div></div>' +
-        '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional · £' + ADDON.price + ' a month</span></b><em>Only if you also take bookings on Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
-          '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + ob.addon + '" aria-label="' + ADDON.name + '"></button></div></div>' +
+        addonCard(ob, u) +
         '<form data-form="pay" class="s-ob-form" novalidate>' + acctFields(inst) +
-          '<div class="s-ob-nav"><span></span><button class="btn primary lg s-glow" type="submit"' + (ob.paying ? ' disabled' : '') + '>' + icon('lock') + (ob.paying ? 'Opening Stripe…' : 'Pay £' + (ob.annual ? (p.price * 10 + (ob.addon ? ADDON.price * 12 : 0)).toLocaleString('en-GB') + ' and start' : total + ' and start')) + '</button></div>' +
+          '<div class="s-ob-nav"><span></span><button class="btn primary lg s-glow" type="submit"' + (ob.paying ? ' disabled' : '') + '>' + icon('lock') + (ob.paying ? 'Opening Stripe…' : 'Pay £' + (ob.annual ? (p.price * 10 + addonP(ob) * 12).toLocaleString('en-GB') + ' and start' : total + ' and start')) + '</button></div>' +
           '<p class="s-fine">' + icon('lock') + 'You pay securely with Stripe. ' + (ob.annual ? 'The plan renews every year.' : 'The plan renews every month.') + ' Prices include VAT.</p></form>' +
       '</main></div></div>';
   }
@@ -831,7 +837,8 @@
         else if (a === 'sample') { ob.url = SAMPLES.airbnb.url; ob.urlErr = ''; ob.source = 'airbnb'; ob.step = 2; startImport(inst); inst.render(); }
         else if (a === 'back') { clearTimers(inst); if (ob.step === 2 && !ob.imported) ob.importedFrom = ''; ob.dState = ob.dState === 'checking' ? 'idle' : ob.dState; ob.conn = mapConn(ob.conn); ob.step = prevStep(ob.step); inst.render(); scrollTopOb(); }
         else if (a === 'pets') { ob.d.pets = !ob.d.pets; inst.render(); }
-        else if (a === 'addon') { ob.addon = !ob.addon; inst.render(); }
+        else if (a === 'addon') { ob.addon = !ob.addon; if (!ob.addon) ob.allCh = false; inst.render(); }
+        else if (a === 'allch') { ob.addon = true; ob.allCh = el.dataset.v === 'prices'; inst.render(); }
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
       });
       BB.on(root, 'click', '[data-theme-pick]', el => { inst.st.ob.theme = el.dataset.themePick; inst.render(); });

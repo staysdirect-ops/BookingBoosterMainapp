@@ -70,12 +70,27 @@ module.exports = function (cfg) {
     },
     async refund(paymentIntent, amount) { return api('POST', '/refunds', { payment_intent: paymentIntent, amount: amount ? pence(amount) : undefined, reverse_transfer: true, refund_application_fee: !cfg.stripe.passFees }); }, // Stripe keeps its card fee on a refund, so the pass-through stays too
     appFee,
-    async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
+    // The add-on price this account should pay: All channels (£29) replaces the calendar sync add-on (£15), never both.
+    addonPrice({ addon, tier, annual }) { const P = cfg.stripe.prices; if (!addon) return null; return tier === 'all' ? (annual ? P.allChannelsAnnual : P.allChannels) : (annual ? P.addonAnnual : P.addon); },
+    // Keeps a running subscription in step when the host adds, changes or drops the add-on from their console.
+    // Prorated, so they pay for the days they use. Returns what changed.
+    async syncAddon(customer, want) {
+      const P = cfg.stripe.prices; const ours = [P.addon, P.addonAnnual, P.allChannels, P.allChannelsAnnual].filter(Boolean);
+      const list = await api('GET', '/subscriptions', { customer, status: 'active', limit: 10 });
+      const sub = (list.data || [])[0]; if (!sub) return { changed: false, reason: 'no subscription' };
+      const items = (sub.items && sub.items.data) || []; const have = items.filter(it => it.price && ours.includes(it.price.id || it.price));
+      const pid = it => it.price.id || it.price;
+      if (want && have.length === 1 && pid(have[0]) === want) return { changed: false };
+      if (want && !have.some(it => pid(it) === want)) await api('POST', '/subscription_items', { subscription: sub.id, price: want, quantity: 1, proration_behavior: 'create_prorations' });
+      for (const it of have) if (pid(it) !== want) await api('DELETE', '/subscription_items/' + it.id, { proration_behavior: 'create_prorations' });
+      return { changed: true };
+    },
+    async subscribe({ customer, customerEmail, plan, addon, tier, annual, successUrl, cancelUrl, meta }) {
       // Annual billing (2 months free) uses the yearly prices; the add-on then bills yearly too, at 12 × £15.
       // No setup fee and no free month: the first month (or year) is paid at checkout, before the host sets anything up.
       const P = cfg.stripe.prices, yearly = annual && P[plan + 'Annual'];
       const price = yearly ? P[plan + 'Annual'] : P[plan]; if (!price) throw new Error('No Stripe price is set for the ' + plan + ' plan.');
-      const add = yearly ? P.addonAnnual : P.addon;
+      const add = tier === 'all' ? (yearly ? P.allChannelsAnnual : P.allChannels) || (yearly ? P.addonAnnual : P.addon) : yearly ? P.addonAnnual : P.addon;
       const items = [{ price, quantity: 1 }]; if (addon && add) items.push({ price: add, quantity: 1 });
       const s = await api('POST', '/checkout/sessions', { mode: 'subscription', customer: customer || undefined, customer_email: customer ? undefined : customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
       return { id: s.id, url: s.url };

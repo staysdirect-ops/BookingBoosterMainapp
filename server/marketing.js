@@ -4,7 +4,7 @@
 'use strict';
 const { esc } = require('./pages');
 
-const PRICE = { setup: 0, month: 197, year: 1970, addon: 15, homes: 3, aiCredit: 50 };
+const PRICE = { setup: 0, month: 197, year: 1970, addon: 15, allChannels: 29, homes: 3, aiCredit: 50 };
 const FAQ = [
   ['Do I have to leave Airbnb or Vrbo?', 'No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (£15 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there.'],
   ['How do guests pay?', 'By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout.'],
@@ -47,7 +47,8 @@ function jsonLd(base, co) {
   const org = { '@type': 'Organization', '@id': url + '#org', name: 'Bookingbooster', url, logo: base + '/assets/icons/icon-512.png', email: co.support,
     description: 'Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.', areaServed: { '@type': 'Country', name: 'United Kingdom' },
     contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: co.support, areaServed: 'GB', availableLanguage: 'en-GB' } };
-  org.sameAs = SOCIAL.map(x => x[1]);
+  // PROFILE_LINKS adds the profiles AI answers check a business against (Trustpilot, LinkedIn, Bing Places, Google Business Profile, Companies House).
+  org.sameAs = SOCIAL.map(x => x[1]).concat(co.profiles || []);
   org.knowsAbout = ['Direct booking websites', 'Holiday lets', 'Short-term lets', 'Search engine optimisation', 'Local SEO', 'Answer engine optimisation', 'Generative engine optimisation', 'Google AI Overviews', 'Guest email marketing'];
   org.slogan = 'Fill your calendar without the 15% fee.';
   if (co.name) org.legalName = co.name;
@@ -68,7 +69,8 @@ function jsonLd(base, co) {
       hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Bookingbooster pricing', itemListElement: [
         offer('Monthly plan', PRICE.month, 'MON', { description: 'No setup fee. Everything included for up to ' + PRICE.homes + ' homes. No commission. Cancel anytime.' }),
         offer('Yearly plan', PRICE.year, 'ANN', { description: 'The same plan paid yearly: two months free. No setup fee.' }),
-        offer('Calendar sync add-on', PRICE.addon, 'MON', { description: 'Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager.' }),
+        offer('All channels add-on', PRICE.addon, 'MON', { description: 'Lists your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites, with open dates kept in step everywhere.' }),
+        offer('All channels add-on with price sync', PRICE.allChannels, 'MON', { description: 'Everything in the All channels add-on, plus nightly prices and minimum stays sent to every site.' }),
       ] } },
     { '@type': 'FAQPage', '@id': url + '#faq', mainEntity: allFaq().map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
   ] };
@@ -94,7 +96,7 @@ function content(base, co) {
     '<h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => '<h3>' + esc(h) + '</h3><p>' + esc(p) + '</p>').join('') +
     '<h2>How it works</h2><ol>' + STEPS.map(([h, p]) => '<li><strong>' + esc(h) + '.</strong> ' + esc(p) + '</li>').join('') + '</ol>' +
     '<h2>Pricing</h2><p>One plan, done for you. £' + PRICE.month + ' a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to ' + PRICE.homes + ' homes.</p>' +
-    li(INCLUDED) + '<p>Optional calendar sync add-on: £' + PRICE.addon + ' a month.</p>' +
+    li(INCLUDED) + '<p>Optional All channels add-on, to list your homes on Airbnb, Booking.com, Vrbo and 70+ more sites from one calendar: £' + PRICE.addon + ' a month, or £' + PRICE.allChannels + ' with price sync.</p>' +
     '<h2>Questions hosts ask</h2>' + allFaq().map(([q, a]) => '<h3>' + esc(q) + '</h3><p>' + esc(a) + '</p>').join('') +
     '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p>' +
     '<p><a href="/direct-booking-website">Direct booking websites</a> · <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> · <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> · <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> · <a href="/guides">Free guides</a> · <a href="/help">Help</a> · <a href="/partners">Partner programme</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>' +
@@ -109,11 +111,11 @@ function llms(base, co) {
     '- Website: ' + base + '/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd’s huts)\n' +
     '- Price: £' + PRICE.month + ' a month, no setup fee. Or £' + PRICE.year.toLocaleString('en-GB') + ' a year paid yearly (two months free). All prices include VAT. Covers up to ' + PRICE.homes + ' homes.\n' +
     '- AI credit: £' + PRICE.aiCredit + ' a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from £10 never expire.\n' +
-    '- Calendar sync add-on: £' + PRICE.addon + ' a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
+    '- All channels add-on (lists homes on Airbnb, Booking.com, Vrbo and 70+ more, dates in step): £' + PRICE.addon + ' a month, or £' + PRICE.allChannels + ' with price sync\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: ' + co.support + '\n\n' +
     '## What is included\n\n' + INCLUDED.map(x => '- ' + x).join('\n') + '\n\n' +
     '## How it works\n\n' + STEPS.map(([h, p], i) => (i + 1) + '. ' + h + ': ' + p).join('\n') + '\n\n' +
     '## Questions\n\n' + allFaq().map(([q, a]) => '### ' + q + '\n\n' + a).join('\n\n') + '\n\n' +
-    '## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home\'s facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n' +
+    '## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home\'s facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity, Claude and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n' +
     '## Links\n\n- [Full text of our guides for AI assistants](' + base + '/llms-full.txt)\n- [Home and pricing](' + base + '/)\n- [Start a booking site](' + base + '/start)\n- [Live demo](' + base + '/demo)\n- [Help](' + base + '/help)\n- [Privacy notice](' + base + '/privacy)\n- [Terms of service](' + base + '/terms)\n' +
     require('./answers').list().map(x => '- [' + x.title + '](' + base + x.path + '): ' + x.description).join('\n') + '\n' +
     '- Social profiles: ' + SOCIAL.map(([n, u]) => '[' + n + '](' + u + ')').join(', ') + '\n';

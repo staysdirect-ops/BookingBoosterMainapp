@@ -91,3 +91,34 @@ test('a calendar export with trailing spaces or a byte-order mark still blocks i
   const t = '﻿BEGIN:VCALENDAR\r\nBEGIN:VEVENT \r\nDTSTART;VALUE=DATE:20261210 \r\nDTEND;VALUE=DATE:20261212\r\nSUMMARY:Reserved \r\nEND:VEVENT \r\nEND:VCALENDAR\r\n';
   assert.deepEqual(ical.parse(t), [{ from: '2026-12-10', to: '2026-12-12' }]);
 });
+
+test('All channels: switching on is checked on the server, and the Channex webhook needs its secret', async () => {
+  const { p } = await t.home();
+  assert.equal((await t.act('toggleIntegration', 'hub')).status, 400, 'switched with its own action, not the plain toggle');
+  assert.equal((await t.act('applyHubBooking', p.id, { ref: 'x', from: t.dateIn(5), to: t.dateIn(6) })).status, 403, 'only the server records bookings from other sites');
+  assert.equal((await t.call('/app/channels/sites', { body: { pid: p.id } })).status, 400, 'switch it on first');
+  await t.act('joinAllChannels', true);
+  const st = await state();
+  assert.equal(st.integrations.find(i => i.id === 'hub').connected, true);
+  assert.equal(st.account.tier, 'all'); assert.equal(st.account.addon, true);
+  assert.equal((await t.call('/app/channels/sites', { body: { pid: p.id } })).status, 409, 'not live on a server without a Channex key');
+  const hook = await fetch(t.base + '/webhooks/channex', { method: 'POST', headers: { 'content-type': 'application/json', 'x-bb-hook': 'wrong' }, body: '{"event":"booking_new"}' });
+  assert.equal(hook.status, 404);
+  await t.act('leaveAllChannels');
+  assert.ok(!(await state()).account.tier);
+});
+
+test('a site from the calendar list gets its own link and feed, and blocks the others', async () => {
+  const { p } = await t.home();
+  assert.equal((await t.act('addCalendarSite', 'hipcamp')).ok !== false, true);
+  cal['/hipcamp.ics'] = vcal([{ from: t.dateIn(70), to: t.dateIn(72) }]);
+  await t.act('setCalendarLink', 'hipcamp', p.id, link('/hipcamp.ics'));
+  assert.ok(await t.until(async () => (await blocksOf('hipcamp')).length), 'Hipcamp dates blocked here');
+  const feeds = (await t.call('/api/calendar-feeds')).body.feeds[0];
+  assert.match(feeds.channels.hipcamp, /\.hipcamp\.ics$/);
+  const own = (await t.call(new URL(feeds.channels.hipcamp).pathname)).body;
+  const airbnb = (await t.call(new URL(feeds.channels.airbnb).pathname)).body;
+  assert.doesNotMatch(own, new RegExp(D(t.dateIn(70))), 'Hipcamp never gets its own dates back');
+  assert.match(airbnb, new RegExp('DTSTART;VALUE=DATE:' + D(t.dateIn(70))), 'Airbnb sees the Hipcamp stay');
+  assert.equal((await t.call(new URL(feeds.url).pathname.replace(/\.ics$/, '.sawdays.ics'))).status, 404, 'a site not added has no feed');
+});

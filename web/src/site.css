@@ -635,6 +635,12 @@
 .x-site .s-conn-addon { border-style: dashed; }
 .x-site .s-conn-addon .s-conn-ic { background: var(--surface-2); color: var(--muted); }
 .x-site .s-conn-addon.on { border-style: solid; border-color: var(--primary); background: color-mix(in oklab, var(--primary-soft) 50%, var(--surface)); }
+.x-site .s-allchs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.x-site .s-allch { text-align: left; display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: inherit; font: inherit; cursor: pointer; }
+.x-site .s-allch.on { border-color: var(--primary); background: var(--primary-soft); }
+.x-site .s-allch em { font-style: normal; color: var(--primary); font-weight: 700; }
+.x-site .s-allch small { color: var(--muted); line-height: 1.35; }
+@media (max-width: 560px) { .x-site .s-allchs { grid-template-columns: minmax(0, 1fr); } }
 .x-site .s-addon-note { display: flex; gap: 8px; align-items: center; margin: 12px 0 0 58px; font-size: 14px; color: var(--primary); font-weight: 600; }
 .x-site .s-addon-note .ic { width: 16px; height: 16px; }
 .x-site .s-ob-main > .s-addon-note { margin: 14px 0 0; }

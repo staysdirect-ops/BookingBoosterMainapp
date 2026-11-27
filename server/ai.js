@@ -1,4 +1,4 @@
-// AI visibility checks: asks the real answer engines the questions travellers ask and records whether the host's
+// AI visibility checks: asks the real answer engines (ChatGPT, Gemini, Perplexity, Claude, Google) the questions travellers ask and records whether the host's
 // homes are named or linked. Each engine runs only when its API key is set; the rest are left as they were.
 'use strict';
 
@@ -26,6 +26,18 @@ module.exports = function (cfg) {
     perplexity: A.perplexity && (async q => {
       const j = await post('https://api.perplexity.ai/chat/completions', { authorization: 'Bearer ' + A.perplexity }, { model: A.perplexityModel, messages: [{ role: 'user', content: ask.replace('{q}', q) }] });
       return { text: ((j.choices || [])[0] || {}).message ? j.choices[0].message.content : '', urls: j.citations || (j.search_results || []).map(r => r.url) };
+    }),
+    // Claude (Anthropic) with its web search tool, the same way claude.ai answers a traveller who asks.
+    claude: A.anthropic && (async q => {
+      const j = await post((A.anthropicBase || 'https://api.anthropic.com') + '/v1/messages', { 'x-api-key': A.anthropic, 'anthropic-version': '2023-06-01' },
+        { model: A.anthropicModel, max_tokens: 4000, tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 3, user_location: { type: 'approximate', country: 'GB' } }], messages: [{ role: 'user', content: ask.replace('{q}', q) }] });
+      if (j.stop_reason === 'refusal') return { text: '', urls: [] };
+      const blocks = j.content || [];
+      const text = blocks.filter(c => c.type === 'text').map(c => c.text || '').join('');
+      // Cited sources first, then everything the search returned.
+      const cited = blocks.filter(c => c.type === 'text').flatMap(c => c.citations || []).map(c => c.url);
+      const found = blocks.filter(c => c.type === 'web_search_tool_result' && Array.isArray(c.content)).flatMap(c => c.content).map(r => r.url);
+      return { text, urls: [...new Set(cited.concat(found).filter(Boolean))] };
     }),
     // Google: the regular results page plus any AI Overview, through SerpAPI.
     google: A.serpapi && (async q => {

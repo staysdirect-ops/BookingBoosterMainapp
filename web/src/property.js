@@ -232,8 +232,17 @@
     ].filter(Boolean);
   }
 
+  // Dates a guest picked elsewhere (Google Vacation Rentals, a search ad, a shared link): ?checkin=YYYY-MM-DD&checkout=YYYY-MM-DD.
+  function linkSel(pid) {
+    try {
+      const q = new URLSearchParams(location.search), a = q.get('checkin'), b = q.get('checkout'), t = BB.store.get().today, ok = x => /^\d{4}-\d{2}-\d{2}$/.test(x || '');
+      if (ok(a) && ok(b) && a >= t && b > a && BB.q.isAvailable(pid, a, b)) return { a, b };
+    } catch (_) {}
+    return null;
+  }
   function defaultSel(pid) {
     const p = BB.q.property(pid); if (!p) return { a: null, b: null };
+    const fromLink = linkSel(pid); if (fromLink) return fromLink;
     const n = Math.max(p.minNights || 1, 3), t = BB.store.get().today;
     for (let d = D.add(t, 7); d < D.add(t, 150); d = D.add(d, 1)) if (BB.q.isAvailable(pid, d, D.add(d, n))) return { a: d, b: D.add(d, n) };
     return { a: null, b: null };

@@ -677,6 +677,55 @@
   .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* All channels: the headline add-on on Connections */
+.ag .ag-cx { padding: 20px; border: 1.5px solid color-mix(in oklab, var(--primary) 35%, var(--line)); background: linear-gradient(180deg, var(--primary-soft), var(--surface) 70%); display: grid; gap: 16px; }
+.ag .ag-cx.on { border-color: color-mix(in oklab, var(--good) 45%, var(--line)); }
+.ag .ag-cx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.ag .ag-cx-top h3 { margin: 4px 0 6px; font-size: 1.5rem; }
+.ag .ag-cx-top p { margin: 0; color: var(--muted); max-width: 60ch; }
+.ag .ag-cx-pros { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; }
+.ag .ag-cx-pros li { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.ag .ag-cx-pros li > svg { flex: none; width: 20px; height: 20px; color: var(--primary); margin-top: 2px; }
+.ag .ag-cx-pros b { display: block; }
+.ag .ag-cx-pros small { color: var(--muted); line-height: 1.4; }
+.ag .ag-cx-plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ag .ag-cx-plan { text-align: left; display: grid; gap: 4px; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
+.ag .ag-cx-plan:hover { border-color: var(--primary); }
+.ag .ag-cx-plan.on { border-color: var(--good); background: var(--good-soft); }
+.ag .ag-cx-plan b { font-size: 1.05rem; }
+.ag .ag-cx-price { font-family: var(--font-display); font-size: 1.6rem; }
+.ag .ag-cx-price small { font-size: .85rem; color: var(--muted); }
+.ag .ag-cx-plan > small { color: var(--muted); line-height: 1.4; }
+.ag .ag-cx-plan em { font-style: normal; font-weight: 600; color: var(--primary); display: inline-flex; gap: 6px; align-items: center; margin-top: 4px; }
+.ag .ag-cx-plan.on em { color: var(--good); }
+.ag .ag-cx-plan em svg { width: 16px; height: 16px; }
+.ag .ag-cx-homes { display: grid; gap: 8px; }
+.ag .ag-cx-home { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.ag .ag-cx-home > span:first-child { flex: 1 1 200px; min-width: 0; }
+.ag .ag-cx-home b { display: block; }
+.ag .ag-cx-home small { color: var(--muted); overflow-wrap: anywhere; }
+.ag .ag-cx-frame { display: grid; gap: 8px; }
+.ag .ag-cx-frame-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ag .ag-cx-frame iframe { width: 100%; min-height: 620px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.ag .ag-cx-recent { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ag .ag-cx-recent .eyebrow { flex-basis: 100%; }
+@container ag (max-width: 620px) {
+  .ag .ag-cx { padding: 14px; }
+  .ag .ag-cx-plans { grid-template-columns: minmax(0, 1fr); }
+  .ag .ag-cx-frame iframe { min-height: 520px; }
+}
+/* Official brand marks (web/src/logos.js): the mark in white on the brand colour, unaltered */
+.ag .ag-logo.ag-logo-b { background: var(--brand); color: #fff; }
+.ag .ag-logo.ag-logo-b svg { width: 20px; height: 20px; fill: currentColor; }
+.ag .ag-icard.off .ag-logo.ag-logo-b { filter: none; opacity: 1; }
+.ag .ag-cbtn { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--fg); font: 600 13px var(--font-body); cursor: pointer; }
+.ag .ag-cbtn:hover { border-color: var(--primary); }
+.ag .ag-cbtn .ag-logo { width: 26px; height: 26px; border-radius: 7px; font-size: 11px; }
+.ag .ag-cbtn .ag-logo svg { width: 15px; height: 15px; }
+.ag .ag-secure { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--good); }
+.ag .ag-secure svg { width: 14px; height: 14px; }
+.ag .ag-sitepick { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.ag .ag-sitepick .field { flex: 1 1 280px; }
 /* Site checklist: "Finish your website" (readyCard in app-grow.js, rules in site-ready.js) */
 .ag .ag-rd { border-color: color-mix(in oklab, var(--brand, #2747F5) 35%, transparent); }
 .ag .ag-rd-top { display: flex; align-items: center; gap: 14px; }

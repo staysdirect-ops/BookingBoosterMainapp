@@ -50,6 +50,10 @@ module.exports = {
   storage: SB_URL && SB_KEY && (SERVERLESS || E.USE_SUPABASE_STORAGE === '1') ? { url: SB_URL, key: SB_KEY, bucket: E.STORAGE_BUCKET || 'files' } : null,
   jobsKey: E.JOBS_KEY || '',
   secret: secret(),
+  // Bing Webmaster Tools meta tag code for the marketing site (Bing results feed ChatGPT search and Copilot).
+  bingVerification: String(E.BING_SITE_VERIFICATION || '').replace(/[^\w-]/g, ''),
+  // Comma-separated https profile URLs added to the company's sameAs in structured data.
+  profileLinks: String(E.PROFILE_LINKS || '').split(',').map(x => x.trim()).filter(x => /^https:\/\/[^\s"<>]+$/.test(x)),
   secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? 'https:' : '')),
   outreachTestOn: E.ALLOW_TEST_CLOCK === '1' ? String(E.OUTREACH_TEST_ON || '').split(',').map(x => x.trim()).filter(Boolean) : [], // tests only: switch outreach drafts on
   testClock: E.ALLOW_TEST_CLOCK === '1', // tests only: lets /admin/leads/run move the lead-email clock forward
@@ -67,7 +71,7 @@ module.exports = {
   company: { name: E.COMPANY_NAME || 'Bookingbooster Ltd', address: E.COMPANY_ADDRESS || 'Registered address to be confirmed', number: E.COMPANY_NUMBER || '', vat: E.VAT_NUMBER || '', support: E.SUPPORT_EMAIL || 'help@booking-booster.co.uk' },
   email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? 'resend' : E.POSTMARK_TOKEN ? 'postmark' : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || 'Bookingbooster <hello@booking-booster.co.uk>', guestFromDomain: E.GUEST_EMAIL_DOMAIN || 'mail.booking-booster.co.uk' },
   sms: { apiBase: E.SMS_API_BASE, sid: E.TWILIO_ACCOUNT_SID, token: E.TWILIO_AUTH_TOKEN, from: E.TWILIO_FROM },
-  stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : undefined, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: { Growth: E.STRIPE_PRICE_GROWTH, addon: E.STRIPE_PRICE_CALENDAR_SYNC,
+  stripe: { apiBase: E.STRIPE_API_BASE, key: stripeKeyName ? String(E[stripeKeyName]).trim() : undefined, keyName: stripeKeyName, webhookSecret: E.STRIPE_WEBHOOK_SECRET, connectWebhookSecret: E.STRIPE_CONNECT_WEBHOOK_SECRET, prices: { Growth: E.STRIPE_PRICE_GROWTH, addon: E.STRIPE_PRICE_CALENDAR_SYNC, allChannels: E.STRIPE_PRICE_ALL_CHANNELS, allChannelsAnnual: E.STRIPE_PRICE_ALL_CHANNELS_ANNUAL,
     GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL, addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL }, feePct: +(E.STRIPE_APPLICATION_FEE_PCT || 0),
     // Guest card fees, passed to the host at cost: on destination charges Stripe takes its fee from the platform.
     // Standard UK card pricing; STRIPE_PASS_CARD_FEES=0 switches it off.
@@ -79,6 +83,7 @@ module.exports = {
   credits: { enabled: E.AI_CREDITS !== 'off', monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
   // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
   google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
+  bing: { apiKey: E.BING_WEBMASTER_API_KEY, apiBase: E.BING_API_BASE },
   nuki: { token: E.NUKI_API_TOKEN },
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
   // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
@@ -86,4 +91,8 @@ module.exports = {
   // The bonus is capped at £50: a referred host must never cost more than £50 to win.
   affiliate: { bonus: Math.round(Math.max(0, Math.min(50, +(E.AFFILIATE_BONUS || 50))) * 100), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
   icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
+  googleVr: { partner: E.GOOGLE_VR_PARTNER || 'bookingbooster' }, // the partner name Google gives us in Hotel Center
+  // All channels (server/channex.js): Bookingbooster's own Channex account. Switches on by itself once CHANNEX_MIN_HOSTS
+  // hosts pay for the add-on (enough to cover Channex's monthly fee); CHANNEX_ALWAYS_ON=1 skips that wait.
+  channex: { key: (E.CHANNEX_API_KEY || '').trim(), base: E.CHANNEX_BASE || 'https://staging.channex.io', minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === '1', frameBase: E.CHANNEX_FRAME_BASE || '', hookSecret: E.CHANNEX_WEBHOOK_SECRET || '' },
 };

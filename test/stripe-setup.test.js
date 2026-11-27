@@ -25,12 +25,12 @@ const run = () => new Promise(res => execFile(process.execPath, [path.join(__dir
 
 test('creates monthly and yearly prices with VAT included (no setup fee), and both webhooks', async () => {
   const r = await run(); assert.equal(r.code, 0, r.err);
-  assert.equal(prices.length, 4); assert.ok(prices.every(p => p.tax === 'inclusive'));
+  assert.equal(prices.length, 6); assert.ok(prices.every(p => p.tax === 'inclusive'));
   const amt = k => prices.find(p => p.lookup_key === k).unit_amount;
-  assert.equal(amt('bb_growth_month_197'), 19700); assert.equal(amt('bb_growth_year_1970'), 197000); assert.equal(amt('bb_calendar_sync_year_180'), 18000);
+  assert.equal(amt('bb_growth_month_197'), 19700); assert.equal(amt('bb_growth_year_1970'), 197000); assert.equal(amt('bb_calendar_sync_year_180'), 18000); assert.equal(amt('bb_all_channels_month_29'), 2900); assert.equal(amt('bb_all_channels_year_348'), 34800);
   assert.ok(!prices.some(p => /setup/.test(p.lookup_key))); assert.doesNotMatch(r.out, /STRIPE_PRICE_SETUP/);
   assert.equal(hooks.length, 2); assert.ok(hooks.some(h => h.connect)); assert.ok(hooks.every(h => h.url === 'https://app.example.co.uk/webhooks/stripe'));
   assert.match(r.out, /STRIPE_PRICE_GROWTH_ANNUAL=price_\d/); assert.match(r.out, /STRIPE_CONNECT_WEBHOOK_SECRET=whsec_/);
-  const again = await run(); assert.equal(again.code, 0); assert.equal(prices.length, 4); assert.equal(products.length, 2); assert.equal(hooks.length, 2);
+  const again = await run(); assert.equal(again.code, 0); assert.equal(prices.length, 6); assert.equal(products.length, 3); assert.equal(hooks.length, 2);
   assert.match(again.out, /already existed/);
 });

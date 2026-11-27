@@ -94,13 +94,13 @@ test('an endpoint made before refunds were needed gets the new events added once
 
 test('a setup saved at the old £200 price gets new £197 prices once, and new checkouts use them', async () => {
   const db = fakeDb(); const { cfg, a } = mk('sk_live_price', db); await a.ensure();
-  const saved = JSON.parse(db.kv.get('config:stripe')); assert.equal(saved.amounts, 'GROWTH=197,CALENDAR_SYNC=15');
+  const saved = JSON.parse(db.kv.get('config:stripe')); assert.equal(saved.amounts, 'GROWTH=197,CALENDAR_SYNC=15,ALL_CHANNELS=29');
   // as saved before the price change: the old £200 prices, and no amounts
   saved.prices.STRIPE_PRICE_GROWTH = 'price_old200'; saved.prices.STRIPE_PRICE_GROWTH_ANNUAL = 'price_old2000'; delete saved.amounts;
   db.kv.set('config:stripe', JSON.stringify(saved)); cfg.stripe.prices.Growth = 'price_old200'; cfg.stripe.prices.GrowthAnnual = 'price_old2000';
   const before = prices.length; await a.ensure();
   const now = JSON.parse(db.kv.get('config:stripe'));
-  assert.equal(now.amounts, 'GROWTH=197,CALENDAR_SYNC=15');
+  assert.equal(now.amounts, 'GROWTH=197,CALENDAR_SYNC=15,ALL_CHANNELS=29');
   assert.equal(prices.find(p => p.id === now.prices.STRIPE_PRICE_GROWTH).lookup_key, 'bb_growth_month_197');
   assert.equal(prices.find(p => p.id === now.prices.STRIPE_PRICE_GROWTH_ANNUAL).lookup_key, 'bb_growth_year_1970');
   assert.equal(cfg.stripe.prices.Growth, now.prices.STRIPE_PRICE_GROWTH); assert.equal(cfg.stripe.prices.GrowthAnnual, now.prices.STRIPE_PRICE_GROWTH_ANNUAL);

@@ -221,14 +221,14 @@
     const ai = {
       checkedAt: '2026-11-14',
       questions: [
-        { q: 'cabin with hot tub in the Lake District', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: true, google: true } },
-        { q: 'dog friendly cabin near Windermere', propertyId: 'laurel', engines: { chatgpt: true, gemini: false, perplexity: true, google: true } },
-        { q: 'cottage with kayaks in St Ives', propertyId: 'lakeside', engines: { chatgpt: true, gemini: true, perplexity: false, google: true } },
-        { q: 'harbour cottage Cornwall with sea view', propertyId: 'lakeside', engines: { chatgpt: false, gemini: true, perplexity: false, google: false } },
-        { q: 'apartment in central Bath walkable', propertyId: 'loft', engines: { chatgpt: true, gemini: false, perplexity: false, google: true } },
-        { q: 'romantic weekend in Bath', propertyId: 'loft', engines: { chatgpt: false, gemini: false, perplexity: false, google: false } },
-        { q: 'family cabin Lake District with a stream', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: false, google: true } },
-        { q: 'pet friendly stay Lake District', propertyId: 'laurel', engines: { chatgpt: false, gemini: false, perplexity: true, google: false } },
+        { q: 'cabin with hot tub in the Lake District', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: true, claude: true, google: true } },
+        { q: 'dog friendly cabin near Windermere', propertyId: 'laurel', engines: { chatgpt: true, gemini: false, perplexity: true, claude: true, google: true } },
+        { q: 'cottage with kayaks in St Ives', propertyId: 'lakeside', engines: { chatgpt: true, gemini: true, perplexity: false, claude: false, google: true } },
+        { q: 'harbour cottage Cornwall with sea view', propertyId: 'lakeside', engines: { chatgpt: false, gemini: true, perplexity: false, claude: false, google: false } },
+        { q: 'apartment in central Bath walkable', propertyId: 'loft', engines: { chatgpt: true, gemini: false, perplexity: false, claude: false, google: true } },
+        { q: 'romantic weekend in Bath', propertyId: 'loft', engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false } },
+        { q: 'family cabin Lake District with a stream', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: false, claude: false, google: true } },
+        { q: 'pet friendly stay Lake District', propertyId: 'laurel', engines: { chatgpt: false, gemini: false, perplexity: true, claude: false, google: false } },
       ],
       tasks: [
         { id: 'faq-pets', text: 'Add a dog policy FAQ to Larch Fell', done: false, fixes: [1, 7] },

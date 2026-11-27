@@ -59,6 +59,8 @@ const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
 const seoTools = require('./seo-tools')(cfg);
 const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
+const ownSite = require('./own-site');
+const bing = require('./bing-webmaster')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
 const domains = require('./domains')({ cfg, auth, log });
@@ -77,6 +79,7 @@ const adminUsers = require('./admin-users');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const flows = require('./flows')({ db, cfg, msg, auth, ws, leads, hostMail, stripe, log }); // sales automation flows, /admin/flows
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
+const googleVr = require('./google-vr')({ cfg, ws, urls });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
 
 /* ---------------- http helpers ---------------- */
@@ -135,7 +138,7 @@ let marketingState = null;
 const marketing = () => marketingState || (marketingState = seedDemo());
 async function hostBoot(w, surface) {
   const s = w.state;
-  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain, support: cfg.company.support,
+  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, hub: effects.channex.pub(), aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain, support: cfg.company.support,
     ...hostLinks(w), aiEngines: ai.available(), test: testNotes() };
 }
 const SOON = ['cleaner', 'google', 'gsc', 'analytics', 'pricelabs']; // shown in live accounts as coming soon
@@ -175,6 +178,12 @@ async function autoIndex(w, o) {
         out.push({ ok: true, message: prop.name + ': sitemap submitted to Google.' }); }
       catch (e) { patch.google = { state: 'error', sitemap: sm, at: now, error: String(e.message).slice(0, 200) }; out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' }); }
     }
+    // Bing feeds ChatGPT search, Copilot, DuckDuckGo and other assistants. A site on our own address is part of our verified site.
+    if (bing.enabled) {
+      try { const r = await bing.submit(origin, sm, [site]); patch.bing = { state: r.state, sitemap: sm, at: now };
+        out.push({ ok: true, message: prop.name + ': ' + (r.state === 'submitted' ? 'sitemap submitted to Bing.' : 'Bing is checking the site. We submit the sitemap once it is verified.') }); }
+      catch (e) { patch.bing = { state: 'error', sitemap: sm, at: now, error: String(e.message).slice(0, 200) }; out.push({ ok: false, message: prop.name + ': Bing said "' + patch.bing.error + '".' }); }
+    }
     // IndexNow only when the page's words changed, as the protocol asks.
     const sig = crypto.createHash('sha1').update(seo.llms(s, prop, site)).digest('hex').slice(0, 16);
     if ((o && o.force) || (cur.indexnow || {}).sig !== sig) {
@@ -183,9 +192,31 @@ async function autoIndex(w, o) {
       patch.indexnow = { state: r.ok ? 'sent' : 'error', at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
       out.push({ ok: r.ok, message: prop.name + ': ' + r.message });
     }
+    // The host's own site hosted elsewhere: verified once the host has pasted our snippet or added the DNS records.
+    const ext = ownSite.originOf((prop.seo || {}).ownSite);
+    if (ext && ext !== origin && (google.enabled || bing.enabled)) {
+      const r = await ownSiteRun(ext); patch.own = Object.assign({ origin: ext, at: now }, r);
+      out.push({ ok: !r.error, message: prop.name + ' (' + new URL(ext).hostname + '): ' + r.message });
+    }
     if (Object.keys(patch).length) await ws.withWs(w.id, BB => BB.act.setIndexing(prop.id, patch), { quiet: true });
   }
   return out;
+}
+
+async function ownSiteCodes(ext) {
+  return { google: google.enabled ? await google.prepare(ext) : {}, bing: bing.enabled ? await bing.prepare(ext) : {} };
+}
+async function ownSiteRun(ext) {
+  try {
+    const codes = await ownSiteCodes(ext), found = await ownSite.check(ext, codes), r = { found };
+    if (google.enabled) r.google = (await google.submitExternal(ext, found.sitemap)).state;
+    if (bing.enabled) r.bing = (await bing.submit(ext, found.sitemap, [ext + '/'])).state;
+    const done = [r.google, r.bing].filter(Boolean), all = done.every(x => x === 'submitted');
+    r.message = all ? 'verified and sitemap submitted to ' + [r.google && 'Google', r.bing && 'Bing'].filter(Boolean).join(' and ') + '.'
+      : !found.reached ? 'we could not open the site. We try again tomorrow.'
+      : 'waiting for the snippet or DNS records. We check again every day.';
+    return r;
+  } catch (e) { log('own site', ext, e.message); return { error: String(e.message).slice(0, 200), message: 'the search engines said "' + String(e.message).slice(0, 120) + '". We retry daily.' }; }
 }
 
 // Search health tools in the console: what the site sends crawlers, AI-written drafts and IndexNow pings.
@@ -199,7 +230,17 @@ async function seoApi(req, res, p, m, w, live, headers) {
   const key = seo.indexNowKey(cfg.secret, w.id), keyUrl = onPath ? cfg.baseUrl + '/s/' + w.slug + '/' + key + '.txt' : root + key + '.txt';
   if (p === '/api/seo/files' && m === 'GET') {
     return json(res, { site, sitemap: onPath ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : root + 'sitemap.xml', robots: root + 'robots.txt', llmsUrl: onPath ? site + '/llms.txt' : root + 'llms.txt', keyUrl,
-      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled }, 200, headers);
+      jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled, bing: live && bing.enabled }, 200, headers);
+  }
+  // The snippet and DNS records for the host's own site hosted elsewhere.
+  if (p === '/api/seo/own-site' && m === 'GET') {
+    const ext = ownSite.originOf((prop.seo || {}).ownSite); if (!ext) throw err(400, 'Add your website address first.');
+    const llmsUrl = onPath ? site + '/llms.txt' : root + 'llms.txt';
+    if (!live) return json(res, Object.assign(ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, { google: { meta: 'demo-google-code', txt: 'google-site-verification=demo-google-code', domain: new URL(ext).hostname.replace(/^www\./, '') }, bing: { code: 'DEMOBINGCODE' } }), { demo: true }), 200, headers);
+    if (!google.enabled && !bing.enabled) return json(res, Object.assign(ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, {}), { off: true }), 200, headers);
+    if (!auth.limit('own-site:' + w.id, 30, 3600e3)) throw err(429, 'Too many requests. Try again in a few minutes.');
+    try { return json(res, ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, await ownSiteCodes(ext)), 200, headers); }
+    catch (e) { log('own site kit', e.message); throw err(502, 'Google or Bing did not answer just now. Try again in a minute.'); }
   }
   if (p === '/api/seo/write' && m === 'POST') {
     const what = String(j.what || ''); if (!['summary', 'area', 'meta', 'faqs'].includes(what)) throw err(400, 'Unknown draft');
@@ -228,7 +269,7 @@ async function seoApi(req, res, p, m, w, live, headers) {
 async function sitePage(res, w, p, canonical, host, req) {
   const s = w.state; if (req && w.kind === 'live') visits.count(req, w.id, p.id, s.today);
   // A site on its own address carries our Google verification tag on its home page, so we can submit it to Search Console.
-  const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : '';
+  const gsv = host ? (google.enabled ? await google.metaTag(new URL(canonical).origin) : '') + (bing.enabled ? await bing.metaTag(new URL(canonical).origin) : '') : '';
   const built = studio.publishedSite(w, p, canonical); // a site designed and published in the Site builder
   if (built) return send(res, 200, gsv ? built.replace('<head>', '<head>' + gsv) : built, 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   const st = pub.siteState(s, p.id);
@@ -363,7 +404,7 @@ async function signup(req, res) {
   const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
   if (b.property && b.property.name) await addFirstHome(wid, b, { name, email, business: a.business }, wantsBuy);
   // Pay first sends only the account: the plan choices still go to checkout.
-  if (b.addon || b.annual) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; BB.store.commit({}); });
+  if (b.addon || b.annual || b.allChannels) await ws.withWs(wid, BB => { const a = BB.store.get().account; if (b.addon) a.addon = true; if (b.annual) a.annual = true; if (b.allChannels) BB.act.joinAllChannels(b.allChannels === 'prices'); BB.store.commit({}); });
   await ws.setMeta(wid, { plan, billing_status: 'trial' });
   await aff.attach(wid, ref);
   const token = await auth.startSession(uid), set = { 'set-cookie': cookie('bb_s', token, 30 * 86400) };
@@ -421,7 +462,7 @@ const needsSetup = async (req, w) => w.kind === 'live' && !w.state.properties.le
 // Plan checkout: the first month (or year) is paid today. Back to /app/pay/done, which confirms it without waiting for the webhook.
 async function planCheckout(w) {
   const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
-  return stripe.subscribe({ customer: r.stripe_customer || undefined, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
+  return stripe.subscribe({ customer: r.stripe_customer || undefined, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, tier: w.state.account.tier, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + '/app/pay/done?session={CHECKOUT_SESSION_ID}', cancelUrl: cfg.baseUrl + '/app/pay', meta: { workspace: w.id, kind: 'plan', plan } });
 }
 // The plan is paid (from the webhook or the return from Checkout, whichever comes first): open the console and say welcome once.
 async function planPaid(wid, customer, plan) {
@@ -439,13 +480,19 @@ async function mustPay(req, w) {
   const r = await ws.row(w.id); if (r && !offPlan(r.billing_status)) return false;
   return !await isAdmin(req);
 }
+// The add-on line on the payment and billing pages. All channels (£29) replaces the calendar sync add-on (£15).
+function addonLine(s) {
+  if (!s.account.addon) return '';
+  const all = s.account.tier === 'all', m = all ? 29 : 15;
+  return '<p style="margin:6px 0 0">Plus ' + (all ? 'All channels, with dates and prices kept in step on every booking site' : 'the calendar sync add-on') + ', ' + (s.account.annual ? '£' + m * 12 + ' a year' : '£' + m + ' a month') + '.</p>';
+}
 function payPage(w, note) {
   const s = w.state, price = 197, ended = (w.row || {}).billing_status === 'cancelled';
   const due = s.account.annual ? '£' + price * 10 + (ended ? ' for the year' : ' for your first year') : '£' + price + (ended ? ' for the month' : ' for your first month');
   return authPage(ended ? 'Restart your plan' : 'Start your plan', (ended ? '<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay ' + due + ' to restart your plan. Everything you set up is still here.</p>'
     : '<h1>One step left</h1><p>Pay ' + due + ' to open your console and start setting up ' + E((s.properties[0] || {}).name || s.account.business) + '.</p>') +
     (note ? '<p class="ok" role="status">' + E(note) + '</p>' : '') +
-    '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? 'the year' : 'the first month') + ' today, then it renews automatically. No commission on any booking. Guest card fees are passed on at Stripe’s cost (about 1.5% + 20p per payment), with nothing added. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '</div>' +
+    '<div class="card"><b>' + E(s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? 'the year' : 'the first month') + ' today, then it renews automatically. No commission on any booking. Guest card fees are passed on at Stripe’s cost (about 1.5% + 20p per payment), with nothing added. Cancel anytime.</p>' + addonLine(s) + '</div>' +
     '<form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form>' +
     '<div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div>' +
     '<form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
@@ -461,7 +508,7 @@ async function welcome(wid) {
 const CLEAR_OFFLINE = '<script>try{caches.keys().then(function(k){k.forEach(function(n){if(n.indexOf("bb-app")===0)caches.delete(n)})})}catch(e){}</script>';
 const authPage = (title, inner, wide, index) => pages.plain({ title, body: inner, wide, index });
 // Company details we show in public. Placeholders such as "to be confirmed" are left out.
-const publicCompany = () => { const c = cfg.company; return { name: c.name, number: c.number || '', vat: c.vat || '', address: /to be confirmed/i.test(c.address || '') ? '' : (c.address || ''), support: c.support }; };
+const publicCompany = () => { const c = cfg.company; return { name: c.name, number: c.number || '', vat: c.vat || '', address: /to be confirmed/i.test(c.address || '') ? '' : (c.address || ''), support: c.support, profiles: cfg.profileLinks }; };
 const E = pages.esc;
 function loginForm(o) {
   o = o || {};
@@ -477,7 +524,7 @@ const GUIDES_A = ['direct-booking-playbook.pdf', 'direct-booking-launch-checklis
 async function route(req, res) {
   await db.ready;
   await stripeAuto.load(); // Stripe prices and webhook secrets kept in the database
-  const u = new URL(req.url, 'http://x'); const p = u.pathname; const m = req.method;
+  const u = new URL(req.url, 'http://x'); const p = u.pathname; const m = req.method; let mm0;
   const host = String(req.headers.host || '').toLowerCase();
   if (m === 'POST' && !p.startsWith('/webhooks/') && !p.startsWith('/u/') && p !== '/api/leads' && !sameOrigin(req)) return json(res, { error: 'Cross-site request blocked' }, 403);
 
@@ -519,6 +566,20 @@ async function route(req, res) {
   if (p === '/app/sw.js') return file(res, path.join(ROOT, 'web'), 'sw.js', 'no-cache', { 'service-worker-allowed': '/app' });
   if (p === '/app/offline') return send(res, 200, authPage('Offline', '<h1>You are offline.</h1><p>Bookingbooster needs a connection to load your bookings. It will open again as soon as you have signal.</p><p><a href="/app/phone">Try again</a></p>'), 'text/html; charset=utf-8');
   if (p === '/webhooks/stripe' && m === 'POST') return await stripeWebhook(req, res);
+  // Google Vacation Rentals: the daily listing feed (a ZIP), the Point of Sale file, and the landing link guests arrive on.
+  if ((mm0 = p.match(/^\/feeds\/google-vr\/([a-f0-9]+)\/(listings\.zip|pos\.xml)$/))) {
+    const a = Buffer.from(mm0[1]), b = Buffer.from(googleVr.key()); if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return notFound(res);
+    if (mm0[2] === 'pos.xml') return send(res, 200, googleVr.pos(), 'application/xml; charset=utf-8', { 'cache-control': 'no-store' });
+    return send(res, 200, await googleVr.feedZip(), 'application/zip', { 'cache-control': 'no-store', 'content-disposition': 'attachment; filename="listings.zip"' });
+  }
+  if ((mm0 = p.match(/^\/go\/vr\/([^/]+)$/))) { const to = await googleVr.landing(decodeURIComponent(mm0[1]), u.searchParams); return to ? redirect(res, to) : notFound(res); }
+  // Channex tells us a booking came in on one of the sites; we read the details back from its feed.
+  if (p === '/webhooks/channex' && m === 'POST') {
+    await jsonBody(req, 2e5).catch(() => null);
+    if (!effects.channex.hookOk(req.headers['x-bb-hook'])) return notFound(res);
+    effects.channex.pull().catch(e => log('channex hook', e.message));
+    return json(res, { ok: true });
+  }
 
   /* public guest API (any host) */
   let mm;
@@ -571,9 +632,9 @@ async function route(req, res) {
   }
   // <token>.ics carries direct bookings and blocks made here; <token>.<calendar>.ics (for example .airbnb.ics) also
   // carries the dates read from every other calendar, so Airbnb, Vrbo and Booking.com block each other through us.
-  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z]+))?\.ics$/))) {
+  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z0-9]+))?\.ics$/))) {
     const r = await ws.bySlug(mm[1]); const pid = decodeURIComponent(mm[2]);
-    if (!r || !auth.verify(mm[3], 'ical', r.id, pid) || (mm[4] && !ical.CHANNELS.includes(mm[4]))) return send(res, 404, 'Not found', 'text/plain');
+    if (!r || !auth.verify(mm[3], 'ical', r.id, pid)) return send(res, 404, 'Not found', 'text/plain');
     const w = await ws.open(r.id); w.catchUp(); const f = ical.feed(w.state, pid, MAIN_HOST, mm[4]); if (!f) return send(res, 404, 'Not found', 'text/plain');
     return send(res, 200, f, 'text/calendar; charset=utf-8', { 'cache-control': 'no-cache', 'content-disposition': 'inline; filename="' + pid + '.ics"' });
   }
@@ -710,7 +771,7 @@ async function route(req, res) {
       annual: q('annual') === '1', addon: q('addon') === '1', ref: aff.cookieCode(req), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q('email')) ? q('email') : '', name: q('name'), business: q('business') } : {};
     const co = publicCompany();
     return send(res, 200, pages.page({ title: p === '/start' ? 'Start your booking site · Bookingbooster' : mkt.TITLE, description: mkt.DESCRIPTION,
-      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
+      head: mkt.head(cfg.baseUrl, p) + (p === '/' ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : '') + (bing.enabled ? await bing.metaTag(new URL(cfg.baseUrl).origin) : '') + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : '') : ''), content: p === '/' ? mkt.content(cfg.baseUrl, co) : '',
       boot: { mode: 'marketing', state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: '/api/signup', dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: '/api/domains/search', payFirst: stripe.enabled, loggedIn: !!await me(req) } }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
   }
   if (m === 'GET' && Object.hasOwn(answers.PAGES, p)) { const a = answers.render(cfg.baseUrl, p); return send(res, 200, pages.plain({ title: a.title, head: a.head, body: a.body, wide: 'read', index: true }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' }); }
@@ -880,7 +941,7 @@ async function route(req, res) {
     if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');
-      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing', 'teamLaunch', 'teamReturn'].includes(name)) throw err(403, 'That action is not available in a live account.');
+      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyHubBooking', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing', 'teamLaunch', 'teamReturn'].includes(name)) throw err(403, 'That action is not available in a live account.');
       if (name === 'toggleIntegration' && j.args) {
         const iid = j.args[0], cur = w.state.integrations.find(i => i.id === iid);
         if (!cur) throw err(404, 'Unknown connection');
@@ -889,6 +950,7 @@ async function route(req, res) {
         if (iid === 'lock' && cur.connected) await secrets.del(w.id, 'nuki');
         if (iid === 'sms' && !cur.connected && !cfg.sms.sid) { /* allowed: texts stay in the outbox until Twilio keys are set */ }
         if (cur.api && !cur.connected) throw err(400, 'Add your ' + cur.name + ' key to connect it.');
+        if (cur.hub) throw err(400, 'Use the All channels switch in Connections.');
         if (cur.addon && !cur.api && !cur.connected) throw err(400, 'Paste a calendar link to turn on calendar sync.');
         if (cur.api && cur.connected) await effects.channels.disconnect(w, iid); // reopens the dates we closed there and forgets the key
       }
@@ -955,8 +1017,17 @@ async function route(req, res) {
     if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
-    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
+    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.icalIds(w.state).map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
     // Calendar sync add-on: connect a channel manager with the host's own API key (kept encrypted, never sent to the browser).
+    // The Channex screen where the host links their Airbnb, Booking.com or Vrbo account to one home.
+    if (p === '/app/channels/sites' && m === 'POST') {
+      const j = await jsonBody(req, 2e3); const pid = String(j.pid || '');
+      if (!w.state.properties.some(x => x.id === pid)) throw err(404, 'Home not found');
+      const i = w.state.integrations.find(x => x.id === 'hub'); if (!i || !i.connected) throw err(400, 'Switch on All channels first.');
+      if (!(await effects.channex.gate()).live) throw err(409, 'All channels is not switched on yet. Your homes are set up the moment it is.');
+      if (!auth.limit('cx:' + w.id, 20, 600e3)) throw err(429, 'Too many tries. Wait a few minutes and try again.');
+      try { return json(res, { url: await effects.channex.connectUrl(w, pid) }); } catch (e) { throw err(e.status === 409 ? 409 : 502, 'The channel connection ' + e.message); }
+    }
     if (p === '/app/channel/connect' && m === 'POST') {
       const j = await jsonBody(req, 4e3); const id = String(j.id || ''); const A = effects.channels.ADAPTERS[id];
       if (!A) throw err(404, 'Unknown channel manager');
@@ -1212,7 +1283,7 @@ async function deleteWorkspace(wid) {
 async function billingPage(w, sp) {
   const r = await ws.row(w.id); const s = w.state; const price = 197;
   const status = { trial: 'Not paid yet. Your booking site goes live to guests once your plan is paid', active: 'Active', past_due: 'Payment failed. Update your card so Stripe can take it again', cancelled: 'Cancelled' }[r.billing_status] || 'Not paid yet';
-  return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? '£180 a year' : '£15 a month') + '.</p>' : '') + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking. Guest card fees are passed on at Stripe’s cost (about 1.5% + 20p per payment), with nothing added.</p></div>' +
+  return authPage('Plan and billing', '<h1>Plan and billing</h1><p>' + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + ' plan · ' + (s.account.annual ? '£' + price * 10 + ' a year' : '£' + price + ' a month') + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? 'year' : 'month') + '. Cancel anytime.</p>' + addonLine(s) + '<p style="margin:6px 0 0">Status: ' + E(status) + '. No commission on any booking. Guest card fees are passed on at Stripe’s cost (about 1.5% + 20p per payment), with nothing added.</p></div>' +
     (stripe.enabled ? (r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === 'cancelled' ? 'Restart your plan' : 'Start your plan') + '</button></form>') : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') +
     (credits.enabled ? await creditCard(w, sp) : '') +
     '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
@@ -1276,6 +1347,8 @@ async function runTick(t) {
   bg('campaigns', campaigns.run(t));
   bg('flows', flows.run(t));
   bg('stripe', stripeAuto.ensure(t)); // creates the Stripe prices and webhooks once a key is set
+  const cx = effects.channex;
+  if (cx.ready()) { const g = await cx.gate(ical); if (g.live) { bg('channex feed', cx.pull()); if (daily || ical) bg('channex hook', cx.ensureHook()); } }
   for (const id of await ws.liveIds()) {
     try {
       const w = await ws.open(id); if (!w) continue;
@@ -1283,6 +1356,7 @@ async function runTick(t) {
       const exp = w.state.bookings.filter(b => b.status === 'pending' && b.holdUntil && b.holdUntil < t).map(b => b.id);
       if (rolled || exp.length) await ws.withWs(id, BB => exp.forEach(bid => BB.act.expirePending(bid)), { scheduler: true });
       if (ical) bg('ical', effects.calendars(w));
+      if (ical && cx.ready()) { const i = w.state.integrations.find(x => x.id === 'hub'); if (i && i.connected) bg('hub', cx.run(w)); }
       if (daily && w.kind === 'live') bg('index', autoIndex(w).catch(e => log('index', id, e.message)));
       if (daily && ai.available().length) { const c = w.state.ai.checkedAt; if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg('ai', effects.aiCheck(w)); }
     } catch (e) { log('job', id, e.message); }
@@ -1290,7 +1364,7 @@ async function runTick(t) {
   if (last.domains === t) { bg('domains', checkDomains()); bg('registrar', registrar.due()); }
   if (daily) bg('renewals', registrar.renewals(t));
   if (last.events === t && cfg.events.crawl) bg('events', eventFinder.due(cfg.serverless ? 2 : 4, cfg.serverless ? 100e3 : 240e3));
-  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); }
+  if (daily) { bg('demos', ws.cleanupDemos(7)); bg('ids', purgeIds()); bg('indexnow', pingOwnPages()); bg('bing', submitOwnSite()); }
   if (!cfg.serverless) bg('backup', backup.run(t)); // once a day: skips when today's copy exists
   await Promise.all(jobs); await ws.settle();
   return { ok: true, ical, daily };
@@ -1307,6 +1381,13 @@ async function pingOwnPages() {
   const row = await kvGet.get('indexnow:own'); if (row && row.v === sig) return;
   const r = await fetch('https://api.indexnow.org/indexnow', { method: 'POST', signal: AbortSignal.timeout(15000), headers: { 'content-type': 'application/json; charset=utf-8' }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + '/' + ownIndexKey() + '.txt', urlList: urls }) });
   log('indexnow', 'own pages', r.status); if (r.status === 200 || r.status === 202) await kvSet.run('indexnow:own', sig);
+}
+
+// Our own site in Bing Webmaster Tools: verified with the same API key, sitemap submitted daily. It covers every
+// host site on our address (/s/<slug>/), which our sitemap lists.
+async function submitOwnSite() {
+  const u = new URL(cfg.baseUrl); if (!bing.enabled || u.protocol !== 'https:' || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+  try { const r = await bing.submit(u.origin, cfg.baseUrl + '/sitemap.xml', [cfg.baseUrl + '/']); log('bing', 'own site', r.state); } catch (e) { log('bing', 'own site', e.message); }
 }
 
 // ID photos are deleted 30 days after checkout (or when the booking is cancelled).
