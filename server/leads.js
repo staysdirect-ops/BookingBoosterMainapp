@@ -22,7 +22,7 @@ const time = ms => fmt(ms, { hour: '2-digit', minute: '2-digit', hour12: false }
 
 // Which series a form starts. A form can also name one with a hidden input: <input type="hidden" name="sequence" value="fee">
 function pick(kind, d) {
-  const k = String(d.sequence || '').toLowerCase(); if (['fee', 'audit', 'call', 'webinar', 'site', 'apply'].includes(k)) return k;
+  const k = String(d.sequence || '').toLowerCase(); if (['fee', 'audit', 'call', 'webinar', 'site', 'apply', 'guide'].includes(k)) return k;
   const s = (String(d.page || '') + ' ' + String(kind || '')).toLowerCase();
   if (/book-call|walkthrough/.test(s)) return 'call';
   if (/fee-leak|optin/.test(s)) return 'fee';

@@ -14700,6 +14700,8 @@ var require_config = __commonJS({
       legalReviewed: /^\d{4}-\d{2}-\d{2}$/.test(E.LEGAL_REVIEWED || "") ? E.LEGAL_REVIEWED : "",
       // the date a solicitor signed off /privacy and /terms
       backupKeep: Math.max(1, +(E.BACKUP_KEEP || 14)),
+      manychat: { secret: (E.MANYCHAT_SECRET || "").trim() },
+      // shared secret ManyChat sends as X-BB-Key (docs/manychat/README.md)
       leads: { from: E.LEADS_FROM || "", signoff: E.LEADS_SIGNOFF || "The Bookingbooster team" },
       company: { name: E.COMPANY_NAME || "Bookingbooster Ltd", address: E.COMPANY_ADDRESS || "Registered address to be confirmed", number: E.COMPANY_NUMBER || "", vat: E.VAT_NUMBER || "", support: E.SUPPORT_EMAIL || "help@booking-booster.co.uk" },
       email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? "resend" : E.POSTMARK_TOKEN ? "postmark" : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || "Bookingbooster <hello@booking-booster.co.uk>", guestFromDomain: E.GUEST_EMAIL_DOMAIN || "mail.booking-booster.co.uk" },
@@ -17386,9 +17388,55 @@ var require_credits = __commonJS({
   }
 });
 
+// server/manychat.js
+var require_manychat = __commonJS({
+  "server/manychat.js"(exports, module) {
+    var crypto = __require("node:crypto");
+    var GUIDES = {
+      playbook: { file: "direct-booking-playbook.pdf", title: "The Direct Booking Playbook" },
+      leak: { file: "fee-leak-worksheet.pdf", title: "Fee Leak Worksheet" },
+      templates: { file: "guest-message-template-pack.pdf", title: "Guest Message Template Pack" },
+      audit: { file: "ai-search-self-audit.pdf", title: "AI Search Self-Audit" },
+      aiguide: { file: "get-found-in-ai-search.pdf", title: "Get Recommended by AI" },
+      checklist: { file: "direct-booking-launch-checklist.pdf", title: "7-Day Direct Booking Launch Checklist" },
+      website: { file: "direct-booking-website-must-haves.pdf", title: "Direct Booking Website Scorecard" },
+      repeat: { file: "repeat-guest-engine.pdf", title: "The Repeat Guest Engine" },
+      swipe: { file: "repeat-guest-swipe-file.pdf", title: "Repeat Guest Swipe File" }
+    };
+    var CHANNELS = ["instagram", "facebook", "messenger", "whatsapp", "tiktok"];
+    var yes = (v) => v === true || /^(1|y|yes|true|on|ok|sure)$/i.test(String(v == null ? "" : v).trim());
+    module.exports = function({ cfg }) {
+      function allowed(req) {
+        const want = String(cfg.manychat.secret || ""), got = String(req.headers["x-bb-key"] || "");
+        if (want.length < 16 || got.length !== want.length) return false;
+        return crypto.timingSafeEqual(Buffer.from(got), Buffer.from(want));
+      }
+      function parse(d) {
+        const email = String(d.email || "").trim().slice(0, 160);
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { error: "Enter a valid email." };
+        const key = String(d.guide || "").trim().toLowerCase().replace(/[^a-z]/g, "");
+        const guide = GUIDES[key] ? Object.assign({ key, url: cfg.baseUrl + "/guides/" + GUIDES[key].file }, GUIDES[key]) : null;
+        const channel = CHANNELS.includes(String(d.channel || "").toLowerCase()) ? String(d.channel).toLowerCase() : "dm";
+        const data = { page: "manychat-" + channel, channel, consent: yes(d.consent) ? "yes" : "no" };
+        if (guide) {
+          data.sequence = "guide";
+          data.guide = guide.key;
+        }
+        ["topic", "homes", "town", "subscriber_id", "instagram", "phone"].forEach((k) => {
+          if (d[k] != null && String(d[k]).trim()) data[k] = String(d[k]).trim().slice(0, 300);
+        });
+        return { lead: { email, name: String(d.name || "").trim().slice(0, 120), kind: guide ? "manychat-guide" : "manychat-" + (data.topic ? "sales" : "contact"), data }, guide };
+      }
+      return { GUIDES, allowed, parse, enabled: () => String(cfg.manychat.secret || "").length >= 16 };
+    };
+    module.exports.GUIDES = GUIDES;
+  }
+});
+
 // server/lead-emails.js
 var require_lead_emails = __commonJS({
   "server/lead-emails.js"(exports, module) {
+    var { GUIDES } = require_manychat();
     var pounds = (n) => "\xA3" + Math.round(n).toLocaleString("en-GB");
     module.exports = function(t) {
       const growth = { label: "Start Growth", href: t.app("/start?plan=Growth") };
@@ -17499,6 +17547,75 @@ var require_lead_emails = __commonJS({
             body: () => ["This month\u2019s tip: " + tip.text].concat(tip.more || []),
             cta: () => ({ label: "See how Bookingbooster does it", href: t.app("/demo") })
           })))
+        },
+        /* ---------- Free guides asked for in a DM (ManyChat, server/manychat.js) ---------- */
+        // G1 delivers the guide to everyone who asked. G2 to G4 only go to people who said yes to tips by email in the DM (PECR).
+        guide: {
+          name: "Free guide (DM)",
+          vars: (d) => {
+            const g = GUIDES[d.guide] || GUIDES.playbook;
+            return { guide_title: g.title, guide_url: t.guide(g.file), consent: d.consent === "yes" ? "yes" : "no", channel: d.channel || "dm" };
+          },
+          steps: [
+            {
+              key: "G1",
+              when: (c) => c.start,
+              subject: (v) => "Your copy: " + v.guide_title,
+              preview: "The download link you asked for in our DMs.",
+              body: (v) => [
+                "Thanks for messaging us. Here is " + v.guide_title + ", as promised.",
+                "It is a PDF, so you can save it to your phone or print it. The link keeps working, so you can come back to it."
+              ],
+              cta: (v) => ({ label: "Download " + v.guide_title, href: v.guide_url }),
+              after: (v) => [
+                v.consent === "yes" ? "Over the next week we will send three short emails on getting more bookings direct. You can unsubscribe from any of them in one click." : "That is the only email you will get from us unless you ask for more.",
+                "Got a question? Reply to this email and a person will answer."
+              ]
+            },
+            {
+              key: "G2",
+              when: (c) => c.v.consent === "yes" ? t.dayAt(c.start, 2) : false,
+              subject: "Where direct bookings actually come from",
+              preview: "Three places, in this order.",
+              body: () => [
+                "Direct bookings come from three places. In this order:",
+                { list: [
+                  "<b>Past guests.</b> They already trust you. A good email at the right time does more than any ad.",
+                  "<b>Google.</b> People search \u2018dog friendly cottage near Padstow\u2019, not your name. Local pages win those searches.",
+                  "<b>AI answers.</b> More travellers now ask ChatGPT or Google\u2019s AI Overview where to stay. If your site is not clear and well reviewed, you are not in the answer."
+                ] },
+                "A website on its own does none of this. It is the place the three sources send people to."
+              ],
+              cta: () => tour,
+              ai: true
+            },
+            {
+              key: "G3",
+              when: (c) => c.v.consent === "yes" ? t.dayAt(c.start, 5) : false,
+              subject: "Do I have to leave Airbnb?",
+              preview: "No. Here is how hosts use both.",
+              body: () => [
+                "The question we hear most in our DMs: \u2018Do I have to leave Airbnb?\u2019",
+                "No. Platforms are good at finding first-time guests. Keep them for that. The aim is to make the second booking, and the Google search, come to you direct.",
+                "If you want to stay on the platforms too, the optional All channels add-on (from \xA315 a month) lists your homes on Airbnb, Booking.com, Vrbo and more from one calendar, so you never double book."
+              ],
+              cta: () => ({ label: "See how Growth works", href: t.app("/pricing") })
+            },
+            {
+              key: "G4",
+              when: (c) => c.v.consent === "yes" ? t.dayAt(c.start, 8) : false,
+              subject: "Your direct booking site, set up for you",
+              preview: "Growth: \xA3197 a month, no setup fee, cancel anytime.",
+              body: () => [
+                "If the guide was useful, here is the simplest way to put it into practice.",
+                "Growth: \xA3197 a month, no setup fee. We build your booking site on your own domain and set up payments, deposits and check-in. Then every month we write new local SEO pages, fix your AI visibility gaps and write and send your guest campaigns.",
+                { list: ["Setup done for you", "No commission on bookings", "Cancel anytime", "Prices include VAT"] },
+                "At Airbnb\u2019s 15.5% host fee, about \xA31,270 of bookings a month moved direct covers the plan. Estimate only."
+              ],
+              cta: () => ({ label: "Start Growth for \xA3197 a month", href: growth.href }),
+              after: ["That is the last email in this series. Thanks for reading."]
+            }
+          ]
         },
         /* ---------- Funnel 2: free AI visibility audit ---------- */
         audit: {
@@ -17873,7 +17990,7 @@ var require_leads = __commonJS({
     var time = (ms) => fmt(ms, { hour: "2-digit", minute: "2-digit", hour12: false });
     function pick(kind, d) {
       const k = String(d.sequence || "").toLowerCase();
-      if (["fee", "audit", "call", "webinar", "site", "apply"].includes(k)) return k;
+      if (["fee", "audit", "call", "webinar", "site", "apply", "guide"].includes(k)) return k;
       const s = (String(d.page || "") + " " + String(kind || "")).toLowerCase();
       if (/book-call|walkthrough/.test(s)) return "call";
       if (/fee-leak|optin/.test(s)) return "fee";
@@ -26515,6 +26632,7 @@ var require_server = __commonJS({
     var bing = require_bing_webmaster()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
+    var manychat = require_manychat()({ cfg });
     var domains = require_domains()({ cfg, auth, log });
     var registrar = require_registrar()({ cfg, db, ws, stripe, domains, log });
     var backup = require_backup()({ db, cfg, log });
@@ -27264,6 +27382,7 @@ Disallow: /
         effects.channex.pull().catch((e) => log("channex hook", e.message));
         return json(res, { ok: true });
       }
+      if (p === "/webhooks/manychat" && m === "POST") return await manychatLead(req, res);
       let mm;
       if (mm = p.match(/^\/api\/public\/([a-z0-9-]+)\/(.+)$/)) {
         const r = await ws.bySlug(mm[1]);
@@ -28172,6 +28291,18 @@ Disallow: /
         return await adminPage(req, res, mm[2] === "stop" ? "Emails stopped." : "Sent.", "leads");
       }
       return notFound(res);
+    }
+    var mcIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at, source, consent_at, has_email) VALUES (?, ?, ?, ?, ?, 'manychat', ?, 1)");
+    async function manychatLead(req, res) {
+      if (!manychat.enabled() || !manychat.allowed(req)) return json(res, { error: "Not allowed" }, 401);
+      if (!auth.limit("manychat", 600, 36e5)) return json(res, { error: "Too many requests" }, 429);
+      const r = manychat.parse(await jsonBody(req, 2e4));
+      if (r.error) return json(res, { ok: false, error: r.error }, 400);
+      const { lead: l, guide } = r, now = Date.now();
+      const leadId = Number((await mcIns.run(l.kind, l.email, l.name, JSON.stringify(l.data), now, l.data.consent === "yes" ? new Date(now).toISOString().slice(0, 10) : null)).lastInsertRowid);
+      if (await leads.start(leadId, l.kind, l.email, l.data)) ws.defer(leads.advance(leadId), "leads");
+      msg.sendEmail({ to: cfg.company.support, subject: "New ManyChat lead (" + (guide ? guide.title : l.data.topic || "DM") + "): " + l.email, text: JSON.stringify(Object.assign({ email: l.email, name: l.name }, l.data), null, 2), meta: { lead: l.kind } });
+      json(res, { ok: true, lead_id: leadId, guide_title: guide ? guide.title : "", guide_url: guide ? guide.url : "", signup_url: cfg.baseUrl + "/start?plan=Growth&utm_source=" + l.data.channel + "&utm_medium=dm&utm_campaign=manychat" });
     }
     async function lead(req, res) {
       const cors = { "access-control-allow-origin": "*", "access-control-allow-methods": "POST", "access-control-allow-headers": "content-type" };

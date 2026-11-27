@@ -79,6 +79,8 @@ Anyone can join at `/partners` and gets a link (`/r/<code>`) and a code. A host 
 
 The marketing sites in `marketing/web-email/sites` (Ledger and Done-for-you) and the four lead pages in `marketing/funnels` (fee leak opt-in, AI audit request, call booking and webinar sign-up) load `https://booking-booster.co.uk/embed/forms.js`. The mock checkout pages do not, because real payments go through Stripe. That script sends every valid form (email plus any other answers, the page it came from and UTM tags) to `/api/leads`. The page's own thank-you message still shows. Each lead is saved and emailed to `SUPPORT_EMAIL`. People whose email is listed in `ADMIN_EMAILS` can see all leads and host accounts at `/admin`. If the app lives somewhere other than `booking-booster.co.uk`, change the script address in those pages.
 
+Instagram and Messenger DMs come in through ManyChat: its External Request posts to `/webhooks/manychat` (locked with `MANYCHAT_SECRET`, sent as the `X-BB-Key` header), which saves the lead with source `manychat`, emails the free guide the person asked for and answers with the guide link for the DM. Setup, flows and costs: [docs/manychat](docs/manychat/README.md).
+
 ## Lead follow-up emails
 
 Every lead form starts its own email series (`server/lead-emails.js`), signed by `LEADS_SIGNOFF` and sent from `LEADS_FROM` (or `EMAIL_FROM`):

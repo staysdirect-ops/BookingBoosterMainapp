@@ -67,6 +67,7 @@ module.exports = {
     renewal: E.DOMAIN_RENEWAL === 'charge' ? 'charge' : 'included', renewalPrice: num(E.DOMAIN_RENEWAL_PRICE, 0) },
   legalReviewed: /^\d{4}-\d{2}-\d{2}$/.test(E.LEGAL_REVIEWED || '') ? E.LEGAL_REVIEWED : '', // the date a solicitor signed off /privacy and /terms
   backupKeep: Math.max(1, +(E.BACKUP_KEEP || 14)),
+  manychat: { secret: (E.MANYCHAT_SECRET || '').trim() }, // shared secret ManyChat sends as X-BB-Key (docs/manychat/README.md)
   leads: { from: E.LEADS_FROM || '', signoff: E.LEADS_SIGNOFF || 'The Bookingbooster team' },
   company: { name: E.COMPANY_NAME || 'Bookingbooster Ltd', address: E.COMPANY_ADDRESS || 'Registered address to be confirmed', number: E.COMPANY_NUMBER || '', vat: E.VAT_NUMBER || '', support: E.SUPPORT_EMAIL || 'help@booking-booster.co.uk' },
   email: { apiBase: E.EMAIL_API_BASE, provider: E.RESEND_API_KEY ? 'resend' : E.POSTMARK_TOKEN ? 'postmark' : null, resendKey: E.RESEND_API_KEY, postmarkToken: E.POSTMARK_TOKEN, from: E.EMAIL_FROM || 'Bookingbooster <hello@booking-booster.co.uk>', guestFromDomain: E.GUEST_EMAIL_DOMAIN || 'mail.booking-booster.co.uk' },
