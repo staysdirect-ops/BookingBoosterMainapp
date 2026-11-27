@@ -24,6 +24,7 @@ test.before(async () => {
   const base = 'http://localhost:' + mock.address().port;
   t = await start({ GOOGLE_SERVICE_ACCOUNT_JSON: Buffer.from(JSON.stringify(SA)).toString('base64'), GOOGLE_OAUTH_URL: base + '/token', GOOGLE_API_BASE: base });
   await t.signup();
+  await t.launch();
 });
 test.after(() => { t.stop(); mock.close(); });
 

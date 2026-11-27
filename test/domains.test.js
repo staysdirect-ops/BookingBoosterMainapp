@@ -13,7 +13,7 @@ const setDns = o => fs.writeFileSync(dnsFile, JSON.stringify(o));
 let t;
 const get = (host, p) => new Promise((res, rej) => http.get({ host: 'localhost', port: t.port, path: p || '/', headers: { host } }, r => { let b = ''; r.on('data', c => b += c); r.on('end', () => res({ status: r.statusCode, body: b, location: r.headers.location })); }).on('error', rej));
 
-test.before(async () => { setDns({}); t = await start({ ALLOW_TEST_CLOCK: '1', DNS_FAKE_FILE: dnsFile, CUSTOM_DOMAIN_TARGET: 'sites.booking-booster.co.uk', CUSTOM_DOMAIN_IPS: '203.0.113.7' }); await t.signup(); });
+test.before(async () => { setDns({}); t = await start({ ALLOW_TEST_CLOCK: '1', DNS_FAKE_FILE: dnsFile, CUSTOM_DOMAIN_TARGET: 'sites.booking-booster.co.uk', CUSTOM_DOMAIN_IPS: '203.0.113.7' }); await t.signup(); await t.launch(); });
 test.after(() => t.stop());
 
 test('a domain stays offline until its records are in place, then goes live', async () => {

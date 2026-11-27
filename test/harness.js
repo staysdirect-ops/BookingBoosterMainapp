@@ -65,9 +65,36 @@ const start = module.exports = async function start(env = {}) {
   async function home() { const boot = (await call('/api/state')).body; const p = boot.state.properties[0]; const url = boot.siteUrls[p.id]; return { p, url, slug: new URL(url).pathname.split('/')[2], state: boot.state }; }
   // Runs SQL on the test server's database (Postgres syntax, ? for each argument).
   const sql = async (q, ...args) => { const r = await fetch(base + '/test/sql', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q, args }) }); const j = await r.json(); if (!r.ok) throw new Error(j.error || 'SQL failed'); return j.rows; };
+  // Marks every home live, as if its site checklist were done (web/src/site-ready.js), for tests about live sites.
+  async function launch() {
+    for (const r of await sql("SELECT id, state FROM workspaces WHERE kind = 'live'")) {
+      const s = JSON.parse(r.state); let changed = false;
+      (s.properties || []).forEach(p => { if (p.launch && p.launch.state !== 'live') { p.launch.state = 'live'; changed = true; } });
+      if (changed) await sql('UPDATE workspaces SET state = ?, version = version + 1 WHERE id = ?', JSON.stringify(s), r.id);
+    }
+  }
+  // Works through the site checklist for real as the host, then presses Go live (sends the "site is live" email).
+  // Card payouts are marked connected in the saved state, as Stripe's return would do.
+  async function finish(pid) {
+    const st = (await call('/api/state')).body.state; pid = pid || st.properties[0].id;
+    if (!st.integrations.find(i => i.id === 'stripe').connected) {
+      for (const r of await sql("SELECT id, state FROM workspaces WHERE kind = 'live'")) {
+        const s = JSON.parse(r.state); if (!(s.properties || []).some(p => p.id === pid)) continue;
+        s.integrations.find(i => i.id === 'stripe').connected = true;
+        await sql('UPDATE workspaces SET state = ?, version = version + 1 WHERE id = ?', JSON.stringify(s), r.id);
+      }
+    }
+    await act('updateProperty', pid, { photos: Array.from({ length: 10 }, (_, i) => ({ url: 'https://img.example/' + i + '.jpg' })), amenities: ['Hot tub', 'Log burner', 'Dogs welcome', 'Parking', 'Fast Wi-Fi', 'Sea view'],
+      address: '4 Henrietta Street, Whitby YO22 4DW', entry: 'Key safe by the front door', headline: 'A harbour cottage below the abbey', sub: 'Sleeps 4 · dogs welcome · near the beach',
+      about: Array.from({ length: 64 }, (_, i) => ['bright', 'cottage', 'harbour', 'views'][i % 4]).join(' ') });
+    await act('addFaqs', pid, [{ q: 'Are dogs allowed?', a: 'Yes.' }, { q: 'Is there parking?', a: 'One permit.' }, { q: 'Is there a hot tub?', a: 'Yes, in the yard.' }]);
+    await act('updateSeo', pid, { summary: 'A dog friendly two bedroom harbour cottage with a hot tub in Whitby, two minutes from the beach and the abbey steps.' });
+    const r = await act('goLive', pid); if (!r.body.result || !r.body.result.ok) throw new Error('goLive failed: ' + JSON.stringify(r.body.result || r.body));
+    return r;
+  }
   const dateIn = n => { const d = new Date(); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
   function stop() { srv.stop(); fs.rmSync(data, { recursive: true, force: true }); }
-  return { base, port, data, call, act, until, signup, home, dateIn, stop, sql, get cookie() { return cookie; } };
+  return { base, port, data, call, act, until, signup, home, launch, finish, dateIn, stop, sql, get cookie() { return cookie; } };
 };
 
 module.exports.spawnServer = spawnServer;

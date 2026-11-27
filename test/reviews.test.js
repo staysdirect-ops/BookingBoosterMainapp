@@ -5,7 +5,7 @@ const assert = require('node:assert');
 const start = require('./harness');
 
 let t;
-test.before(async () => { t = await start(); await t.signup(); });
+test.before(async () => { t = await start(); await t.signup(); await t.launch(); });
 test.after(() => t.stop());
 
 async function stay(name, email, from) {

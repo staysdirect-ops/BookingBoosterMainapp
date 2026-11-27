@@ -5,7 +5,7 @@ const assert = require('node:assert');
 const start = require('./harness');
 
 let t, home;
-test.before(async () => { t = await start(); await t.signup(); home = await t.home(); });
+test.before(async () => { t = await start(); await t.signup(); await t.launch(); home = await t.home(); });
 test.after(() => t.stop());
 
 const book = (input, kind) => fetch(t.base + '/api/public/' + home.slug + '/book', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ input: Object.assign({ propertyId: home.p.id, adults: 2 }, input), kind }) }).then(r => r.json());

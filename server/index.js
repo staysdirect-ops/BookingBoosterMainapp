@@ -157,6 +157,10 @@ function publicBoot(w, mode, extra) {
 const offPlan = st => !st || st === 'trial' || st === 'cancelled';
 function unpaid(w) { if (!stripe.enabled || w.kind !== 'live') return false; return offPlan((w.row || {}).billing_status); }
 async function hiddenFrom(req, w) { if (!unpaid(w)) return false; const s = await me(req); return !(s && s.workspace_id === w.id); }
+// A home still "building" (site-ready.js) is offline too, except to its own host and the team, who see a preview.
+const building = p => !!(p && p.launch && p.launch.state && p.launch.state !== 'live');
+async function previewer(req, w) { const s = await me(req); return !!s && (s.workspace_id === w.id || await isAdminEmail(s.email)); }
+async function closedFrom(req, w, p) { return await hiddenFrom(req, w) || (building(p) && !await previewer(req, w)); }
 function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming soon', body: '<h1>' + E(w.state.account.business) + ' is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>' }), 'text/html; charset=utf-8', { 'retry-after': '86400', 'x-robots-tag': 'noindex', 'cache-control': 'no-store' }); }
 // Search engines, with no sign-in for the host: every live home's site is submitted to Google Search Console through our
 // service account (verified with a meta tag we serve), and Bing, Yandex, Seznam and Naver hear about changes via IndexNow.
@@ -164,7 +168,7 @@ function comingSoon(res, w) { return send(res, 503, pages.plain({ title: 'Coming
 function sitemapOf(w, site) { return site.includes('/s/' + w.slug + '/') ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : new URL(site).origin + '/sitemap.xml'; }
 async function autoIndex(w, o) {
   const s = w.state, out = [], now = new Date().toISOString();
-  for (const prop of s.properties.filter(x => x.published !== false)) {
+  for (const prop of s.properties.filter(x => x.published !== false && !building(x))) {
     // The daily run waits for the host's own photos: a site still showing drawings is not worth a first crawl.
     // Submit now in the console still sends it straight away.
     if (!(o && o.force) && !(prop.photos || []).some(x => x && x.url)) continue;
@@ -273,7 +277,7 @@ async function sitePage(res, w, p, canonical, host, req) {
   send(res, 200, pages.page({
     title: seo.titleOf(p), description: seo.descOf(p), head: gsv + seo.head(s, p, canonical), content: seo.content(s, p, canonical),
     boot: publicBoot(w, 'site', { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
-    banner: stripeReady(w) ? null : (w.kind === 'live' ? null : '<b>Demo</b> No real bookings are taken here.'),
+    banner: building(p) ? '<b>Preview</b> Only you can see this. ' + E(p.name) + ' goes live when its site checklist is done.' : stripeReady(w) ? null : (w.kind === 'live' ? null : '<b>Demo</b> No real bookings are taken here.'),
   }), 'text/html; charset=utf-8', { 'cache-control': 'no-cache' });
 }
 function tripPage(res, w, b, k, step) {
@@ -730,7 +734,7 @@ async function route(req, res) {
     if (host.startsWith('www.')) return send(res, 301, '', 'text/plain', { location: 'https://' + dom.host + req.url });
     const w = await ws.open(dom.workspace_id); w.catchUp(); const prop = w.state.properties.find(x => x.id === dom.property_id);
     if (!prop) return notFound(res);
-    if (await hiddenFrom(req, w)) return comingSoon(res, w);
+    if (await closedFrom(req, w, prop)) return comingSoon(res, w);
     const canonical = 'https://' + host.replace(/:\d+$/, '') + '/';
     if (p === '/robots.txt') return send(res, 200, seo.robots(canonical + 'sitemap.xml'), 'text/plain; charset=utf-8');
     if (p === '/sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, [[prop, canonical]], [canonical + 'llms.txt']), 'application/xml');
@@ -749,8 +753,9 @@ async function route(req, res) {
     if (!prop) return notFound(res);
     if (await hiddenFrom(req, w)) return comingSoon(res, w);
     const canonical = cfg.baseUrl + '/s/' + w.slug + '/' + prop.id;
+    if (mm[3] === '/sitemap.xml' || mm[2] === 'sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, w.state.properties.filter(x => !building(x)).map(x => [x, cfg.baseUrl + '/s/' + w.slug + '/' + x.id])), 'application/xml');
+    if (building(prop) && !await previewer(req, w)) return comingSoon(res, w);
     if (mm[3] === '/llms.txt' || mm[2] === 'llms.txt') return send(res, 200, seo.llms(w.state, prop, canonical), 'text/plain; charset=utf-8');
-    if (mm[3] === '/sitemap.xml' || mm[2] === 'sitemap.xml') return send(res, 200, seo.sitemapFor(w.state, w.state.properties.map(x => [x, cfg.baseUrl + '/s/' + w.slug + '/' + x.id])), 'application/xml');
     if (!mm[2]) return redirect(res, canonical);
     return await sitePage(res, w, prop, canonical, null, req);
   }
@@ -776,7 +781,7 @@ async function route(req, res) {
   if (p === '/sitemap.xml') {
     // Privacy and terms join the sitemap once a solicitor has reviewed them (LEGAL_REVIEWED); until then they say Draft and stay out of search.
     const list = [{ loc: cfg.baseUrl + '/' }, { loc: cfg.baseUrl + '/help' }, { loc: cfg.baseUrl + '/partners' }].concat(answers.list().map(x => ({ loc: cfg.baseUrl + x.path }))).concat(cfg.legalReviewed ? [{ loc: cfg.baseUrl + '/privacy' }, { loc: cfg.baseUrl + '/terms' }] : []);
-    for (const id of await ws.liveIds()) { const w = await ws.open(id); if (unpaid(w)) continue; for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
+    for (const id of await ws.liveIds()) { const w = await ws.open(id); if (unpaid(w)) continue; for (const x of w.state.properties) if (x.published !== false && !building(x)) list.push({ loc: urls.site(w, x), lastmod: w.state.today }); }
     return send(res, 200, seo.sitemap(list.filter(x => x.loc.startsWith(cfg.baseUrl))), 'application/xml');
   }
   if (p === '/llms.txt') return send(res, 200, mkt.llms(cfg.baseUrl, publicCompany()), 'text/plain; charset=utf-8');
@@ -807,6 +812,7 @@ async function route(req, res) {
     }
     return notFound(res);
   }
+  if (p === '/admin/sites' || p.startsWith('/admin/sites/')) { if (!await isAdmin(req)) return notFound(res); if (await sitesAdmin(req).route(req, res, p, m, u) === false) return notFound(res); return; }
   if (p === '/admin/outreach' || p.startsWith('/admin/outreach/')) { if (!await isAdmin(req)) return notFound(res); if (await outreachAdmin({ db, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody })(req, res, p, m, u) === false) return notFound(res); return; }
   if (p === '/admin/flows/run' && m === 'POST' && cfg.testClock && await isAdmin(req)) { const b = await jsonBody(req, 1e3); return json(res, { sent: await flows.run(+b.at || Date.now(), true) }); } // test servers only
   if (p === '/admin/flows' || p.startsWith('/admin/flows/')) { if (!await isAdmin(req)) return notFound(res); return await flowsAdmin({ flows, E, ui: adminUi, email: async () => ((await me(req)) || {}).email, send, redirect, formBody })(req, res, p, m); }
@@ -937,7 +943,7 @@ async function route(req, res) {
     if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');
-      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyHubBooking', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing'].includes(name)) throw err(403, 'That action is not available in a live account.');
+      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyHubBooking', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing', 'teamLaunch', 'teamReturn'].includes(name)) throw err(403, 'That action is not available in a live account.');
       if (name === 'toggleIntegration' && j.args) {
         const iid = j.args[0], cur = w.state.integrations.find(i => i.id === iid);
         if (!cur) throw err(404, 'Unknown connection');
@@ -1065,6 +1071,7 @@ async function leadImportPost(req, res) {
 const isAdminEmail = async email => { email = String(email || '').toLowerCase(); if (!email) return false; if (cfg.admins.includes(email)) return true;
   const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return !!r && String(r.v).toLowerCase().split(/[\s,]+/).includes(email); };
 const isAdmin = async req => { const u = await me(req); return isAdminEmail(u && u.email); };
+const sitesAdmin = req => require('./admin-sites')({ db, ws, urls, ui: adminUi, E, send, redirect, formBody, email: async () => ((await me(req)) || {}).email });
 const usersAdmin = req => adminUsers({ db, ws, cfg, credits, urls, ui: adminUi, E, send, email: async () => ((await me(req)) || {}).email,
   admins: async () => { const r = await db.prepare('SELECT v FROM kv WHERE k = ?').get('config:admins'); return [...new Set(cfg.admins.concat(r ? String(r.v).toLowerCase().split(/[\s,]+/).filter(Boolean) : []))]; } });
 async function adminPage(req, res, note, section, err) {
@@ -1140,12 +1147,13 @@ async function adminPage(req, res, note, section, err) {
   // overview
   const since = Date.now() - 30 * 864e5;
   const hour = +new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hour12: false });
-  const launch = await launchCard(A);
+  const launch = await launchCard(A), sitesWaiting = await sitesAdmin(req).count();
   const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + '</section>' : '<div class="a-empty">' + A.icon('check') + '<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>';
   return shell({ title: 'Overview', heading: (hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening') + ', team', active: 'overview',
     sub: 'Leads and accounts · ' + leadRows.length + ' leads · ' + accts.length + ' host accounts. Emails go out automatically; anything marked “Waiting for you” needs a person.',
     actions: '<a class="btn sm" href="/admin/leads">' + A.icon('users') + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon('mail') + 'Email campaigns</a>',
     body: launch + '<div class="adm-kpis">' + A.kpi('Leads, last 30 days', leadRows.filter(l => l.created_at > since).length, '', leadRows.length + ' in total') + A.kpi('Waiting for you', waiting.length, waiting.length ? '' : 'All clear', 'need a person to act') +
+      A.kpi('Sites to finish', sitesWaiting ? '<a href="/admin/sites">' + sitesWaiting + '</a>' : 0, sitesWaiting ? '' : 'All clear', 'handed to the team by hosts') +
       A.kpi('Host accounts', accts.length, '', accts.filter(a => a.billing_status === 'active').length + ' paying') + A.kpi('AI used, 30 days', credits.money(aiTotal), '', 'by all hosts', true) + '</div>' + await marketingRow(A) +
       '<div class="a-grid adm-top"><div class="a-s8">' + A.card('Waiting for you', waiting.length + ' lead' + (waiting.length === 1 ? '' : 's'), needs, waiting.length ? 'a-flush' : '').replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div>' +
       '<div class="a-s4 adm-stack">' + A.card('Newest leads', '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map(l => '<div><span><b>' + E(l.email || l.phone || '') + '</b><small>' + E(l.kind) + ' · ' + d(l.created_at) + '</small></span></div>').join('') || '<div><span><small>No leads yet.</small></span></div>') + '</div>') + stripeCard + '</div></div>' });
