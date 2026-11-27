@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SRC = path.join(__dirname, '..', 'web', 'src');
-const code = ['store.js', 'store-ext.js', 'seo-rules.js'].map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n;\n');
+const code = ['store.js', 'store-ext.js', 'seo-rules.js', 'site-ready.js'].map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n;\n');
 // The rules run inside a function whose parameters stand in for the browser globals they look for, so they see
 // their own window and nothing of the server (no storage, no network). A plain function, rather than node:vm,
 // because Supabase's Edge Runtime does not support vm.Script.

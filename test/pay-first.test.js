@@ -45,7 +45,9 @@ test('once paid, the host sets up their first home, then the console opens', asy
   assert.equal((await t.call('/app')).status, 200); assert.equal((await t.call('/app/setup')).headers.get('location'), '/app');
   const { p } = await t.home(); assert.equal(p.name, 'Gull Cottage');
   assert.equal(await t.until(async () => (await outbox('Welcome to Bookingbooster')) === 1), true, 'one welcome email, after setup');
-  assert.equal(await t.until(async () => (await outbox('%site-live%')) === 1), true, 'one "site is live" email, after setup');
+  assert.equal(await outbox('%site-live%'), 0, 'the new site is still building, so no "site is live" email yet');
+  await t.finish();
+  assert.equal(await t.until(async () => (await outbox('%site-live%')) === 1), true, 'one "site is live" email, once it goes live');
   const again = await t.call('/api/setup', { body: { property: { name: 'Second' } } }); assert.equal(again.body.redirect, '/app');
   assert.equal((await t.call('/api/state')).body.state.properties.length, 1, 'setup adds the first home only once');
 });

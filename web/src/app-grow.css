@@ -676,3 +676,26 @@
   .ag .ag-ctmap td { padding: 0 12px; border: 0; }
   .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Site checklist: "Finish your website" (readyCard in app-grow.js, rules in site-ready.js) */
+.ag .ag-rd { border-color: color-mix(in oklab, var(--brand, #2747F5) 35%, transparent); }
+.ag .ag-rd-top { display: flex; align-items: center; gap: 14px; }
+.ag .ag-rd-top b { display: block; font-size: 16px; }
+.ag .ag-rd-top small { color: var(--ink-2, #5B6478); }
+.ag .ag-rd-pct { font-size: 30px; font-weight: 700; min-width: 72px; color: var(--brand, #2747F5); }
+.ag .ag-rd-bar { height: 10px; border-radius: 99px; background: var(--line, #E3E7F5); overflow: hidden; margin: 12px 0 6px; }
+.ag .ag-rd-bar > i { display: block; height: 100%; background: var(--brand, #2747F5); border-radius: inherit; transition: width .3s ease; }
+.ag .ag-rd-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.ag .ag-rd-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line, #E3E7F5); }
+.ag .ag-rd-list li > div { flex: 1; min-width: 0; }
+.ag .ag-rd-list li b { display: block; font-size: 14px; }
+.ag .ag-rd-list li b em { font-style: normal; font-size: 11px; font-weight: 600; padding: 1px 7px; margin-left: 6px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); }
+.ag .ag-rd-list li small { color: var(--ink-2, #5B6478); }
+.ag .ag-rd-list li.done b { color: var(--ink-2, #5B6478); }
+.ag .ag-rd-i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--line, #E3E7F5); }
+.ag .ag-rd-i .ic { width: 15px; height: 15px; }
+.ag .ag-rd-list li.done .ag-rd-i { background: var(--good-soft); color: var(--good); }
+.ag .ag-rd-opt { margin-top: 8px; }
+.ag .ag-rd-opt summary { cursor: pointer; font-weight: 600; font-size: 14px; padding: 6px 0; }
+.ag .ag-rd-acts { margin-top: 12px; align-items: center; flex-wrap: wrap; }
+.ag .ag-rd-ask { margin-top: 12px; }

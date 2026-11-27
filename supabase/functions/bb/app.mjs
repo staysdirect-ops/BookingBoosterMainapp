@@ -944,6 +944,29 @@ var require_bb_embedded_files = __commonJS({
   .ag .ag-ctmap td { padding: 0 12px; border: 0; }
   .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Site checklist: "Finish your website" (readyCard in app-grow.js, rules in site-ready.js) */
+.ag .ag-rd { border-color: color-mix(in oklab, var(--brand, #2747F5) 35%, transparent); }
+.ag .ag-rd-top { display: flex; align-items: center; gap: 14px; }
+.ag .ag-rd-top b { display: block; font-size: 16px; }
+.ag .ag-rd-top small { color: var(--ink-2, #5B6478); }
+.ag .ag-rd-pct { font-size: 30px; font-weight: 700; min-width: 72px; color: var(--brand, #2747F5); }
+.ag .ag-rd-bar { height: 10px; border-radius: 99px; background: var(--line, #E3E7F5); overflow: hidden; margin: 12px 0 6px; }
+.ag .ag-rd-bar > i { display: block; height: 100%; background: var(--brand, #2747F5); border-radius: inherit; transition: width .3s ease; }
+.ag .ag-rd-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.ag .ag-rd-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line, #E3E7F5); }
+.ag .ag-rd-list li > div { flex: 1; min-width: 0; }
+.ag .ag-rd-list li b { display: block; font-size: 14px; }
+.ag .ag-rd-list li b em { font-style: normal; font-size: 11px; font-weight: 600; padding: 1px 7px; margin-left: 6px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); }
+.ag .ag-rd-list li small { color: var(--ink-2, #5B6478); }
+.ag .ag-rd-list li.done b { color: var(--ink-2, #5B6478); }
+.ag .ag-rd-i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--line, #E3E7F5); }
+.ag .ag-rd-i .ic { width: 15px; height: 15px; }
+.ag .ag-rd-list li.done .ag-rd-i { background: var(--good-soft); color: var(--good); }
+.ag .ag-rd-opt { margin-top: 8px; }
+.ag .ag-rd-opt summary { cursor: pointer; font-weight: 600; font-size: 14px; padding: 6px 0; }
+.ag .ag-rd-acts { margin-top: 12px; align-items: center; flex-wrap: wrap; }
+.ag .ag-rd-ask { margin-top: 12px; }
 ` }, "/app/web/src/app-grow.js": { "t": `/* Bookingbooster prototype: host console views for Grow (guests, campaigns, automations), Get found (website, AI visibility)
    and Settings (connections). Registers into BB.appViews; app.js owns the frame, routing and event forwarding. */
 (function () {
@@ -1032,6 +1055,7 @@ var require_bb_embedded_files = __commonJS({
     if (scope === 'gu') { inst.st['gu_' + key] = el.value; inst.render(); }
     if (scope === 'cp') { const e = inst.st.cp_edit; if (!e) return; e[key] = el.type === 'number' ? Number(el.value) : el.value; inst.render(); }
     if (scope === 'ws') { const d = wsDraft(inst); d[key] = el.type === 'number' ? Math.max(0, Number(el.value) || 0) : el.value; inst.render(); }
+    if (scope === 'rd') { inst.st.rd_note = el.value; return; }
     if (scope === 'ct') { inst.st['ct_' + key] = el.value; if (key === 'q') { inst.st.ct_all = false; inst.render(); } return; }
     if (scope === 'of') { inst.st.gu_offer[key] = el.value; inst.render(); }
     if (scope === 'faq') { inst.st['ws_faq_' + key] = el.value; }
@@ -1152,6 +1176,19 @@ var require_bb_embedded_files = __commonJS({
     'ws-discard': inst => { inst.st.ws_d[inst.st.ws_pid] = {}; inst.render(); },
     'ws-page': (inst, v) => inst.set({ ws_page: v }),
     'ws-faq': inst => inst.set({ ws_faq_open: !inst.st.ws_faq_open, ws_faq_err: null }),
+    /* site checklist (site-ready.js): jump to a step, go live, or hand it to the team */
+    'rd-go': (inst, v) => {
+      const k = { photos: 'photos', facts: 'wsamenitiesText', address: 'wsaddress', entry: 'wsentry', headline: 'wsheadline', about: 'wsabout', hostNote: 'wshostNote', guide: 'wsguideText', domain: 'domain' }[v];
+      if (v === 'payouts') return nav(inst, 'connections');
+      if (v === 'summary') return nav(inst, 'seo');
+      if (v === 'faqs') { inst.set({ ws_page: 'faq', ws_faq_open: true }); return; }
+      const el = k && (document.getElementById(ID(inst, k)) || document.getElementById(ID(inst, k.replace(/^ws/, ''))));
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (el.focus && /INPUT|TEXTAREA/.test(el.tagName)) setTimeout(() => el.focus({ preventScroll: true }), 300); }
+    },
+    'rd-live': inst => { const r = BB.act.goLive(inst.st.ws_pid) || {}; if (r.ok) { BB.toast('You are live. Guests and search engines can see your site now.', 'good'); inst.render(); } else BB.toast(r.error || 'Not ready yet', 'bad'); },
+    'rd-ask': inst => inst.set({ rd_ask: !inst.st.rd_ask }),
+    'rd-send': inst => { const r = BB.act.requestSiteReview(inst.st.ws_pid, inst.st.rd_note || '') || {}; if (r.ok) { inst.set({ rd_ask: false, rd_note: '' }); BB.toast('Sent to our team. We finish and publish it within 2 working days.', 'good'); } else BB.toast(r.error || 'Could not send it', 'bad'); },
+    'rd-cancel': inst => { BB.act.cancelSiteReview(inst.st.ws_pid); BB.toast('Back with you. Carry on with the checklist.'); },
     /* ai */
     'ai-do': (inst, v) => { const before = BB.aiScore().score; BB.act.completeAiTask(v); const after = BB.aiScore().score; inst.set({ ai_delta: after - before }); BB.toast('Done. Visibility score is now ' + after, 'good'); },
     'ai-q': (inst, v) => inst.set({ ai_q: +v }),
@@ -1638,7 +1675,7 @@ var require_bb_embedded_files = __commonJS({
   }
   function photoCard(inst, p) {
     const ph = (p.photos || []), up = inst.st.ws_up;
-    return '<section class="a-card ag-card"><div class="a-card-h"><h3>Photos</h3><span class="ag-meta">' + (ph.length ? ph.length + ' of 24 \xB7 the first one is the cover' : 'Add your own photos') + '</span></div>' +
+    return '<section class="a-card ag-card" id="' + ID(inst, 'photos') + '"><div class="a-card-h"><h3>Photos</h3><span class="ag-meta">' + (ph.length ? ph.length + ' of 24 \xB7 the first one is the cover' : 'Add your own photos') + '</span></div>' +
       (ph.length ? '<div class="ag-photos">' + ph.map((x, i) => '<figure class="ag-ph"><img src="' + esc(x.url) + '" alt="' + esc(x.cap || p.name) + '" loading="lazy"><input aria-label="Caption for photo ' + (i + 1) + '" data-agcap="' + i + '" placeholder="Caption, e.g. Living room" value="' + esc(x.cap || '') + '"><div>' +
         (i ? '<button type="button" class="btn sm ghost" data-ag="ws-ph-cover" data-v="' + i + '">Make cover</button>' : '<span class="ag-ph-c">Cover</span>') + '<button type="button" class="btn sm ghost" data-ag="ws-ph-del" data-v="' + i + '" aria-label="Remove photo ' + (i + 1) + '">' + I('x') + '</button></div></figure>').join('') + '</div>'
         : '<p class="muted ag-p">Until you add photos, your site shows a drawing of your home. Photos make the biggest difference to bookings.</p>') +
@@ -1701,6 +1738,33 @@ var require_bb_embedded_files = __commonJS({
     }
     inst.set({ ws_up: null }); BB.toast('Photos added to your site', 'good');
   }
+  // The site checklist: what a professional booking site needs, with a percentage. The home stays offline ("opening
+  // soon") until every required step is done and the host goes live, or hands it to our team (web/src/site-ready.js).
+  function readyCard(inst, p0, draftP, changed) {
+    if (!BB.ready || BB.ready.isOpen(p0)) return '';
+    const st = inst.st, L = p0.launch || {}, c = BB.ready.check(draftP), saved = BB.ready.check(p0);
+    const row = x => '<li class="' + (x.done ? 'done' : '') + '"><span class="ag-rd-i">' + I(x.done ? 'check' : 'plus') + '</span><div><b>' + esc(x.title) + (!x.done && x.who === 'host' && !x.optional ? ' <em>Only you</em>' : '') + '</b><small>' + esc(x.why) + '</small></div>' +
+      (x.done ? '' : '<button type="button" class="btn sm" data-ag="rd-go" data-v="' + x.id + '">' + (x.who === 'host' ? 'Add it' : 'Write it') + '</button>') + '</li>';
+    const req = c.steps.filter(x => !x.optional), opt = c.steps.filter(x => x.optional);
+    const head = '<div class="ag-rd-top"><div class="ag-rd-pct num">' + c.pct + '%</div><div><b>' + (L.state === 'review' ? 'Our team is finishing your site' : c.complete ? 'Ready to go live' : 'Your site is ' + c.pct + '% built') + '</b><small>' +
+      (L.state === 'review' ? 'Sent to us ' + esc(L.requestedAt ? BB.ago(L.requestedAt) : '') + '. We write and polish the words, then publish it, usually within 2 working days. We email you when it is live.'
+        : 'Guests and Google see an "opening soon" page until every step is done. ' + c.done + ' of ' + c.required + ' done.') + '</small></div></div>' +
+      '<div class="ag-rd-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + c.pct + '" aria-label="Site checklist"><i style="width:' + c.pct + '%"></i></div>';
+    const back = L.state === 'building' && L.teamNote ? '<div class="ag-banner warn">' + I('edit') + '<p><b>A note from our team:</b> ' + esc(L.teamNote) + '</p></div>' : '';
+    let acts = '';
+    if (L.state === 'review') acts = '<button class="btn sm ghost" data-ag="rd-cancel">I will finish it myself</button>';
+    else if (saved.complete) acts = '<button class="btn primary" data-ag="rd-live">' + I('send') + 'Go live</button>';
+    else {
+      acts = (changed ? '<span class="ag-meta">Publish your changes to save them to the checklist.</span>' : '') +
+        (saved.canAskTeam ? '<button class="btn sm" data-ag="rd-ask">Stuck? Our team will finish it</button>' : '<span class="ag-meta">Stuck on the words? Once the steps marked \u201Conly you\u201D are done, our team can write the rest and publish it for you.</span>');
+    }
+    const ask = st.rd_ask && L.state === 'building' && saved.canAskTeam ? '<div class="ag-form ag-rd-ask"><label class="field"><span>Anything we should know? (optional)</span><textarea data-agf="rd.note" rows="2" placeholder="E.g. we are dog friendly and 5 minutes from the beach. Please keep it warm, not salesy.">' + esc(st.rd_note || '') + '</textarea></label>' +
+      '<p class="ag-note">' + I('bolt') + '<span>We write the headline, description, FAQs and AI search summary from your details, check the site on a phone, then publish it and email you. Included in your plan.</span></p><div class="ag-acts-row"><button class="btn sm primary" data-ag="rd-send">Send to our team</button><button class="btn sm ghost" data-ag="rd-ask">Cancel</button></div></div>' : '';
+    return '<section class="a-card ag-card ag-rd" id="' + ID(inst, 'ready') + '"><div class="a-card-h"><h3>Finish your website</h3><span class="ag-meta">' + (L.state === 'review' ? 'With our team' : 'Not live yet') + '</span></div>' + head + back +
+      '<ul class="ag-rd-list">' + req.filter(x => !x.done).map(row).join('') + req.filter(x => x.done).map(row).join('') + '</ul>' +
+      '<details class="ag-rd-opt"><summary>Extras that help (' + opt.filter(x => x.done).length + ' of ' + opt.length + ')</summary><ul class="ag-rd-list">' + opt.map(row).join('') + '</ul></details>' +
+      '<div class="ag-acts-row ag-rd-acts">' + acts + '</div>' + ask + '</section>';
+  }
   function wsDraft(inst) { const st = inst.st; st.ws_d = st.ws_d || {}; const pid = st.ws_pid || S().properties[0].id; st.ws_pid = pid; return (st.ws_d[pid] = st.ws_d[pid] || {}); }
   const THEMES = [['cabin', 'Fell cabin', 'Larch, slate and moss, serif headings'], ['lake', 'Harbour cottage', 'Sea blues and whitewash, clean type'], ['city', 'Georgian townhouse', 'Bath stone, editorial type']];
   const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1727,9 +1791,10 @@ var require_bb_embedded_files = __commonJS({
       const th = THEMES.find(t => t[0] === p.theme) || THEMES[0];
       return wrap(inst, 'ag-web',
         vh('Website & SEO', S().live ? 'Each home has its own booking site. Edit it here and publish. Search engines and AI assistants can read every page.' : 'Each home has its own booking site on its own .co.uk domain. Edit it here, publish, and Google picks it up.',
-          '<button class="btn" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + 'View live site</button><button class="btn primary" data-ag="ws-publish"' + (changed.length ? '' : ' disabled') + '>' + I('send') + (changed.length ? 'Publish ' + changed.length + (changed.length === 1 ? ' change' : ' changes') : 'Publish changes') + '</button>') +
+          '<button class="btn" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + (BB.ready && !BB.ready.isOpen(p0) ? 'Preview site' : 'View live site') + '</button><button class="btn primary" data-ag="ws-publish"' + (changed.length ? '' : ' disabled') + '>' + I('send') + (changed.length ? 'Publish ' + changed.length + (changed.length === 1 ? ' change' : ' changes') : 'Publish changes') + '</button>') +
         '<div class="ag-ptabs" role="tablist" aria-label="Homes" id="' + ID(inst, 'ptabs') + '">' + s.properties.map(x => '<button type="button" role="tab" aria-selected="' + (x.id === p0.id) + '" data-ag="ws-pid" data-v="' + x.id + '">' + hero(x, 'ag-thumb') + '<span><b>' + esc(x.name) + '</b><small class="mono">' + esc(x.domain) + '</small></span>' + ((st.ws_d[x.id] && Object.keys(st.ws_d[x.id]).some(k => st.ws_d[x.id][k] !== x[k])) ? '<i class="ag-dot" title="Unpublished changes"></i>' : '') + '</button>').join('') + '</div>' +
-        (st.ws_pub === p0.id && !changed.length ? '<div class="ag-banner good">' + I('check') + '<p>Published to <b class="mono">' + esc(p0.domain) + '</b>. Guests see the new version now, and Google gets the updated pages on its next crawl.</p><button class="btn sm" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + 'View live site</button></div>' : '') +
+        readyCard(inst, p0, Object.assign({}, p0, wsPatch(p0, d)), changed.length > 0) +
+        (st.ws_pub === p0.id && !changed.length ? '<div class="ag-banner good">' + I('check') + (BB.ready && !BB.ready.isOpen(p0) ? '<p>Saved. Guests see it once your site goes live; the checklist above shows what is left.</p>' : '<p>Published to <b class="mono">' + esc(p0.domain) + '</b>. Guests see the new version now, and Google gets the updated pages on its next crawl.</p>') + '<button class="btn sm" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + 'View live site</button></div>' : '') +
         (changed.length ? '<div class="ag-banner info">' + I('edit') + '<p><b>' + changed.length + ' unpublished ' + (changed.length === 1 ? 'change' : 'changes') + '</b>: ' + changed.map(k => ({ theme: 'theme', headline: 'headline', sub: 'subheading', about: 'about', nightly: 'nightly rate', weekend: 'weekend uplift', cleaning: 'cleaning fee', petsAllowed: 'dog policy', petFee: 'dog fee', address: 'address', wifiSsid: 'Wi-Fi name', wifiPw: 'Wi-Fi password', parking: 'parking', checkinTime: 'check-in time', checkoutTime: 'checkout time', minNights: 'minimum nights', entry: 'how guests get in', amenitiesText: 'amenities', rulesText: 'house rules', guideText: 'area guide', hostNote: 'host note', nukiId: 'smart lock' }[k] || k)).join(', ') + '.</p><div class="ag-acts-row"><button class="btn sm primary" data-ag="ws-publish">Publish</button><button class="btn sm ghost" data-ag="ws-discard">Discard</button></div></div>' : '') +
         (!stripe ? '<div class="ag-banner warn">' + I('plug') + (S().live ? '<p>Connect Stripe to take instant card bookings. Until then your site takes booking requests and you send a payment link.</p><button class="btn sm" data-ag-nav="connections">Connect Stripe</button></div>' : '<p>Stripe is disconnected, so ' + esc(p0.domain) + ' takes booking requests instead of instant bookings.</p><button class="btn sm" data-ag-nav="connections">Reconnect</button></div>') : '') +
         '<div class="ag-cols ag-cols-web">' +
@@ -3466,6 +3531,14 @@ var require_bb_embedded_files = __commonJS({
       btn: '<button class="btn sm" data-a="nav" data-view="connections">' + ic('card') + 'Connect</button>' });
     s.properties.forEach(p => {
       const where = one ? p.short + ': ' : '', go = 'data-a="nav" data-view="website" data-id="' + esc(p.id) + '"', n = (p.photos || []).length;
+      // A home that is not live yet has one row: its site checklist, with the percentage (site-ready.js).
+      if (BB.ready && !BB.ready.isOpen(p)) {
+        const c = BB.ready.check(p), rv = BB.ready.stateOf(p) === 'review';
+        out.push({ tone: rv ? 'info' : 'bad', icon: 'web', title: where + (rv ? 'Our team is finishing your website' : c.complete ? 'Your website is ready to go live' : 'Finish your website: ' + c.pct + '% done'),
+          sub: rv ? 'We email you when it is live, usually within 2 working days.' : c.complete ? 'Every step is done. Press Go live in Website & SEO.' : 'Guests see "opening soon" until it is done. Next: ' + c.left.slice(0, 2).map(x => x.title.toLowerCase()).join(', ') + '.', open: go,
+          btn: '<button class="btn sm" ' + go + '>' + ic('web') + (rv ? 'See it' : c.complete ? 'Go live' : 'Continue') + '</button>' });
+        return;
+      }
       if (n < 10) out.push({ tone: n ? 'warn' : 'bad', icon: 'web', title: where + (n ? 'Add ' + plural(10 - n, 'more photo') : 'Add your photos'),
         sub: n ? n + ' of 10 added. Homes with 10 or more photos get more bookings.' : 'Your site shows a drawing of a home until you add your own photos.', open: go,
         btn: '<button class="btn sm" ' + go + '>' + ic('web') + 'Add photos</button>' });
@@ -3531,7 +3604,7 @@ var require_bb_embedded_files = __commonJS({
           '<div class="a-s4 a-last">' + card('Where bookings came from', 'Last 12 months', sources) + '</div>' +
           '<div class="a-s4">' + card('AI visibility', ai.total + ' tracked questions', '<button class="a-tile a-ai" data-a="nav" data-view="ai">' + gauge(ai.score) + '<span><b>Mentioned in ' + ai.mentioned + ' of ' + ai.total + '</b><span class="muted">' + (task ? 'Next: ' + esc(task.text) + '.' : s.ai.checkedAt ? 'Every suggested fix is done.' : 'Not checked yet.') + '</span></span></button>') + '</div>' +
           '<div class="a-s4">' + card('Last campaign', sent ? 'Sent ' + D.fmt(sent.sentAt) : '', camp) + '</div>' +
-          '<div class="a-s4 a-last">' + card('Websites', plural(s.properties.filter(p => p.published).length, 'site') + ' live',
+          '<div class="a-s4 a-last">' + card('Websites', plural(s.properties.filter(p => p.published && (!BB.ready || BB.ready.isOpen(p))).length, 'site') + ' live',
             '<button class="a-tile" data-a="nav" data-view="website"><div class="a-trow"><span>Visitors, 30 days<em>' + pct(s.website.fromSearch) + ' from Google and AI answers</em></span><b class="num">' + vis.toLocaleString('en-GB') + '</b></div>' +
             '<div class="a-trow"><span>Booking conversion<em>Visit to paid stay</em></span><b class="num">' + ((m.conversion || 0) * 100).toFixed(1) + '%</b></div>' +
             '<div class="a-trow"><span>Direct stays this year<em>Booked on your sites</em></span><b class="num">' + m.directYearCount + '</b></div></button>') + '</div>' +
@@ -8454,6 +8527,100 @@ body.p-lock { overflow: hidden; }
 .x-site .s-hc-ai { left: auto; right: -16px; bottom: 0; }
 .x-site .s-hc-app { left: 0; right: auto; top: 210px; bottom: auto; }
 @media (max-width: 640px) { .x-site .s-hc-ai { right: auto; } }
+` }, "/app/web/src/site-ready.js": { "t": `/* Bookingbooster: is a host's booking site finished? Shared by the browser and the server engine.
+   BB.ready.check(p) lists everything a professional holiday let site needs, marks each step done or not, and gives a
+   percentage. A new home in a live account starts in "building": guests and search engines see an "opening soon" page
+   until every required step is done and the host presses Go live. A host who gets stuck can hand it to the team once
+   the steps only they can do are done (photos, the facts of the home, payouts); the team then writes and polishes the
+   words and publishes it from /admin/sites. Homes made before this existed have no launch record and count as live.
+
+   p.launch = { state: 'building' | 'review' | 'live', since, requestedAt, note, teamNote, returnedAt, liveAt, by } */
+(function () {
+  const BB = window.BB; if (!BB) return;
+  const S = () => BB.store.get();
+  const A = BB.act;
+  const stamp = () => S().today + 'T' + S().clock;
+  const txt = v => String(v || '').trim();
+  const words = t => txt(t).split(/\\s+/).filter(Boolean).length;
+  const DEFAULT_HEADLINE = 'book direct and save.';
+  const faqsOf = pid => ((S().website || {}).faqs || {})[pid] || [];
+  const seoOf = p => (BB.seo && BB.seo.seoOf ? BB.seo.seoOf(p) : Object.assign({ summary: '' }, p.seo || {}));
+
+  // who: 'host' means only the host can do it (their photos, their facts, their bank); 'either' means our team can do
+  // it for them in a review. go: where the console sends the host to do it.
+  function steps(p) {
+    const s = S(), photos = (p.photos || []).filter(x => x && x.url).length, faqs = faqsOf(p.id).length;
+    const custom = !!p.domain && !p._autoDomain && !(BB.BOOT && BB.BOOT.sitesDomain && String(p.domain).endsWith('.' + BB.BOOT.sitesDomain));
+    return [
+      { id: 'photos', title: '10 or more photos', why: photos + ' of 10 added. Your best landscape shots, the first one is the cover.', done: photos >= 10, who: 'host', go: 'website' },
+      { id: 'facts', title: 'What the home offers, 6 or more things', why: (p.amenities || []).length + ' listed. Hot tub, log burner, dogs, parking, Wi-Fi: guests and AI assistants match on these.', done: (p.amenities || []).filter(x => txt(x)).length >= 6, who: 'host', go: 'website' },
+      { id: 'address', title: 'Full address', why: 'Puts the home on the map in search and in the guest trip app.', done: txt(p.address).length >= 10, who: 'host', go: 'website' },
+      { id: 'entry', title: 'How guests get in', why: 'Key safe, lockbox or meet and greet. Guests see it after check-in.', done: txt(p.entry).length >= 10, who: 'host', go: 'website' },
+      { id: 'payouts', title: 'Card payments switched on', why: 'Connect Stripe with your UK bank so guests can book and pay instantly.', done: !!(BB.q && BB.q.connected && BB.q.connected('stripe')) || !s.live, who: 'host', go: 'connections' },
+      { id: 'headline', title: 'Headline and subheading', why: 'The first words guests read. Say what makes the stay special, not "book direct".', done: txt(p.headline).length >= 8 && txt(p.headline).toLowerCase() !== DEFAULT_HEADLINE && txt(p.sub).length >= 10, who: 'either', go: 'website' },
+      { id: 'about', title: 'A full description, 60 words or more', why: words(p.about) + ' words so far. The rooms, the views and what is nearby. Google and AI assistants read it.', done: words(p.about) >= 60, who: 'either', go: 'website' },
+      { id: 'faqs', title: '3 or more FAQs', why: faqs + ' added. The questions guests ask you most; AI assistants quote them.', done: faqs >= 3, who: 'either', go: 'website' },
+      { id: 'summary', title: 'Answer-first summary for AI search', why: 'Two or three sentences that answer "where should I stay in ' + (txt(p.area).split(',')[0] || 'the area') + '?". In Search health.', done: txt(seoOf(p).summary).length >= 80, who: 'either', go: 'seo' },
+      { id: 'domain', title: 'Your own web address', why: 'Optional. Your free address works until then.', done: custom, who: 'host', go: 'website', optional: true },
+      { id: 'guide', title: 'Local area guide', why: 'Optional. Three or more places nearby, with how far and your tip.', done: (p.guide || []).length >= 3, who: 'either', go: 'website', optional: true },
+      { id: 'hostNote', title: 'A line from you', why: 'Optional. Shown next to your name, it makes the site feel personal.', done: txt(p.hostNote).length >= 10, who: 'either', go: 'website', optional: true },
+    ];
+  }
+  function check(p) {
+    const list = steps(p), req = list.filter(x => !x.optional), done = req.filter(x => x.done).length;
+    const hostLeft = req.filter(x => !x.done && x.who === 'host'), left = req.filter(x => !x.done);
+    return { steps: list, required: req.length, done, pct: Math.round(100 * done / req.length), complete: done === req.length, left, hostLeft, canAskTeam: !hostLeft.length };
+  }
+  const stateOf = p => (p && p.launch && p.launch.state) || 'live';
+  const isOpen = p => stateOf(p) === 'live';
+  BB.ready = { check, steps, stateOf, isOpen };
+
+  // Patches from the website editor never touch the launch record: going live has its own checked actions.
+  const up0 = A.updateProperty;
+  A.updateProperty = function (pid, patch, quiet) { if (patch && typeof patch === 'object' && 'launch' in patch) { patch = Object.assign({}, patch); delete patch.launch; } return up0(pid, patch, quiet); };
+
+  function launch(p, by) {
+    const was = stateOf(p);
+    p.launch = Object.assign({}, p.launch, { state: 'live', liveAt: stamp(), by: by || 'host' });
+    if (was !== 'live' && S().live) BB.fx('site.launched', { propertyId: p.id, by: by || 'host' });
+    BB.log('site', by === 'team' ? 'Bookingbooster team' : 'Website editor', p.name + ' is live' + (by === 'team' ? ', finished and published by the Bookingbooster team.' : '. Guests and search engines can see it now.'), p.id, ['Website', p.domain || '']);
+  }
+  // The host presses Go live once every required step is done.
+  A.goLive = function (pid) {
+    const p = BB.q.property(pid); if (!p) return { ok: false, error: 'Unknown home' };
+    if (isOpen(p)) return { ok: true };
+    const r = check(p); if (!r.complete) return { ok: false, error: 'Finish ' + r.left.length + ' more step' + (r.left.length === 1 ? '' : 's') + ' first: ' + r.left.map(x => x.title).join(', ') + '.' };
+    launch(p, 'host'); BB.store.commit({ type: 'property', id: pid }); return { ok: true };
+  };
+  // Stuck on the words? The team finishes them, once the host has done the parts only they can do.
+  A.requestSiteReview = function (pid, note) {
+    const p = BB.q.property(pid); if (!p) return { ok: false, error: 'Unknown home' };
+    if (stateOf(p) !== 'building') return { ok: false, error: isOpen(p) ? 'This site is already live.' : 'Our team already has this site.' };
+    const r = check(p); if (!r.canAskTeam) return { ok: false, error: 'Only you can do these, so they come first: ' + r.hostLeft.map(x => x.title).join(', ') + '.' };
+    p.launch = Object.assign({}, p.launch, { state: 'review', requestedAt: stamp(), note: txt(note).slice(0, 1000), teamNote: '' });
+    if (S().live) BB.fx('site.review', { propertyId: pid });
+    BB.log('site', 'Website editor', 'Asked the Bookingbooster team to finish and publish ' + p.name + '.', pid, ['Website', 'Bookingbooster team']);
+    BB.store.commit({ type: 'property', id: pid }); return { ok: true };
+  };
+  A.cancelSiteReview = function (pid) {
+    const p = BB.q.property(pid); if (!p || stateOf(p) !== 'review') return { ok: false };
+    p.launch = Object.assign({}, p.launch, { state: 'building' });
+    BB.store.commit({ type: 'property', id: pid }); return { ok: true };
+  };
+  // Team only (blocked on /api/act): publish after polishing, or hand it back with a note.
+  A.teamLaunch = function (pid) {
+    const p = BB.q.property(pid); if (!p) return { ok: false, error: 'Unknown home' };
+    const r = check(p); if (!r.complete) return { ok: false, error: 'Still missing: ' + r.left.map(x => x.title).join(', ') + '.' };
+    launch(p, 'team'); BB.store.commit({ type: 'property', id: pid }); return { ok: true };
+  };
+  A.teamReturn = function (pid, note) {
+    const p = BB.q.property(pid); if (!p || stateOf(p) === 'live') return { ok: false, error: 'This site is not waiting for the team.' };
+    p.launch = Object.assign({}, p.launch, { state: 'building', teamNote: txt(note).slice(0, 1000), returnedAt: stamp() });
+    if (S().live) BB.fx('site.returned', { propertyId: pid });
+    BB.log('site', 'Bookingbooster team', 'Sent ' + p.name + ' back with a note: ' + txt(note).slice(0, 200), pid, ['Website', 'Bookingbooster team']);
+    BB.store.commit({ type: 'property', id: pid }); return { ok: true };
+  };
+})();
 ` }, "/app/web/src/site-social.css": { "t": `/* Social style for the marketing site, matching the BookingBooster social posts.
    Loaded last. Cobalt, ink, sky and yellow panels; heavy Bricolage headlines with a yellow highlight;
    mono pill labels with a yellow dot; big soft chevrons; real product screens in browser and phone frames. */
@@ -11466,10 +11633,12 @@ body.p-lock { overflow: hidden; }
     const id = (data.name || 'home').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) + '-' + (++S().seq);
     const blank = S().live ? { wifi: { ssid: '', pw: '' }, address: '', entry: '', amenities: [], parking: '' } : {}; // live homes start empty, the host fills in real details
     const p = Object.assign({ id, short: data.name.split(' ').slice(0, 2).join(' '), theme: 'cabin', nightly: 145, weekend: 25, cleaning: 65, petFee: 0, petsAllowed: false, maxGuests: 4, bedrooms: 2, baths: 1, minNights: 2, lockPrefix: '66', wifi: { ssid: 'Guest', pw: 'welcome123' }, amenities: ['Fast Wi-Fi', 'Self check-in', 'Free parking'], rules: ['Quiet hours are 10 pm to 8 am.', 'No parties or events.'], parking: 'Driveway', checkinTime: '4 pm', checkoutTime: '11 am', rating: 4.9, reviews: 0, published: true, color: '#3355FF', headline: 'Book direct and save.', sub: '', about: '', area: '' }, blank, data, { id });
+    // A real home starts "building": guests see an opening-soon page until the site checklist is done (site-ready.js).
+    if (S().live) p.launch = { state: 'building', since: S().today + 'T' + S().clock }; else delete p.launch;
     S().properties.push(p); S().website.visitors[id] = 0;
     if (S().live) { S().account.onboarded = true; if (BB.aiQuestionsFor) S().ai.questions.push(...BB.aiQuestionsFor(p)); fx('property.added', { propertyId: id }); }
     log('site', 'Onboarding', 'Imported ' + p.name + ' with photos, ' + p.reviews + ' reviews and house rules.', id, ['Listing link', 'Bookingbooster']);
-    log('site', 'Website builder', p.domain + ' is live with booking, check-in and SEO pages.', id, ['Bookingbooster', p.domain]);
+    log('site', 'Website builder', S().live ? p.domain + ' is built with booking, check-in and SEO pages. Finish the site checklist to go live.' : p.domain + ' is live with booking, check-in and SEO pages.', id, ['Bookingbooster', p.domain]);
     BB.store.commit({ type: 'property', id }); return p;
   };
   A.completeAiTask = function (taskId) {
@@ -14603,7 +14772,7 @@ var require_engine = __commonJS({
     var fs = require_vfs();
     var path = __require("path");
     var SRC = path.join(__dirname, "..", "web", "src");
-    var code = ["store.js", "store-ext.js", "seo-rules.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
+    var code = ["store.js", "store-ext.js", "seo-rules.js", "site-ready.js"].map((f) => fs.readFileSync(path.join(SRC, f), "utf8")).join("\n;\n");
     var SHADOW = ["localStorage", "sessionStorage", "BroadcastChannel", "document", "navigator", "location", "fetch", "XMLHttpRequest", "WebSocket", "process", "require", "Deno", "globalThis", "self", "global"];
     var PARAMS = ["window", "__BB_BOOT__", "console", "Date", "Math", "JSON", "Intl", "setTimeout", "clearTimeout"].concat(SHADOW);
     var rules = new Function(...PARAMS, code + "\n//# sourceURL=bb-rules.js");
@@ -15113,7 +15282,7 @@ var require_build = __commonJS({
     var MODS = ["site", "app", "app-grow", "app-seo", "app-studio", "app-events", "mobile", "property", "guest"];
     function build() {
       const css = [rd("core.css"), rd("shell.css"), rd("shell-prod.css")].concat(MODS.map((m) => rd(m + ".css")), [rd("site-calm.css"), rd("site-social.css")]).join("\n");
-      const core = [rd("store.js"), rd("store-ext.js"), rd("seo-rules.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
+      const core = [rd("store.js"), rd("store-ext.js"), rd("seo-rules.js"), rd("site-ready.js"), rd("ui.js")].concat(MODS.map((m) => rd(m + ".js")));
       const prodJs = core.concat([rd("sync.js"), rd("shell-prod.js")]).join("\n;\n");
       const demoJs = core.concat([rd("sync.js"), rd("shell.js")]).join("\n;\n");
       const h = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 10);
@@ -19394,7 +19563,7 @@ var require_admin_shell = __commonJS({
     var icon = (k, cls) => '<svg class="ic ' + (cls || "") + '" viewBox="0 0 24 24" aria-hidden="true">' + (I[k] || I.spark) + "</svg>";
     var MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     var NAV = [
-      ["Team", [["overview", "/admin", "dash", "Overview"], ["leads", "/admin/leads", "users", "Leads"], ["outreach", "/admin/outreach", "phone", "Outreach"], ["hosts", "/admin/hosts", "home", "Users"], ["partners", "/admin/affiliates", "share", "Partners"]]],
+      ["Team", [["overview", "/admin", "dash", "Overview"], ["leads", "/admin/leads", "users", "Leads"], ["outreach", "/admin/outreach", "phone", "Outreach"], ["hosts", "/admin/hosts", "home", "Users"], ["sites", "/admin/sites", "check", "Sites to finish"], ["partners", "/admin/affiliates", "share", "Partners"]]],
       ["Marketing", [["flows", "/admin/flows", "spark", "Sales flows"], ["campaigns", "/admin/campaigns", "mail", "Email campaigns"], ["emails", "/admin/emails", "doc", "Email templates"], ["social", "/admin/social", "share", "Social posts"]]],
       ["Settings", [["settings", "/admin/settings", "gear", "Stripe, links and backups"]]]
     ];
@@ -19899,7 +20068,7 @@ var require_admin_users = __commonJS({
           business: (s.account || {}).business || w.slug,
           owner: (s.account || {}).owner || "",
           props,
-          live: props.filter((p) => p.published !== false).length,
+          live: props.filter((p) => p.published !== false && !(p.launch && p.launch.state && p.launch.state !== "live")).length,
           bookings: bs.length,
           direct: direct.length,
           revenue: direct.reduce((n, b) => n + (+b.total || 0), 0),
@@ -19958,7 +20127,7 @@ var require_admin_users = __commonJS({
         const acct = A.card("Account", bill(a.billing_status), '<div class="adm-list"><div><span><small>Business</small><b>' + E(s.business) + "</b></span></div><div><span><small>Owner</small><b>" + E(a.name || s.owner || "\u2013") + "</b></span></div><div><span><small>Sign-in email</small><b>" + E(a.email || "No login") + "</b></span>" + (a.email ? A.pill(a.verified ? "good" : "warn", a.verified ? "Confirmed" : "Not confirmed") : "") + "</div><div><span><small>Plan</small><b>" + E(a.plan || "No plan") + "</b></span>" + bill(a.billing_status) + "</div><div><span><small>Joined</small><b>" + d(a.created_at) + "</b></span><span><small>Last seen</small><b>" + ago(a.last_seen) + "</b></span></div><div><span><small>Last sign-in</small><b>" + dt(login && login.at) + "</b></span><span><small>Setup</small><b>" + (s.onboarded ? "Finished" : "Not finished") + '</b></span></div><div><span><small>Stripe customer (their plan)</small><b class="mono">' + (a.stripe_customer ? '<a href="https://dashboard.stripe.com/customers/' + E(a.stripe_customer) + '" target="_blank" rel="noopener">' + E(a.stripe_customer) + "</a>" : "\u2013") + "</b></span></div><div><span><small>Guest payouts</small><b>" + (s.stripe ? "Stripe connected" : "Not connected") + '</b></span></div><div><span><small>Account id</small><b class="mono">' + E(id) + "</b></span></div></div>");
         const sites = A.card("Sites", s.live + " of " + s.props.length + " live", s.props.length ? '<div class="adm-list">' + s.props.map((p) => {
           const u = urls.site(w, p);
-          return "<div><span><b>" + E(p.name) + "</b><small>" + E(p.area || "") + (p.nightly ? " \xB7 from " + gbp(p.nightly) + " a night" : "") + '</small><small><a href="' + E(u) + '" target="_blank" rel="noopener">' + E(u.replace(/^https?:\/\//, "")) + "</a></small></span>" + A.pill(p.published === false ? "muted" : "good", p.published === false ? "Not live" : "Live") + "</div>";
+          return "<div><span><b>" + E(p.name) + "</b><small>" + E(p.area || "") + (p.nightly ? " \xB7 from " + gbp(p.nightly) + " a night" : "") + '</small><small><a href="' + E(u) + '" target="_blank" rel="noopener">' + E(u.replace(/^https?:\/\//, "")) + "</a></small></span>" + (p.launch && p.launch.state === "review" ? '<a href="/admin/sites">' + A.pill("warn", "With the team") + "</a>" : p.launch && p.launch.state === "building" ? A.pill("info", "Building, " + w.BB.ready.check(p).pct + "%") : A.pill(p.published === false ? "muted" : "good", p.published === false ? "Not live" : "Live")) + "</div>";
         }).join("") + "</div>" : '<p class="adm-help" style="margin:0">No homes added yet.</p>');
         const bks = (st.bookings || []).slice().sort((x, y) => String(y.createdAt || y.checkIn).localeCompare(String(x.createdAt || x.checkIn))).slice(0, 12);
         const prop = (pid) => (s.props.find((p) => p.id === pid) || {}).name || pid, guest = (gid) => ((st.guests || []).find((g) => g.id === gid) || {}).name || "";
@@ -21607,18 +21776,35 @@ var require_effects = __commonJS({
         const r = await ws.row(w.id);
         return !r || !r.billing_status || r.billing_status === "trial" || r.billing_status === "cancelled";
       };
+      const building = (p) => !!(p.launch && p.launch.state && p.launch.state !== "live");
       async function siteLive(wid) {
         const w = await ws.open(wid);
         if (!w) return;
-        for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true);
+        for (const p of w.state.properties) if (p.published !== false && !building(p)) await hostEmail(w, { propertyId: p.id }, true);
       }
       async function hostEmail(w, d, paid) {
         if (!paid && await unpaid(w)) return;
         const s = w.state;
         const p = s.properties.find((x) => x.id === d.propertyId);
-        if (!p) return;
+        if (!p || building(p)) return;
         const v = { first_name: first(s.account.owner), property_name: p.name, site_domain: p.domain, site_url: urls.site(w, p), pages_live: "6", account_url: cfg.baseUrl + "/app", website_editor_url: cfg.baseUrl + "/app", share_kit_url: cfg.baseUrl + "/app", help_url: cfg.baseUrl + "/help", company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + "/privacy", unsubscribe_url: cfg.baseUrl + "/app", preferences_url: cfg.baseUrl + "/app" };
         await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: p.name + " is live", text: p.name + " is live at " + v.site_url + ". Open your console: " + v.account_url, html: msg.template("host-o03-site-live", v), meta: { template: "site-live" } });
+      }
+      async function siteReview(w, d) {
+        const s = w.state, p = s.properties.find((x) => x.id === d.propertyId);
+        if (!p) return;
+        const to = (cfg.admins || []).length ? cfg.admins.join(",") : cfg.company.support;
+        if (!to) return;
+        const note = String((p.launch || {}).note || "").trim();
+        const text = s.account.business + " asked us to finish " + p.name + " and publish it." + (note ? "\n\nTheir note: " + note : "") + "\n\nOpen the queue: " + cfg.baseUrl + "/admin/sites";
+        await msg.sendEmail({ to, subject: "Site to finish: " + p.name, text, meta: { template: "site-review", workspace: w.id, propertyId: p.id } });
+      }
+      async function siteReturned(w, d) {
+        const s = w.state, p = s.properties.find((x) => x.id === d.propertyId);
+        if (!p) return;
+        const note = String((p.launch || {}).teamNote || "").trim();
+        const text = "Hi " + first(s.account.owner) + ", we looked at " + p.name + " and need one thing from you before we can publish it:\n\n" + note + "\n\nOpen Website & SEO in your console to finish it: " + cfg.baseUrl + "/app#website";
+        await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: "One thing to finish on " + p.name, text, meta: { template: "site-returned" } });
       }
       async function run(w, list) {
         if (w.kind !== "live") return;
@@ -21638,6 +21824,9 @@ var require_effects = __commonJS({
             else if (f.type === "payment.invoice") await invoiceEmail(w, d);
             else if (f.type === "lock.code") await lockCode(w, d);
             else if (f.type === "email.host") await hostAlert(w, d);
+            else if (f.type === "site.launched") await hostEmail(w, d);
+            else if (f.type === "site.review") await siteReview(w, d);
+            else if (f.type === "site.returned") await siteReturned(w, d);
             else if (f.type === "property.added") {
               await hostEmail(w, d);
               await ws.withWs(w.id, () => {
@@ -25186,6 +25375,104 @@ var require_lead_import = __commonJS({
   }
 });
 
+// server/admin-sites.js
+var require_admin_sites = __commonJS({
+  "server/admin-sites.js"(exports, module) {
+    module.exports = function({ db, ws, urls, ui, E, send, redirect, formBody, email }) {
+      const A = ui;
+      const ago = (iso) => {
+        if (!iso) return "\u2013";
+        const t = Date.parse(iso.length <= 16 ? iso + ":00Z" : iso);
+        if (!t) return E(iso);
+        const h = (Date.now() - t) / 36e5;
+        return h < 1 ? "under an hour ago" : h < 48 ? Math.round(h) + " h ago" : Math.round(h / 24) + " days ago";
+      };
+      const stateOf = (p) => p.launch && p.launch.state || "live";
+      const lines = (v) => String(v || "").split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
+      async function homes() {
+        const rows = await db.prepare("SELECT id, slug, billing_status FROM workspaces WHERE kind = 'live' ORDER BY created_at DESC LIMIT 1000").all();
+        const out = [];
+        for (const r of rows) {
+          const w = await ws.open(r.id);
+          if (!w) continue;
+          for (const p of w.state.properties || []) {
+            const st = stateOf(p);
+            if (st === "live") continue;
+            out.push({ w, r, p, st, check: w.BB.ready.check(p), business: (w.state.account || {}).business || r.slug });
+          }
+        }
+        return out;
+      }
+      async function count() {
+        return (await homes()).filter((x) => x.st === "review").length;
+      }
+      const bar = (n) => '<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;min-width:80px;height:8px;border-radius:99px;background:var(--line,#E3E7F5);overflow:hidden"><i style="display:block;height:100%;width:' + n + "%;background:" + (n === 100 ? "var(--good,#1F9D63)" : "var(--brand,#2747F5)") + '"></i></div><b class="num">' + n + "%</b></div>";
+      const stepList = (c) => '<div class="adm-list">' + c.steps.filter((x) => !x.optional).map((x) => "<div><span><b>" + E(x.title) + "</b><small>" + E(x.why) + "</small></span>" + A.pill(x.done ? "good" : x.who === "host" ? "bad" : "warn", x.done ? "Done" : x.who === "host" ? "Host only" : "We can do this") + "</div>").join("") + "</div>";
+      function reviewCard(x) {
+        const { w, p, check: c } = x, faqs = (((w.state.website || {}).faqs || {})[p.id] || []).map((f) => f.replace("|", " | ")).join("\n");
+        const seo = p.seo || {}, act = "/admin/sites/" + E(w.id) + "/" + encodeURIComponent(p.id);
+        const note = String((p.launch || {}).note || "").trim();
+        return A.card(
+          p.name,
+          E(x.business) + " \xB7 asked " + ago((p.launch || {}).requestedAt) + " \xB7 " + c.pct + "% done",
+          (note ? '<p class="adm-help" style="margin:0 0 12px"><b>Their note:</b> ' + E(note) + "</p>" : "") + '<div class="adm-inline" style="margin-bottom:12px"><a class="btn sm" href="' + E(urls.site(w, p)) + '" target="_blank" rel="noopener">' + A.icon("out") + 'Preview the site</a><a class="btn sm ghost" href="/admin/hosts/' + E(w.id) + '">' + A.icon("home") + 'Their account</a></div><div class="adm-cols"><div>' + stepList(c) + '</div><form class="adm-form" method="post" action="' + act + '/save"><small class="adm-help">Write from their facts: ' + E([p.area, (p.amenities || []).slice(0, 6).join(", ")].filter(Boolean).join(" \xB7 ")) + ". Keep it true, plain and specific.</small>" + A.field("headline", p.headline, "Headline", { ph: "A larch cabin with a hot tub above Ambleside" }) + A.field("sub", p.sub, "Subheading", { ph: "Sleeps 4 \xB7 dogs welcome \xB7 10 minutes walk to the lake" }) + A.field("about", p.about, "About this home, 60 words or more", { area: true }) + A.field("summary", seo.summary, "Answer-first summary for AI search (80 characters or more)", { area: true }) + A.field("faqs", faqs, "FAQs, one per line: question | answer (3 or more)", { area: true }) + A.field("hostNote", p.hostNote, "A line from the host (optional)") + '<div class="row"><button class="btn sm" name="then" value="save">Save</button><button class="btn sm primary" name="then" value="publish">Save and publish</button></div></form><details class="adm-x" style="margin-top:10px"><summary>Send it back to the host</summary><form class="adm-form" method="post" action="' + act + '/return">' + A.field("note", "", "What they need to do (emailed to them and shown in their console)", { area: true, req: true }) + '<button class="btn sm">Send back</button></form></details></div>'
+        );
+      }
+      async function page(res, note, err) {
+        const all = await homes(), queue = all.filter((x) => x.st === "review").sort((a, b) => String((a.p.launch || {}).requestedAt).localeCompare(String((b.p.launch || {}).requestedAt)));
+        const building = all.filter((x) => x.st === "building").sort((a, b) => b.check.pct - a.check.pct);
+        const row = (x) => "<tr><td><b>" + E(x.p.name) + '</b><small><a href="/admin/hosts/' + E(x.w.id) + '">' + E(x.business) + '</a></small></td><td style="min-width:160px">' + bar(x.check.pct) + '</td><td class="wrap">' + E(x.check.left.map((s) => s.title).join(", ") || "Ready, waiting for them to press Go live") + "</td><td>" + (x.check.canAskTeam ? A.pill("info", "Can hand to us") : A.pill("muted", "Host steps left")) + '</td><td class="num">' + ago((x.p.launch || {}).since) + "</td></tr>";
+        const body = '<div class="adm-kpis">' + A.kpi("Waiting for the team", queue.length, "", queue.length ? "oldest first" : "All clear") + A.kpi("Still building", building.length, "", "hosts working through the checklist") + A.kpi("Ready to go live", building.filter((x) => x.check.complete).length, "", "all steps done, not published yet") + "</div>" + (queue.length ? '<div class="adm-stack">' + queue.map(reviewCard).join("") + "</div>" : '<div class="a-empty">' + A.icon("check") + "<p>No sites waiting for the team. Hosts hand theirs over from Website &amp; SEO when they get stuck.</p></div>") + '<section class="a-card a-flush" style="margin-top:18px"><div class="a-card-h" style="padding:18px 20px 0"><h3>Still building</h3><div class="a-card-m">' + building.length + " homes</div></div>" + A.table(["Home", "Done", "Still to do", "", "Started"], building.map(row), "No sites being built right now.") + "</section>";
+        return send(res, 200, A.shell({
+          email: await email(),
+          title: "Sites to finish",
+          active: "sites",
+          note,
+          err,
+          sub: "New sites stay offline until their checklist is done. Hosts hand a site to us once they have done the parts only they can do; we write and polish the words, then publish. Aim for about 15 minutes a site.",
+          body
+        }), "text/html; charset=utf-8", { "cache-control": "no-store" });
+      }
+      async function post(req, res, wid, pid, what) {
+        const f = await formBody(req), w = await ws.open(wid), p = w && (w.state.properties || []).find((x) => x.id === pid);
+        if (!p) return page(res, "", "That site was not found.");
+        if (what === "return") {
+          if (!String(f.note || "").trim()) return page(res, "", "Add a note so the host knows what to do.");
+          const r2 = await ws.withWs(wid, (BB) => BB.act.teamReturn(pid, f.note));
+          return r2 && r2.ok ? redirect(res, "/admin/sites?done=returned") : page(res, "", r2 && r2.error || "Could not send it back.");
+        }
+        const clip = (v, n) => String(v == null ? "" : v).trim().slice(0, n);
+        const r = await ws.withWs(wid, (BB) => {
+          BB.act.updateProperty(pid, { headline: clip(f.headline, 120), sub: clip(f.sub, 200), about: clip(f.about, 4e3), hostNote: clip(f.hostNote, 200) }, true);
+          BB.act.updateSeo(pid, { summary: clip(f.summary, 600) });
+          const s = BB.store.get();
+          s.website.faqs = s.website.faqs || {};
+          s.website.faqs[pid] = lines(f.faqs).map((l) => {
+            const i = l.indexOf("|");
+            return i < 0 ? "" : clip(l.slice(0, i), 200) + "|" + clip(l.slice(i + 1), 800);
+          }).filter((l) => l && !l.startsWith("|") && !l.endsWith("|")).slice(0, 20);
+          BB.log("site", "Bookingbooster team", "Polished the words on " + BB.q.property(pid).name + ".", pid, ["Website", "Bookingbooster team"]);
+          const out = f.then === "publish" ? BB.act.teamLaunch(pid) : { ok: true, saved: true };
+          BB.store.commit({ type: "property", id: pid });
+          return out;
+        });
+        if (!r || !r.ok) return page(res, "Saved.", "Not published yet. " + (r && r.error || ""));
+        return redirect(res, "/admin/sites?done=" + (r.saved ? "saved" : "published"));
+      }
+      async function route(req, res, p, m, u) {
+        if (p === "/admin/sites" && m === "GET") {
+          const d = u.searchParams.get("done");
+          return page(res, { saved: "Saved.", published: 'Published. The host gets their "site is live" email.', returned: "Sent back to the host." }[d] || "");
+        }
+        const mm = p.match(/^\/admin\/sites\/([A-Za-z0-9_-]+)\/([^/]+)\/(save|return)$/);
+        if (mm && m === "POST") return post(req, res, mm[1], decodeURIComponent(mm[2]), mm[3]);
+        return false;
+      }
+      return { route, count, homes };
+    };
+  }
+});
+
 // server/preflight.js
 var require_preflight = __commonJS({
   "server/preflight.js"(exports, module) {
@@ -25566,6 +25853,14 @@ var require_server = __commonJS({
       const s = await me(req);
       return !(s && s.workspace_id === w.id);
     }
+    var building = (p) => !!(p && p.launch && p.launch.state && p.launch.state !== "live");
+    async function previewer(req, w) {
+      const s = await me(req);
+      return !!s && (s.workspace_id === w.id || await isAdminEmail(s.email));
+    }
+    async function closedFrom(req, w, p) {
+      return await hiddenFrom(req, w) || building(p) && !await previewer(req, w);
+    }
     function comingSoon(res, w) {
       return send(res, 503, pages.plain({ title: "Coming soon", body: "<h1>" + E(w.state.account.business) + " is opening soon.</h1><p>This booking site is not live yet. Check back soon.</p>" }), "text/html; charset=utf-8", { "retry-after": "86400", "x-robots-tag": "noindex", "cache-control": "no-store" });
     }
@@ -25574,7 +25869,7 @@ var require_server = __commonJS({
     }
     async function autoIndex(w, o) {
       const s = w.state, out = [], now = (/* @__PURE__ */ new Date()).toISOString();
-      for (const prop of s.properties.filter((x) => x.published !== false)) {
+      for (const prop of s.properties.filter((x) => x.published !== false && !building(x))) {
         if (!(o && o.force) && !(prop.photos || []).some((x) => x && x.url)) continue;
         const site = urls.site(w, prop), origin = new URL(site).origin, sm = sitemapOf(w, site), cur = prop.indexing || {}, patch = {};
         if (google.enabled) {
@@ -25680,7 +25975,7 @@ var require_server = __commonJS({
         head: gsv + seo.head(s, p, canonical),
         content: seo.content(s, p, canonical),
         boot: publicBoot(w, "site", { state: st, focus: p.id, opts: { propertyId: p.id }, siteUrl: canonical }),
-        banner: stripeReady(w) ? null : w.kind === "live" ? null : "<b>Demo</b> No real bookings are taken here."
+        banner: building(p) ? "<b>Preview</b> Only you can see this. " + E(p.name) + " goes live when its site checklist is done." : stripeReady(w) ? null : w.kind === "live" ? null : "<b>Demo</b> No real bookings are taken here."
       }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
     }
     function tripPage(res, w, b, k, step) {
@@ -26290,7 +26585,7 @@ Disallow: /
         w.catchUp();
         const prop = w.state.properties.find((x) => x.id === dom.property_id);
         if (!prop) return notFound(res);
-        if (await hiddenFrom(req, w)) return comingSoon(res, w);
+        if (await closedFrom(req, w, prop)) return comingSoon(res, w);
         const canonical = "https://" + host.replace(/:\d+$/, "") + "/";
         if (p === "/robots.txt") return send(res, 200, seo.robots(canonical + "sitemap.xml"), "text/plain; charset=utf-8");
         if (p === "/sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, [[prop, canonical]], [canonical + "llms.txt"]), "application/xml");
@@ -26309,8 +26604,9 @@ Disallow: /
         if (!prop) return notFound(res);
         if (await hiddenFrom(req, w)) return comingSoon(res, w);
         const canonical = cfg.baseUrl + "/s/" + w.slug + "/" + prop.id;
+        if (mm[3] === "/sitemap.xml" || mm[2] === "sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, w.state.properties.filter((x) => !building(x)).map((x) => [x, cfg.baseUrl + "/s/" + w.slug + "/" + x.id])), "application/xml");
+        if (building(prop) && !await previewer(req, w)) return comingSoon(res, w);
         if (mm[3] === "/llms.txt" || mm[2] === "llms.txt") return send(res, 200, seo.llms(w.state, prop, canonical), "text/plain; charset=utf-8");
-        if (mm[3] === "/sitemap.xml" || mm[2] === "sitemap.xml") return send(res, 200, seo.sitemapFor(w.state, w.state.properties.map((x) => [x, cfg.baseUrl + "/s/" + w.slug + "/" + x.id])), "application/xml");
         if (!mm[2]) return redirect(res, canonical);
         return await sitePage(res, w, prop, canonical, null, req);
       }
@@ -26347,7 +26643,7 @@ Disallow: /
         for (const id of await ws.liveIds()) {
           const w = await ws.open(id);
           if (unpaid(w)) continue;
-          for (const x of w.state.properties) if (x.published !== false) list.push({ loc: urls.site(w, x), lastmod: w.state.today });
+          for (const x of w.state.properties) if (x.published !== false && !building(x)) list.push({ loc: urls.site(w, x), lastmod: w.state.today });
         }
         return send(res, 200, seo.sitemap(list.filter((x) => x.loc.startsWith(cfg.baseUrl))), "application/xml");
       }
@@ -26389,6 +26685,11 @@ Disallow: /
           return await U.detailPage(res, hm[1], r ? "Password reset link sent to " + r.user.email + ". It works for one hour." : "", r ? "" : "This account has no sign-in email.");
         }
         return notFound(res);
+      }
+      if (p === "/admin/sites" || p.startsWith("/admin/sites/")) {
+        if (!await isAdmin(req)) return notFound(res);
+        if (await sitesAdmin(req).route(req, res, p, m, u) === false) return notFound(res);
+        return;
       }
       if (p === "/admin/outreach" || p.startsWith("/admin/outreach/")) {
         if (!await isAdmin(req)) return notFound(res);
@@ -26616,7 +26917,7 @@ Disallow: /
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);
           const name = String(j.name || "");
-          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
+          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing", "teamLaunch", "teamReturn"].includes(name)) throw err(403, "That action is not available in a live account.");
           if (name === "toggleIntegration" && j.args) {
             const iid = j.args[0], cur = w.state.integrations.find((i) => i.id === iid);
             if (!cur) throw err(404, "Unknown connection");
@@ -26803,6 +27104,7 @@ Disallow: /
       const u = await me(req);
       return isAdminEmail(u && u.email);
     };
+    var sitesAdmin = (req) => require_admin_sites()({ db, ws, urls, ui: adminUi, E, send, redirect, formBody, email: async () => (await me(req) || {}).email });
     var usersAdmin = (req) => adminUsers({
       db,
       ws,
@@ -26894,7 +27196,7 @@ Disallow: /
       }
       const since = Date.now() - 30 * 864e5;
       const hour = +(/* @__PURE__ */ new Date()).toLocaleString("en-GB", { timeZone: "Europe/London", hour: "2-digit", hour12: false });
-      const launch = await launchCard(A);
+      const launch = await launchCard(A), sitesWaiting = await sitesAdmin(req).count();
       const needs = waiting.length ? '<section class="a-card a-flush">' + A.table(LEAD_HEADS, waiting.map(leadRow)) + "</section>" : '<div class="a-empty">' + A.icon("check") + "<p>Nothing is waiting for you. Lead emails are going out by themselves.</p></div>";
       return shell({
         title: "Overview",
@@ -26902,7 +27204,7 @@ Disallow: /
         active: "overview",
         sub: "Leads and accounts \xB7 " + leadRows.length + " leads \xB7 " + accts.length + " host accounts. Emails go out automatically; anything marked \u201CWaiting for you\u201D needs a person.",
         actions: '<a class="btn sm" href="/admin/leads">' + A.icon("users") + 'All leads</a><a class="btn sm" href="/admin/campaigns">' + A.icon("mail") + "Email campaigns</a>",
-        body: launch + '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email || l.phone || "") + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
+        body: launch + '<div class="adm-kpis">' + A.kpi("Leads, last 30 days", leadRows.filter((l) => l.created_at > since).length, "", leadRows.length + " in total") + A.kpi("Waiting for you", waiting.length, waiting.length ? "" : "All clear", "need a person to act") + A.kpi("Sites to finish", sitesWaiting ? '<a href="/admin/sites">' + sitesWaiting + "</a>" : 0, sitesWaiting ? "" : "All clear", "handed to the team by hosts") + A.kpi("Host accounts", accts.length, "", accts.filter((a) => a.billing_status === "active").length + " paying") + A.kpi("AI used, 30 days", credits.money(aiTotal), "", "by all hosts", true) + "</div>" + await marketingRow(A) + '<div class="a-grid adm-top"><div class="a-s8">' + A.card("Waiting for you", waiting.length + " lead" + (waiting.length === 1 ? "" : "s"), needs, waiting.length ? "a-flush" : "").replace('<div class="a-card-h">', waiting.length ? '<div class="a-card-h" style="padding:18px 20px 0">' : '<div class="a-card-h">') + '</div><div class="a-s4 adm-stack">' + A.card("Newest leads", '<a href="/admin/leads">See all</a>', '<div class="adm-list">' + (leadRows.slice(0, 6).map((l) => "<div><span><b>" + E(l.email || l.phone || "") + "</b><small>" + E(l.kind) + " \xB7 " + d(l.created_at) + "</small></span></div>").join("") || "<div><span><small>No leads yet.</small></span></div>") + "</div>") + stripeCard + "</div></div>"
       });
     }
     async function launchCard(A) {

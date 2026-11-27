@@ -421,6 +421,14 @@
       btn: '<button class="btn sm" data-a="nav" data-view="connections">' + ic('card') + 'Connect</button>' });
     s.properties.forEach(p => {
       const where = one ? p.short + ': ' : '', go = 'data-a="nav" data-view="website" data-id="' + esc(p.id) + '"', n = (p.photos || []).length;
+      // A home that is not live yet has one row: its site checklist, with the percentage (site-ready.js).
+      if (BB.ready && !BB.ready.isOpen(p)) {
+        const c = BB.ready.check(p), rv = BB.ready.stateOf(p) === 'review';
+        out.push({ tone: rv ? 'info' : 'bad', icon: 'web', title: where + (rv ? 'Our team is finishing your website' : c.complete ? 'Your website is ready to go live' : 'Finish your website: ' + c.pct + '% done'),
+          sub: rv ? 'We email you when it is live, usually within 2 working days.' : c.complete ? 'Every step is done. Press Go live in Website & SEO.' : 'Guests see "opening soon" until it is done. Next: ' + c.left.slice(0, 2).map(x => x.title.toLowerCase()).join(', ') + '.', open: go,
+          btn: '<button class="btn sm" ' + go + '>' + ic('web') + (rv ? 'See it' : c.complete ? 'Go live' : 'Continue') + '</button>' });
+        return;
+      }
       if (n < 10) out.push({ tone: n ? 'warn' : 'bad', icon: 'web', title: where + (n ? 'Add ' + plural(10 - n, 'more photo') : 'Add your photos'),
         sub: n ? n + ' of 10 added. Homes with 10 or more photos get more bookings.' : 'Your site shows a drawing of a home until you add your own photos.', open: go,
         btn: '<button class="btn sm" ' + go + '>' + ic('web') + 'Add photos</button>' });
@@ -486,7 +494,7 @@
           '<div class="a-s4 a-last">' + card('Where bookings came from', 'Last 12 months', sources) + '</div>' +
           '<div class="a-s4">' + card('AI visibility', ai.total + ' tracked questions', '<button class="a-tile a-ai" data-a="nav" data-view="ai">' + gauge(ai.score) + '<span><b>Mentioned in ' + ai.mentioned + ' of ' + ai.total + '</b><span class="muted">' + (task ? 'Next: ' + esc(task.text) + '.' : s.ai.checkedAt ? 'Every suggested fix is done.' : 'Not checked yet.') + '</span></span></button>') + '</div>' +
           '<div class="a-s4">' + card('Last campaign', sent ? 'Sent ' + D.fmt(sent.sentAt) : '', camp) + '</div>' +
-          '<div class="a-s4 a-last">' + card('Websites', plural(s.properties.filter(p => p.published).length, 'site') + ' live',
+          '<div class="a-s4 a-last">' + card('Websites', plural(s.properties.filter(p => p.published && (!BB.ready || BB.ready.isOpen(p))).length, 'site') + ' live',
             '<button class="a-tile" data-a="nav" data-view="website"><div class="a-trow"><span>Visitors, 30 days<em>' + pct(s.website.fromSearch) + ' from Google and AI answers</em></span><b class="num">' + vis.toLocaleString('en-GB') + '</b></div>' +
             '<div class="a-trow"><span>Booking conversion<em>Visit to paid stay</em></span><b class="num">' + ((m.conversion || 0) * 100).toFixed(1) + '%</b></div>' +
             '<div class="a-trow"><span>Direct stays this year<em>Booked on your sites</em></span><b class="num">' + m.directYearCount + '</b></div></button>') + '</div>' +

@@ -214,12 +214,30 @@ module.exports = function (ctx) {
   }
   // An unpaid sign-up's site is still offline ("opening soon"), so its "site is live" email waits for the first payment (siteLive).
   const unpaid = async w => { if (!stripe.enabled || w.kind !== 'live') return false; const r = await ws.row(w.id); return !r || !r.billing_status || r.billing_status === 'trial' || r.billing_status === 'cancelled'; };
-  async function siteLive(wid) { const w = await ws.open(wid); if (!w) return; for (const p of w.state.properties) if (p.published !== false) await hostEmail(w, { propertyId: p.id }, true); }
+  // A home still "building" (web/src/site-ready.js) gets its "site is live" email when it goes live (site.launched).
+  const building = p => !!(p.launch && p.launch.state && p.launch.state !== 'live');
+  async function siteLive(wid) { const w = await ws.open(wid); if (!w) return; for (const p of w.state.properties) if (p.published !== false && !building(p)) await hostEmail(w, { propertyId: p.id }, true); }
   async function hostEmail(w, d, paid) {
     if (!paid && await unpaid(w)) return;
-    const s = w.state; const p = s.properties.find(x => x.id === d.propertyId); if (!p) return;
+    const s = w.state; const p = s.properties.find(x => x.id === d.propertyId); if (!p || building(p)) return;
     const v = { first_name: first(s.account.owner), property_name: p.name, site_domain: p.domain, site_url: urls.site(w, p), pages_live: '6', account_url: cfg.baseUrl + '/app', website_editor_url: cfg.baseUrl + '/app', share_kit_url: cfg.baseUrl + '/app', help_url: cfg.baseUrl + '/help', company_address: cfg.company.address, company_number: cfg.company.number, vat_number: cfg.company.vat, privacy_url: cfg.baseUrl + '/privacy', unsubscribe_url: cfg.baseUrl + '/app', preferences_url: cfg.baseUrl + '/app' };
     await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: p.name + ' is live', text: p.name + ' is live at ' + v.site_url + '. Open your console: ' + v.account_url, html: msg.template('host-o03-site-live', v), meta: { template: 'site-live' } });
+  }
+
+  // The host handed their site to the team: tell the team, who finish it at /admin/sites.
+  async function siteReview(w, d) {
+    const s = w.state, p = s.properties.find(x => x.id === d.propertyId); if (!p) return;
+    const to = (cfg.admins || []).length ? cfg.admins.join(',') : cfg.company.support; if (!to) return;
+    const note = String((p.launch || {}).note || '').trim();
+    const text = s.account.business + ' asked us to finish ' + p.name + ' and publish it.' + (note ? '\n\nTheir note: ' + note : '') + '\n\nOpen the queue: ' + cfg.baseUrl + '/admin/sites';
+    await msg.sendEmail({ to, subject: 'Site to finish: ' + p.name, text, meta: { template: 'site-review', workspace: w.id, propertyId: p.id } });
+  }
+  // The team sent the site back with a note: the host sees it in the console too.
+  async function siteReturned(w, d) {
+    const s = w.state, p = s.properties.find(x => x.id === d.propertyId); if (!p) return;
+    const note = String((p.launch || {}).teamNote || '').trim();
+    const text = 'Hi ' + first(s.account.owner) + ', we looked at ' + p.name + ' and need one thing from you before we can publish it:\n\n' + note + '\n\nOpen Website & SEO in your console to finish it: ' + cfg.baseUrl + '/app#website';
+    await msg.sendEmail({ workspaceId: w.id, to: s.account.email, subject: 'One thing to finish on ' + p.name, text, meta: { template: 'site-returned' } });
   }
 
   async function run(w, list) {
@@ -240,6 +258,9 @@ module.exports = function (ctx) {
         else if (f.type === 'payment.invoice') await invoiceEmail(w, d);
         else if (f.type === 'lock.code') await lockCode(w, d);
         else if (f.type === 'email.host') await hostAlert(w, d);
+        else if (f.type === 'site.launched') await hostEmail(w, d);
+        else if (f.type === 'site.review') await siteReview(w, d);
+        else if (f.type === 'site.returned') await siteReturned(w, d);
         else if (f.type === 'property.added') { await hostEmail(w, d); await ws.withWs(w.id, () => {}); }
       } catch (e) { log('effect ' + f.type + ' failed:', e.message); }
     }

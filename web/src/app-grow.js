@@ -86,6 +86,7 @@
     if (scope === 'gu') { inst.st['gu_' + key] = el.value; inst.render(); }
     if (scope === 'cp') { const e = inst.st.cp_edit; if (!e) return; e[key] = el.type === 'number' ? Number(el.value) : el.value; inst.render(); }
     if (scope === 'ws') { const d = wsDraft(inst); d[key] = el.type === 'number' ? Math.max(0, Number(el.value) || 0) : el.value; inst.render(); }
+    if (scope === 'rd') { inst.st.rd_note = el.value; return; }
     if (scope === 'ct') { inst.st['ct_' + key] = el.value; if (key === 'q') { inst.st.ct_all = false; inst.render(); } return; }
     if (scope === 'of') { inst.st.gu_offer[key] = el.value; inst.render(); }
     if (scope === 'faq') { inst.st['ws_faq_' + key] = el.value; }
@@ -206,6 +207,19 @@
     'ws-discard': inst => { inst.st.ws_d[inst.st.ws_pid] = {}; inst.render(); },
     'ws-page': (inst, v) => inst.set({ ws_page: v }),
     'ws-faq': inst => inst.set({ ws_faq_open: !inst.st.ws_faq_open, ws_faq_err: null }),
+    /* site checklist (site-ready.js): jump to a step, go live, or hand it to the team */
+    'rd-go': (inst, v) => {
+      const k = { photos: 'photos', facts: 'wsamenitiesText', address: 'wsaddress', entry: 'wsentry', headline: 'wsheadline', about: 'wsabout', hostNote: 'wshostNote', guide: 'wsguideText', domain: 'domain' }[v];
+      if (v === 'payouts') return nav(inst, 'connections');
+      if (v === 'summary') return nav(inst, 'seo');
+      if (v === 'faqs') { inst.set({ ws_page: 'faq', ws_faq_open: true }); return; }
+      const el = k && (document.getElementById(ID(inst, k)) || document.getElementById(ID(inst, k.replace(/^ws/, ''))));
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (el.focus && /INPUT|TEXTAREA/.test(el.tagName)) setTimeout(() => el.focus({ preventScroll: true }), 300); }
+    },
+    'rd-live': inst => { const r = BB.act.goLive(inst.st.ws_pid) || {}; if (r.ok) { BB.toast('You are live. Guests and search engines can see your site now.', 'good'); inst.render(); } else BB.toast(r.error || 'Not ready yet', 'bad'); },
+    'rd-ask': inst => inst.set({ rd_ask: !inst.st.rd_ask }),
+    'rd-send': inst => { const r = BB.act.requestSiteReview(inst.st.ws_pid, inst.st.rd_note || '') || {}; if (r.ok) { inst.set({ rd_ask: false, rd_note: '' }); BB.toast('Sent to our team. We finish and publish it within 2 working days.', 'good'); } else BB.toast(r.error || 'Could not send it', 'bad'); },
+    'rd-cancel': inst => { BB.act.cancelSiteReview(inst.st.ws_pid); BB.toast('Back with you. Carry on with the checklist.'); },
     /* ai */
     'ai-do': (inst, v) => { const before = BB.aiScore().score; BB.act.completeAiTask(v); const after = BB.aiScore().score; inst.set({ ai_delta: after - before }); BB.toast('Done. Visibility score is now ' + after, 'good'); },
     'ai-q': (inst, v) => inst.set({ ai_q: +v }),
@@ -692,7 +706,7 @@
   }
   function photoCard(inst, p) {
     const ph = (p.photos || []), up = inst.st.ws_up;
-    return '<section class="a-card ag-card"><div class="a-card-h"><h3>Photos</h3><span class="ag-meta">' + (ph.length ? ph.length + ' of 24 · the first one is the cover' : 'Add your own photos') + '</span></div>' +
+    return '<section class="a-card ag-card" id="' + ID(inst, 'photos') + '"><div class="a-card-h"><h3>Photos</h3><span class="ag-meta">' + (ph.length ? ph.length + ' of 24 · the first one is the cover' : 'Add your own photos') + '</span></div>' +
       (ph.length ? '<div class="ag-photos">' + ph.map((x, i) => '<figure class="ag-ph"><img src="' + esc(x.url) + '" alt="' + esc(x.cap || p.name) + '" loading="lazy"><input aria-label="Caption for photo ' + (i + 1) + '" data-agcap="' + i + '" placeholder="Caption, e.g. Living room" value="' + esc(x.cap || '') + '"><div>' +
         (i ? '<button type="button" class="btn sm ghost" data-ag="ws-ph-cover" data-v="' + i + '">Make cover</button>' : '<span class="ag-ph-c">Cover</span>') + '<button type="button" class="btn sm ghost" data-ag="ws-ph-del" data-v="' + i + '" aria-label="Remove photo ' + (i + 1) + '">' + I('x') + '</button></div></figure>').join('') + '</div>'
         : '<p class="muted ag-p">Until you add photos, your site shows a drawing of your home. Photos make the biggest difference to bookings.</p>') +
@@ -755,6 +769,33 @@
     }
     inst.set({ ws_up: null }); BB.toast('Photos added to your site', 'good');
   }
+  // The site checklist: what a professional booking site needs, with a percentage. The home stays offline ("opening
+  // soon") until every required step is done and the host goes live, or hands it to our team (web/src/site-ready.js).
+  function readyCard(inst, p0, draftP, changed) {
+    if (!BB.ready || BB.ready.isOpen(p0)) return '';
+    const st = inst.st, L = p0.launch || {}, c = BB.ready.check(draftP), saved = BB.ready.check(p0);
+    const row = x => '<li class="' + (x.done ? 'done' : '') + '"><span class="ag-rd-i">' + I(x.done ? 'check' : 'plus') + '</span><div><b>' + esc(x.title) + (!x.done && x.who === 'host' && !x.optional ? ' <em>Only you</em>' : '') + '</b><small>' + esc(x.why) + '</small></div>' +
+      (x.done ? '' : '<button type="button" class="btn sm" data-ag="rd-go" data-v="' + x.id + '">' + (x.who === 'host' ? 'Add it' : 'Write it') + '</button>') + '</li>';
+    const req = c.steps.filter(x => !x.optional), opt = c.steps.filter(x => x.optional);
+    const head = '<div class="ag-rd-top"><div class="ag-rd-pct num">' + c.pct + '%</div><div><b>' + (L.state === 'review' ? 'Our team is finishing your site' : c.complete ? 'Ready to go live' : 'Your site is ' + c.pct + '% built') + '</b><small>' +
+      (L.state === 'review' ? 'Sent to us ' + esc(L.requestedAt ? BB.ago(L.requestedAt) : '') + '. We write and polish the words, then publish it, usually within 2 working days. We email you when it is live.'
+        : 'Guests and Google see an "opening soon" page until every step is done. ' + c.done + ' of ' + c.required + ' done.') + '</small></div></div>' +
+      '<div class="ag-rd-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + c.pct + '" aria-label="Site checklist"><i style="width:' + c.pct + '%"></i></div>';
+    const back = L.state === 'building' && L.teamNote ? '<div class="ag-banner warn">' + I('edit') + '<p><b>A note from our team:</b> ' + esc(L.teamNote) + '</p></div>' : '';
+    let acts = '';
+    if (L.state === 'review') acts = '<button class="btn sm ghost" data-ag="rd-cancel">I will finish it myself</button>';
+    else if (saved.complete) acts = '<button class="btn primary" data-ag="rd-live">' + I('send') + 'Go live</button>';
+    else {
+      acts = (changed ? '<span class="ag-meta">Publish your changes to save them to the checklist.</span>' : '') +
+        (saved.canAskTeam ? '<button class="btn sm" data-ag="rd-ask">Stuck? Our team will finish it</button>' : '<span class="ag-meta">Stuck on the words? Once the steps marked “only you” are done, our team can write the rest and publish it for you.</span>');
+    }
+    const ask = st.rd_ask && L.state === 'building' && saved.canAskTeam ? '<div class="ag-form ag-rd-ask"><label class="field"><span>Anything we should know? (optional)</span><textarea data-agf="rd.note" rows="2" placeholder="E.g. we are dog friendly and 5 minutes from the beach. Please keep it warm, not salesy.">' + esc(st.rd_note || '') + '</textarea></label>' +
+      '<p class="ag-note">' + I('bolt') + '<span>We write the headline, description, FAQs and AI search summary from your details, check the site on a phone, then publish it and email you. Included in your plan.</span></p><div class="ag-acts-row"><button class="btn sm primary" data-ag="rd-send">Send to our team</button><button class="btn sm ghost" data-ag="rd-ask">Cancel</button></div></div>' : '';
+    return '<section class="a-card ag-card ag-rd" id="' + ID(inst, 'ready') + '"><div class="a-card-h"><h3>Finish your website</h3><span class="ag-meta">' + (L.state === 'review' ? 'With our team' : 'Not live yet') + '</span></div>' + head + back +
+      '<ul class="ag-rd-list">' + req.filter(x => !x.done).map(row).join('') + req.filter(x => x.done).map(row).join('') + '</ul>' +
+      '<details class="ag-rd-opt"><summary>Extras that help (' + opt.filter(x => x.done).length + ' of ' + opt.length + ')</summary><ul class="ag-rd-list">' + opt.map(row).join('') + '</ul></details>' +
+      '<div class="ag-acts-row ag-rd-acts">' + acts + '</div>' + ask + '</section>';
+  }
   function wsDraft(inst) { const st = inst.st; st.ws_d = st.ws_d || {}; const pid = st.ws_pid || S().properties[0].id; st.ws_pid = pid; return (st.ws_d[pid] = st.ws_d[pid] || {}); }
   const THEMES = [['cabin', 'Fell cabin', 'Larch, slate and moss, serif headings'], ['lake', 'Harbour cottage', 'Sea blues and whitewash, clean type'], ['city', 'Georgian townhouse', 'Bath stone, editorial type']];
   const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -781,9 +822,10 @@
       const th = THEMES.find(t => t[0] === p.theme) || THEMES[0];
       return wrap(inst, 'ag-web',
         vh('Website & SEO', S().live ? 'Each home has its own booking site. Edit it here and publish. Search engines and AI assistants can read every page.' : 'Each home has its own booking site on its own .co.uk domain. Edit it here, publish, and Google picks it up.',
-          '<button class="btn" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + 'View live site</button><button class="btn primary" data-ag="ws-publish"' + (changed.length ? '' : ' disabled') + '>' + I('send') + (changed.length ? 'Publish ' + changed.length + (changed.length === 1 ? ' change' : ' changes') : 'Publish changes') + '</button>') +
+          '<button class="btn" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + (BB.ready && !BB.ready.isOpen(p0) ? 'Preview site' : 'View live site') + '</button><button class="btn primary" data-ag="ws-publish"' + (changed.length ? '' : ' disabled') + '>' + I('send') + (changed.length ? 'Publish ' + changed.length + (changed.length === 1 ? ' change' : ' changes') : 'Publish changes') + '</button>') +
         '<div class="ag-ptabs" role="tablist" aria-label="Homes" id="' + ID(inst, 'ptabs') + '">' + s.properties.map(x => '<button type="button" role="tab" aria-selected="' + (x.id === p0.id) + '" data-ag="ws-pid" data-v="' + x.id + '">' + hero(x, 'ag-thumb') + '<span><b>' + esc(x.name) + '</b><small class="mono">' + esc(x.domain) + '</small></span>' + ((st.ws_d[x.id] && Object.keys(st.ws_d[x.id]).some(k => st.ws_d[x.id][k] !== x[k])) ? '<i class="ag-dot" title="Unpublished changes"></i>' : '') + '</button>').join('') + '</div>' +
-        (st.ws_pub === p0.id && !changed.length ? '<div class="ag-banner good">' + I('check') + '<p>Published to <b class="mono">' + esc(p0.domain) + '</b>. Guests see the new version now, and Google gets the updated pages on its next crawl.</p><button class="btn sm" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + 'View live site</button></div>' : '') +
+        readyCard(inst, p0, Object.assign({}, p0, wsPatch(p0, d)), changed.length > 0) +
+        (st.ws_pub === p0.id && !changed.length ? '<div class="ag-banner good">' + I('check') + (BB.ready && !BB.ready.isOpen(p0) ? '<p>Saved. Guests see it once your site goes live; the checklist above shows what is left.</p>' : '<p>Published to <b class="mono">' + esc(p0.domain) + '</b>. Guests see the new version now, and Google gets the updated pages on its next crawl.</p>') + '<button class="btn sm" data-ag-nav="property" data-ag-id="' + p0.id + '">' + I('out') + 'View live site</button></div>' : '') +
         (changed.length ? '<div class="ag-banner info">' + I('edit') + '<p><b>' + changed.length + ' unpublished ' + (changed.length === 1 ? 'change' : 'changes') + '</b>: ' + changed.map(k => ({ theme: 'theme', headline: 'headline', sub: 'subheading', about: 'about', nightly: 'nightly rate', weekend: 'weekend uplift', cleaning: 'cleaning fee', petsAllowed: 'dog policy', petFee: 'dog fee', address: 'address', wifiSsid: 'Wi-Fi name', wifiPw: 'Wi-Fi password', parking: 'parking', checkinTime: 'check-in time', checkoutTime: 'checkout time', minNights: 'minimum nights', entry: 'how guests get in', amenitiesText: 'amenities', rulesText: 'house rules', guideText: 'area guide', hostNote: 'host note', nukiId: 'smart lock' }[k] || k)).join(', ') + '.</p><div class="ag-acts-row"><button class="btn sm primary" data-ag="ws-publish">Publish</button><button class="btn sm ghost" data-ag="ws-discard">Discard</button></div></div>' : '') +
         (!stripe ? '<div class="ag-banner warn">' + I('plug') + (S().live ? '<p>Connect Stripe to take instant card bookings. Until then your site takes booking requests and you send a payment link.</p><button class="btn sm" data-ag-nav="connections">Connect Stripe</button></div>' : '<p>Stripe is disconnected, so ' + esc(p0.domain) + ' takes booking requests instead of instant bookings.</p><button class="btn sm" data-ag-nav="connections">Reconnect</button></div>') : '') +
         '<div class="ag-cols ag-cols-web">' +

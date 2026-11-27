@@ -628,10 +628,12 @@
     const id = (data.name || 'home').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) + '-' + (++S().seq);
     const blank = S().live ? { wifi: { ssid: '', pw: '' }, address: '', entry: '', amenities: [], parking: '' } : {}; // live homes start empty, the host fills in real details
     const p = Object.assign({ id, short: data.name.split(' ').slice(0, 2).join(' '), theme: 'cabin', nightly: 145, weekend: 25, cleaning: 65, petFee: 0, petsAllowed: false, maxGuests: 4, bedrooms: 2, baths: 1, minNights: 2, lockPrefix: '66', wifi: { ssid: 'Guest', pw: 'welcome123' }, amenities: ['Fast Wi-Fi', 'Self check-in', 'Free parking'], rules: ['Quiet hours are 10 pm to 8 am.', 'No parties or events.'], parking: 'Driveway', checkinTime: '4 pm', checkoutTime: '11 am', rating: 4.9, reviews: 0, published: true, color: '#3355FF', headline: 'Book direct and save.', sub: '', about: '', area: '' }, blank, data, { id });
+    // A real home starts "building": guests see an opening-soon page until the site checklist is done (site-ready.js).
+    if (S().live) p.launch = { state: 'building', since: S().today + 'T' + S().clock }; else delete p.launch;
     S().properties.push(p); S().website.visitors[id] = 0;
     if (S().live) { S().account.onboarded = true; if (BB.aiQuestionsFor) S().ai.questions.push(...BB.aiQuestionsFor(p)); fx('property.added', { propertyId: id }); }
     log('site', 'Onboarding', 'Imported ' + p.name + ' with photos, ' + p.reviews + ' reviews and house rules.', id, ['Listing link', 'Bookingbooster']);
-    log('site', 'Website builder', p.domain + ' is live with booking, check-in and SEO pages.', id, ['Bookingbooster', p.domain]);
+    log('site', 'Website builder', S().live ? p.domain + ' is built with booking, check-in and SEO pages. Finish the site checklist to go live.' : p.domain + ' is live with booking, check-in and SEO pages.', id, ['Bookingbooster', p.domain]);
     BB.store.commit({ type: 'property', id }); return p;
   };
   A.completeAiTask = function (taskId) {

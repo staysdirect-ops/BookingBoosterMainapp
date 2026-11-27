@@ -6,7 +6,7 @@ const start = require('./harness');
 const { Workspace, seedDemo } = require('../server/engine');
 
 let t;
-test.before(async () => { t = await start(); await t.signup(); });
+test.before(async () => { t = await start(); await t.signup(); await t.launch(); });
 test.after(() => t.stop());
 
 test('the audit scores every kind of search work and orders the fixes', () => {

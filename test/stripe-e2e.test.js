@@ -51,6 +51,9 @@ test('the return from Checkout and the webhook racing each other send one welcom
   const [done, wh] = await Promise.all([t.call('/app/pay/done?session=' + planSession), hook(ev)]);
   assert.equal(done.headers.get('location'), '/app?welcome=1'); assert.equal(wh.status, 200);
   assert.equal(await status(), 'active');
+  assert.equal((await fetch(t.base + '/s/' + slug + '/')).status, 503, 'paid, but still building until the site checklist is done');
+  await new Promise(r => setTimeout(r, 800)); assert.equal(await count("meta LIKE '%site-live%'"), 0, 'no "site is live" email while it is building');
+  await t.finish();
   assert.equal((await fetch(t.base + '/s/' + slug + '/')).status, 200, 'site is live to guests');
   await t.until(async () => await count("meta LIKE '%site-live%'") > 0);
   await new Promise(r => setTimeout(r, 1500));
