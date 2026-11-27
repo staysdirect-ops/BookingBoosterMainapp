@@ -447,6 +447,25 @@
   }
   function needRow(n) { return '<div class="a-row a-need t-' + n.tone + '" ' + n.open + ' role="link" tabindex="0"><span class="a-ico">' + ic(n.icon) + '</span><span class="a-row-t"><b>' + esc(n.title) + '</b><span>' + esc(n.sub) + '</span></span><span class="a-row-m">' + (n.btn || '') + '</span></div>'; }
 
+  // All channels on the dashboard: what it is doing for the host when on, and what they would get when off.
+  function allChannels() {
+    const s = S(), i = BB.q.integration('channex'); if (!i) return '';
+    const g = (BB.BOOT && BB.BOOT.channex) || null, waiting = s.live && (!g || !g.live);
+    if (!i.connected) {
+      if (s.account.hideHub) return '';
+      return '<div class="a-s12"><section class="a-card a-hub"><div class="a-hub-t"><span class="eyebrow">Add-on</span><h3>List your homes on every booking site, from here</h3><p>Airbnb, Booking.com, Vrbo, Expedia and 70+ more, all fed from your one calendar. A booking anywhere closes the dates everywhere, a price change here updates every site, and every booking lands in this console. From £' + BB.ALL_CHANNELS.addon + ' a month, with no channel manager to pay for.</p></div>' +
+        '<ul class="a-hub-p"><li>' + ic('check') + 'No double bookings</li><li>' + ic('check') + 'One price list everywhere</li><li>' + ic('check') + 'Every booking in one place</li></ul>' +
+        '<div class="a-hub-a"><button class="btn primary sm" data-a="nav" data-view="connections">See All channels' + ic('arrow') + '</button><button class="btn ghost sm" data-hidehub>Not now</button></div></section></div>';
+    }
+    const fut = s.blocks.filter(k => k.sync === 'channex' && k.to > s.today);
+    const sites = [...new Set(s.blocks.filter(k => k.sync === 'channex' && k.ota).map(k => k.ota))];
+    const live = Object.values(i.map || {}).filter(m => m && m.rate).length;
+    const sub = waiting ? 'Switching on soon' + (g && g.need ? ' · ' + Math.min(g.paying, g.need) + ' of ' + g.need + ' hosts' : '') : i.error ? 'Needs a look' : plural(live, 'home') + ' listed';
+    return '<div class="a-s12"><section class="a-card a-hub on"><div class="a-hub-t"><span class="eyebrow">All channels · ' + (s.account.tier === 'all' ? 'dates and prices' : 'dates') + '</span><h3>' + (waiting ? 'You are on the list for All channels' : 'Your homes are in step on every site') + '</h3><p>' +
+      (waiting ? 'Your homes are listed automatically the moment it switches on. Calendar links keep you covered until then.' : i.error ? esc(i.error) : (i.lastSync ? 'Last sent ' + esc(BB.ago(i.lastSync)) + '. ' : '') + (sites.length ? 'Bookings from ' + esc(sites.join(', ')) + ' land here by themselves.' : 'Connect Airbnb, Booking.com or Vrbo to each home and their bookings land here by themselves.')) + '</p></div>' +
+      '<div class="a-minis"><div><span>Status</span><b>' + esc(sub) + '</b></div><div><span>Coming up from other sites</span><b class="num">' + fut.length + '</b></div><div><span>Sites with bookings</span><b class="num">' + sites.length + '</b></div></div>' +
+      '<div class="a-hub-a"><button class="btn sm" data-a="nav" data-view="connections">' + (waiting ? 'See details' : 'Connect sites') + ic('arrow') + '</button></div></section></div>';
+  }
   V.dashboard = {
     label: 'Dashboard', group: 'Run', icon: 'dash', order: 10,
     render(inst) {
@@ -479,7 +498,7 @@
         '<span class="a-tile-f">' + BB.money(sent.revenue) + ' in direct bookings' + ic('arrow') + '</span></button>' : '<div class="a-empty"><p>No campaigns sent yet.</p><button class="btn sm" data-a="nav" data-view="campaigns">Write your first campaign</button></div>';
       return vh(hello + ', ' + esc(fst(s.account.owner)), esc(D.fmt(t, { weekday: 'long', month: 'long' })) + ' · ' + sum,
           '<button class="btn sm" data-a="nav" data-view="calendar">' + ic('cal') + 'Calendar</button><button class="btn sm" data-a="nav" data-view="checkin">' + ic('key') + 'Check-in board</button>') +
-        '<div class="a-grid">' + kpis +
+        '<div class="a-grid">' + kpis + allChannels() +
           '<div class="a-s8">' + card('Direct revenue: new vs returning guests', 'Earned per night, GBP', revChart(m)) + '</div>' +
           '<div class="a-s4 a-last">' + card('Today', D.fmt(t, { weekday: 'short' }), today.length ? '<div class="a-list a-today">' + today.join('') + '</div>' : '<div class="a-empty"><p>No arrivals, departures or messages today.</p></div>') + '</div>' +
           '<div class="a-s8">' + card('Needs you', needs.length ? plural(needs.length, 'item') : 'All clear', needs.length ? '<div class="a-list a-needs">' + needs.map(needRow).join('') + '</div>' : '<div class="a-empty">' + ic('check') + '<p>You are all caught up. Deposits, check-ins and messages are handled.</p></div>') + '</div>' +
@@ -494,7 +513,8 @@
     },
     click(ev, inst) {
       const r = ev.target.closest('[data-remind]'); if (r) { if (BB.act.remindCheckin(r.dataset.remind)) BB.toast('Reminder sent to ' + fst(gOf(BB.q.booking(r.dataset.remind)).name), 'good'); return; }
-      const p = ev.target.closest('[data-paid]'); if (p) { BB.act.markPaid(p.dataset.paid); BB.toast('Marked as paid'); }
+      const p = ev.target.closest('[data-paid]'); if (p) { BB.act.markPaid(p.dataset.paid); BB.toast('Marked as paid'); return; }
+      if (ev.target.closest('[data-hidehub]')) { BB.act.updateAccount({ hideHub: true }); BB.toast('Hidden. All channels is always in Connections.'); }
     },
     keydown(ev, inst) { if (ev.key === 'Enter' && ev.target.matches('.a-need[data-a]')) ev.target.click(); },
   };

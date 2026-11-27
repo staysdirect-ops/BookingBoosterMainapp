@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const PLANS = [
   ['GROWTH', 'Bookingbooster Growth', 197],
   ['CALENDAR_SYNC', 'Bookingbooster calendar sync add-on', 15],
+  ['ALL_CHANNELS', 'Bookingbooster All channels (calendar and price sync to every booking site)', 29], // instead of the £15 add-on, not on top
 ];
 const PLATFORM_EVENTS = ['checkout.session.completed', 'checkout.session.expired', 'customer.subscription.updated', 'customer.subscription.deleted', 'invoice.payment_failed', 'invoice.paid', 'charge.refunded', 'charge.dispute.closed'];
 const CONNECT_EVENTS = ['account.updated'];
@@ -57,7 +58,7 @@ async function makePrices(stripe) {
     const prod = await product(env, name);
     prices['STRIPE_PRICE_' + env] = await price(env, prod.id, monthly, 'month');
     // yearly: plans are 10 months' price (2 months free); the add-on is 12 × £15
-    prices['STRIPE_PRICE_' + env + '_ANNUAL'] = await price(env, prod.id, env === 'CALENDAR_SYNC' ? monthly * 12 : monthly * 10, 'year');
+    prices['STRIPE_PRICE_' + env + '_ANNUAL'] = await price(env, prod.id, ['CALENDAR_SYNC', 'ALL_CHANNELS'].includes(env) ? monthly * 12 : monthly * 10, 'year');
   }
   return prices;
 }
@@ -69,7 +70,7 @@ function auto({ cfg, stripe, db, log }) {
   // Which Stripe key this was made with (a hash, never the key): a new key means a new setup.
   const fp = () => crypto.createHash('sha256').update(String(cfg.stripe.key || '')).digest('hex').slice(0, 16);
   const mode = () => /^(sk|rk)_live_/.test(cfg.stripe.key || '') ? 'live' : 'test';
-  const P = { STRIPE_PRICE_GROWTH: 'Growth', STRIPE_PRICE_GROWTH_ANNUAL: 'GrowthAnnual', STRIPE_PRICE_CALENDAR_SYNC: 'addon', STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: 'addonAnnual' };
+  const P = { STRIPE_PRICE_GROWTH: 'Growth', STRIPE_PRICE_GROWTH_ANNUAL: 'GrowthAnnual', STRIPE_PRICE_CALENDAR_SYNC: 'addon', STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: 'addonAnnual', STRIPE_PRICE_ALL_CHANNELS: 'allChannels', STRIPE_PRICE_ALL_CHANNELS_ANNUAL: 'allChannelsAnnual' };
   const read = async () => { const r = await get.get(KEY); try { return r ? JSON.parse(r.v) : null; } catch (_) { return null; } };
   const complete = s => !!(s && s.fp === fp() && s.prices && s.webhookSecret && s.connectWebhookSecret);
   // Only fills what the environment left empty.

@@ -91,3 +91,19 @@ test('a calendar export with trailing spaces or a byte-order mark still blocks i
   const t = '﻿BEGIN:VCALENDAR\r\nBEGIN:VEVENT \r\nDTSTART;VALUE=DATE:20261210 \r\nDTEND;VALUE=DATE:20261212\r\nSUMMARY:Reserved \r\nEND:VEVENT \r\nEND:VCALENDAR\r\n';
   assert.deepEqual(ical.parse(t), [{ from: '2026-12-10', to: '2026-12-12' }]);
 });
+
+test('All channels: switching on is checked on the server, and the Channex webhook needs its secret', async () => {
+  const { p } = await t.home();
+  assert.equal((await t.act('toggleIntegration', 'channex')).status, 400, 'switched with its own action, not the plain toggle');
+  assert.equal((await t.act('applyChannexBooking', p.id, { ref: 'x', from: t.dateIn(5), to: t.dateIn(6) })).status, 403, 'only the server records bookings from other sites');
+  assert.equal((await t.call('/app/channex/connect', { body: { pid: p.id } })).status, 400, 'switch it on first');
+  await t.act('joinAllChannels', true);
+  const st = await state();
+  assert.equal(st.integrations.find(i => i.id === 'channex').connected, true);
+  assert.equal(st.account.tier, 'all'); assert.equal(st.account.addon, true);
+  assert.equal((await t.call('/app/channex/connect', { body: { pid: p.id } })).status, 409, 'not live on a server without a Channex key');
+  const hook = await fetch(t.base + '/hooks/channex', { method: 'POST', headers: { 'content-type': 'application/json', 'x-bb-hook': 'wrong' }, body: '{"event":"booking_new"}' });
+  assert.equal(hook.status, 404);
+  await t.act('leaveAllChannels');
+  assert.ok(!(await state()).account.tier);
+});

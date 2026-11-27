@@ -944,6 +944,44 @@ var require_bb_embedded_files = __commonJS({
   .ag .ag-ctmap td { padding: 0 12px; border: 0; }
   .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* All channels (Channex): the headline add-on on Connections */
+.ag .ag-cx { padding: 20px; border: 1.5px solid color-mix(in oklab, var(--primary) 35%, var(--line)); background: linear-gradient(180deg, var(--primary-soft), var(--surface) 70%); display: grid; gap: 16px; }
+.ag .ag-cx.on { border-color: color-mix(in oklab, var(--good) 45%, var(--line)); }
+.ag .ag-cx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.ag .ag-cx-top h3 { margin: 4px 0 6px; font-size: 1.5rem; }
+.ag .ag-cx-top p { margin: 0; color: var(--muted); max-width: 60ch; }
+.ag .ag-cx-pros { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; }
+.ag .ag-cx-pros li { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.ag .ag-cx-pros li > svg { flex: none; width: 20px; height: 20px; color: var(--primary); margin-top: 2px; }
+.ag .ag-cx-pros b { display: block; }
+.ag .ag-cx-pros small { color: var(--muted); line-height: 1.4; }
+.ag .ag-cx-plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ag .ag-cx-plan { text-align: left; display: grid; gap: 4px; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
+.ag .ag-cx-plan:hover { border-color: var(--primary); }
+.ag .ag-cx-plan.on { border-color: var(--good); background: var(--good-soft); }
+.ag .ag-cx-plan b { font-size: 1.05rem; }
+.ag .ag-cx-price { font-family: var(--font-display); font-size: 1.6rem; }
+.ag .ag-cx-price small { font-size: .85rem; color: var(--muted); }
+.ag .ag-cx-plan > small { color: var(--muted); line-height: 1.4; }
+.ag .ag-cx-plan em { font-style: normal; font-weight: 600; color: var(--primary); display: inline-flex; gap: 6px; align-items: center; margin-top: 4px; }
+.ag .ag-cx-plan.on em { color: var(--good); }
+.ag .ag-cx-plan em svg { width: 16px; height: 16px; }
+.ag .ag-cx-homes { display: grid; gap: 8px; }
+.ag .ag-cx-home { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.ag .ag-cx-home > span:first-child { flex: 1 1 200px; min-width: 0; }
+.ag .ag-cx-home b { display: block; }
+.ag .ag-cx-home small { color: var(--muted); overflow-wrap: anywhere; }
+.ag .ag-cx-frame { display: grid; gap: 8px; }
+.ag .ag-cx-frame-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ag .ag-cx-frame iframe { width: 100%; min-height: 620px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.ag .ag-cx-recent { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ag .ag-cx-recent .eyebrow { flex-basis: 100%; }
+@container ag (max-width: 620px) {
+  .ag .ag-cx { padding: 14px; }
+  .ag .ag-cx-plans { grid-template-columns: minmax(0, 1fr); }
+  .ag .ag-cx-frame iframe { min-height: 520px; }
+}
 ` }, "/app/web/src/app-grow.js": { "t": `/* Bookingbooster prototype: host console views for Grow (guests, campaigns, automations), Get found (website, AI visibility)
    and Settings (connections). Registers into BB.appViews; app.js owns the frame, routing and event forwarding. */
 (function () {
@@ -1165,6 +1203,17 @@ var require_bb_embedded_files = __commonJS({
       inst.st.cn_conf = null; BB.act.toggleIntegration(v); BB.toast(i.addon ? (i.connected ? 'Calendar sync is on for your ' + i.name + '. We check it every few minutes.' : 'Calendar sync stopped for your ' + i.name) : (i.connected ? i.name + ' connected' : i.name + ' disconnected'), i.connected ? 'good' : '');
     },
     'cn-keep': inst => inst.set({ cn_conf: null }),
+    // All channels: pick dates only (\xA315) or dates and prices (\xA329), open the Channex screen for a home, or stop.
+    'cx-join': (inst, v) => { const was = BB.q.integration('channex'); const on = was && was.connected; BB.act.joinAllChannels(v === 'prices'); BB.toast(v === 'prices' ? 'All channels is on: dates and prices go to every site you connect' : 'All channels is on: your open dates go to every site you connect', 'good'); inst.set({ cx_conf: null, cx_was: on }); },
+    'cx-stop': inst => { if (!inst.st.cx_conf) { inst.set({ cx_conf: true }); return; } BB.act.leaveAllChannels(); BB.toast('All channels is off. Bookings already taken stay on your calendar.'); inst.set({ cx_conf: null, cx_url: null }); },
+    'cx-keep': inst => inst.set({ cx_conf: null }),
+    'cx-connect': async (inst, v) => {
+      if (!S().live) { BB.toast('In your live account this opens the screen where you link Airbnb, Booking.com and Vrbo to this home.'); return; }
+      inst.set({ cx_busy: v });
+      try { const j = await BB.api.call('/app/channex/connect', { pid: v }); inst.set({ cx_url: j.url, cx_pid: v, cx_busy: null }); }
+      catch (e) { BB.toast(e.message, 'bad'); inst.set({ cx_busy: null }); }
+    },
+    'cx-close': inst => inst.set({ cx_url: null, cx_pid: null }),
     'cn-nuki': async (inst, v, el) => {
       const inp = document.getElementById(el.dataset.el); const token = inp ? inp.value.trim() : ''; if (!token) { BB.toast('Paste your Nuki API token first', 'bad'); return; }
       inst.set({ cn_busy: true });
@@ -1835,7 +1884,7 @@ var require_bb_embedded_files = __commonJS({
     badge: s => { const soon = (s.live && BB.BOOT && BB.BOOT.soon) || []; const n = s.integrations.filter(i => !i.connected && !i.addon && CN[i.id] && CN[i.id].off && !soon.includes(i.id) && (!s.live || i.lastSync)).length; return n || null; },
     render(inst) {
       const s = S(), st = inst.st; const ints = s.integrations; const c = id => BB.q.connected(id);
-      const core = ints.filter(i => !i.addon), addons = ints.filter(i => i.addon);
+      const core = ints.filter(i => !i.addon), addons = ints.filter(i => i.addon && !i.hub);
       const groups = []; core.forEach(i => { let g = groups.find(x => x[0] === i.group); if (!g) groups.push(g = [i.group, []]); g[1].push(i); });
       const soon = id => S().live && ((BB.BOOT && BB.BOOT.soon) || []).includes(id);
       const issues = core.filter(i => !i.connected && CN[i.id] && CN[i.id].off && !soon(i.id) && (!S().live || i.lastSync));
@@ -1848,7 +1897,8 @@ var require_bb_embedded_files = __commonJS({
           node('Google search', c('gsc') ? 'Pages indexed, rankings tracked' : 'Rankings not tracked', c('google') || c('gsc'), 'search') +
           '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
           node('Your guest list', c('email') ? ((n => n + (n === 1 ? ' subscribed guest' : ' subscribed guests'))(s.guests.filter(g => g.subscribed).length)) : 'Emails paused', c('email'), 'mail') +
-          '<div class="ag-dn opt' + (syncing.length ? ' on' : '') + '"><span class="ag-dn-i">' + I('sync') + '</span><span><b>Calendar sync</b><small>' + (syncing.length ? 'Blocking dates booked on ' + syncing.map(i => i.id === 'cm' ? 'your channel manager' : BB.CHANNEL[i.id]).join(', ') : 'Optional add-on, off') + '</small></span><em class="ag-opt">Optional</em></div>' +
+          (c('channex') ? '<div class="ag-dn opt on"><span class="ag-dn-i">' + I('globe') + '</span><span><b>All channels</b><small>Airbnb, Booking.com, Vrbo and 70+ more, in step with your calendar</small></span><em class="ag-opt">Add-on</em></div>' :
+          '<div class="ag-dn opt' + (syncing.length ? ' on' : '') + '"><span class="ag-dn-i">' + I('sync') + '</span><span><b>Calendar sync</b><small>' + (syncing.length ? 'Blocking dates booked on ' + syncing.map(i => i.id === 'cm' ? 'your channel manager' : BB.CHANNEL[i.id]).join(', ') : 'Optional add-on, off. <a href="#all-channels">List on every site</a>') + '</small></span><em class="ag-opt">Optional</em></div>') +
         '</div>' +
         '<div class="ag-darr" aria-hidden="true"><span>' + I('arrow') + '</span><small>Book direct</small></div>' +
         '<div class="ag-dcol ag-dmid"><div class="ag-dhub">' + BB.MARK + '<b>Your booking sites</b><small class="mono">' + esc(domains[0]) + (domains.length > 1 ? ' and ' + (domains.length - 1) + ' more' : '') + '</small><small>One calendar for ' + (s.properties.length === 1 ? 'your home' : s.properties.length + ' homes') + '. Every booking, guest and payment is yours.</small></div></div>' +
@@ -1881,6 +1931,36 @@ var require_bb_embedded_files = __commonJS({
         ? '<div class="ag-calf">' + ((i.locks || []).length ? '<p class="ag-note">' + I('key') + '<span>' + esc(i.locks.map(l => l.name).join(', ')) + '. Pick the lock for each home in Website & SEO, under Guest details.</span></p>' : '<p class="ag-note">' + I('key') + '<span>No locks found in your Nuki account yet.</span></p>') + '</div>'
         : (st.cn_open === 'lock' ? '<div class="ag-calf"><div class="ag-calf-r"><label class="field"><span>Nuki API token</span><input id="' + ID(inst, 'nuki') + '" type="password" autocomplete="off" placeholder="Paste your token"></label><button class="btn sm primary" data-ag="cn-nuki" data-el="' + ID(inst, 'nuki') + '">' + (st.cn_busy ? 'Checking\u2026' : 'Connect') + '</button></div>' +
           '<p class="ag-note">' + I('bolt') + '<span>In Nuki Web, open API, create a token with permission to manage smart locks, and paste it here. We create a code for each stay and remove it after checkout.</span></p></div>' : '');
+      // All channels: the headline add-on. Everything a host gets, in plain words, then the switch.
+      const hub = inst => {
+        const i = BB.q.integration('channex'); if (!i) return '';
+        const g = (BB.BOOT && BB.BOOT.channex) || null; const live = S().live; const waiting = live && (!g || !g.live);
+        const tier = S().account.tier === 'all' ? 'prices' : 'dates'; const on = i.connected;
+        const pros = [
+          ['globe', 'Listed everywhere', 'Airbnb, Booking.com, Vrbo, Expedia, Google, Agoda and 70+ more booking sites, from this one console.'],
+          ['cal', 'One calendar, no double bookings', 'A booking on any site closes those nights on every other site and on your own booking site within about a minute.'],
+          ['chart', 'Change a price once', 'Set your nightly price, weekend extra and minimum stay here, and every site updates. On the All channels plan.'],
+          ['inbox', 'Every booking lands here', 'Guest name, dates, site and amount in your calendar and notifications, wherever they booked.'],
+          ['bolt', 'No channel manager to pay for', 'We run the connection for you, so there is no separate subscription or extra software to learn.'],
+        ];
+        const plan = (v, name, price, what) => '<button type="button" class="ag-cx-plan' + (on && tier === v ? ' on' : '') + '" data-ag="cx-join" data-v="' + v + '" aria-pressed="' + (on && tier === v) + '"><b>' + name + '</b><span class="ag-cx-price">\xA3' + price + '<small>/month</small></span><small>' + what + '</small>' + (on && tier === v ? '<em>' + I('check') + 'Your plan</em>' : '<em>' + (on ? 'Switch to this' : 'Choose') + '</em>') + '</button>';
+        const homes = S().properties.map(p => { const m = (i.map || {})[p.id]; const st2 = (i.status || {})[p.id] || {};
+          const demo = !live && on; const state = !on ? '' : demo ? BB.pill('good', 'Live') : waiting ? BB.pill('muted', 'Ready to go') : !m || !m.rate ? BB.pill('muted', 'Setting up') : st2.error ? BB.pill('warn', 'Needs a look') : BB.pill('good', 'Live');
+          return '<div class="ag-cx-home"><span><b>' + esc(p.short) + '</b><small>' + (st2.error ? esc(st2.error) : !on ? 'Not listed yet' : demo ? 'Dates' + (tier === 'prices' ? ' and prices' : '') + ' sent to every connected site' : waiting ? 'Set up the moment All channels switches on' : m && m.rate ? (st2.ok ? 'Dates' + (tier === 'prices' ? ' and prices' : '') + ' sent ' + esc(BB.ago(new Date(st2.ok).toLocaleString('sv-SE', { timeZone: 'Europe/London' }).replace(' ', 'T').slice(0, 16))) : 'Sending dates' + (tier === 'prices' ? ' and prices' : '')) : 'Creating the listing') + '</small></span>' + state +
+            (on && (!live || (m && m.rate && !waiting)) ? '<button class="btn sm primary" data-ag="cx-connect" data-v="' + p.id + '">' + (st.cx_busy === p.id ? 'Opening\u2026' : 'Connect Airbnb, Booking.com, Vrbo\u2026') + '</button>' : '') + '</div>'; }).join('');
+        const recent = S().blocks.filter(k => k.sync === 'channex' && k.to > S().today).sort((a, b) => a.from < b.from ? -1 : 1).slice(0, 5);
+        return '<section class="a-card ag-card ag-cx' + (on ? ' on' : '') + '" id="all-channels"><div class="ag-cx-top"><div><span class="eyebrow">' + (on ? 'On \xB7 ' + (tier === 'prices' ? 'dates and prices' : 'dates') + ' on every site' : 'Recommended add-on') + '</span><h3 class="disp">All channels</h3><p>List your homes on every big booking site and run them all from here. One calendar, one price list, every booking in one place.</p></div>' +
+          (on ? (i.error && !waiting ? BB.pill('warn', 'Needs a look') : waiting ? BB.pill('muted', 'Switching on soon') : BB.pill('good', 'On')) : BB.pill('muted', 'Not added')) + '</div>' +
+          '<ul class="ag-cx-pros">' + pros.map(([ic, t, d]) => '<li>' + I(ic) + '<span><b>' + t + '</b><small>' + d + '</small></span></li>').join('') + '</ul>' +
+          '<div class="ag-cx-plans">' + plan('dates', 'Calendar sync', BB.ALL_CHANNELS.addon, 'Open dates kept in step on every site you connect, plus calendar links and channel manager keys.') + plan('prices', 'All channels', BB.ALL_CHANNELS.price, 'Everything in Calendar sync, plus your prices and minimum stays sent to every site. Replaces the \xA3' + BB.ALL_CHANNELS.addon + ' add-on.') + '</div>' +
+          (waiting && on ? '<p class="ag-note">' + I('sync') + '<span><b>You are on the list.</b> All channels switches on for everyone as soon as enough hosts have joined' + (g && g.need ? ' (' + Math.min(g.paying, g.need) + ' of ' + g.need + ' so far)' : '') + '. Your homes are listed automatically the moment it does, and we email you. Until then the calendar links below keep you covered.</span></p>' : '') +
+          (waiting && !on ? '<p class="ag-note">' + I('sync') + '<span>Join now and your homes are listed automatically the moment All channels switches on' + (g && g.need ? ', once ' + g.need + ' hosts have joined (' + Math.min(g.paying, g.need) + ' so far)' : '') + '. You only pay the add-on price, and calendar links work in the meantime.</span></p>' : '') +
+          (on ? '<div class="ag-cx-homes">' + homes + '</div>' : '') +
+          (st.cx_url ? '<div class="ag-cx-frame"><div class="ag-cx-frame-h"><b>Connect sites to ' + esc((BB.q.property(st.cx_pid) || {}).short || 'this home') + '</b><button class="btn sm ghost" data-ag="cx-close">Done</button></div><iframe src="' + esc(st.cx_url) + '" title="Connect booking sites" referrerpolicy="no-referrer"></iframe><small class="muted">Sign in to Airbnb, Booking.com or Vrbo here and pick the listing for this home. Your dates and prices start flowing straight away.</small></div>' : '') +
+          (recent.length ? '<div class="ag-cx-recent"><span class="eyebrow">Coming up from other sites</span>' + recent.map(k => '<button class="btn sm" data-ag-nav="calendar">' + esc(k.ota || 'Booked') + ' \xB7 ' + esc((BB.q.property(k.propertyId) || {}).short || '') + ' \xB7 ' + D.fmt(k.from) + ' \u2013 ' + D.fmt(k.to) + (k.guest ? ' \xB7 ' + esc(k.guest) : '') + '</button>').join('') + '</div>' : '') +
+          (on ? (st.cx_conf ? '<div class="ag-ic-conf"><p><b>Switch off All channels?</b> Your dates and prices stop going to other sites. Bookings already taken stay on your calendar. Disconnect the sites in the Channex screen too, so they stop taking bookings.</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cx-stop">Switch off</button><button class="btn sm ghost" data-ag="cx-keep">Keep it on</button></div></div>' : '<div class="ag-acts-row"><button class="btn sm ghost" data-ag="cx-stop">Switch off</button></div>') : '') +
+          '</section>';
+      };
       const icard = i => {
         const info = CN[i.id] || {}; const conf = st.cn_conf === i.id; const r = res && res.id === i.id ? res : null; const ad = i.addon;
         if (soon(i.id)) return '<article class="ag-icard off"><div class="ag-ic-h"><span class="ag-logo l-' + i.id + '">' + esc(i.name.replace(/[^A-Za-z]/g, '').slice(0, 2)) + '</span><div><b>' + esc(i.name) + '</b><small>' + esc(i.detail || '') + '</small></div>' + BB.pill('muted', 'Coming soon') + '</div><p class="ag-ic-d">' + esc(info.does || info.on || '') + '</p></article>';
@@ -1899,9 +1979,9 @@ var require_bb_embedded_files = __commonJS({
             (conf ? '' : '<button class="btn sm ' + (i.connected ? 'ghost' : ad ? '' : 'primary') + '" data-ag="cn-toggle" data-v="' + i.id + '">' + (i.connected ? (ad ? 'Stop sync' : 'Disconnect') : (i.api ? 'Connect ' + esc(i.name) : ad ? 'Add calendar link' : 'Connect')) + '</button>') + '</div></div></article>';
       };
       return wrap(inst, 'ag-conn',
-        vh('Connections', 'What runs your direct bookings, from payments and email to door codes, plus optional calendar sync. Turn one off and see exactly what changes.', syncing.length ? '<button class="btn" data-ag="cn-syncall">' + I('sync') + 'Check synced calendars</button>' : '') +
+        vh('Connections', 'What runs your direct bookings, from payments and email to door codes, plus All channels to list your homes on every booking site. Turn one off and see exactly what changes.', syncing.length ? '<button class="btn" data-ag="cn-syncall">' + I('sync') + 'Check synced calendars</button>' : '') +
         (res && res.id === 'all' ? '<div class="ag-banner ' + (res.blks.length ? 'good' : 'info') + '">' + I(res.blks.length ? 'check' : 'sync') + '<div><p>' + (res.blks.length ? '<b>' + res.blks.length + (res.blks.length === 1 ? ' stay' : ' stays') + ' booked elsewhere.</b> Those dates are now blocked on your own sites, so you never double book.' : 'Calendars checked. No new dates.') + '</p>' + (res.blks.length ? '<div class="ag-links">' + res.blks.map(k => '<button class="btn sm" data-ag-nav="calendar">' + esc(k.note) + ' \xB7 ' + esc(BB.q.property(k.pid).short) + ' \xB7 ' + D.fmt(k.from) + ' \u2013 ' + D.fmt(k.to) + '</button>').join('') + '</div>' : '') + '</div></div>' : '') +
-        diagram +
+        diagram + hub(inst) +
         groups.map(([gname, list]) => '<section class="ag-group"><h3 class="ag-gh">' + I(GICON[gname] || 'plug') + esc(gname) + '<span class="muted">' + list.filter(i => i.connected).length + ' of ' + list.length + ' connected</span></h3><div class="ag-icards">' + list.map(icard).join('') + '</div></section>').join('') +
         (addons.length ? '<section class="ag-group ag-addons"><div class="ag-addon-h"><div><span class="eyebrow">Optional add-on</span><h3 class="disp">Calendar sync add-on, \xA315/month</h3><p>Calendar sync with your channel manager, Airbnb, Vrbo, Booking.com or any site with a calendar link. Paste each calendar link (iCal) and dates booked there are blocked on your sites, then paste your Bookingbooster link back into each site so they block each other and your direct bookings. We check every few minutes, and again the moment a guest starts booking. Dates only: never guests, prices or messages. You do not need it to take direct bookings.</p></div>' + (syncing.length ? BB.pill('good', 'On for ' + syncing.length + (syncing.length === 1 ? ' calendar' : ' calendars')) : BB.pill('muted', 'Not added')) + '</div><div class="ag-icards">' + addons.filter(i => !i.api).map(icard).join('') + '</div>' +
           (addons.some(i => i.api) ? '<div class="ag-addon-h ag-addon-sub"><div><h3 class="disp">Or connect your channel manager directly</h3><p>Use Beds24, Smoobu, Hostaway, Guesty or Lodgify? Connect it with your own API key instead of calendar links. Dates booked anywhere close on your sites within minutes, and your direct bookings close the same nights in your channel manager, which passes them on to Airbnb, Booking.com and Vrbo. Calendar links can take a few hours to reach Airbnb; this does not.</p></div></div><div class="ag-icards">' + addons.filter(i => i.api).map(icard).join('') + '</div>' : '') + '</section>' : '') + BB.aiTm('ag-tm'));
@@ -3043,6 +3123,18 @@ var require_bb_embedded_files = __commonJS({
 .x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
 .x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }
+
+/* All channels on the dashboard */
+.x-app .a-hub { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 24px; align-items: center; background: linear-gradient(120deg, var(--primary-soft), var(--surface) 65%); border-color: color-mix(in oklab, var(--primary) 30%, var(--line)); }
+.x-app .a-hub.on { background: linear-gradient(120deg, var(--good-soft), var(--surface) 65%); border-color: color-mix(in oklab, var(--good) 35%, var(--line)); }
+.x-app .a-hub-t h3 { margin: 4px 0 6px; font-size: 1.15rem; }
+.x-app .a-hub-t p { margin: 0; color: var(--muted); max-width: 70ch; }
+.x-app .a-hub-p { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.x-app .a-hub-p li { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.x-app .a-hub-p svg { width: 18px; height: 18px; color: var(--good); }
+.x-app .a-hub .a-minis { grid-column: 1 / -1; }
+.x-app .a-hub-a { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 720px) { .x-app .a-hub { grid-template-columns: minmax(0, 1fr); } }
 ` }, "/app/web/src/app.js": { "t": `/* Bookingbooster prototype: host console frame (sidebar, top bar, search, notifications, routing, modal host)
    and the "Run" views: dashboard, calendar, reservations, booking, inbox, check-in, payments, notifications. */
 (function () {
@@ -3492,6 +3584,25 @@ var require_bb_embedded_files = __commonJS({
   }
   function needRow(n) { return '<div class="a-row a-need t-' + n.tone + '" ' + n.open + ' role="link" tabindex="0"><span class="a-ico">' + ic(n.icon) + '</span><span class="a-row-t"><b>' + esc(n.title) + '</b><span>' + esc(n.sub) + '</span></span><span class="a-row-m">' + (n.btn || '') + '</span></div>'; }
 
+  // All channels on the dashboard: what it is doing for the host when on, and what they would get when off.
+  function allChannels() {
+    const s = S(), i = BB.q.integration('channex'); if (!i) return '';
+    const g = (BB.BOOT && BB.BOOT.channex) || null, waiting = s.live && (!g || !g.live);
+    if (!i.connected) {
+      if (s.account.hideHub) return '';
+      return '<div class="a-s12"><section class="a-card a-hub"><div class="a-hub-t"><span class="eyebrow">Add-on</span><h3>List your homes on every booking site, from here</h3><p>Airbnb, Booking.com, Vrbo, Expedia and 70+ more, all fed from your one calendar. A booking anywhere closes the dates everywhere, a price change here updates every site, and every booking lands in this console. From \xA3' + BB.ALL_CHANNELS.addon + ' a month, with no channel manager to pay for.</p></div>' +
+        '<ul class="a-hub-p"><li>' + ic('check') + 'No double bookings</li><li>' + ic('check') + 'One price list everywhere</li><li>' + ic('check') + 'Every booking in one place</li></ul>' +
+        '<div class="a-hub-a"><button class="btn primary sm" data-a="nav" data-view="connections">See All channels' + ic('arrow') + '</button><button class="btn ghost sm" data-hidehub>Not now</button></div></section></div>';
+    }
+    const fut = s.blocks.filter(k => k.sync === 'channex' && k.to > s.today);
+    const sites = [...new Set(s.blocks.filter(k => k.sync === 'channex' && k.ota).map(k => k.ota))];
+    const live = Object.values(i.map || {}).filter(m => m && m.rate).length;
+    const sub = waiting ? 'Switching on soon' + (g && g.need ? ' \xB7 ' + Math.min(g.paying, g.need) + ' of ' + g.need + ' hosts' : '') : i.error ? 'Needs a look' : plural(live, 'home') + ' listed';
+    return '<div class="a-s12"><section class="a-card a-hub on"><div class="a-hub-t"><span class="eyebrow">All channels \xB7 ' + (s.account.tier === 'all' ? 'dates and prices' : 'dates') + '</span><h3>' + (waiting ? 'You are on the list for All channels' : 'Your homes are in step on every site') + '</h3><p>' +
+      (waiting ? 'Your homes are listed automatically the moment it switches on. Calendar links keep you covered until then.' : i.error ? esc(i.error) : (i.lastSync ? 'Last sent ' + esc(BB.ago(i.lastSync)) + '. ' : '') + (sites.length ? 'Bookings from ' + esc(sites.join(', ')) + ' land here by themselves.' : 'Connect Airbnb, Booking.com or Vrbo to each home and their bookings land here by themselves.')) + '</p></div>' +
+      '<div class="a-minis"><div><span>Status</span><b>' + esc(sub) + '</b></div><div><span>Coming up from other sites</span><b class="num">' + fut.length + '</b></div><div><span>Sites with bookings</span><b class="num">' + sites.length + '</b></div></div>' +
+      '<div class="a-hub-a"><button class="btn sm" data-a="nav" data-view="connections">' + (waiting ? 'See details' : 'Connect sites') + ic('arrow') + '</button></div></section></div>';
+  }
   V.dashboard = {
     label: 'Dashboard', group: 'Run', icon: 'dash', order: 10,
     render(inst) {
@@ -3524,7 +3635,7 @@ var require_bb_embedded_files = __commonJS({
         '<span class="a-tile-f">' + BB.money(sent.revenue) + ' in direct bookings' + ic('arrow') + '</span></button>' : '<div class="a-empty"><p>No campaigns sent yet.</p><button class="btn sm" data-a="nav" data-view="campaigns">Write your first campaign</button></div>';
       return vh(hello + ', ' + esc(fst(s.account.owner)), esc(D.fmt(t, { weekday: 'long', month: 'long' })) + ' \xB7 ' + sum,
           '<button class="btn sm" data-a="nav" data-view="calendar">' + ic('cal') + 'Calendar</button><button class="btn sm" data-a="nav" data-view="checkin">' + ic('key') + 'Check-in board</button>') +
-        '<div class="a-grid">' + kpis +
+        '<div class="a-grid">' + kpis + allChannels() +
           '<div class="a-s8">' + card('Direct revenue: new vs returning guests', 'Earned per night, GBP', revChart(m)) + '</div>' +
           '<div class="a-s4 a-last">' + card('Today', D.fmt(t, { weekday: 'short' }), today.length ? '<div class="a-list a-today">' + today.join('') + '</div>' : '<div class="a-empty"><p>No arrivals, departures or messages today.</p></div>') + '</div>' +
           '<div class="a-s8">' + card('Needs you', needs.length ? plural(needs.length, 'item') : 'All clear', needs.length ? '<div class="a-list a-needs">' + needs.map(needRow).join('') + '</div>' : '<div class="a-empty">' + ic('check') + '<p>You are all caught up. Deposits, check-ins and messages are handled.</p></div>') + '</div>' +
@@ -3539,7 +3650,8 @@ var require_bb_embedded_files = __commonJS({
     },
     click(ev, inst) {
       const r = ev.target.closest('[data-remind]'); if (r) { if (BB.act.remindCheckin(r.dataset.remind)) BB.toast('Reminder sent to ' + fst(gOf(BB.q.booking(r.dataset.remind)).name), 'good'); return; }
-      const p = ev.target.closest('[data-paid]'); if (p) { BB.act.markPaid(p.dataset.paid); BB.toast('Marked as paid'); }
+      const p = ev.target.closest('[data-paid]'); if (p) { BB.act.markPaid(p.dataset.paid); BB.toast('Marked as paid'); return; }
+      if (ev.target.closest('[data-hidehub]')) { BB.act.updateAccount({ hideHub: true }); BB.toast('Hidden. All channels is always in Connections.'); }
     },
     keydown(ev, inst) { if (ev.key === 'Enter' && ev.target.matches('.a-need[data-a]')) ev.target.click(); },
   };
@@ -9385,6 +9497,12 @@ body.p-lock { overflow: hidden; }
 .x-site .s-conn-addon { border-style: dashed; }
 .x-site .s-conn-addon .s-conn-ic { background: var(--surface-2); color: var(--muted); }
 .x-site .s-conn-addon.on { border-style: solid; border-color: var(--primary); background: color-mix(in oklab, var(--primary-soft) 50%, var(--surface)); }
+.x-site .s-allchs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.x-site .s-allch { text-align: left; display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: inherit; font: inherit; cursor: pointer; }
+.x-site .s-allch.on { border-color: var(--primary); background: var(--primary-soft); }
+.x-site .s-allch em { font-style: normal; color: var(--primary); font-weight: 700; }
+.x-site .s-allch small { color: var(--muted); line-height: 1.35; }
+@media (max-width: 560px) { .x-site .s-allchs { grid-template-columns: minmax(0, 1fr); } }
 .x-site .s-addon-note { display: flex; gap: 8px; align-items: center; margin: 12px 0 0 58px; font-size: 14px; color: var(--primary); font-weight: 600; }
 .x-site .s-addon-note .ic { width: 16px; height: 16px; }
 .x-site .s-ob-main > .s-addon-note { margin: 14px 0 0; }
@@ -9441,7 +9559,16 @@ body.p-lock { overflow: hidden; }
     // One plan: a monthly price including VAT. No setup fee.
     { id: 'growth', name: 'Growth', price: 197, setup: 0, tag: 'Done for you', hot: true, blurb: 'We set it up and keep growing it.', feats: ['Booking site on your own domain', 'Card payments, deposit holds and payouts', 'Guest check-in app and door codes', 'New local SEO pages every month', 'AI visibility tracking and fixes', 'Campaigns written and sent for you', 'Text message outreach'], cta: 'Start with Growth' },
   ];
-  const ADDON = { name: 'Calendar sync add-on', price: 15 };
+  const ADDON = { name: 'All channels add-on', price: 15, all: 29 };
+  // What the add-on adds a month: \xA315 for dates on every site, \xA329 with prices and minimum stays too (instead, not on top).
+  const addonP = ob => ob.addon ? (ob.allCh ? ADDON.all : ADDON.price) : 0;
+  function addonCard(ob, u) {
+    const opt = (v, t, price, d) => '<button type="button" class="s-allch' + (ob.addon && !!ob.allCh === (v === 'prices') ? ' on' : '') + '" data-act="allch" data-v="' + v + '" aria-pressed="' + (ob.addon && !!ob.allCh === (v === 'prices')) + '"><b>' + t + ' <em>\xA3' + price + '/mo</em></b><small>' + d + '</small></button>';
+    return '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional \xB7 from \xA3' + ADDON.price + ' a month</span></b><em>List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites. A booking anywhere closes the dates everywhere, and every booking lands in your console. No channel manager to pay for.</em></span>' +
+      '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + !!ob.addon + '" aria-label="' + ADDON.name + '"></button></div>' +
+      (ob.addon ? '<div class="s-allchs">' + opt('dates', 'Dates on every site', ADDON.price, 'Open dates kept in step everywhere, plus calendar links.') + opt('prices', 'Dates and prices', ADDON.all, 'Also sends your prices and minimum stays to every site.') + '</div>' +
+        '<p class="s-addon-note">' + icon('check') + 'Added for \xA3' + addonP(ob) + ' a month. Your homes are set up for every site automatically; you link Airbnb, Booking.com or Vrbo in your console.</p>' : '') + '</div>';
+  }
   const plan = id => PLANS.find(p => p.id === id) || PLANS[0];
   const perMonth = (p, annual) => annual ? Math.round(p.price * 10 / 12) : p.price;
   const gbp = n => '\xA3' + n;
@@ -9794,7 +9921,7 @@ body.p-lock { overflow: hidden; }
         '<p class="s-plan-bill">' + (an ? 'Billed ' + $(p.price * 10) + ' a year inc. VAT. You save ' + $(p.price * 2) + '.' : 'Billed monthly, inc. VAT. Cancel anytime.') + ' No setup fee.</p>' +
         '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul>' +
         '<button class="btn ' + (p.hot ? 'accent' : '') + ' block lg" data-act="start" data-plan="' + p.id + '">' + p.cta + '</button></article>').join('') + '</div>' +
-      '<div class="s-addon"><span class="s-addon-ic">' + icon('sync') + '</span><div><b>Optional: ' + ADDON.name + ' <em>+\xA3' + ADDON.price + ' a month</em></b><p>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Paste the calendar link and dates booked there are blocked on your site, so you never double book. Most hosts never need it.</p></div></div>' +
+      '<div class="s-addon"><span class="s-addon-ic">' + icon('sync') + '</span><div><b>Optional: ' + ADDON.name + ' <em>+\xA3' + ADDON.price + ' a month, or \xA3' + ADDON.all + ' with price sync</em></b><p>List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from your console. A booking anywhere closes the dates everywhere, so you never double book, and every booking lands in one calendar. With price sync, change your price once and every site updates. No channel manager to pay for.</p></div></div>' +
       '</div></section>';
   }
 
@@ -9984,7 +10111,7 @@ body.p-lock { overflow: hidden; }
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     } else if (REAL()) {
       const a = ob.acct || {};
-      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, property: buildData(ob), listing: ob.url,
+      signup = BB.api.call(BB.BOOT.signupUrl, { account: { name: a.name, email: a.email, password: a.password, business: a.business }, ref: a.ref || '', plan: plan(ob.plan).name, annual: ob.annual, addon: ob.addon, allChannels: ob.addon ? (ob.allCh ? 'prices' : 'dates') : '', property: buildData(ob), listing: ob.url,
         domainMode: buying(ob) ? 'new' : ob.dMode === 'own' ? 'own' : 'free', registrant: buying(ob) ? ob.reg2 : undefined })
         .then(j => ({ ok: true, j }), e => ({ ok: false, e }));
     }
@@ -10001,7 +10128,7 @@ body.p-lock { overflow: hidden; }
         const data = buildData(ob);
         const on = CONNECT.filter(c => ob.conn[c[0]] === 'on').map(c => c[2]);
         if (on.length) BB.log('sync', 'Onboarding', 'Connected ' + on.join(' and ') + ' for ' + data.name + '.', null, ['Onboarding', 'Integrations']);
-        if (ob.addon) BB.log('system', 'Onboarding', 'Added the Calendar sync add-on (\xA315 a month) for ' + data.name + '. Paste a calendar link from your channel manager, Airbnb, Vrbo or Booking.com in Connections to block its dates.', null, ['Onboarding', 'Add-ons']);
+        if (ob.addon) { BB.log('system', 'Onboarding', 'Added the All channels add-on (\xA3' + addonP(ob) + ' a month) for ' + data.name + '. Link Airbnb, Booking.com or Vrbo in Connections and every site stays in step.', null, ['Onboarding', 'Add-ons']); if (BB.act.joinAllChannels) BB.act.joinAllChannels(!!ob.allCh); }
         const p = BB.act.addProperty(data);
         ob.launched = p.id; ob.step = 8; inst.render(); window.scrollTo({ top: 0 });
       } else { t(); inst.render(); }
@@ -10016,8 +10143,8 @@ body.p-lock { overflow: hidden; }
       ['Home', d.name ? esc(d.name) + (d.area ? '<em>' + esc(d.area) + '</em>' : '') : null, ob.step > 2],
       ['Look', ob.step > 3 || ob.step === 3 ? THEMES[ob.theme].label + ' theme' : null, ob.step > 3],
       ['Domain', ob.domain ? esc(ob.domain) : null, ob.step > 4],
-      ['Connected', ob.step >= 5 ? (conns.length ? conns.join(', ') : 'Nothing yet') + (ob.addon ? '<em>+ Calendar sync add-on</em>' : '') : null, ob.step > 5],
-      ['Plan', ob.step >= 6 ? p.name + ' \xB7 \xA3' + (perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0)) + '/mo' + (ob.annual ? '<em>billed yearly</em>' : '') : null, ob.step > 6],
+      ['Connected', ob.step >= 5 ? (conns.length ? conns.join(', ') : 'Nothing yet') + (ob.addon ? '<em>+ All channels add-on</em>' : '') : null, ob.step > 5],
+      ['Plan', ob.step >= 6 ? p.name + ' \xB7 \xA3' + (perMonth(p, ob.annual) + addonP(ob)) + '/mo' + (ob.annual ? '<em>billed yearly</em>' : '') : null, ob.step > 6],
     ].filter(r => !SETUP() || (r[0] !== 'Connected' && r[0] !== 'Plan'));
     return '<aside class="s-rail" aria-label="Your setup so far"><p class="eyebrow">Your site so far</p>' +
       miniSite({ theme: ob.theme, name: d.name || 'Your home', domain: ob.domain || (d.name ? slug(d.name) + '.co.uk' : 'yourhome.co.uk'), price: +d.nightly || null, save: d.nightly ? Math.round(+d.nightly * 3 * 0.142) : 0, cls: 's-rail-browser s-compact' }) +
@@ -10087,9 +10214,7 @@ body.p-lock { overflow: hidden; }
                 '<div class="s-oauth-a"><button class="btn sm ghost" data-conn="' + k + '" data-c="off">Cancel</button><button class="btn sm primary" data-conn="' + k + '" data-c="busy">' + icon('lock') + 'Allow access</button></div><p class="s-fine">' + (REAL() ? 'You connect your real account securely from your console once you have signed up.' : 'Simulated sign-in for the demo.') + '</p></div>' : '') +
               '</div>';
           }).join('') +
-          '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional \xB7 \xA3' + ADDON.price + ' a month</span></b><em>Calendar sync with your channel manager, Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
-            '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + ob.addon + '" aria-label="' + ADDON.name + '"></button></div>' +
-            (ob.addon ? '<p class="s-addon-note">' + icon('check') + 'Added for \xA3' + ADDON.price + ' a month. Paste your calendar link in your console after launch.</p>' : '') + '</div>' +
+          addonCard(ob, u) +
           '</div>' +
           (ready ? '' : '<p class="s-fine">Connect Stripe so guests can pay you. It is the one thing a booking site needs.</p>') +
           '<form data-form="next" class="s-ob-form">' + navRow(ready ? 'Continue' : 'Connect Stripe to continue', !ready) + '</form>';
@@ -10099,10 +10224,10 @@ body.p-lock { overflow: hidden; }
           '<span class="s-obplan-h"><b>' + p.name + '</b>' + '' + '<i class="s-radio">' + icon('check') + '</i></span>' +
           '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + p.blurb + ' No setup fee.</span>' +
           '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></button>').join('') + '</div>' +
-        (ob.addon ? '<p class="s-addon-note">' + icon('sync') + 'Plus the Calendar sync add-on, \xA3' + ADDON.price + ' a month.</p>' : '') +
+        (ob.addon ? '<p class="s-addon-note">' + icon('sync') + 'Plus the ' + (ob.allCh ? 'All channels add-on with price sync' : 'All channels add-on') + ', \xA3' + addonP(ob) + ' a month.</p>' : '') +
         '<form data-form="next" class="s-ob-form">' + navRow('Continue with ' + plan(ob.plan).name) + '</form>';
       case 7: {
-        const p = plan(ob.plan), on = CONNECT.filter(c => ob.conn[c[0]] === 'on'), total = perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0);
+        const p = plan(ob.plan), on = CONNECT.filter(c => ob.conn[c[0]] === 'on'), total = perMonth(p, ob.annual) + addonP(ob);
         if (ob.launchN >= 0) return '<h1 class="s-ob-h">Launching ' + esc(d.name) + '\u2026</h1><p class="s-ob-sub">Hang tight. This is the part we do for you.</p>' +
           '<ul class="s-imp">' + LAUNCH.map((t, i) => '<li class="' + (i < ob.launchN ? 'done' : i === ob.launchN ? 'on' : '') + '"><span class="s-imp-ic">' + (i < ob.launchN ? icon('check') : i === ob.launchN ? '<i class="s-spin"></i>' : icon('spark')) + '</span><span><b>' + t + '</b><em>' + (i < ob.launchN ? 'Done' : i === ob.launchN ? 'Working\u2026' : 'Waiting') + '</em></span></li>').join('') + '</ul>' +
           '<div class="s-prog s-prog-lg"><i style="width:' + (100 * ob.launchN / LAUNCH.length) + '%"></i></div>';
@@ -10111,7 +10236,7 @@ body.p-lock { overflow: hidden; }
             '<div><dt>Home</dt><dd><b>' + esc(d.name) + '</b><span>' + esc(d.area) + ' \xB7 ' + $(+d.nightly) + ' a night \xB7 sleeps ' + esc(d.sleeps) + ' \xB7 ' + esc(d.bedrooms) + ' bedrooms \xB7 ' + (d.pets ? 'pets welcome' : 'no pets') + '</span></dd><button class="btn sm ghost" data-goto="2">Edit</button></div>' +
             '<div><dt>Look</dt><dd><b>' + THEMES[ob.theme].label + '</b><span>' + THEMES[ob.theme].note + '</span></dd><button class="btn sm ghost" data-goto="3">Edit</button></div>' +
             '<div><dt>Domain</dt><dd><b>' + esc(ob.domain) + '</b><span>' + (ob.dMode === 'own' ? 'Your own domain. Add the DNS records after launch, your free address works until then' : /bookingbooster\\.site$/.test(ob.domain) ? 'Free address' : buying(ob) ? 'We register it in your name once your first payment goes through. ' + domainNote() : 'Included free for the first year') + '</span></dd><button class="btn sm ghost" data-goto="4">Edit</button></div>' +
-            (SETUP() ? '' : '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the Calendar sync add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
+            (SETUP() ? '' : '<div><dt>Connected</dt><dd><b>' + (on.length ? on.map(c => c[2]).join(', ') : 'Nothing yet') + '</b><span>' + (ob.addon ? 'Plus the All channels add-on' : on.length < 2 ? 'Add a smart lock from your console any time' : 'Payments and door codes are ready') + '</span></dd><button class="btn sm ghost" data-goto="5">Edit</button></div>' +
             '<div><dt>Plan</dt><dd><b>' + p.name + (ob.addon ? ' + add-on' : '') + ' \xB7 \xA3' + total + ' a month</b><span>' + (ob.annual ? 'Plan billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee</span></dd><button class="btn sm ghost" data-goto="6">Edit</button></div>') +
           '</dl>' +
           '<form data-form="launch" class="s-ob-form" novalidate>' + (SETUP() ? (buying(ob) || ob.acctErr ? '<div class="s-acct">' + (buying(ob) ? regFields(inst) : '') + (ob.acctErr ? '<p class="s-err" role="alert">' + esc(ob.acctErr) + '</p>' : '') + '</div>' : '') : REAL() ? acctFields(inst) : '') + '<div class="s-ob-nav"><button type="button" class="btn ghost lg" data-act="back">' + icon('back') + 'Back</button><button class="btn primary lg s-glow" type="submit">' + icon('bolt') + (PAYFIRST() ? 'Continue to payment' : 'Launch my site') + '</button></div></form>';
@@ -10159,7 +10284,7 @@ body.p-lock { overflow: hidden; }
       ['key', on('lock') ? 'Creates a unique door code when a guest finishes check-in' : 'Door codes start when you connect your lock', on('lock')],
       ['spark', 'Checks ChatGPT, Gemini, Perplexity and Google for ' + town(p.area) + ' every week', true, 'ai'],
       ['users', 'Adds every guest to your list after checkout and invites them back', true],
-    ].concat(ob.addon ? [['sync', 'Blocks dates booked elsewhere once you add your calendar link (Calendar sync add-on)', false]] : []);
+    ].concat(ob.addon ? [['sync', 'Sets your homes up for Airbnb, Booking.com, Vrbo and 70+ more sites (All channels add-on)', false]] : []);
     return '<div class="s-ob s-done"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home">' + BB.lockup() + '</button><span class="s-done-tag">' + BB.pill('good', 'Live') + '</span></div></header>' +
       '<div class="s-w s-done-in">' +
         '<div class="s-done-copy"><span class="s-burst">' + icon('check') + '</span><p class="eyebrow">' + esc(p.name) + '</p><h1 class="s-ob-h s-done-h">Your site is live.</h1>' +
@@ -10174,7 +10299,7 @@ body.p-lock { overflow: hidden; }
 
   // Pay first: one screen with the plan and the account, then Stripe Checkout. Setting up the site comes after payment.
   function payStart(inst) {
-    const ob = inst.st.ob, p = plan(ob.plan), total = perMonth(p, ob.annual) + (ob.addon ? ADDON.price : 0), u = inst.uid;
+    const ob = inst.st.ob, p = plan(ob.plan), total = perMonth(p, ob.annual) + addonP(ob), u = inst.uid;
     const tabs = '<div class="s-tabs s-dmode" role="tablist" aria-label="Billing">' + [['m', 'Monthly'], ['y', 'Yearly, 2 months free']].map(([k, t]) => '<button type="button" role="tab" aria-selected="' + (ob.annual === (k === 'y')) + '" data-obbill="' + k + '">' + t + '</button>').join('') + '</div>';
     return '<div class="s-ob s-ob-pay"><header class="s-ob-top"><div class="s-w s-ob-top-in"><button class="s-logo" data-act="home" aria-label="Back to the Bookingbooster home page">' + BB.lockup() + '</button>' +
       '<button class="btn ghost sm" data-act="home"><span class="s-exit-l">Back to the home page</span><span class="s-exit-s">Exit</span></button></div></header>' +
@@ -10184,10 +10309,9 @@ body.p-lock { overflow: hidden; }
         '<div class="s-obplans"><div class="s-obplan on"><span class="s-obplan-h"><b>' + p.name + '</b></span>' +
           '<span class="s-amt"><b class="num">\xA3' + perMonth(p, ob.annual) + '</b><span>/ month</span></span><span class="s-plan-tag">' + (ob.annual ? 'Billed ' + $(p.price * 10) + ' a year' : 'Billed monthly') + ', inc. VAT. No setup fee. Cancel anytime.</span>' +
           '<ul>' + p.feats.map(f => '<li>' + icon('check') + f + '</li>').join('') + '</ul></div></div>' +
-        '<div class="s-conn s-conn-addon' + (ob.addon ? ' on' : '') + '"><div class="s-conn-top"><span class="s-conn-ic">' + icon('sync') + '</span><span class="s-conn-t"><b>' + ADDON.name + '<span class="s-need">Optional \xB7 \xA3' + ADDON.price + ' a month</span></b><em>Only if you also take bookings on Airbnb, Vrbo or Booking.com. Dates booked there are blocked on your site so you never double book.</em></span>' +
-          '<button type="button" class="switch" role="switch" id="s-addon-' + u + '" data-act="addon" aria-checked="' + ob.addon + '" aria-label="' + ADDON.name + '"></button></div></div>' +
+        addonCard(ob, u) +
         '<form data-form="pay" class="s-ob-form" novalidate>' + acctFields(inst) +
-          '<div class="s-ob-nav"><span></span><button class="btn primary lg s-glow" type="submit"' + (ob.paying ? ' disabled' : '') + '>' + icon('lock') + (ob.paying ? 'Opening Stripe\u2026' : 'Pay \xA3' + (ob.annual ? (p.price * 10 + (ob.addon ? ADDON.price * 12 : 0)).toLocaleString('en-GB') + ' and start' : total + ' and start')) + '</button></div>' +
+          '<div class="s-ob-nav"><span></span><button class="btn primary lg s-glow" type="submit"' + (ob.paying ? ' disabled' : '') + '>' + icon('lock') + (ob.paying ? 'Opening Stripe\u2026' : 'Pay \xA3' + (ob.annual ? (p.price * 10 + addonP(ob) * 12).toLocaleString('en-GB') + ' and start' : total + ' and start')) + '</button></div>' +
           '<p class="s-fine">' + icon('lock') + 'You pay securely with Stripe. ' + (ob.annual ? 'The plan renews every year.' : 'The plan renews every month.') + ' Prices include VAT.</p></form>' +
       '</main></div></div>';
   }
@@ -10259,7 +10383,8 @@ body.p-lock { overflow: hidden; }
         else if (a === 'sample') { ob.url = SAMPLES.airbnb.url; ob.urlErr = ''; ob.source = 'airbnb'; ob.step = 2; startImport(inst); inst.render(); }
         else if (a === 'back') { clearTimers(inst); if (ob.step === 2 && !ob.imported) ob.importedFrom = ''; ob.dState = ob.dState === 'checking' ? 'idle' : ob.dState; ob.conn = mapConn(ob.conn); ob.step = prevStep(ob.step); inst.render(); scrollTopOb(); }
         else if (a === 'pets') { ob.d.pets = !ob.d.pets; inst.render(); }
-        else if (a === 'addon') { ob.addon = !ob.addon; inst.render(); }
+        else if (a === 'addon') { ob.addon = !ob.addon; if (!ob.addon) ob.allCh = false; inst.render(); }
+        else if (a === 'allch') { ob.addon = true; ob.allCh = el.dataset.v === 'prices'; inst.render(); }
         else if (a === 'again') { inst.st.ob = newOb(); inst.render(); window.scrollTo({ top: 0 }); }
       });
       BB.on(root, 'click', '[data-theme-pick]', el => { inst.st.ob.theme = el.dataset.themePick; inst.render(); });
@@ -10800,6 +10925,58 @@ body.p-lock { overflow: hidden; }
     { id: 'guesty', name: 'Guesty', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Guesty account. Dates booked there close on your sites, and direct bookings close the dates in Guesty within minutes.', lastSync: null },
     { id: 'lodgify', name: 'Lodgify', group: 'Add-ons', addon: true, api: true, readOnly: true, connected: false, detail: 'Reads your Lodgify bookings every few minutes so those dates close on your sites. Lodgify reads your direct bookings back from your Bookingbooster calendar link.', lastSync: null },
   ];
+  // All channels (Channex): one connection that lists every home on Airbnb, Booking.com, Vrbo, Expedia and 70+ more,
+  // keeps open dates (and, on the All channels plan, prices and minimum stays) in step everywhere, and brings their
+  // bookings back here. Bookingbooster runs the Channex account, so the host never needs one of their own.
+  BB.SYNC_EXTRA.push({ id: 'channex', name: 'All channels', group: 'Add-ons', addon: true, hub: true, connected: false, detail: 'List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from one place. Dates, and on the All channels plan prices, stay in step everywhere, and every booking lands here.', lastSync: null });
+  BB.CHANNEL.channex = 'All channels';
+  BB.ALL_CHANNELS = { price: 29, addon: 15 };
+  // Short names for the booking sites Channex reports a booking from.
+  BB.OTA = { BookingCom: 'Booking.com', Airbnb: 'Airbnb', AirBNB: 'Airbnb', Expedia: 'Expedia', VRBO: 'Vrbo', Vrbo: 'Vrbo', Agoda: 'Agoda', Google: 'Google', Hostelworld: 'Hostelworld', Tripadvisor: 'Tripadvisor', Trip: 'Trip.com' };
+  BB.otaName = x => BB.OTA[x] || String(x || 'another site').replace(/([a-z])([A-Z])/g, '$1 $2');
+  // The host turns it on. prices: true also keeps nightly prices and minimum stays in step (the All channels plan).
+  BB.act.joinAllChannels = function (prices) {
+    const s = S(); const i = BB.q.integration('channex'); if (!i) return { ok: false };
+    const was = i.connected && (s.account.tier === 'all') === !!prices;
+    i.connected = true; s.account.addon = true; if (prices) s.account.tier = 'all'; else delete s.account.tier;
+    i.joinedAt = i.joinedAt || stamp();
+    if (!was) BB.log('sync', 'All channels', prices ? 'Switched on All channels with price sync. Your homes, dates and prices go to every booking site you connect.' : 'Switched on All channels. Your homes and open dates go to every booking site you connect.', 'channex');
+    BB.fx('channex.run', {}); BB.fx('billing.addon', {});
+    BB.store.commit({ type: 'integration', id: 'channex' });
+    return { ok: true };
+  };
+  BB.act.leaveAllChannels = function () {
+    const s = S(); const i = BB.q.integration('channex'); if (!i || !i.connected) return { ok: false };
+    i.connected = false; delete s.account.tier;
+    if (!(s.integrations || []).some(x => x.addon && !x.hub && x.connected)) s.account.addon = false;
+    BB.log('sync', 'All channels', 'Switched off All channels. Bookings already taken stay on your calendar.', 'channex');
+    BB.fx('channex.run', {}); BB.fx('billing.addon', {});
+    BB.store.commit({ type: 'integration', id: 'channex' });
+    return { ok: true };
+  };
+  // A booking from a site connected through Channex (server only). r: { ref, status, from, to, ota, guest, code, amount, currency }
+  BB.act.applyChannexBooking = function (pid, r) {
+    const s = S(); const p = P(pid); if (!p || !r || !r.ref) return { ok: false };
+    const ota = BB.otaName(r.ota); const old = s.blocks.find(k => k.sync === 'channex' && k.ref === r.ref);
+    s.blocks = s.blocks.filter(k => !(k.sync === 'channex' && k.ref === r.ref));
+    if (r.status === 'cancelled') {
+      if (old) { BB.log('sync', 'All channels', ota + ' cancelled ' + (old.guest ? old.guest + "'s" : 'a') + ' stay at ' + p.short + ', ' + D.fmt(old.from) + '\u2013' + D.fmt(old.to) + '. Those nights are open again everywhere.', pid, [ota, 'Your calendar']); BB.notify('Cancelled on ' + ota + ' \xB7 ' + p.short, D.fmt(old.from) + '\u2013' + D.fmt(old.to) + ' is open again on every site.'); }
+      BB.store.commit({ type: 'sync' }); return { ok: true };
+    }
+    if (!r.from || !r.to || r.to <= s.today) { BB.store.commit({ type: 'sync', quiet: true }); return { ok: true }; }
+    const k = { propertyId: pid, from: r.from, to: r.to, note: 'Booked on ' + ota + (r.guest ? ' \xB7 ' + r.guest : ''), sync: 'channex', ref: r.ref, ota, guest: r.guest || '', code: r.code || '', amount: r.amount || null, currency: r.currency || '' };
+    s.blocks.push(k);
+    const clash = s.bookings.find(b => b.propertyId === pid && b.status !== 'cancelled' && b.checkIn < r.to && b.checkOut > r.from);
+    if (clash) BB.notify('Possible double booking at ' + p.short, ota + ' ' + D.fmt(r.from) + '\u2013' + D.fmt(r.to) + ' overlaps ' + clash.id + '. Check both calendars.', clash.id);
+    const changed = old && (old.from !== r.from || old.to !== r.to);
+    if (!old || changed) {
+      BB.log('booking', ota, (changed ? 'Changed on ' : 'New booking on ') + ota + ': ' + (r.guest || 'a guest') + ', ' + D.fmt(r.from) + '\u2013' + D.fmt(r.to) + ' at ' + p.short + (r.amount ? ' (' + (r.currency && r.currency !== 'GBP' ? r.currency + ' ' : '\xA3') + r.amount + ')' : '') + '. Closed on every other site straight away.', pid, [ota, 'Your calendar', 'Every other site']);
+      if (!old) BB.notify('New ' + ota + ' booking \xB7 ' + p.short, (r.guest || 'A guest') + ', ' + D.fmt(r.from) + '\u2013' + D.fmt(r.to) + '. Closed everywhere else.');
+    }
+    const i = BB.q.integration('channex'); if (i) i.lastSync = stamp();
+    BB.store.commit({ type: 'sync' });
+    return { ok: true };
+  };
   BB.ensureChannels = function (s) {
     if (!s || !Array.isArray(s.integrations)) return;
     BB.SYNC_EXTRA.forEach(x => { if (!s.integrations.some(i => i.id === x.id)) s.integrations.push(Object.assign({}, x)); });
@@ -10829,10 +11006,16 @@ body.p-lock { overflow: hidden; }
     return s.bookings.filter(b => homes.has(b.propertyId) && b.status !== 'cancelled' && b.checkOut >= s.today).map(b => b.id + ':' + b.propertyId + ':' + b.checkIn + ':' + b.checkOut).sort().join(',')
       + '|' + s.blocks.filter(k => homes.has(k.propertyId) && !k.sync && k.to >= s.today).map(k => k.propertyId + ':' + k.from + ':' + k.to).sort().join(',');
   };
+  // All channels: open nights (and prices, on the All channels plan) for every home, so a change reaches every site in minutes.
+  const hubPrint = () => {
+    const s = S(); const i = (s.integrations || []).find(x => x.id === 'channex'); if (!i || !i.connected) return '';
+    return s.properties.map(p => p.id + ':' + [...BB.q.blocked(p.id)].filter(n => n >= s.today).sort().join(',') + (s.account.tier === 'all' ? ':' + p.nightly + '/' + p.weekend + '/' + p.minNights : '')).join('|');
+  };
   const commit0 = BB.store.commit;
   BB.store.commit = function (meta) {
     const s = S();
     if (s && s.live) { const fp = directPrint(); if (fp && fp !== s.directPrint) { s.directPrint = fp; BB.fx('channels.push', {}); } else if (!fp && s.directPrint) s.directPrint = ''; }
+    if (s && s.live) { const hp = hubPrint(); if (hp && hp !== s.hubPrint) { s.hubPrint = hp; BB.fx('channex.push', {}); } else if (!hp && s.hubPrint) s.hubPrint = ''; }
     return commit0.call(BB.store, meta);
   };
 })();
@@ -14322,6 +14505,8 @@ var require_config = __commonJS({
         prices: {
           Growth: E.STRIPE_PRICE_GROWTH,
           addon: E.STRIPE_PRICE_CALENDAR_SYNC,
+          allChannels: E.STRIPE_PRICE_ALL_CHANNELS,
+          allChannelsAnnual: E.STRIPE_PRICE_ALL_CHANNELS_ANNUAL,
           GrowthAnnual: E.STRIPE_PRICE_GROWTH_ANNUAL,
           addonAnnual: E.STRIPE_PRICE_CALENDAR_SYNC_ANNUAL
         },
@@ -14346,7 +14531,10 @@ var require_config = __commonJS({
       // is held for refunds, and the smallest payout (pence).
       // The bonus is capped at £50: a referred host must never cost more than £50 to win.
       affiliate: { bonus: Math.round(Math.max(0, Math.min(50, +(E.AFFILIATE_BONUS || 50))) * 100), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
-      icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10)
+      icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
+      // All channels (server/channex.js): Bookingbooster's own Channex account. Switches on by itself once CHANNEX_MIN_HOSTS
+      // hosts pay for the add-on (enough to cover Channex's monthly fee); CHANNEX_ALWAYS_ON=1 skips that wait.
+      channex: { key: (E.CHANNEX_API_KEY || "").trim(), base: E.CHANNEX_BASE || "https://staging.channex.io", minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === "1", hookSecret: E.CHANNEX_WEBHOOK_SECRET || "" }
     };
   }
 });
@@ -15379,7 +15567,7 @@ var require_answers = __commonJS({
         description: "What a direct booking website is, what it costs, and how UK holiday let owners use one to take bookings without paying 15% or more to Airbnb or Vrbo. " + PRICE_LINE,
         lead: "A direct booking website is your own website, on your own domain, where guests check live availability and pay you directly. There is no platform in the middle, so there is no platform fee on the stay. Bookingbooster builds and runs one for UK holiday let owners, with SEO, AI search visibility and guest marketing included.",
         sections: [
-          ["What you get", "<ul>" + ["Your own booking site on your own .co.uk domain, with live availability and instant booking", "Card, Apple Pay and Google Pay payments through your own Stripe account, paid into your UK bank", "Security deposits taken as card holds that release on their own after checkout", "A guest check-in app with door codes", "Local SEO pages written for the searches guests make near you, added every month", "AI search visibility: structured data, llms.txt and answers that ChatGPT, Perplexity, Gemini and Google AI Overviews can read and cite", "Email and text campaigns to past guests, written and sent for you", "An optional calendar sync add-on (\xA3" + P.addon + " a month) so you never double book with Airbnb, Vrbo or Booking.com"].map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"],
+          ["What you get", "<ul>" + ["Your own booking site on your own .co.uk domain, with live availability and instant booking", "Card, Apple Pay and Google Pay payments through your own Stripe account, paid into your UK bank", "Security deposits taken as card holds that release on their own after checkout", "A guest check-in app with door codes", "Local SEO pages written for the searches guests make near you, added every month", "AI search visibility: structured data, llms.txt and answers that ChatGPT, Perplexity, Gemini and Google AI Overviews can read and cite", "Email and text campaigns to past guests, written and sent for you", "An optional All channels add-on (\xA3" + P.addon + " a month, or \xA329 with price sync) that lists your homes on Airbnb, Booking.com, Vrbo and 70+ more sites, so you never double book"].map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"],
           ["What it costs", "<p>" + esc(PRICE_LINE) + "</p><p>Platform fees, by comparison, grow with every booking. At Airbnb\u2019s host-only fee of 15.5%, a holiday let taking \xA330,000 a year through Airbnb pays about " + feeOn(3e4) + " in fees, and one taking \xA360,000 pays about " + feeOn(6e4) + ". The plan costs \xA3" + P.year.toLocaleString("en-GB") + ' a year on annual billing, whatever you take.</p><table><tr><th align="left">Yearly bookings</th><th align="left">Airbnb fee at 15.5%</th><th align="left">Bookingbooster, annual plan</th></tr>' + [2e4, 3e4, 6e4, 1e5].map((r) => "<tr><td>" + money(r) + "</td><td>" + feeOn(r) + "</td><td>" + money(P.year) + "</td></tr>").join("") + "</table><p><small>Estimates. Most hosts keep some platform listings, so the saving depends on how many stays move direct.</small></p>"],
           ["Who it is for", "<p>Owners and managers of holiday cottages, cabins, lodges, apartments, barn conversions and shepherd\u2019s huts in England, Scotland, Wales and Northern Ireland who want more bookings direct and fewer platform fees. One plan covers up to " + P.homes + " homes.</p>"],
           ["How it works", "<ol><li><strong>Paste your listing link.</strong> We copy your photos, reviews and house rules from Airbnb or Vrbo. Nothing there is changed.</li><li><strong>We build and tune it.</strong> Your site is live the same day on a free address. Your own domain, SEO pages and guest list take about a week.</li><li><strong>Bookings come direct.</strong> Guests find you on Google and in AI answers, pay you, and are invited back next season.</li></ol>"]
@@ -15483,7 +15671,7 @@ var require_answers = __commonJS({
 var require_marketing = __commonJS({
   "server/marketing.js"(exports, module) {
     var { esc } = require_pages();
-    var PRICE = { setup: 0, month: 197, year: 1970, addon: 15, homes: 3, aiCredit: 50 };
+    var PRICE = { setup: 0, month: 197, year: 1970, addon: 15, allChannels: 29, homes: 3, aiCredit: 50 };
     var FAQ = [
       ["Do I have to leave Airbnb or Vrbo?", "No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there."],
       ["How do guests pay?", "By card, Apple Pay or Google Pay through Stripe, paid straight into your UK bank account. Security deposits are card holds that release on their own after checkout."],
@@ -15573,7 +15761,8 @@ var require_marketing = __commonJS({
           hasOfferCatalog: { "@type": "OfferCatalog", name: "Bookingbooster pricing", itemListElement: [
             offer("Monthly plan", PRICE.month, "MON", { description: "No setup fee. Everything included for up to " + PRICE.homes + " homes. No commission. Cancel anytime." }),
             offer("Yearly plan", PRICE.year, "ANN", { description: "The same plan paid yearly: two months free. No setup fee." }),
-            offer("Calendar sync add-on", PRICE.addon, "MON", { description: "Keeps your calendar in step with Airbnb, Vrbo, Booking.com or your channel manager." })
+            offer("All channels add-on", PRICE.addon, "MON", { description: "Lists your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites, with open dates kept in step everywhere." }),
+            offer("All channels add-on with price sync", PRICE.allChannels, "MON", { description: "Everything in the All channels add-on, plus nightly prices and minimum stays sent to every site." })
           ] }
         },
         { "@type": "FAQPage", "@id": url + "#faq", mainEntity: allFaq().map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) }
@@ -15586,10 +15775,10 @@ var require_marketing = __commonJS({
     var ldScript = (base, co) => '<script type="application/ld+json">' + JSON.stringify(jsonLd(base, co)).replace(/</g, "\\u003c") + "</script>";
     function content(base, co) {
       const li = (a) => "<ul>" + a.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
-      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/direct-booking-website">Direct booking websites</a> \xB7 <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> \xB7 <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> \xB7 <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> \xB7 <a href="/guides">Free guides</a> \xB7 <a href="/help">Help</a> \xB7 <a href="/partners">Partner programme</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
+      return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional All channels add-on, to list your homes on Airbnb, Booking.com, Vrbo and 70+ more sites from one calendar: \xA3" + PRICE.addon + " a month, or \xA3" + PRICE.allChannels + " with price sync.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/direct-booking-website">Direct booking websites</a> \xB7 <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> \xB7 <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> \xB7 <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> \xB7 <a href="/guides">Free guides</a> \xB7 <a href="/help">Help</a> \xB7 <a href="/partners">Partner programme</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- All channels add-on (lists homes on Airbnb, Booking.com, Vrbo and 70+ more, dates in step): \xA3" + PRICE.addon + " a month, or \xA3" + PRICE.allChannels + " with price sync\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
     }
     module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
@@ -16080,11 +16269,33 @@ var require_stripe = __commonJS({
         },
         // Stripe keeps its card fee on a refund, so the pass-through stays too
         appFee,
-        async subscribe({ customer, customerEmail, plan, addon, annual, successUrl, cancelUrl, meta }) {
+        // The add-on price this account should pay: All channels (£29) replaces the calendar sync add-on (£15), never both.
+        addonPrice({ addon, tier, annual }) {
+          const P = cfg.stripe.prices;
+          if (!addon) return null;
+          return tier === "all" ? annual ? P.allChannelsAnnual : P.allChannels : annual ? P.addonAnnual : P.addon;
+        },
+        // Keeps a running subscription in step when the host adds, changes or drops the add-on from their console.
+        // Prorated, so they pay for the days they use. Returns what changed.
+        async syncAddon(customer, want) {
+          const P = cfg.stripe.prices;
+          const ours = [P.addon, P.addonAnnual, P.allChannels, P.allChannelsAnnual].filter(Boolean);
+          const list = await api("GET", "/subscriptions", { customer, status: "active", limit: 10 });
+          const sub = (list.data || [])[0];
+          if (!sub) return { changed: false, reason: "no subscription" };
+          const items = sub.items && sub.items.data || [];
+          const have = items.filter((it) => it.price && ours.includes(it.price.id || it.price));
+          const pid = (it) => it.price.id || it.price;
+          if (want && have.length === 1 && pid(have[0]) === want) return { changed: false };
+          if (want && !have.some((it) => pid(it) === want)) await api("POST", "/subscription_items", { subscription: sub.id, price: want, quantity: 1, proration_behavior: "create_prorations" });
+          for (const it of have) if (pid(it) !== want) await api("DELETE", "/subscription_items/" + it.id, { proration_behavior: "create_prorations" });
+          return { changed: true };
+        },
+        async subscribe({ customer, customerEmail, plan, addon, tier, annual, successUrl, cancelUrl, meta }) {
           const P = cfg.stripe.prices, yearly = annual && P[plan + "Annual"];
           const price = yearly ? P[plan + "Annual"] : P[plan];
           if (!price) throw new Error("No Stripe price is set for the " + plan + " plan.");
-          const add = yearly ? P.addonAnnual : P.addon;
+          const add = tier === "all" ? (yearly ? P.allChannelsAnnual : P.allChannels) || (yearly ? P.addonAnnual : P.addon) : yearly ? P.addonAnnual : P.addon;
           const items = [{ price, quantity: 1 }];
           if (addon && add) items.push({ price: add, quantity: 1 });
           const s = await api("POST", "/checkout/sessions", { mode: "subscription", customer: customer || void 0, customer_email: customer ? void 0 : customerEmail, line_items: items, success_url: successUrl, cancel_url: cancelUrl, subscription_data: { metadata: meta }, metadata: meta, allow_promotion_codes: true });
@@ -19990,7 +20201,9 @@ var require_stripe_auto = __commonJS({
     var crypto = __require("crypto");
     var PLANS = [
       ["GROWTH", "Bookingbooster Growth", 197],
-      ["CALENDAR_SYNC", "Bookingbooster calendar sync add-on", 15]
+      ["CALENDAR_SYNC", "Bookingbooster calendar sync add-on", 15],
+      ["ALL_CHANNELS", "Bookingbooster All channels (calendar and price sync to every booking site)", 29]
+      // instead of the £15 add-on, not on top
     ];
     var PLATFORM_EVENTS = ["checkout.session.completed", "checkout.session.expired", "customer.subscription.updated", "customer.subscription.deleted", "invoice.payment_failed", "invoice.paid", "charge.refunded", "charge.dispute.closed"];
     var CONNECT_EVENTS = ["account.updated"];
@@ -20029,7 +20242,7 @@ var require_stripe_auto = __commonJS({
       for (const [env, name, monthly] of PLANS) {
         const prod = await product(env, name);
         prices["STRIPE_PRICE_" + env] = await price(env, prod.id, monthly, "month");
-        prices["STRIPE_PRICE_" + env + "_ANNUAL"] = await price(env, prod.id, env === "CALENDAR_SYNC" ? monthly * 12 : monthly * 10, "year");
+        prices["STRIPE_PRICE_" + env + "_ANNUAL"] = await price(env, prod.id, ["CALENDAR_SYNC", "ALL_CHANNELS"].includes(env) ? monthly * 12 : monthly * 10, "year");
       }
       return prices;
     }
@@ -20038,7 +20251,7 @@ var require_stripe_auto = __commonJS({
       const KEY = "config:stripe";
       const fp = () => crypto.createHash("sha256").update(String(cfg.stripe.key || "")).digest("hex").slice(0, 16);
       const mode = () => /^(sk|rk)_live_/.test(cfg.stripe.key || "") ? "live" : "test";
-      const P = { STRIPE_PRICE_GROWTH: "Growth", STRIPE_PRICE_GROWTH_ANNUAL: "GrowthAnnual", STRIPE_PRICE_CALENDAR_SYNC: "addon", STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: "addonAnnual" };
+      const P = { STRIPE_PRICE_GROWTH: "Growth", STRIPE_PRICE_GROWTH_ANNUAL: "GrowthAnnual", STRIPE_PRICE_CALENDAR_SYNC: "addon", STRIPE_PRICE_CALENDAR_SYNC_ANNUAL: "addonAnnual", STRIPE_PRICE_ALL_CHANNELS: "allChannels", STRIPE_PRICE_ALL_CHANNELS_ANNUAL: "allChannelsAnnual" };
       const read = async () => {
         const r = await get.get(KEY);
         try {
@@ -21275,6 +21488,291 @@ var require_channels = __commonJS({
   }
 });
 
+// server/channex.js
+var require_channex = __commonJS({
+  "server/channex.js"(exports, module) {
+    var crypto = __require("crypto");
+    var ical = require_ical();
+    var ApiError = class extends Error {
+      constructor(msg, status) {
+        super(msg);
+        this.status = status;
+      }
+    };
+    var DAYS = 500;
+    module.exports = function({ cfg, ws, db, log }) {
+      const C = cfg.channex || {};
+      const base = () => String(C.base || "https://staging.channex.io").replace(/\/+$/, "");
+      const ready = () => !!C.key;
+      const kvGet = db.prepare("SELECT v FROM kv WHERE k = ?"), kvSet = db.prepare("INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)");
+      const payingRows = db.prepare("SELECT state FROM workspaces WHERE kind = 'live' AND billing_status = 'active'");
+      const hookSecret = () => C.hookSecret || crypto.createHmac("sha256", String(cfg.secret || "bb")).update("channex-hook").digest("hex").slice(0, 40);
+      async function api(method, path, { body, query } = {}) {
+        if (!ready()) throw new ApiError("is not set up on this server yet.");
+        const qs = query ? "?" + new URLSearchParams(query).toString() : "";
+        let r;
+        try {
+          r = await fetch(base() + "/api/v1" + path + qs, { method, headers: { "user-api-key": C.key, accept: "application/json", "content-type": "application/json", "user-agent": "Bookingbooster (+https://booking-booster.co.uk)" }, body: body === void 0 ? void 0 : JSON.stringify(body), signal: AbortSignal.timeout(2e4) });
+        } catch (e) {
+          throw new ApiError(e.name === "TimeoutError" ? "took too long to answer." : "could not be reached.");
+        }
+        const text = await r.text();
+        let j = null;
+        try {
+          j = text ? JSON.parse(text) : null;
+        } catch (_) {
+        }
+        if (r.status === 429) throw new ApiError("asked us to slow down. We will send it again shortly.", 429);
+        if (!r.ok) {
+          const e = j && j.errors;
+          const det = e && e.details ? Object.entries(e.details).map(([k, v]) => k + " " + [].concat(v).join(", ")).join("; ") : "";
+          throw new ApiError("answered with error " + r.status + (e ? " (" + String(e.title || e.code || "") + (det ? ": " + det : "") + ")" : ""), r.status);
+        }
+        return j;
+      }
+      const idOf = (j) => j && j.data && (j.data.id || j.data.attributes && j.data.attributes.id);
+      let gateCache = null;
+      async function gate(fresh) {
+        if (gateCache && !fresh && Date.now() - gateCache.at < 10 * 6e4) return gateCache;
+        let paying = 0;
+        try {
+          for (const r of await payingRows.all()) {
+            try {
+              if (JSON.parse(r.state).account.addon) paying++;
+            } catch (_) {
+            }
+          }
+        } catch (e) {
+          log("channex gate", e.message);
+        }
+        const need = Math.max(0, +C.minHosts || 0);
+        gateCache = { at: Date.now(), ready: ready(), paying, need, live: ready() && (C.always || paying >= need) };
+        return gateCache;
+      }
+      const pub = () => {
+        const g = gateCache || { ready: ready(), paying: 0, need: +C.minHosts || 0, live: false };
+        return { ready: g.ready, live: g.live, paying: g.paying, need: g.need };
+      };
+      const idx = async (pid) => {
+        const r = await kvGet.get("channex:prop:" + pid);
+        return r ? JSON.parse(r.v) : null;
+      };
+      const setIdx = (cid, wid, pid) => kvSet.run("channex:prop:" + cid, JSON.stringify({ wid, pid }));
+      const save = (wid, fn) => ws.withWs(wid, (BB) => {
+        const i = BB.q.integration("channex");
+        if (!i) return;
+        fn(i, BB.store.get());
+        BB.store.commit({ quiet: true });
+      }, { quiet: true });
+      async function provision(w) {
+        const s = w.state;
+        const i0 = s.integrations.find((x) => x.id === "channex");
+        if (!i0) return;
+        let group = i0.cxGroup;
+        if (!group) {
+          group = idOf(await api("POST", "/groups", { body: { group: { title: String(s.account.business || "Bookingbooster host").slice(0, 200) + " (" + w.id + ")" } } }));
+          await save(w.id, (i) => {
+            i.cxGroup = group;
+          });
+        }
+        const map = Object.assign({}, i0.map || {});
+        for (const p of s.properties) {
+          const m = Object.assign({}, map[p.id] || {});
+          if (m.property && m.room && m.rate) continue;
+          if (!m.property) {
+            const area = String(p.area || "").split(",").map((x) => x.trim()).filter(Boolean);
+            m.property = idOf(await api("POST", "/properties", { body: { property: { title: String(p.name).slice(0, 250), currency: "GBP", timezone: "Europe/London", property_type: "apartment", country: "GB", city: area[0] || void 0, email: s.account.email || void 0, group_id: group, settings: { min_stay_type: "arrival" } } } }));
+            await setIdx(m.property, w.id, p.id);
+          }
+          if (!m.room) m.room = idOf(await api("POST", "/room_types", { body: { room_type: { property_id: m.property, title: String(p.short || p.name).slice(0, 200), count_of_rooms: 1, occ_adults: Math.max(1, +p.maxGuests || 2), occ_children: 0, occ_infants: 0, room_kind: "room" } } }));
+          if (!m.rate) m.rate = idOf(await api("POST", "/rate_plans", { body: { rate_plan: { property_id: m.property, room_type_id: m.room, title: "Standard", sell_mode: "per_room", rate_mode: "manual", currency: "GBP", meal_type: "none", options: [{ occupancy: Math.max(1, +p.maxGuests || 2), is_primary: true, rate: String((+p.nightly || 100).toFixed(2)) }] } } }));
+          map[p.id] = m;
+          await save(w.id, (i) => {
+            i.map = i.map || {};
+            i.map[p.id] = m;
+          });
+          log("channex", w.id, "set up", p.id, m.property);
+        }
+      }
+      function plan(w) {
+        const out = {};
+        const s = w.state;
+        const BB = w.BB;
+        const prices = s.account.tier === "all";
+        const i = s.integrations.find((x) => x.id === "channex");
+        const today = s.today;
+        for (const p of s.properties) {
+          const m = (i.map || {})[p.id];
+          if (!m || !m.rate) continue;
+          const bl = BB.q.blocked(p.id);
+          const avail = [], rates = [];
+          for (let k = 0; k < DAYS; k++) {
+            const d = ical.addDay(today, k);
+            avail.push([d, bl.has(d) ? 0 : 1]);
+            if (prices) {
+              const dow = (/* @__PURE__ */ new Date(d + "T12:00:00Z")).getUTCDay();
+              rates.push([d, ((+p.nightly || 0) + ([5, 6].includes(dow) ? +p.weekend || 0 : 0)).toFixed(2) + "/" + Math.max(1, +p.minNights || 1)]);
+            }
+          }
+          const runs = (list) => {
+            const r = [];
+            for (const [d, v] of list) {
+              const last = r[r.length - 1];
+              if (last && last.v === v && ical.addDay(last.to, 1) === d) last.to = d;
+              else r.push({ from: d, to: d, v });
+            }
+            return r;
+          };
+          out[p.id] = { m, avail: runs(avail), rates: prices ? runs(rates) : null };
+        }
+        return out;
+      }
+      const hash = (x) => crypto.createHash("sha1").update(JSON.stringify(x)).digest("hex").slice(0, 16);
+      async function push(w, { force } = {}) {
+        const i = w.state.integrations.find((x) => x.id === "channex");
+        const sent = Object.assign({}, i.sent || {});
+        const status = {};
+        for (const [pid, P] of Object.entries(plan(w))) {
+          const st = { checked: (/* @__PURE__ */ new Date()).toISOString() };
+          try {
+            const ha = hash(P.avail), hr = P.rates ? hash(P.rates) : null;
+            const was = sent[pid] || {};
+            const stale = !was.at || Date.now() - was.at > 20 * 36e5;
+            if (force || stale || was.a !== ha) await api("POST", "/availability", { body: { values: P.avail.map((r) => ({ property_id: P.m.property, room_type_id: P.m.room, date_from: r.from, date_to: r.to, availability: r.v })) } });
+            if (hr && (force || stale || was.r !== hr)) await api("POST", "/restrictions", { body: { values: P.rates.filter((r) => +r.v.split("/")[0] > 0).map((r) => {
+              const [rate, min] = r.v.split("/");
+              return { property_id: P.m.property, rate_plan_id: P.m.rate, date_from: r.from, date_to: r.to, rate, min_stay_arrival: +min };
+            }) } });
+            sent[pid] = { a: ha, r: hr, at: force || stale || was.a !== ha || hr && was.r !== hr ? Date.now() : was.at };
+            st.ok = st.checked;
+          } catch (e) {
+            st.error = "Channex " + e.message;
+            log("channex push", w.id, pid, e.message);
+          }
+          status[pid] = st;
+        }
+        await save(w.id, (x) => {
+          x.sent = sent;
+          x.status = Object.assign({}, x.status || {}, status);
+          const err = Object.values(x.status).map((v) => v.error).find(Boolean) || null;
+          x.error = err;
+          const s = w.state;
+          if (!err) x.lastSync = s.today + "T" + s.clock;
+        });
+      }
+      const short = (c) => {
+        if (!c) return "";
+        const n = String(c.name || "").trim(), sn = String(c.surname || "").trim();
+        const real = (x) => x && x !== "***";
+        return [real(n) ? n : "", real(sn) ? sn[0] + "." : ""].filter(Boolean).join(" ");
+      };
+      let pulling = null;
+      function pull() {
+        if (!pulling) pulling = pullNow().finally(() => {
+          pulling = null;
+        });
+        return pulling;
+      }
+      async function pullNow() {
+        if (!ready() || !(await gate()).live) return { read: 0 };
+        let read = 0;
+        for (let page = 0; page < 10; page++) {
+          const j = await api("GET", "/booking_revisions/feed", { query: { "order[inserted_at]": "asc", "pagination[limit]": "100" } });
+          const list = j && j.data || [];
+          if (!list.length) break;
+          let done = 0;
+          for (const it of list) {
+            const a = Object.assign({ id: it.id }, it.attributes || {});
+            const at = await idx(a.property_id);
+            if (!at) {
+              log("channex", "booking for a property we do not know", a.property_id);
+              continue;
+            }
+            const room = (a.rooms || [])[0] || {};
+            const r = { ref: String(a.booking_id || a.id), status: a.status, from: a.arrival_date || room.checkin_date, to: a.departure_date || room.checkout_date, ota: a.ota_name, guest: short(a.customer), code: a.ota_reservation_code || a.unique_id || "", amount: a.amount ? String(a.amount) : null, currency: a.currency || "" };
+            try {
+              await ws.withWs(at.wid, (BB) => BB.act.applyChannexBooking(at.pid, r), { action: "channexBooking" });
+              await api("POST", "/booking_revisions/" + encodeURIComponent(a.id) + "/ack");
+              read++;
+              done++;
+            } catch (e) {
+              log("channex pull", at.wid, a.id, e.message);
+            }
+          }
+          if (!done) break;
+        }
+        return { read };
+      }
+      async function ensureHook() {
+        if (!ready() || !cfg.baseUrl || /localhost|127\.0\.0\.1/.test(cfg.baseUrl)) return;
+        const r = await kvGet.get("channex:hook");
+        if (r && JSON.parse(r.v).base === base()) return;
+        try {
+          const j = await api("POST", "/webhooks", { body: { webhook: { callback_url: cfg.baseUrl + "/hooks/channex", event_mask: "booking_new;booking_modification;booking_cancellation", is_global: true, is_active: true, send_data: false, headers: { "x-bb-hook": hookSecret() } } } });
+          await kvSet.run("channex:hook", JSON.stringify({ base: base(), id: idOf(j) }));
+        } catch (e) {
+          log("channex hook", e.message);
+          if (e.status === 422) await kvSet.run("channex:hook", JSON.stringify({ base: base(), id: null, note: e.message }));
+        }
+      }
+      const hookOk = (h) => {
+        const a = Buffer.from(String(h || "")), b = Buffer.from(hookSecret());
+        return a.length === b.length && crypto.timingSafeEqual(a, b);
+      };
+      async function connectUrl(w, pid) {
+        const i = w.state.integrations.find((x) => x.id === "channex");
+        const m = i && i.map && i.map[pid];
+        if (!m || !m.property) throw new ApiError("is still setting up this home. Try again in a minute.", 409);
+        const j = await api("POST", "/auth/one_time_token", { body: { one_time_token: { property_id: m.property, group_id: i.cxGroup || void 0, username: String(w.state.account.email || w.id).slice(0, 120) } } });
+        const t = j && j.data && j.data.token;
+        if (!t) throw new ApiError("did not give us a sign-in link.");
+        const q = new URLSearchParams({ oauth_session_key: t, app_mode: "headless", redirect_to: "/channels", property_id: m.property, lng: "en" });
+        if (i.cxGroup) q.set("group_id", i.cxGroup);
+        return base() + "/auth/exchange?" + q.toString();
+      }
+      const running = /* @__PURE__ */ new Map();
+      function run(w, opts = {}) {
+        const prev = running.get(w.id) || Promise.resolve();
+        const next = prev.then(() => runNow(w.id, opts)).catch((e) => log("channex", w.id, e.message));
+        running.set(w.id, next);
+        next.finally(() => {
+          if (running.get(w.id) === next) running.delete(w.id);
+        });
+        return next;
+      }
+      async function runNow(wid, opts) {
+        let w = await ws.open(wid);
+        if (!w || w.kind !== "live") return;
+        const i = w.state.integrations.find((x) => x.id === "channex");
+        if (!i || !i.connected) return;
+        const g = await gate();
+        if (!g.live) {
+          if (!i.waiting) await save(wid, (x) => {
+            x.waiting = true;
+          });
+          return;
+        }
+        try {
+          await provision(w);
+        } catch (e) {
+          log("channex provision", wid, e.message);
+          await save(wid, (x) => {
+            x.error = "Channex " + e.message;
+          });
+          return;
+        }
+        if (i.waiting) await save(wid, (x) => {
+          x.waiting = false;
+        });
+        w = await ws.open(wid);
+        await push(w, opts);
+      }
+      return { ready, gate, pub, api, provision, push, pull, run, connectUrl, ensureHook, hookOk, hookSecret, plan };
+    };
+    module.exports.ApiError = ApiError;
+  }
+});
+
 // server/effects.js
 var require_effects = __commonJS({
   "server/effects.js"(exports, module) {
@@ -21284,6 +21782,20 @@ var require_effects = __commonJS({
       const { cfg, ws, msg, stripe, ai, auth, urls, db, log, secrets } = ctx;
       const host = new URL(cfg.baseUrl).host;
       const channels = ctx.channels || require_channels()({ ws, secrets, log, host });
+      const channex = ctx.channex || require_channex()({ cfg, ws, db, log });
+      async function billingAddon(w) {
+        if (!stripe.enabled || w.kind !== "live") return;
+        const r = await ws.row(w.id);
+        if (!r || !r.stripe_customer || r.billing_status !== "active") return;
+        const a = w.state.account;
+        const want = stripe.addonPrice({ addon: !!a.addon, tier: a.tier, annual: !!a.annual });
+        if (a.addon && !want) {
+          log("billing addon", w.id, "no Stripe price for", a.tier || "addon");
+          return;
+        }
+        const res = await stripe.syncAddon(r.stripe_customer, want);
+        if (res.changed) log("billing addon", w.id, want || "removed");
+      }
       const money = (n) => "\xA3" + Number(n || 0).toLocaleString("en-GB", { minimumFractionDigits: n % 1 ? 2 : 0 });
       const fmt = (iso, o) => (/* @__PURE__ */ new Date(iso + "T00:00:00Z")).toLocaleDateString("en-GB", Object.assign({ timeZone: "UTC", weekday: "short", day: "numeric", month: "short", year: "numeric" }, o || {}));
       const first = (n) => String(n || "").split(" ")[0];
@@ -21631,6 +22143,8 @@ var require_effects = __commonJS({
             else if (f.type === "ical.sync") await calendars(w, d.id);
             else if (f.type === "channels.sync") await channels.sync(w, { id: d.id });
             else if (f.type === "channels.push") await channels.sync(w, { pull: false });
+            else if (f.type === "channex.run" || f.type === "channex.push") await channex.run(w);
+            else if (f.type === "billing.addon") await billingAddon(w);
             else if (f.type === "ai.check") await aiCheck(w);
             else if (f.type === "payment.refund") await refund(w, d);
             else if (f.type === "payment.link") await paymentLink(w, d);
@@ -21642,13 +22156,14 @@ var require_effects = __commonJS({
               await hostEmail(w, d);
               await ws.withWs(w.id, () => {
               });
+              await channex.run(w);
             }
           } catch (e) {
             log("effect " + f.type + " failed:", e.message);
           }
         }
       }
-      return Object.assign(run, { calendars, freshen, channels, aiCheck, siteLive });
+      return Object.assign(run, { calendars, freshen, channels, channex, aiCheck, siteLive, billingAddon });
     };
   }
 });
@@ -25532,6 +26047,7 @@ var require_server = __commonJS({
         stripe: stripeReady(w),
         stripeAvailable: stripe.enabled,
         soon: SOON,
+        channex: effects.channex.pub(),
         aiDrafts: assist.enabled,
         guestFromDomain: cfg.email.guestFromDomain,
         support: cfg.company.support,
@@ -25900,10 +26416,11 @@ var require_server = __commonJS({
       const wid = await ws.createLive({ business, owner: name, email, plan });
       const uid = await auth.createUser({ email, name, password: pw, workspaceId: wid });
       if (b.property && b.property.name) await addFirstHome(wid, b, { name, email, business: a.business }, wantsBuy);
-      if (b.addon || b.annual) await ws.withWs(wid, (BB) => {
+      if (b.addon || b.annual || b.allChannels) await ws.withWs(wid, (BB) => {
         const a2 = BB.store.get().account;
         if (b.addon) a2.addon = true;
         if (b.annual) a2.annual = true;
+        if (b.allChannels) BB.act.joinAllChannels(b.allChannels === "prices");
         BB.store.commit({});
       });
       await ws.setMeta(wid, { plan, billing_status: "trial" });
@@ -25973,7 +26490,7 @@ var require_server = __commonJS({
     var needsSetup = async (req, w) => w.kind === "live" && !w.state.properties.length && !await isAdmin(req);
     async function planCheckout(w) {
       const r = await ws.row(w.id), plan = r.plan || w.state.account.plan;
-      return stripe.subscribe({ customer: r.stripe_customer || void 0, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + "/app/pay/done?session={CHECKOUT_SESSION_ID}", cancelUrl: cfg.baseUrl + "/app/pay", meta: { workspace: w.id, kind: "plan", plan } });
+      return stripe.subscribe({ customer: r.stripe_customer || void 0, customerEmail: w.state.account.email, plan, addon: !!w.state.account.addon, tier: w.state.account.tier, annual: !!w.state.account.annual, successUrl: cfg.baseUrl + "/app/pay/done?session={CHECKOUT_SESSION_ID}", cancelUrl: cfg.baseUrl + "/app/pay", meta: { workspace: w.id, kind: "plan", plan } });
     }
     async function planPaid(wid, customer, plan) {
       const r = await ws.row(wid);
@@ -25998,10 +26515,15 @@ var require_server = __commonJS({
       if (r && !offPlan(r.billing_status)) return false;
       return !await isAdmin(req);
     }
+    function addonLine(s) {
+      if (!s.account.addon) return "";
+      const all = s.account.tier === "all", m = all ? 29 : 15;
+      return '<p style="margin:6px 0 0">Plus ' + (all ? "All channels, with dates and prices kept in step on every booking site" : "the calendar sync add-on") + ", " + (s.account.annual ? "\xA3" + m * 12 + " a year" : "\xA3" + m + " a month") + ".</p>";
+    }
     function payPage(w, note) {
       const s = w.state, price = 197, ended = (w.row || {}).billing_status === "cancelled";
       const due = s.account.annual ? "\xA3" + price * 10 + (ended ? " for the year" : " for your first year") : "\xA3" + price + (ended ? " for the month" : " for your first month");
-      return authPage(ended ? "Restart your plan" : "Start your plan", (ended ? "<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay " + due + " to restart your plan. Everything you set up is still here.</p>" : "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>") + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added. Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
+      return authPage(ended ? "Restart your plan" : "Start your plan", (ended ? "<h1>Your plan has ended</h1><p>Your booking site is offline to guests. Pay " + due + " to restart your plan. Everything you set up is still here.</p>" : "<h1>One step left</h1><p>Pay " + due + " to open your console and start setting up " + E((s.properties[0] || {}).name || s.account.business) + ".</p>") + (note ? '<p class="ok" role="status">' + E(note) + "</p>" : "") + '<div class="card"><b>' + E(s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. You pay ' + (s.account.annual ? "the year" : "the first month") + " today, then it renews automatically. No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added. Cancel anytime.</p>" + addonLine(s) + '</div><form method="post" action="/app/billing/start"><button>Pay securely with Stripe</button></form><div class="links"><a href="mailto:' + E(cfg.company.support) + '">Questions? Email us</a><a href="/app/account">Your account</a></div><form method="post" action="/logout" style="margin-top:8px"><button class="link" style="background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer">Sign out</button></form>');
     }
     async function welcome(wid) {
       const w = await ws.open(wid);
@@ -26083,6 +26605,12 @@ Disallow: /
       if (p === "/app/sw.js") return file(res, path.join(ROOT, "web"), "sw.js", "no-cache", { "service-worker-allowed": "/app" });
       if (p === "/app/offline") return send(res, 200, authPage("Offline", '<h1>You are offline.</h1><p>Bookingbooster needs a connection to load your bookings. It will open again as soon as you have signal.</p><p><a href="/app/phone">Try again</a></p>'), "text/html; charset=utf-8");
       if (p === "/webhooks/stripe" && m === "POST") return await stripeWebhook(req, res);
+      if (p === "/hooks/channex" && m === "POST") {
+        await jsonBody(req, 2e5).catch(() => null);
+        if (!effects.channex.hookOk(req.headers["x-bb-hook"])) return notFound(res);
+        effects.channex.pull().catch((e) => log("channex hook", e.message));
+        return json(res, { ok: true });
+      }
       let mm;
       if (mm = p.match(/^\/api\/public\/([a-z0-9-]+)\/(.+)$/)) {
         const r = await ws.bySlug(mm[1]);
@@ -26616,7 +27144,7 @@ Disallow: /
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);
           const name = String(j.name || "");
-          if (["nextDay", "simulateCampaign", "applyCalendar", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
+          if (["nextDay", "simulateCampaign", "applyCalendar", "applyChannexBooking", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
           if (name === "toggleIntegration" && j.args) {
             const iid = j.args[0], cur = w.state.integrations.find((i) => i.id === iid);
             if (!cur) throw err(404, "Unknown connection");
@@ -26626,6 +27154,7 @@ Disallow: /
             if (iid === "sms" && !cur.connected && !cfg.sms.sid) {
             }
             if (cur.api && !cur.connected) throw err(400, "Add your " + cur.name + " key to connect it.");
+            if (cur.hub) throw err(400, "Use the All channels switch in Connections.");
             if (cur.addon && !cur.api && !cur.connected) throw err(400, "Paste a calendar link to turn on calendar sync.");
             if (cur.api && cur.connected) await effects.channels.disconnect(w, iid);
           }
@@ -26750,6 +27279,20 @@ Disallow: /
           const url = urls.ical(w, x);
           return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map((c) => [c, url.replace(/\.ics$/, "." + c + ".ics")])) };
         }) });
+        if (p === "/app/channex/connect" && m === "POST") {
+          const j = await jsonBody(req, 2e3);
+          const pid = String(j.pid || "");
+          if (!w.state.properties.some((x) => x.id === pid)) throw err(404, "Home not found");
+          const i = w.state.integrations.find((x) => x.id === "channex");
+          if (!i || !i.connected) throw err(400, "Switch on All channels first.");
+          if (!(await effects.channex.gate()).live) throw err(409, "All channels is not switched on yet. Your homes are set up the moment it is.");
+          if (!auth.limit("cx:" + w.id, 20, 6e5)) throw err(429, "Too many tries. Wait a few minutes and try again.");
+          try {
+            return json(res, { url: await effects.channex.connectUrl(w, pid) });
+          } catch (e) {
+            throw err(e.status === 409 ? 409 : 502, "Channex " + e.message);
+          }
+        }
         if (p === "/app/channel/connect" && m === "POST") {
           const j = await jsonBody(req, 4e3);
           const id = String(j.id || "");
@@ -27054,7 +27597,7 @@ Disallow: /
       const s = w.state;
       const price = 197;
       const status = { trial: "Not paid yet. Your booking site goes live to guests once your plan is paid", active: "Active", past_due: "Payment failed. Update your card so Stripe can take it again", cancelled: "Cancelled" }[r.billing_status] || "Not paid yet";
-      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + (s.account.addon ? '<p style="margin:6px 0 0">Plus the calendar sync add-on, ' + (s.account.annual ? "\xA3180 a year" : "\xA315 a month") + ".</p>" : "") + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added.</p></div>" + (stripe.enabled ? r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === "cancelled" ? "Restart your plan" : "Start your plan") + "</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
+      return authPage("Plan and billing", "<h1>Plan and billing</h1><p>" + E(s.account.business) + '</p><div class="card"><b>' + E(r.plan || s.account.plan) + " plan \xB7 " + (s.account.annual ? "\xA3" + price * 10 + " a year" : "\xA3" + price + " a month") + ' inc. VAT</b><p style="margin:6px 0 0">No setup fee. Paid upfront each ' + (s.account.annual ? "year" : "month") + ". Cancel anytime.</p>" + addonLine(s) + '<p style="margin:6px 0 0">Status: ' + E(status) + ". No commission on any booking. Guest card fees are passed on at Stripe\u2019s cost (about 1.5% + 20p per payment), with nothing added.</p></div>" + (stripe.enabled ? r.stripe_customer && !offPlan(r.billing_status) ? '<form method="post" action="/app/billing/portal"><button>Manage billing in Stripe</button></form>' : '<form method="post" action="/app/billing/start"><button>' + (r.billing_status === "cancelled" ? "Restart your plan" : "Start your plan") + "</button></form>" : '<p class="card">Card billing is not switched on for this server yet. Add the Stripe keys described in the README.</p>') + (credits.enabled ? await creditCard(w, sp) : "") + '<div class="links"><a href="/app">Back to your console</a><a href="mailto:' + E(cfg.company.support) + '">Contact us</a></div>');
     }
     async function creditCard(w, sp) {
       const c = await credits.summary(w.id), rows = await credits.recent(w.id, 12), M = credits.money;
@@ -27123,6 +27666,14 @@ Disallow: /
       bg("campaigns", campaigns.run(t));
       bg("flows", flows.run(t));
       bg("stripe", stripeAuto.ensure(t));
+      const cx = effects.channex;
+      if (cx.ready()) {
+        const g = await cx.gate(ical2);
+        if (g.live) {
+          bg("channex feed", cx.pull());
+          if (daily || ical2) bg("channex hook", cx.ensureHook());
+        }
+      }
       for (const id of await ws.liveIds()) {
         try {
           const w = await ws.open(id);
@@ -27131,6 +27682,10 @@ Disallow: /
           const exp = w.state.bookings.filter((b) => b.status === "pending" && b.holdUntil && b.holdUntil < t).map((b) => b.id);
           if (rolled || exp.length) await ws.withWs(id, (BB) => exp.forEach((bid) => BB.act.expirePending(bid)), { scheduler: true });
           if (ical2) bg("ical", effects.calendars(w));
+          if (ical2 && cx.ready()) {
+            const i = w.state.integrations.find((x) => x.id === "channex");
+            if (i && i.connected) bg("channex", cx.run(w));
+          }
           if (daily && w.kind === "live") bg("index", autoIndex(w).catch((e) => log("index", id, e.message)));
           if (daily && ai.available().length) {
             const c = w.state.ai.checkedAt;

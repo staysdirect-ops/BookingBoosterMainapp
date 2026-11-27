@@ -8,6 +8,16 @@ module.exports = function (ctx) {
   const { cfg, ws, msg, stripe, ai, auth, urls, db, log, secrets } = ctx;
   const host = new URL(cfg.baseUrl).host;
   const channels = ctx.channels || require('./channels')({ ws, secrets, log, host });
+  const channex = ctx.channex || require('./channex')({ cfg, ws, db, log });
+  // The add-on on a running subscription follows what the host picks in their console (prorated by Stripe).
+  async function billingAddon(w) {
+    if (!stripe.enabled || w.kind !== 'live') return;
+    const r = await ws.row(w.id); if (!r || !r.stripe_customer || r.billing_status !== 'active') return; // checkout adds it for new sign-ups
+    const a = w.state.account; const want = stripe.addonPrice({ addon: !!a.addon, tier: a.tier, annual: !!a.annual });
+    if (a.addon && !want) { log('billing addon', w.id, 'no Stripe price for', a.tier || 'addon'); return; }
+    const res = await stripe.syncAddon(r.stripe_customer, want);
+    if (res.changed) log('billing addon', w.id, want || 'removed');
+  }
   const money = n => '£' + Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: n % 1 ? 2 : 0 });
   const fmt = (iso, o) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', Object.assign({ timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }, o || {}));
   const first = n => String(n || '').split(' ')[0];
@@ -233,6 +243,8 @@ module.exports = function (ctx) {
         else if (f.type === 'ical.sync') await calendars(w, d.id);
         else if (f.type === 'channels.sync') await channels.sync(w, { id: d.id });
         else if (f.type === 'channels.push') await channels.sync(w, { pull: false });
+        else if (f.type === 'channex.run' || f.type === 'channex.push') await channex.run(w);
+        else if (f.type === 'billing.addon') await billingAddon(w);
         else if (f.type === 'ai.check') await aiCheck(w);
         else if (f.type === 'payment.refund') await refund(w, d);
         else if (f.type === 'payment.link') await paymentLink(w, d);
@@ -240,9 +252,9 @@ module.exports = function (ctx) {
         else if (f.type === 'payment.invoice') await invoiceEmail(w, d);
         else if (f.type === 'lock.code') await lockCode(w, d);
         else if (f.type === 'email.host') await hostAlert(w, d);
-        else if (f.type === 'property.added') { await hostEmail(w, d); await ws.withWs(w.id, () => {}); }
+        else if (f.type === 'property.added') { await hostEmail(w, d); await ws.withWs(w.id, () => {}); await channex.run(w); }
       } catch (e) { log('effect ' + f.type + ' failed:', e.message); }
     }
   }
-  return Object.assign(run, { calendars, freshen, channels, aiCheck, siteLive });
+  return Object.assign(run, { calendars, freshen, channels, channex, aiCheck, siteLive, billingAddon });
 };
