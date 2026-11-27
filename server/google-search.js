@@ -60,6 +60,33 @@ module.exports = function (cfg, kv, log) {
     await call('PUT', '/webmasters/v3/sites/' + enc(property) + '/sitemaps/' + enc(sitemapUrl));
     return { property };
   }
+  // A host's own site that we do not serve (WordPress, Wix, Squarespace...). The host pastes our snippet with the meta tag,
+  // or adds a DNS TXT record instead. prepare() gives both codes; submitExternal() verifies whichever is in place.
+  async function prepare(origin) {
+    if (!await metaFor(origin)) {
+      const j = await call('POST', '/siteVerification/v1/token', { verificationMethod: 'META', site: { type: 'SITE', identifier: origin + '/' } });
+      const m = String(j.token || '').match(/content="([^"]+)"/); const v = m ? m[1] : String(j.token || '');
+      if (v) { await kv.set(key(origin), v); memo.set(origin, v); }
+    }
+    const domain = new URL(origin).hostname.replace(/^www\./, '');
+    let row = await kv.get('gsvdns:' + domain);
+    if (!row) { const j = await call('POST', '/siteVerification/v1/token', { verificationMethod: 'DNS_TXT', site: { type: 'INET_DOMAIN', identifier: domain } }); if (j.token) { await kv.set('gsvdns:' + domain, String(j.token)); row = { v: String(j.token) }; } }
+    return { meta: await metaFor(origin), txt: row ? row.v : '', domain };
+  }
+  async function submitExternal(origin, sitemapUrl) {
+    let row = await kv.get('gscx:' + origin), property = row ? row.v : '';
+    if (!property) {
+      const { domain } = await prepare(origin);
+      try { await call('POST', '/siteVerification/v1/webResource?verificationMethod=META', { site: { type: 'SITE', identifier: origin + '/' } }); property = origin + '/'; }
+      catch (e) {
+        try { await call('POST', '/siteVerification/v1/webResource?verificationMethod=DNS_TXT', { site: { type: 'INET_DOMAIN', identifier: domain } }); property = 'sc-domain:' + domain; }
+        catch (_) { return { state: 'waiting' }; }
+      }
+      await call('PUT', '/webmasters/v3/sites/' + enc(property)); await kv.set('gscx:' + origin, property);
+    }
+    await call('PUT', '/webmasters/v3/sites/' + enc(property) + '/sitemaps/' + enc(sitemapUrl));
+    return { state: 'submitted', property };
+  }
   // Last 28 days for pages under pagePrefix: totals and the top searches.
   async function performance(origin, pagePrefix) {
     const end = new Date(Date.now() - 2 * 864e5), start = new Date(end.getTime() - 27 * 864e5), d = x => x.toISOString().slice(0, 10);
@@ -70,5 +97,5 @@ module.exports = function (cfg, kv, log) {
     const r1 = n => Math.round((n || 0) * 10) / 10;
     return { from: d(start), to: d(end), clicks: tot.clicks || 0, impressions: tot.impressions || 0, ctr: r1(100 * (tot.ctr || 0)), position: r1(tot.position), queries: q.map(x => ({ q: String(x.keys[0]).slice(0, 100), clicks: x.clicks || 0, impressions: x.impressions || 0, position: r1(x.position) })) };
   }
-  return { enabled, metaTag, submit, performance, account: enabled ? sa.client_email : null };
+  return { enabled, metaTag, submit, prepare, submitExternal, performance, account: enabled ? sa.client_email : null };
 };

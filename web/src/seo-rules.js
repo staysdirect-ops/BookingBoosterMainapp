@@ -17,7 +17,7 @@
   const clip = (t, n) => String(t || '').trim().slice(0, n);
 
   // The SEO fields a host can edit, kept together on the home so they never collide with booking fields.
-  const SEO_KEYS = { summary: 600, areaIntro: 4000, videoUrl: 300, sameAs: 12, keywords: 20, gbp: 20, metaTitle: 70, metaDescription: 170 };
+  const SEO_KEYS = { summary: 600, areaIntro: 4000, videoUrl: 300, sameAs: 12, keywords: 20, gbp: 20, metaTitle: 70, metaDescription: 170, ownSite: 120 };
   const seoOf = p => Object.assign({ summary: '', areaIntro: '', videoUrl: '', sameAs: [], keywords: [], gbp: {}, metaTitle: '', metaDescription: '' }, p.seo || {});
 
   // Where a link points, so we can tell listings, social profiles, maps and local press apart.
@@ -248,6 +248,8 @@
       if (k === 'sameAs') o[k] = (Array.isArray(v) ? v : []).map(u => String(u).trim()).filter(u => /^https:\/\/[^\s<>"]+$/i.test(u)).slice(0, n);
       else if (k === 'keywords') o[k] = (Array.isArray(v) ? v : []).map(x => clip(String(x).toLowerCase().replace(/\s+/g, ' '), 80)).filter(Boolean).slice(0, n);
       else if (k === 'gbp') { o[k] = {}; GBP.forEach(([id]) => { if (v && v[id]) o[k][id] = true; }); }
+      // The host's own website hosted elsewhere: a public https address, kept as its origin. Empty removes it.
+      else if (k === 'ownSite') { let x = ''; try { const u = new URL(String(v || '').trim()); if (u.protocol === 'https:' && !u.port && /^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(u.hostname)) x = u.origin.toLowerCase(); } catch (_) {} o[k] = x; }
       else if (k === 'videoUrl') o[k] = /^https:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\/[^\s<>"]+$/i.test(String(v || '').trim()) ? String(v).trim().slice(0, n) : '';
       else o[k] = clip(v, n);
     });
@@ -260,7 +262,7 @@
     if (patch && (patch.lat !== undefined || patch.lng !== undefined)) { const la = Number(patch.lat), ln = Number(patch.lng); if (la >= 49 && la <= 61 && ln >= -9 && ln <= 2.5) { p.lat = Math.round(la * 1e5) / 1e5; p.lng = Math.round(ln * 1e5) / 1e5; } }
     if ('videoUrl' in o && o.videoUrl && o.videoUrl !== seoOf(p).videoUrl) o.videoAt = S().today;
     p.seo = Object.assign(seoOf(p), o);
-    const what = { summary: 'the answer-first summary', areaIntro: 'the local area guide', videoUrl: 'the walkthrough video', sameAs: 'where the home is listed', keywords: 'target searches', gbp: 'the Google Business Profile checklist', metaTitle: 'the Google title', metaDescription: 'the Google description' };
+    const what = { summary: 'the answer-first summary', areaIntro: 'the local area guide', videoUrl: 'the walkthrough video', sameAs: 'where the home is listed', keywords: 'target searches', gbp: 'the Google Business Profile checklist', metaTitle: 'the Google title', metaDescription: 'the Google description', ownSite: 'your own website address' };
     if (!keys.every(k => k === 'gbp' || k === 'keywords')) BB.log('site', 'Search health', 'Updated ' + keys.map(k => what[k]).join(' and ') + ' for ' + p.domain + '.', pid, ['Search health', p.domain, 'AI answers']);
     BB.store.commit({ type: 'property', id: pid });
     return p.seo;
@@ -279,7 +281,7 @@
   };
   BB.act.trackAiQuestions = function (pid, list) {
     const s = S(); if (!BB.q.property(pid)) return 0; let n = 0;
-    (Array.isArray(list) ? list : []).slice(0, 10).forEach(q => { q = clip(q, 140); if (q && !s.ai.questions.some(x => x.q.toLowerCase() === q.toLowerCase() && x.propertyId === pid) && s.ai.questions.length < 40) { s.ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true }); n++; } });
+    (Array.isArray(list) ? list : []).slice(0, 10).forEach(q => { q = clip(q, 140); if (q && !s.ai.questions.some(x => x.q.toLowerCase() === q.toLowerCase() && x.propertyId === pid) && s.ai.questions.length < 40) { s.ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false }, pending: true }); n++; } });
     if (n) { BB.log('ai', 'AI visibility', 'Tracking ' + plural(n, 'new traveller question') + ' for ' + BB.q.property(pid).short + '.', pid); BB.store.commit({ type: 'ai' }); }
     return n;
   };
@@ -289,6 +291,7 @@
     const p = BB.q.property(pid); if (!p || !patch) return;
     const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
     if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    if (patch.own && patch.own.google !== 'waiting' && patch.own.bing !== 'verifying' && !patch.own.error && !((was.own || {}).google === 'submitted' || (was.own || {}).bing === 'submitted') && (patch.own.google === 'submitted' || patch.own.bing === 'submitted')) BB.log('site', 'Search health', 'Verified ' + patch.own.origin.replace(/^https:\/\//, '') + ' with ' + [patch.own.google === 'submitted' && 'Google', patch.own.bing === 'submitted' && 'Bing'].filter(Boolean).join(' and ') + ' and submitted its sitemap.', pid, ['Search health', 'Your website']);
     if (patch.bing && patch.bing.state === 'submitted' && (was.bing || {}).state !== 'submitted') BB.log('site', 'Search health', 'Submitted ' + p.domain + ' and its sitemap to Bing, which feeds ChatGPT search and Copilot.', pid, ['Search health', 'Bing']);
     BB.store.commit({ type: 'property', id: pid, quiet: true });
   };

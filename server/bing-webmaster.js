@@ -28,13 +28,18 @@ module.exports = function (cfg, kv, log) {
   }
   async function metaTag(origin) { const v = await codeFor(origin); return v ? '<meta name="msvalidate.01" content="' + v.replace(/[^\w-]/g, '') + '">' : ''; }
   async function find(origin) { return ((await call('GET', 'GetUserSites')) || []).find(x => norm(x.Url) === norm(origin)); }
+  // Adds the site (once) and returns Bing's code: a msvalidate.01 meta tag, or a CNAME <code> -> verify.bing.com.
+  async function prepare(origin) {
+    let site = await find(origin);
+    if (!site) { try { await call('POST', 'AddSite', { siteUrl: origin + '/' }); } catch (e) { if (!/exist/i.test(e.message)) throw e; } site = await find(origin); }
+    if (!site) throw new Error('Bing did not add the site');
+    if (site.AuthenticationCode && site.AuthenticationCode !== await codeFor(origin)) { await kv.set(key(origin), site.AuthenticationCode); memo.set(origin, site.AuthenticationCode); }
+    return { code: site.AuthenticationCode || '', verified: !!site.IsVerified, site };
+  }
   // Adds (once), verifies, then submits the sitemap and the given pages. Returns { state: 'submitted' | 'verifying' }.
   async function submit(origin, sitemapUrl, pages) {
     const siteUrl = origin + '/';
-    let site = await find(origin);
-    if (!site) { try { await call('POST', 'AddSite', { siteUrl }); } catch (e) { if (!/exist/i.test(e.message)) throw e; } site = await find(origin); }
-    if (!site) throw new Error('Bing did not add the site');
-    if (site.AuthenticationCode && site.AuthenticationCode !== await codeFor(origin)) { await kv.set(key(origin), site.AuthenticationCode); memo.set(origin, site.AuthenticationCode); }
+    const { site } = await prepare(origin);
     if (!site.IsVerified && !await call('POST', 'VerifySite', { siteUrl })) return { state: 'verifying' };
     await call('POST', 'SubmitFeed', { siteUrl, feedUrl: sitemapUrl });
     if (pages && pages.length) {
@@ -43,5 +48,5 @@ module.exports = function (cfg, kv, log) {
     }
     return { state: 'submitted' };
   }
-  return { enabled, metaTag, submit };
+  return { enabled, metaTag, prepare, submit };
 };

@@ -32,7 +32,7 @@
     ['Image and video SEO', 'tool', 'Photo captions become alt text and image sitemap entries. A YouTube walkthrough adds video schema.'],
     ['SXO (search experience)', 'auto', 'Price up front, instant booking, reviews and a host note on the page that search visitors land on.'],
     ['AEO (answer engines)', 'tool', 'An answer-first summary, FAQ ideas with drafted answers, FAQPage and speakable schema.'],
-    ['GEO (generative engines)', 'auto', 'llms.txt, AI crawler access and real weekly checks in ChatGPT, Gemini, Perplexity and Google, with the sites they cite.'],
+    ['GEO (generative engines)', 'auto', 'llms.txt, AI crawler access and real weekly checks in ChatGPT, Gemini, Perplexity, Claude and Google, with the sites they cite.'],
     ['LLMO (brand recognition)', 'guide', 'sameAs links tie your listings and profiles to one home, and we track whether answers link to your site.'],
     ['AIO (Google AI Overviews)', 'tool', 'Google answers are checked with each AI run, and the summary sits where AI Overviews read first.'],
     ['Ecommerce SEO', 'part', 'Partly applies: each home is a bookable product with Offer schema, a live price and checkout. There are no category pages to manage.'],
@@ -47,6 +47,15 @@
     st.sh_files[pid] = { loading: true };
     try { st.sh_files[pid] = await BB.api.call(API() + 'seo/files?propertyId=' + encodeURIComponent(pid), null, 'GET'); }
     catch (e) { st.sh_files[pid] = { error: e.message }; }
+    if (st.view === 'seo') inst.render();
+  }
+  // The snippet and DNS records for a home's own site hosted elsewhere, loaded once per address.
+  async function loadOwn(inst, p) {
+    const st = inst.st, o = BB.seo.seoOf(p); st.sh_own = st.sh_own || {};
+    if (!api() || !o.ownSite || (st.sh_own[p.id] && st.sh_own[p.id].for === o.ownSite)) return;
+    st.sh_own[p.id] = { for: o.ownSite, loading: true };
+    try { st.sh_own[p.id] = Object.assign(await BB.api.call(API() + 'seo/own-site?propertyId=' + encodeURIComponent(p.id), null, 'GET'), { for: o.ownSite }); }
+    catch (e) { st.sh_own[p.id] = { for: o.ownSite, error: e.message }; }
     if (st.view === 'seo') inst.render();
   }
   async function write(inst, what) {
@@ -92,6 +101,9 @@
     'sh-gbp': (inst, v) => { const p = home(inst); const g = Object.assign({}, BB.seo.seoOf(p).gbp); g[v] = !g[v]; BB.act.updateSeo(p.id, { gbp: g }); },
     'sh-submit': async (inst, v, el) => { el.disabled = true; el.textContent = 'Submitting…'; try { const j = await BB.api.call(API() + 'seo/submit', { propertyId: home(inst).id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } inst.render(); },
     'sh-ping': async (inst, v, el) => { const p = home(inst); el.disabled = true; try { const j = await BB.api.call(API() + 'seo/ping', { propertyId: p.id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } el.disabled = false; },
+    'sh-own-del': inst => { const p = home(inst); BB.act.updateSeo(p.id, { ownSite: '' }); BB.toast('Website removed', 'good'); },
+    'sh-own-copy': (inst, v, el) => { const k = (inst.st.sh_own || {})[home(inst).id] || {}; BB.copy(v === 'snippet' ? k.snippet : v, el); },
+    'sh-own-tab': (inst, v) => inst.set({ sh_own_tab: v }),
     'sh-files': inst => inst.set({ sh_show: inst.st.sh_show === 'files' ? null : 'files' }),
     'sh-copy': (inst, v) => { try { navigator.clipboard.writeText(v); BB.toast('Copied'); } catch (_) {} },
   };
@@ -109,6 +121,7 @@
     const f = ev.target.closest('form[data-shform]'); if (!f) return; ev.preventDefault();
     const p = home(inst), st = inst.st, k = f.dataset.shform;
     if (k === 'link') { const u = String(st.sh_link || '').trim(); if (!/^https:\/\/\S+\.\S+/.test(u)) { BB.toast('Paste a full link that starts with https://'); return; } BB.act.updateSeo(p.id, { sameAs: (BB.seo.seoOf(p).sameAs || []).concat(u) }); st.sh_link = ''; BB.toast(BB.seo.LINK_LABEL[BB.seo.linkKind(u)] + ' added', 'good'); }
+    if (k === 'own') { const u = String(st.sh_ownurl || '').trim(), x = /^https?:\/\//i.test(u) ? u.replace(/^http:/i, 'https:') : 'https://' + u; const o = BB.act.updateSeo(p.id, { ownSite: x }); if (!o || !o.ownSite) { BB.toast('Paste your website address, like mycottage.co.uk'); return; } st.sh_ownurl = undefined; BB.toast('Website saved', 'good'); }
     if (k === 'video') { const u = String(st.sh_video || '').trim(); const o = BB.act.updateSeo(p.id, { videoUrl: u }); if (u && !(o && o.videoUrl)) { BB.toast('Paste a YouTube or Vimeo link'); return; } st.sh_video = undefined; BB.toast(u ? 'Video linked' : 'Video removed', 'good'); }
     if (k === 'pin') { const m = String(st.sh_pin || '').match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/); if (!m || !BB.act.setMapPin(p.id, m[1], m[2])) { BB.toast('Paste the pin as two numbers, like 54.4281, -2.9037'); return; } st.sh_pin = undefined; BB.toast('Map pin saved', 'good'); }
     inst.render();
@@ -138,13 +151,44 @@
       (perf.queries.length ? '<table class="tbl sh-q"><thead><tr><th>Top searches</th><th>Clicks</th><th>Shown</th><th>Pos.</th></tr></thead><tbody>' + perf.queries.map(q => '<tr><td>' + esc(q.q) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + q.position + '</td></tr>').join('') + '</tbody></table>' : '<p class="muted">No searches yet. New sites usually show up within 2 to 4 weeks.</p>') + '</div>' : '';
     return '<ul class="sh-checks sh-ixl">' + gRow + (bRow || '') + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
   }
+  // Platform steps for pasting the snippet into a site's header.
+  const PLATFORMS = [
+    ['wordpress', 'WordPress', ['In WordPress, go to Plugins, then Add New, and install the free WPCode plugin.', 'Open Code Snippets, then Header & Footer.', 'Paste the snippet into the Header box and press Save Changes.', 'On WordPress.com this needs the Business plan. On a cheaper plan, use the DNS records instead.']],
+    ['wix', 'Wix', ['In your Wix dashboard, open Settings, then Custom code (under Advanced).', 'Press Add Custom Code and paste the snippet.', 'Choose All pages, place the code in Head, and press Apply.', 'Wix needs a paid plan with your own domain connected for custom code. Otherwise, use the DNS records.']],
+    ['squarespace', 'Squarespace', ['Open Settings, then Developer tools, then Code injection.', 'Paste the snippet into the Header box.', 'Press Save.', 'Code injection needs the Core plan or higher. Otherwise, use the DNS records.']],
+    ['other', 'Other sites', ['Open the editor for your site\'s home page or theme.', 'Find where code goes in the page head (often called Header code, Head HTML or Tracking code).', 'Paste the snippet and publish the site.', 'Not sure? Send the snippet to whoever built your site, or use the DNS records.']],
+  ];
+  function ownCard(inst, p, o, live) {
+    const st = inst.st, k = (st.sh_own || {})[p.id] || {}, ix = (p.indexing || {}).own || {}, f = ix.found || {};
+    const form = '<form data-shform="own" class="sh-inl"><input data-shf="sh_ownurl" placeholder="mycottage.co.uk" value="' + esc(st.sh_ownurl != null ? st.sh_ownurl : '') + '" aria-label="Your website address"><button class="btn sm" type="submit">' + I('plus') + 'Add my website</button></form>';
+    if (!o.ownSite) return card('own', 'Your own website, hosted elsewhere', 'Optional · Google · Bing · AI', '<p class="sh-help">Got a website on WordPress, Wix, Squarespace or anywhere else? Add it here. You paste one snippet or add two DNS records, once. Then we verify it with Google and Bing for you and submit it every day, so ChatGPT, Gemini, Copilot, Claude and Perplexity can find it. Your booking site here is already handled.</p>' + form);
+    const row = (name, st2, txt) => '<li class="sh-ck sh-ix s-' + st2 + '"><span class="sh-st">' + I(STI[st2]) + '</span><div><b>' + name + '</b><small>' + txt + '</small></div></li>';
+    const when = t => t ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const eng = (name, v) => !live ? row(name, 'auto', 'Verified and submitted for you once the snippet or DNS records are in place.')
+      : v === 'submitted' ? row(name, 'ok', 'Verified and sitemap submitted ' + when(ix.at) + '. We resubmit daily.')
+      : ix.error ? row(name, 'warn', esc(ix.error) + '. We retry daily.')
+      : row(name, 'warn', ix.at ? 'Waiting for the snippet or DNS records. We check every day, or press Check now.' : 'Add the snippet or DNS records below, then press Check now.');
+    const status = '<ul class="sh-checks sh-ixl">' +
+      (live && ix.at ? row('Snippet on your home page', f.google || f.bing ? 'ok' : f.reached === false ? 'warn' : 'warn', f.google || f.bing ? 'Found ' + when(ix.at) + '.' + (f.structured ? ' Structured data is there too.' : '') : f.reached === false ? 'We could not open your site.' : 'Not found yet. Fine if you used the DNS records.') : '') +
+      (files(inst, p).google ? eng('Google Search Console (Gemini, AI Overviews)', ix.google) : '') + (files(inst, p).bing ? eng('Bing Webmaster Tools (ChatGPT, Copilot)', ix.bing) : '') + '</ul>';
+    const tab = st.sh_own_tab || 'snippet', plat = st.sh_own_plat || 'wordpress';
+    const body = k.loading ? '<p class="muted">Getting your codes…</p>' : k.error ? '<p class="t-bad">' + esc(k.error) + '</p>' : k.off ? '<p class="muted">Automatic verification is not switched on for this server yet. The snippet below still adds your structured data and llms.txt link.</p>' : '';
+    const tabs = '<div class="ag-ptabs sh-own-tabs" role="tablist">' + [['snippet', 'Paste a snippet'], ['dns', 'Add DNS records']].map(([v, l]) => '<button type="button" role="tab" aria-selected="' + (tab === v) + '" data-sh="sh-own-tab" data-v="' + v + '"><span><b>' + l + '</b></span></button>').join('') + '</div>';
+    const snip = k.snippet ? '<p class="sh-help">Paste this once into your site\'s header. It proves the site is yours to Google and Bing, and adds ' + esc(p.name) + '\'s details and booking link for AI assistants. If you change your prices or details, copy it again.</p><pre class="sh-pre">' + esc(k.snippet) + '</pre><div class="sh-row"><span class="sh-sp"></span><button class="btn sm primary" data-sh="sh-own-copy" data-v="snippet">' + I('copy') + 'Copy snippet</button></div>' +
+      PLATFORMS.map(([id, name, steps]) => '<details class="sh-steps"' + (id === plat ? ' open' : '') + '><summary>' + name + '</summary><ol>' + steps.map(x => '<li>' + esc(x) + '</li>').join('') + '</ol></details>').join('') : '';
+    const dns = k.dns && k.dns.length ? '<p class="sh-help">No access to your site\'s code? Add these at the company where you bought your domain (GoDaddy, 123 Reg, IONOS, Namecheap, Cloudflare and so on), under DNS settings. Changes can take up to a day to show.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>For</th><th>Type</th><th>Name / host</th><th>Value</th><th></th></tr></thead><tbody>' +
+      k.dns.map(r => '<tr><td>' + esc(r.engine) + '</td><td class="mono">' + esc(r.type) + '</td><td class="mono">' + esc(r.name) + '</td><td class="mono">' + esc(r.value) + '</td><td><button class="btn sm ghost" data-sh="sh-own-copy" data-v="' + esc(r.value) + '" aria-label="Copy value">' + I('copy') + '</button></td></tr>').join('') + '</tbody></table></div><p class="sh-tip">' + I('bolt') + '<span>DNS proves the site is yours, but it does not add your structured data. Paste the snippet as well if you can.</span></p>' : '<p class="muted">DNS records appear here once automatic verification is switched on.</p>';
+    return card('own', 'Your own website: ' + esc(o.ownSite.replace(/^https:\/\//, '')), 'Google · Bing · AI', status + body + (k.snippet || k.dns ? tabs + (tab === 'dns' ? dns : snip) : '') +
+      '<div class="sh-row"><button class="btn sm ghost" data-sh="sh-own-del">' + I('x') + 'Remove this website</button><span class="sh-sp"></span><button class="btn sm primary" data-sh="sh-submit"' + (api() ? '' : ' disabled') + '>' + I('send') + 'Check now</button></div>');
+  }
+  const files = (inst, p) => ((inst.st.sh_files || {})[p.id] || {});
   function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
   const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';
 
   V.seo = {
     label: 'Search health', group: 'Get found', icon: 'search', order: 15,
     click: onClick, input: onInput, submit: onSubmit,
-    after(inst) { const p = home(inst); if (p) loadFiles(inst, p.id); },
+    after(inst) { const p = home(inst); if (p) { loadFiles(inst, p.id); loadOwn(inst, p); } },
     render(inst) {
       const s = S(), st = inst.st;
       if (!s.properties.length) return '<div class="ag sh">' + vh('Search health', 'Add a home first, then come back to see how it shows up in Google and AI answers.') + '</div>';
@@ -207,7 +251,7 @@
         '</div>' +
 
         '<div class="sh-grid">' +
-          card('cites', 'Sites AI assistants cite', 'GEO · LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
+          card('cites', 'Sites AI assistants cite', 'GEO · LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity, Claude and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
             : '<p class="muted">' + (live ? 'Shown after the next AI check. We record every site each answer cites.' : 'Run an AI check to see the sites answers cite.') + '</p>') +
           card('index', 'Indexing', 'Technical', (files.sitemap ? '<ul class="sh-files"><li><span>Sitemap with images</span><a class="mono" href="' + esc(files.sitemap) + '" target="_blank" rel="noopener">' + esc(files.sitemap.replace(/^https?:\/\//, '')) + '</a></li><li><span>robots.txt</span><a class="mono" href="' + esc(files.robots) + '" target="_blank" rel="noopener">' + esc(files.robots.replace(/^https?:\/\//, '')) + '</a></li><li><span>llms.txt</span><a class="mono" href="' + esc(files.llmsUrl) + '" target="_blank" rel="noopener">' + esc(files.llmsUrl.replace(/^https?:\/\//, '')) + '</a></li></ul>' : '<p class="muted">' + (files.loading ? 'Loading…' : 'Sitemap, robots.txt and llms.txt are published with your site.') + '</p>') +
             indexStatus(p, files, live) +
@@ -216,6 +260,8 @@
             '<button class="btn sm" data-sh="sh-files">' + I('search') + (st.sh_show === 'files' ? 'Hide what crawlers see' : 'See what crawlers and AI read') + '</button>' +
             (st.sh_show === 'files' ? (files.jsonld ? '<div class="sh-types">' + files.jsonld['@graph'].map(n => BB.pill('info', n['@type'])).join('') + '</div><span class="eyebrow">llms.txt</span><pre class="sh-pre">' + esc(files.llms) + '</pre><span class="eyebrow">Structured data</span><pre class="sh-pre">' + esc(JSON.stringify(files.jsonld, null, 2)) + '</pre>' : '<p class="muted">' + esc(files.error || 'Loading…') + '</p>') : '')) +
         '</div>' +
+
+        ownCard(inst, p, o, live) +
 
         card('cover', 'Every kind of search, covered', 'What is automatic and what is guidance', '<div class="tblwrap"><table class="tbl sh-cover"><tbody>' + COVER.map(([n, k, d]) => '<tr><td><b>' + esc(n) + '</b></td><td>' + BB.pill(COVL[k][0], COVL[k][1]) + '</td><td class="muted">' + esc(d) + '</td></tr>').join('') + '</tbody></table></div>') +
       '</div>';

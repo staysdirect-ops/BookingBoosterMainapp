@@ -59,6 +59,7 @@ const visits = require('./visits')(cfg.secret);
 const assist = require('./assist')(cfg);
 const seoTools = require('./seo-tools')(cfg);
 const google = require('./google-search')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
+const ownSite = require('./own-site');
 const bing = require('./bing-webmaster')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
@@ -186,9 +187,31 @@ async function autoIndex(w, o) {
       patch.indexnow = { state: r.ok ? 'sent' : 'error', at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
       out.push({ ok: r.ok, message: prop.name + ': ' + r.message });
     }
+    // The host's own site hosted elsewhere: verified once the host has pasted our snippet or added the DNS records.
+    const ext = ownSite.originOf((prop.seo || {}).ownSite);
+    if (ext && ext !== origin && (google.enabled || bing.enabled)) {
+      const r = await ownSiteRun(ext); patch.own = Object.assign({ origin: ext, at: now }, r);
+      out.push({ ok: !r.error, message: prop.name + ' (' + new URL(ext).hostname + '): ' + r.message });
+    }
     if (Object.keys(patch).length) await ws.withWs(w.id, BB => BB.act.setIndexing(prop.id, patch), { quiet: true });
   }
   return out;
+}
+
+async function ownSiteCodes(ext) {
+  return { google: google.enabled ? await google.prepare(ext) : {}, bing: bing.enabled ? await bing.prepare(ext) : {} };
+}
+async function ownSiteRun(ext) {
+  try {
+    const codes = await ownSiteCodes(ext), found = await ownSite.check(ext, codes), r = { found };
+    if (google.enabled) r.google = (await google.submitExternal(ext, found.sitemap)).state;
+    if (bing.enabled) r.bing = (await bing.submit(ext, found.sitemap, [ext + '/'])).state;
+    const done = [r.google, r.bing].filter(Boolean), all = done.every(x => x === 'submitted');
+    r.message = all ? 'verified and sitemap submitted to ' + [r.google && 'Google', r.bing && 'Bing'].filter(Boolean).join(' and ') + '.'
+      : !found.reached ? 'we could not open the site. We try again tomorrow.'
+      : 'waiting for the snippet or DNS records. We check again every day.';
+    return r;
+  } catch (e) { log('own site', ext, e.message); return { error: String(e.message).slice(0, 200), message: 'the search engines said "' + String(e.message).slice(0, 120) + '". We retry daily.' }; }
 }
 
 // Search health tools in the console: what the site sends crawlers, AI-written drafts and IndexNow pings.
@@ -203,6 +226,16 @@ async function seoApi(req, res, p, m, w, live, headers) {
   if (p === '/api/seo/files' && m === 'GET') {
     return json(res, { site, sitemap: onPath ? cfg.baseUrl + '/s/' + w.slug + '/sitemap.xml' : root + 'sitemap.xml', robots: root + 'robots.txt', llmsUrl: onPath ? site + '/llms.txt' : root + 'llms.txt', keyUrl,
       jsonld: seo.jsonLd(s, prop, site), llms: seo.llms(s, prop, site), title: seo.titleOf(prop), description: seo.descOf(prop), writer: live && seoTools.enabled, indexNow: live, google: live && google.enabled, bing: live && bing.enabled }, 200, headers);
+  }
+  // The snippet and DNS records for the host's own site hosted elsewhere.
+  if (p === '/api/seo/own-site' && m === 'GET') {
+    const ext = ownSite.originOf((prop.seo || {}).ownSite); if (!ext) throw err(400, 'Add your website address first.');
+    const llmsUrl = onPath ? site + '/llms.txt' : root + 'llms.txt';
+    if (!live) return json(res, Object.assign(ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, { google: { meta: 'demo-google-code', txt: 'google-site-verification=demo-google-code', domain: new URL(ext).hostname.replace(/^www\./, '') }, bing: { code: 'DEMOBINGCODE' } }), { demo: true }), 200, headers);
+    if (!google.enabled && !bing.enabled) return json(res, Object.assign(ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, {}), { off: true }), 200, headers);
+    if (!auth.limit('own-site:' + w.id, 30, 3600e3)) throw err(429, 'Too many requests. Try again in a few minutes.');
+    try { return json(res, ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, await ownSiteCodes(ext)), 200, headers); }
+    catch (e) { log('own site kit', e.message); throw err(502, 'Google or Bing did not answer just now. Try again in a minute.'); }
   }
   if (p === '/api/seo/write' && m === 'POST') {
     const what = String(j.what || ''); if (!['summary', 'area', 'meta', 'faqs'].includes(what)) throw err(400, 'Unknown draft');
