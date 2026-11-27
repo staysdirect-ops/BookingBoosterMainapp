@@ -26,7 +26,7 @@ test.before(async () => {
   }); }).listen(0);
   const base = 'http://localhost:' + mock.address().port;
   t = await start({ GOOGLE_SERVICE_ACCOUNT_JSON: JSON.stringify(SA), GOOGLE_OAUTH_URL: base + '/token', GOOGLE_API_BASE: base, BING_WEBMASTER_API_KEY: 'k', BING_API_BASE: base + '/bing' });
-  await t.signup();
+  await t.signup(); await t.launch(); // indexing waits for the site to go live
 });
 test.after(() => { t.stop(); mock.close(); });
 

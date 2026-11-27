@@ -55,6 +55,8 @@ test('a double-clicked setup adds one home and sends one welcome and one "site i
   const [a, b] = await Promise.all([t.call('/api/setup', { body: { property: home, domainMode: 'free' } }), t.call('/api/setup', { body: { property: home, domainMode: 'free' } })]);
   assert.equal(a.status, 200); assert.equal(b.status, 200);
   assert.equal((await t.call('/api/state')).body.state.properties.length, 1, 'one home');
+  await pause(1200); assert.equal(await count('%site-live%'), 0, 'no "site is live" email while the new site is building');
+  await t.finish();
   await t.until(async () => (await count('%site-live%')) > 0); await pause(1200);
   assert.equal(await count('Welcome to Bookingbooster'), 1, 'one welcome'); assert.equal(await count('%site-live%'), 1, 'one site-live');
 });

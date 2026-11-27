@@ -19,7 +19,7 @@ test.before(async () => {
     send({ ErrorCode: 0, Message: 'unknown ' + name }, 404);
   }); }).listen(0);
   t = await start({ BING_WEBMASTER_API_KEY: 'bing-key', BING_API_BASE: 'http://localhost:' + mock.address().port });
-  await t.signup();
+  await t.signup(); await t.launch(); // indexing waits for the site to go live
 });
 test.after(() => { t.stop(); mock.close(); });
 

@@ -54,10 +54,13 @@ test('the booking site stays offline to guests until the first payment', async (
   sessions.cs_done = { id: 'cs_done', status: 'complete', customer: 'cus_b', metadata: { workspace: wsId(), kind: 'plan', plan: 'Growth' } };
   const done = await t.call('/app/pay/done?session=cs_done'); assert.equal(done.headers.get('location'), '/app?welcome=1');
   assert.equal((await t.call('/app')).status, 200); assert.equal((await t.call('/app/pay')).headers.get('location'), '/app');
-  assert.equal((await fetch(t.base + path)).status, 200, 'the site is open to guests');
+  assert.equal((await fetch(t.base + path)).status, 503, 'paid, but still building: guests see opening soon until the site checklist is done');
   assert.equal((await paid()).status, 200, 'the webhook arriving later is fine');
   const welcome = await t.sql("SELECT count(*)::int AS n FROM outbox WHERE subject = 'Welcome to Bookingbooster'"); assert.equal(welcome[0].n, 1, 'one welcome email, after payment');
-  assert.equal(await t.until(async () => (await liveMail()) === 1), true, 'one "site is live" email, after payment');
+  assert.equal(await liveMail(), 0, 'no "site is live" email while it is still building');
+  await t.finish();
+  assert.equal((await fetch(t.base + path)).status, 200, 'the site is open to guests');
+  assert.equal(await t.until(async () => (await liveMail()) === 1), true, 'one "site is live" email, once it goes live');
   assert.match(await (await fetch(t.base + '/sitemap.xml')).text(), new RegExp(path), 'a paid site joins the sitemap');
   // a paid host is not sent to Checkout twice
   assert.equal((await t.call('/app/billing/start', { body: '', headers: { 'content-type': 'application/x-www-form-urlencoded' } })).headers.get('location'), '/app/billing');

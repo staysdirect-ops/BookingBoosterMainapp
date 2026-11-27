@@ -27,7 +27,7 @@ const icon = (k, cls) => '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24
 const MARK = '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#2747F5"/><path d="M22 54 L50 28 L78 54" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 74 L50 57 L68 74" fill="none" stroke="#FFC42E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 const NAV = [
-  ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['outreach', '/admin/outreach', 'phone', 'Outreach'], ['hosts', '/admin/hosts', 'home', 'Users'], ['partners', '/admin/affiliates', 'share', 'Partners']]],
+  ['Team', [['overview', '/admin', 'dash', 'Overview'], ['leads', '/admin/leads', 'users', 'Leads'], ['outreach', '/admin/outreach', 'phone', 'Outreach'], ['hosts', '/admin/hosts', 'home', 'Users'], ['sites', '/admin/sites', 'check', 'Sites to finish'], ['partners', '/admin/affiliates', 'share', 'Partners']]],
   ['Marketing', [['flows', '/admin/flows', 'spark', 'Sales flows'], ['campaigns', '/admin/campaigns', 'mail', 'Email campaigns'], ['emails', '/admin/emails', 'doc', 'Email templates'], ['social', '/admin/social', 'share', 'Social posts']]],
   ['Settings', [['settings', '/admin/settings', 'gear', 'Stripe, links and backups']]],
 ];

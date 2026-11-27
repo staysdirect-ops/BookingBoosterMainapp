@@ -51,7 +51,7 @@ test('style choices change the page, and every layout renders', () => {
 });
 
 let t;
-test.before(async () => { t = await start(); await t.signup(); });
+test.before(async () => { t = await start(); await t.signup(); await t.launch(); });
 test.after(() => t.stop());
 
 test('designs, previews and publishes a site without an AI key, then serves it to guests', async () => {
