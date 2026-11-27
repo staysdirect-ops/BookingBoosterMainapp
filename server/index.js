@@ -63,6 +63,7 @@ const ownSite = require('./own-site');
 const bing = require('./bing-webmaster')(cfg, { get: k => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
 const credits = require('./credits')({ cfg, db, log });
 const leads = require('./leads')({ db, cfg, msg, auth, log });
+const manychat = require('./manychat')({ cfg });
 const domains = require('./domains')({ cfg, auth, log });
 const registrar = require('./registrar')({ cfg, db, ws, stripe, domains, log });
 const backup = require('./backup')({ db, cfg, log });
@@ -580,6 +581,7 @@ async function route(req, res) {
     effects.channex.pull().catch(e => log('channex hook', e.message));
     return json(res, { ok: true });
   }
+  if (p === '/webhooks/manychat' && m === 'POST') return await manychatLead(req, res);
 
   /* public guest API (any host) */
   let mm;
@@ -1212,6 +1214,18 @@ async function adminPost(req, res, p) {
     await leads.advance(id); return await adminPage(req, res, mm[2] === 'stop' ? 'Emails stopped.' : 'Sent.', 'leads');
   }
   return notFound(res);
+}
+// ManyChat DMs (Instagram, Messenger, WhatsApp): saves the lead, starts the guide emails, answers with the guide link for the DM.
+const mcIns = db.prepare("INSERT INTO leads (kind, email, name, data, created_at, source, consent_at, has_email) VALUES (?, ?, ?, ?, ?, 'manychat', ?, 1)");
+async function manychatLead(req, res) {
+  if (!manychat.enabled() || !manychat.allowed(req)) return json(res, { error: 'Not allowed' }, 401);
+  if (!auth.limit('manychat', 600, 3600e3)) return json(res, { error: 'Too many requests' }, 429);
+  const r = manychat.parse(await jsonBody(req, 2e4)); if (r.error) return json(res, { ok: false, error: r.error }, 400);
+  const { lead: l, guide } = r, now = Date.now();
+  const leadId = Number((await mcIns.run(l.kind, l.email, l.name, JSON.stringify(l.data), now, l.data.consent === 'yes' ? new Date(now).toISOString().slice(0, 10) : null)).lastInsertRowid);
+  if (await leads.start(leadId, l.kind, l.email, l.data)) ws.defer(leads.advance(leadId), 'leads');
+  msg.sendEmail({ to: cfg.company.support, subject: 'New ManyChat lead (' + (guide ? guide.title : l.data.topic || 'DM') + '): ' + l.email, text: JSON.stringify(Object.assign({ email: l.email, name: l.name }, l.data), null, 2), meta: { lead: l.kind } });
+  json(res, { ok: true, lead_id: leadId, guide_title: guide ? guide.title : '', guide_url: guide ? guide.url : '', signup_url: cfg.baseUrl + '/start?plan=Growth&utm_source=' + l.data.channel + '&utm_medium=dm&utm_campaign=manychat' });
 }
 async function lead(req, res) {
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST', 'access-control-allow-headers': 'content-type' };

@@ -6,6 +6,7 @@
 'use strict';
 
 const first = n => (String(n || '').trim().split(/\s+/)[0] || 'there');
+const { GUIDES } = require('./manychat');
 const pounds = n => '£' + Math.round(n).toLocaleString('en-GB');
 
 module.exports = function (t) {
@@ -70,6 +71,43 @@ module.exports = function (t) {
       ].concat(TIPS.map((tip, i) => ({ key: 'N' + (i + 1), when: c => t.dayAt(c.sent.E6 || c.start, 30 * (i + 1)),
         subject: 'One direct booking tip for {month}', preview: 'Short, practical, two minutes.',
         body: () => ['This month’s tip: ' + tip.text].concat(tip.more || []), cta: () => ({ label: 'See how Bookingbooster does it', href: t.app('/demo') }) }))),
+    },
+
+    /* ---------- Free guides asked for in a DM (ManyChat, server/manychat.js) ---------- */
+    // G1 delivers the guide to everyone who asked. G2 to G4 only go to people who said yes to tips by email in the DM (PECR).
+    guide: {
+      name: 'Free guide (DM)',
+      vars: d => { const g = GUIDES[d.guide] || GUIDES.playbook; return { guide_title: g.title, guide_url: t.guide(g.file), consent: d.consent === 'yes' ? 'yes' : 'no', channel: d.channel || 'dm' }; },
+      steps: [
+        { key: 'G1', when: c => c.start,
+          subject: v => 'Your copy: ' + v.guide_title, preview: 'The download link you asked for in our DMs.',
+          body: v => ['Thanks for messaging us. Here is ' + v.guide_title + ', as promised.',
+            'It is a PDF, so you can save it to your phone or print it. The link keeps working, so you can come back to it.'],
+          cta: v => ({ label: 'Download ' + v.guide_title, href: v.guide_url }),
+          after: v => [v.consent === 'yes' ? 'Over the next week we will send three short emails on getting more bookings direct. You can unsubscribe from any of them in one click.' : 'That is the only email you will get from us unless you ask for more.',
+            'Got a question? Reply to this email and a person will answer.'] },
+        { key: 'G2', when: c => (c.v.consent === 'yes' ? t.dayAt(c.start, 2) : false),
+          subject: 'Where direct bookings actually come from', preview: 'Three places, in this order.',
+          body: () => ['Direct bookings come from three places. In this order:',
+            { list: ['<b>Past guests.</b> They already trust you. A good email at the right time does more than any ad.',
+              '<b>Google.</b> People search ‘dog friendly cottage near Padstow’, not your name. Local pages win those searches.',
+              '<b>AI answers.</b> More travellers now ask ChatGPT or Google’s AI Overview where to stay. If your site is not clear and well reviewed, you are not in the answer.'] },
+            'A website on its own does none of this. It is the place the three sources send people to.'],
+          cta: () => tour, ai: true },
+        { key: 'G3', when: c => (c.v.consent === 'yes' ? t.dayAt(c.start, 5) : false),
+          subject: 'Do I have to leave Airbnb?', preview: 'No. Here is how hosts use both.',
+          body: () => ['The question we hear most in our DMs: ‘Do I have to leave Airbnb?’',
+            'No. Platforms are good at finding first-time guests. Keep them for that. The aim is to make the second booking, and the Google search, come to you direct.',
+            'If you want to stay on the platforms too, the optional All channels add-on (from £15 a month) lists your homes on Airbnb, Booking.com, Vrbo and more from one calendar, so you never double book.'],
+          cta: () => ({ label: 'See how Growth works', href: t.app('/pricing') }) },
+        { key: 'G4', when: c => (c.v.consent === 'yes' ? t.dayAt(c.start, 8) : false),
+          subject: 'Your direct booking site, set up for you', preview: 'Growth: £197 a month, no setup fee, cancel anytime.',
+          body: () => ['If the guide was useful, here is the simplest way to put it into practice.',
+            'Growth: £197 a month, no setup fee. We build your booking site on your own domain and set up payments, deposits and check-in. Then every month we write new local SEO pages, fix your AI visibility gaps and write and send your guest campaigns.',
+            { list: ['Setup done for you', 'No commission on bookings', 'Cancel anytime', 'Prices include VAT'] },
+            'At Airbnb’s 15.5% host fee, about £1,270 of bookings a month moved direct covers the plan. Estimate only.'],
+          cta: () => ({ label: 'Start Growth for £197 a month', href: growth.href }), after: ['That is the last email in this series. Thanks for reading.'] },
+      ],
     },
 
     /* ---------- Funnel 2: free AI visibility audit ---------- */
