@@ -76,9 +76,12 @@ async function fetchCalendar(url, hops = 0) {
 // made here and dates read from every other calendar (Vrbo, Booking.com, a channel manager...), but never Airbnb's own
 // dates, which would only echo back. With no channel the feed carries direct bookings and blocks made here only.
 const CHANNELS = ['cm', 'airbnb', 'vrbo', 'booking', 'other'];
+// Named sites from the calendar catalogue (BB.ICAL_SITES) get their own feed once the host adds them.
+const isChannel = (s, c) => CHANNELS.includes(c) || (/^[a-z0-9]{2,24}$/.test(c || '') && (s.integrations || []).some(i => i.id === c && i.ical));
+const icalIds = s => CHANNELS.concat((s.integrations || []).filter(i => i.ical && !CHANNELS.includes(i.id)).map(i => i.id));
 function feed(s, pid, host, channel) {
   const p = s.properties.find(x => x.id === pid); if (!p) return null;
-  if (channel && !CHANNELS.includes(channel)) return null;
+  if (channel && !isChannel(s, channel)) return null;
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
   const d = iso => iso.replace(/-/g, '');
   const ev = [];
@@ -104,4 +107,4 @@ function dropEchoes(list, s, pid, host) {
   const tail = host ? '@' + String(host).toLowerCase() : null;
   return list.filter(e => !(tail && e.uid && String(e.uid).toLowerCase().endsWith(tail)) && !own.has(e.from + '|' + e.to));
 }
-module.exports = { parse, events, merge, fromNights, nightsOf, addDay, dropEchoes, fetchCalendar, feed, privateIp, CHANNELS };
+module.exports = { parse, events, merge, fromNights, nightsOf, addDay, dropEchoes, fetchCalendar, feed, privateIp, CHANNELS, isChannel, icalIds };

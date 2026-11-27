@@ -992,6 +992,8 @@ var require_bb_embedded_files = __commonJS({
 .ag .ag-cbtn .ag-logo svg { width: 15px; height: 15px; }
 .ag .ag-secure { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--good); }
 .ag .ag-secure svg { width: 14px; height: 14px; }
+.ag .ag-sitepick { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.ag .ag-sitepick .field { flex: 1 1 280px; }
 ` }, "/app/web/src/app-grow.js": { "t": `/* Bookingbooster prototype: host console views for Grow (guests, campaigns, automations), Get found (website, AI visibility)
    and Settings (connections). Registers into BB.appViews; app.js owns the frame, routing and event forwarding. */
 (function () {
@@ -1213,6 +1215,12 @@ var require_bb_embedded_files = __commonJS({
       inst.st.cn_conf = null; BB.act.toggleIntegration(v); BB.toast(i.addon ? (i.connected ? 'Calendar sync is on for your ' + i.name + '. We check it every few minutes.' : 'Calendar sync stopped for your ' + i.name) : (i.connected ? i.name + ' connected' : i.name + ' disconnected'), i.connected ? 'good' : '');
     },
     'cn-keep': inst => inst.set({ cn_conf: null }),
+    'cn-site-add': (inst, v, el) => {
+      const inp = document.getElementById(el.dataset.el); const q = String(inp && inp.value || '').trim().toLowerCase(); if (!q) { BB.toast('Type the name of the site first', 'bad'); return; }
+      const d = (BB.ICAL_SITES || []).find(x => x[1].toLowerCase() === q) || (BB.ICAL_SITES || []).find(x => x[1].toLowerCase().includes(q));
+      if (!d) { BB.toast('Not in our list yet. Use Other calendar: it works with any site that gives you a calendar link.', 'bad'); return; }
+      BB.act.addCalendarSite(d[0]); inst.set({ cn_open: d[0] }); BB.toast(d[1] + ' added. Paste its calendar link below.', 'good');
+    },
     // All channels: pick dates only (\xA315) or dates and prices (\xA329), open the connect-sites screen for a home, or stop.
     'cx-join': (inst, v) => { const was = BB.q.integration('hub'); const on = was && was.connected; BB.act.joinAllChannels(v === 'prices'); BB.toast(v === 'prices' ? 'All channels is on: dates and prices go to every site you connect' : 'All channels is on: your open dates go to every site you connect', 'good'); inst.set({ cx_conf: null, cx_was: on }); },
     'cx-stop': inst => { if (!inst.st.cx_conf) { inst.set({ cx_conf: true }); return; } BB.act.leaveAllChannels(); BB.toast('All channels is off. Bookings already taken stay on your calendar.'); inst.set({ cx_conf: null, cx_url: null }); },
@@ -1922,6 +1930,7 @@ var require_bb_embedded_files = __commonJS({
           return '<div class="ag-calf-r"><label class="field"><span>' + esc(p.short) + ': calendar link from ' + (i.id === 'other' ? 'the other site' : 'your ' + esc(i.name)) + '</span><input id="' + fid + '" type="url" inputmode="url" placeholder="https://\u2026 .ics" value="' + esc((i.links || {})[p.id] || '') + '"></label>' +
             '<button class="btn sm" data-ag="cn-cal-save" data-v="' + i.id + '" data-pid="' + p.id + '" data-el="' + fid + '">Save</button>' + linkStatus(i, p.id) +
             (feed ? '<p class="ag-calf-x"><small>Paste this into ' + (i.id === 'other' ? 'that site' : 'your ' + esc(i.name)) + ' (import calendar) so it closes dates booked on your site' + (i.id === 'cm' ? '' : ' and on your other synced calendars') + ':</small><code class="mono" id="' + fid + '-x">' + esc(feed) + '</code><button type="button" class="btn sm ghost" data-ag="cn-copy" data-v="' + esc(feed) + '" data-el="' + fid + '-x">Copy</button></p>' : '') + '</div>'; }).join('') +
+          (i.where ? '<p class="ag-note">' + I('cal') + '<span>Where to find it in ' + esc(i.name) + ': ' + esc(i.where) + '.</span></p>' : '') +
           (i.id === 'cm' ? '<p class="ag-note">' + I('bolt') + '<span>If your channel manager already connects to Airbnb, Vrbo or Booking.com, add only its link here, not theirs as well. If it is Beds24, Smoobu, Hostaway, Guesty or Lodgify, connect it directly below instead: it is faster.</span></p>' : '') +
           (S().account.addon ? '' : '<p class="ag-note">' + I('bolt') + '<span>Saving a link adds the calendar sync add-on, \xA315 a month, to your plan.</span></p>') + '</div>';
       // Channel manager API: the key form, then which listing is which home.
@@ -1972,6 +1981,13 @@ var require_bb_embedded_files = __commonJS({
           (on ? (st.cx_conf ? '<div class="ag-ic-conf"><p><b>Switch off All channels?</b> Your dates and prices stop going to other sites. Bookings already taken stay on your calendar. Disconnect the sites in the Connect sites screen too, so they stop taking bookings.</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cx-stop">Switch off</button><button class="btn sm ghost" data-ag="cx-keep">Keep it on</button></div></div>' : '<div class="ag-acts-row"><button class="btn sm ghost" data-ag="cx-stop">Switch off</button></div>') : '') +
           '</section>';
       };
+      // Any other site with a calendar link: pick it by name and it gets its own card, link and feed back.
+      const sitePick = inst => {
+        const have = new Set(S().integrations.filter(i => i.site && (i.shown || i.connected)).map(i => i.id));
+        const left = (BB.ICAL_SITES || []).filter(x => !have.has(x[0])); if (!left.length) return '';
+        const lid = ID(inst, 'sites');
+        return '<div class="ag-sitepick"><label class="field"><span>Add another site with a calendar link (' + (BB.ICAL_SITES || []).length + ' listed, or use Other calendar for any site)</span><input id="' + lid + '" list="' + lid + '-l" placeholder="Start typing: Hipcamp, Holidu, Plum Guide\u2026" autocomplete="off"></label><datalist id="' + lid + '-l">' + left.map(x => '<option value="' + esc(x[1]) + '">' + esc(x[2] || '') + '</option>').join('') + '</datalist><button class="btn sm" data-ag="cn-site-add" data-el="' + lid + '">' + I('plus') + 'Add site</button></div>';
+      };
       const icard = i => {
         const info = CN[i.id] || {}; const conf = st.cn_conf === i.id; const r = res && res.id === i.id ? res : null; const ad = i.addon;
         if (soon(i.id)) return '<article class="ag-icard off"><div class="ag-ic-h">' + BB.logo(i.id, i.name, 'l-' + i.id) + '<div><b>' + esc(i.name) + '</b><small>' + esc(i.detail || '') + '</small></div>' + BB.pill('muted', 'Coming soon') + '</div><p class="ag-ic-d">' + esc(info.does || info.on || '') + '</p></article>';
@@ -1996,7 +2012,7 @@ var require_bb_embedded_files = __commonJS({
         (res && res.id === 'all' ? '<div class="ag-banner ' + (res.blks.length ? 'good' : 'info') + '">' + I(res.blks.length ? 'check' : 'sync') + '<div><p>' + (res.blks.length ? '<b>' + res.blks.length + (res.blks.length === 1 ? ' stay' : ' stays') + ' booked elsewhere.</b> Those dates are now blocked on your own sites, so you never double book.' : 'Calendars checked. No new dates.') + '</p>' + (res.blks.length ? '<div class="ag-links">' + res.blks.map(k => '<button class="btn sm" data-ag-nav="calendar">' + esc(k.note) + ' \xB7 ' + esc(BB.q.property(k.pid).short) + ' \xB7 ' + D.fmt(k.from) + ' \u2013 ' + D.fmt(k.to) + '</button>').join('') + '</div>' : '') + '</div></div>' : '') +
         diagram + hub(inst) +
         groups.map(([gname, list]) => '<section class="ag-group"><h3 class="ag-gh">' + I(GICON[gname] || 'plug') + esc(gname) + '<span class="muted">' + list.filter(i => i.connected).length + ' of ' + list.length + ' connected</span></h3><div class="ag-icards">' + list.map(icard).join('') + '</div></section>').join('') +
-        (addons.length ? '<section class="ag-group ag-addons"><div class="ag-addon-h"><div><span class="eyebrow">Optional add-on</span><h3 class="disp">Calendar sync add-on, \xA315/month</h3><p>Calendar sync with your channel manager, Airbnb, Vrbo, Booking.com or any site with a calendar link. Paste each calendar link (iCal) and dates booked there are blocked on your sites, then paste your Bookingbooster link back into each site so they block each other and your direct bookings. We check every few minutes, and again the moment a guest starts booking. Dates only: never guests, prices or messages. You do not need it to take direct bookings.</p></div>' + (syncing.length ? BB.pill('good', 'On for ' + syncing.length + (syncing.length === 1 ? ' calendar' : ' calendars')) : BB.pill('muted', 'Not added')) + '</div><div class="ag-icards">' + addons.filter(i => !i.api).map(icard).join('') + '</div>' +
+        (addons.length ? '<section class="ag-group ag-addons"><div class="ag-addon-h"><div><span class="eyebrow">Optional add-on</span><h3 class="disp">Calendar sync add-on, \xA315/month</h3><p>Calendar sync with your channel manager, Airbnb, Vrbo, Booking.com or any site with a calendar link. Paste each calendar link (iCal) and dates booked there are blocked on your sites, then paste your Bookingbooster link back into each site so they block each other and your direct bookings. We check every few minutes, and again the moment a guest starts booking. Dates only: never guests, prices or messages. You do not need it to take direct bookings.</p></div>' + (syncing.length ? BB.pill('good', 'On for ' + syncing.length + (syncing.length === 1 ? ' calendar' : ' calendars')) : BB.pill('muted', 'Not added')) + '</div><div class="ag-icards">' + addons.filter(i => !i.api && (!i.site || i.shown || i.connected)).map(icard).join('') + '</div>' + sitePick(inst) +
           (addons.some(i => i.api) ? '<div class="ag-addon-h ag-addon-sub"><div><h3 class="disp">Or connect your channel manager directly</h3><p>Use Beds24, Smoobu, Hostaway, Guesty or Lodgify? Connect it with your own API key instead of calendar links. Dates booked anywhere close on your sites within minutes, and your direct bookings close the same nights in your channel manager, which passes them on to Airbnb, Booking.com and Vrbo. Calendar links can take a few hours to reach Airbnb; this does not.</p></div></div><div class="ag-icards">' + addons.filter(i => i.api).map(icard).join('') + '</div>' : '') + '</section>' : '') + BB.aiTm('ag-tm'));
     },
   }, hooks);
@@ -10948,7 +10964,7 @@ body.p-lock { overflow: hidden; }
   /* ---------- calendar sync add-on: more calendars and channel manager APIs ---------- */
   // Added to every account, old or new, the first time it loads.
   BB.SYNC_EXTRA = [
-    { id: 'other', name: 'Other calendar', group: 'Add-ons', addon: true, connected: false, detail: 'Optional. Paste a calendar link (iCal) from any other site, such as Plum Guide, Sykes, Holidu, Expedia or Google Calendar. Dates booked there are blocked on your sites.', lastSync: null },
+    { id: 'other', name: 'Other calendar', group: 'Add-ons', addon: true, connected: false, detail: 'Optional. Paste a calendar link (iCal) from any other site, such as a small agency or a site not in our list. Dates booked there are blocked on your sites.', lastSync: null },
     { id: 'beds24', name: 'Beds24', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Beds24 account. Dates booked there close on your sites, and direct bookings close the dates in Beds24 within minutes.', lastSync: null },
     { id: 'smoobu', name: 'Smoobu', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Smoobu account. Dates booked there close on your sites, and direct bookings close the dates in Smoobu within minutes.', lastSync: null },
     { id: 'hostaway', name: 'Hostaway', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Hostaway account. Dates booked there close on your sites, and direct bookings close the dates in Hostaway within minutes.', lastSync: null },
@@ -11011,11 +11027,107 @@ body.p-lock { overflow: hidden; }
   BB.SYNC_EXTRA.push({ id: 'gvr', name: 'Google Vacation Rentals', group: 'Get found', connected: false, detail: 'Free listings in Google Search, Maps and Travel that send guests to book on your own site', lastSync: null });
   // What a home still needs before Google will list it (same rules as server/google-vr.js).
   BB.gvrMissing = p => { const out = []; const n = (p.photos || []).length; if (p.published === false) out.push('publish the site'); if (!(p.lat && p.lng)) out.push('add the map pin'); if (n < 5) out.push('add ' + (5 - n) + ' more photo' + (5 - n === 1 ? '' : 's')); if (!String(p.area || '').trim()) out.push('add the town or area'); if (!(+p.maxGuests > 0)) out.push('say how many it sleeps'); return out; };
+  // Calendar catalogue: named sites that offer calendar links (iCal). Each one becomes its own calendar when the host adds
+  // it, with its own feed back, so every site blocks every other through Bookingbooster. [id, name, region, where to find it]
+  BB.ICAL_SITES = BB.ICAL_SITES || [
+    // UK and Ireland
+    ['sawdays', "Sawday's", 'UK', 'Accommodation, then Manage calendar, then the iCal Sync tab'],
+    ['canopystars', 'Canopy & Stars', 'UK', 'Ask your Canopy & Stars contact for the calendar link'],
+    ['pitchup', 'Pitchup', 'UK and Europe', 'Manager portal, then the Allocation tab. Pitchup switches on importing for you'],
+    ['hipcamp', 'Hipcamp', 'UK, US, Australia', 'Calendar, then Options, then Sync external calendars (on a computer)'],
+    ['campanyon', 'Campanyon', 'UK and Nordics', 'Host Dashboard, then your listing, then Calendar'],
+    ['camplify', 'Camplify', 'UK and Australia', 'Listings, then the calendar, then Calendar sync'],
+    ['campsitescouk', 'Campsites.co.uk', 'UK', 'Email Campsites.co.uk bookings and ask them to link your calendar'],
+    ['coolstays', 'Coolstays', 'UK', 'Ask Coolstays for your calendar link'],
+    ['glampsites', 'Glampsites', 'UK', 'Ask Glampsites for your calendar link'],
+    ['qualityunearthed', 'Quality Unearthed', 'UK', 'Ask Quality Unearthed for your calendar link'],
+    ['cottagescom', 'Cottages.com', 'UK', 'Ask your Awaze owner team whether they can link your calendar'],
+    ['hoseasons', 'Hoseasons', 'UK', 'Ask your Awaze owner team whether they can link your calendar'],
+    ['travelchapter', 'The Travel Chapter', 'UK', 'Ask your Travel Chapter owner team for the calendar link'],
+    ['hideaway', 'Hideaway Collection', 'UK', 'Ask your Hideaway Collection owner team for the calendar link'],
+    ['holidayfox', 'Holiday Fox', 'UK', 'Partner area, then iCal calendar feeds'],
+    ['searchandstay', 'Search and Stay', 'UK', 'Import: your property, then the iCal and Date Block tab. Export: Calendar, then Copy iCal'],
+    ['reserveapts', 'Reserve Apartments', 'UK', 'Email Reserve Apartments support and they set it up'],
+    ['simplyowners', 'Simply Owners', 'UK and Ireland', 'Owner console, then Import / Export an iCal link'],
+    ['lodgelovers', 'Lodge Lovers', 'UK', 'Your Listings, then iCal link, then Booking Window'],
+    ['indcottages', 'Independent Cottages', 'UK', 'Ask Independent Cottages to switch calendar import on'],
+    ['plumguide', 'Plum Guide', 'UK and worldwide', 'Listings, then Edit home details, then Calendar, then Import calendar'],
+    ['holidaylettings', 'Holiday Lettings', 'UK', 'Calendar tab, then Import / Export calendar'],
+    ['bestofwales', 'Best of Wales', 'Wales', 'Ask Best of Wales for your calendar link'],
+    ['westwales', 'West Wales Holiday Cottages', 'Wales', 'Ask your West Wales Holiday Cottages contact for the calendar link'],
+    ['bookalighthouse', 'Bookalighthouse.com', 'UK', 'Ask Bookalighthouse for your calendar link'],
+    ['eatsretreats', 'Eats & Retreats', 'UK', 'Ask Eats & Retreats for your calendar link'],
+    ['clickstay', 'Click Stay', 'UK', 'Ask Click Stay for your calendar link'],
+    ['rentalhive', 'The Rental Hive', 'UK', 'Ask The Rental Hive for your calendar link'],
+    ['goboony', 'Goboony', 'UK and Europe', 'Your listing calendar, then calendar sync'],
+    // Europe
+    ['holidu', 'Holidu', 'Europe and UK', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['ferienwohnungen', 'Ferienwohnungen.de', 'Germany', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['casasrurales', 'Casasrurales.net', 'Spain', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['clubrural', 'Clubrural', 'Spain', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['chambreshotes', 'Chambres-hotes.fr', 'France', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['atraveo', 'Atraveo', 'Germany and Europe', 'Owner Portal, then Bookings, then Calendar, then Actions'],
+    ['edomizil', 'e-domizil', 'Germany and Switzerland', 'Owner portal (shared with Atraveo), then Calendar'],
+    ['fewodirekt', 'FeWo-direkt', 'Germany', 'Calendar, then Import / Export (same dashboard as Vrbo)'],
+    ['abritel', 'Abritel', 'France', 'Calendar, then Import / Export (same dashboard as Vrbo)'],
+    ['clevacances', 'Cl\xE9vacances', 'France', 'My availabilities tab'],
+    ['gitescom', 'G\xEEtes.com', 'France', 'Owner area, then Synchronise your availability via iCal'],
+    ['spainholiday', 'Spain-Holiday.com', 'Spain', 'Owner area, then calendar, then iCal sync'],
+    ['bedandbreakfasteu', 'Bedandbreakfast.eu', 'Europe', 'Your account, then Synchronising with other platforms'],
+    ['amivac', 'Amivac', 'France', 'Your listing calendar, then iCal'],
+    ['magicstay', 'MagicStay', 'France', 'Your listing calendar, then iCal'],
+    ['adriago', 'Adriago', 'Croatia', 'Your listing calendar, then iCal'],
+    ['handiscover', 'Handiscover', 'Europe', 'Your listing calendar, then iCal'],
+    ['homelike', 'Homelike', 'Germany', 'Your listing calendar, then iCal'],
+    ['wunderflats', 'Wunderflats', 'Germany', 'Your listing, then Synchronise your booking calendar'],
+    ['uniplaces', 'Uniplaces', 'Portugal and Europe', 'Your listing, then Sync your listing calendar with iCal'],
+    // Worldwide
+    ['expedia', 'Expedia', 'Worldwide', 'Through your Vrbo dashboard: Calendar, then Import / Export'],
+    ['stayz', 'Stayz', 'Australia', 'Calendar, then Reservations, then the Import / Export arrows'],
+    ['bookabach', 'Bookabach', 'New Zealand', 'Calendars & Reservations, then Import / Export'],
+    ['holidayhouses', 'Holiday Houses', 'New Zealand', 'Your listing calendar, then iCal'],
+    ['tripadvisor', 'Tripadvisor Rentals', 'Worldwide', 'Calendar tab, then Import / Export calendar'],
+    ['agoda', 'Agoda Homes', 'Asia and worldwide', 'Calendar, then Calendar connections (homes with one unit)'],
+    ['houfy', 'Houfy', 'US and worldwide', 'Manage Listings, then Calendar, then Import / Export'],
+    ['misterbnb', 'Misterb&b', 'Worldwide', 'Your listing calendar, then calendar sync'],
+    ['tripvillas', 'Tripvillas', 'Asia and worldwide', 'Your listing calendar, then iCal'],
+    ['glampinghub', 'Glamping Hub', 'Worldwide', 'Your listing calendar, then iCal links'],
+    ['thedyrt', 'The Dyrt', 'US', 'Your listing, then Import and export calendars'],
+    ['dubizzle', 'Dubizzle Holiday Homes', 'UAE', 'Your listing, then Manage your calendar with iCalendar'],
+    ['dtravel', 'Dtravel', 'Worldwide', 'Your listing, then Calendar syncing using iCal'],
+    // Your own calendars
+    ['gcal', 'Google Calendar', 'Anywhere', 'Settings, then your calendar, then Secret address in iCal format'],
+    ['outlook', 'Outlook', 'Anywhere', 'Calendar settings, then Shared calendars, then Publish a calendar (ICS link)'],
+    ['icloud', 'Apple Calendar (iCloud)', 'Anywhere', 'Share the calendar as a Public Calendar and copy the link'],
+    // Other booking systems and website plugins
+    ['wixhotels', 'Wix Hotels', 'Anywhere', 'Wix Hotels, then Sync with an external calendar, then Find your iCal URL'],
+    ['motopress', 'MotoPress Hotel Booking', 'Anywhere', 'WordPress, then Accommodation, then Sync Calendars'],
+    ['wpbooking', 'WP Booking System', 'Anywhere', 'WordPress, then your calendar, then iCalendar Import / Export'],
+    ['hbook', 'HBook', 'Anywhere', 'WordPress, then HBook, then iCal settings'],
+    ['wprentals', 'WP Rentals', 'Anywhere', 'Your listing, then iCalendar import / export'],
+    ['cozystay', 'CozyStay', 'Anywhere', 'Your room, then Connect calendar via iCal'],
+    ['anytimebooking', 'Anytime Booking', 'UK', 'Channels, then 2-way iCal'],
+    ['bookster', 'Bookster', 'UK', 'Marketing channels, then via iCalendar'],
+    ['freetobook', 'Freetobook', 'UK', 'Each room has an iCal feed in your settings'],
+    ['bedful', 'Bedful', 'UK', 'Bookings, then iCal availability'],
+    ['innstyle', 'InnStyle', 'UK', 'Channels, then 2-way iCal feed'],
+    ['ownerrez', 'OwnerRez', 'Anywhere', 'Channel management, then Calendar Import / Export'],
+  ];
+  const siteDef = id => BB.ICAL_SITES.find(x => x[0] === id);
+  BB.registerSites = function () {
+    BB.ICAL_SITES.forEach(([id, name]) => { if (!BB.CHANNEL[id]) BB.CHANNEL[id] = name; if (!BB.ICAL_IDS.includes(id)) { BB.ICAL_IDS.push(id); BB.SYNC_IDS.push(id); } });
+  };
+  BB.act.addCalendarSite = function (id) {
+    const d = siteDef(id); const s = S(); if (!d) return { ok: false, error: 'Unknown site' };
+    let i = s.integrations.find(x => x.id === id);
+    if (!i) { i = { id, name: d[1], group: 'Add-ons', addon: true, ical: true, site: true, connected: false, where: d[3] || '', detail: 'Paste your ' + d[1] + ' calendar link (iCal). Dates booked there are blocked on your sites, and your Bookingbooster link pasted into ' + d[1] + ' closes the dates booked everywhere else.', lastSync: null }; s.integrations.push(i); }
+    i.shown = true; BB.store.commit({ type: 'integration', id }); return { ok: true };
+  };
   BB.ensureChannels = function (s) {
     if (!s || !Array.isArray(s.integrations)) return;
     BB.SYNC_EXTRA.forEach(x => { if (!s.integrations.some(i => i.id === x.id)) s.integrations.push(Object.assign({}, x)); });
   };
-  try { BB.ensureChannels(S()); } catch (_) {}
+  try { BB.registerSites(); BB.ensureChannels(S()); } catch (_) {}
 
   // Pick which listing in the channel manager is which home. The listings come from the server when the host connects.
   BB.act.mapChannelListing = function (id, pid, listingId) {
@@ -16088,10 +16200,12 @@ var require_ical = __commonJS({
       }
     }
     var CHANNELS = ["cm", "airbnb", "vrbo", "booking", "other"];
+    var isChannel = (s, c) => CHANNELS.includes(c) || /^[a-z0-9]{2,24}$/.test(c || "") && (s.integrations || []).some((i) => i.id === c && i.ical);
+    var icalIds = (s) => CHANNELS.concat((s.integrations || []).filter((i) => i.ical && !CHANNELS.includes(i.id)).map((i) => i.id));
     function feed(s, pid, host, channel) {
       const p = s.properties.find((x) => x.id === pid);
       if (!p) return null;
-      if (channel && !CHANNELS.includes(channel)) return null;
+      if (channel && !isChannel(s, channel)) return null;
       const stamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
       const d = (iso) => iso.replace(/-/g, "");
       const ev = [];
@@ -16113,7 +16227,7 @@ var require_ical = __commonJS({
       const tail = host ? "@" + String(host).toLowerCase() : null;
       return list.filter((e) => !(tail && e.uid && String(e.uid).toLowerCase().endsWith(tail)) && !own.has(e.from + "|" + e.to));
     }
-    module.exports = { parse, events, merge, fromNights, nightsOf, addDay, dropEchoes, fetchCalendar, feed, privateIp, CHANNELS };
+    module.exports = { parse, events, merge, fromNights, nightsOf, addDay, dropEchoes, fetchCalendar, feed, privateIp, CHANNELS, isChannel, icalIds };
   }
 });
 
@@ -21973,9 +22087,8 @@ var require_effects = __commonJS({
           BB.store.commit({});
         });
       }
-      const ICAL_IDS = ical.CHANNELS;
       async function calendars(w, id, only) {
-        const ids = id ? [id] : ICAL_IDS.concat(Object.keys(channels.ADAPTERS));
+        const ids = id ? [id] : ical.icalIds(w.state).concat(Object.keys(channels.ADAPTERS));
         for (const iid of ids) {
           if (channels.ADAPTERS[iid]) {
             await channels.sync(w, { id: iid, only });
@@ -26914,10 +27027,10 @@ Disallow: /
         const step = ["checkin", "messages", "guide", "checkout", "trip"].includes(u.searchParams.get("step")) ? u.searchParams.get("step") : u.searchParams.get("done") || u.searchParams.get("paid") ? "done" : null;
         return tripPage(res, w, b, k, step);
       }
-      if (mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z]+))?\.ics$/)) {
+      if (mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z0-9]+))?\.ics$/)) {
         const r = await ws.bySlug(mm[1]);
         const pid = decodeURIComponent(mm[2]);
-        if (!r || !auth.verify(mm[3], "ical", r.id, pid) || mm[4] && !ical.CHANNELS.includes(mm[4])) return send(res, 404, "Not found", "text/plain");
+        if (!r || !auth.verify(mm[3], "ical", r.id, pid)) return send(res, 404, "Not found", "text/plain");
         const w = await ws.open(r.id);
         w.catchUp();
         const f = ical.feed(w.state, pid, MAIN_HOST, mm[4]);
@@ -27507,7 +27620,7 @@ Disallow: /
         if (p === "/api/outbox") return json(res, { items: await msg.outbox(w.id, 100) });
         if (p === "/api/calendar-feeds") return json(res, { feeds: w.state.properties.map((x) => {
           const url = urls.ical(w, x);
-          return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map((c) => [c, url.replace(/\.ics$/, "." + c + ".ics")])) };
+          return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.icalIds(w.state).map((c) => [c, url.replace(/\.ics$/, "." + c + ".ics")])) };
         }) });
         if (p === "/app/channels/sites" && m === "POST") {
           const j = await jsonBody(req, 2e3);

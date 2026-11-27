@@ -108,9 +108,8 @@ module.exports = function (ctx) {
   }
 
   // Calendar links (iCal): read each home's links and block the dates taken there. Dates only.
-  const ICAL_IDS = ical.CHANNELS;
   async function calendars(w, id, only) {
-    const ids = id ? [id] : ICAL_IDS.concat(Object.keys(channels.ADAPTERS));
+    const ids = id ? [id] : ical.icalIds(w.state).concat(Object.keys(channels.ADAPTERS));
     for (const iid of ids) {
       if (channels.ADAPTERS[iid]) { await channels.sync(w, { id: iid, only }); continue; }
       const i = w.state.integrations.find(x => x.id === iid); if (!i || !i.connected || !i.links) continue;

@@ -449,7 +449,7 @@
   /* ---------- calendar sync add-on: more calendars and channel manager APIs ---------- */
   // Added to every account, old or new, the first time it loads.
   BB.SYNC_EXTRA = [
-    { id: 'other', name: 'Other calendar', group: 'Add-ons', addon: true, connected: false, detail: 'Optional. Paste a calendar link (iCal) from any other site, such as Plum Guide, Sykes, Holidu, Expedia or Google Calendar. Dates booked there are blocked on your sites.', lastSync: null },
+    { id: 'other', name: 'Other calendar', group: 'Add-ons', addon: true, connected: false, detail: 'Optional. Paste a calendar link (iCal) from any other site, such as a small agency or a site not in our list. Dates booked there are blocked on your sites.', lastSync: null },
     { id: 'beds24', name: 'Beds24', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Beds24 account. Dates booked there close on your sites, and direct bookings close the dates in Beds24 within minutes.', lastSync: null },
     { id: 'smoobu', name: 'Smoobu', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Smoobu account. Dates booked there close on your sites, and direct bookings close the dates in Smoobu within minutes.', lastSync: null },
     { id: 'hostaway', name: 'Hostaway', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Hostaway account. Dates booked there close on your sites, and direct bookings close the dates in Hostaway within minutes.', lastSync: null },
@@ -512,11 +512,107 @@
   BB.SYNC_EXTRA.push({ id: 'gvr', name: 'Google Vacation Rentals', group: 'Get found', connected: false, detail: 'Free listings in Google Search, Maps and Travel that send guests to book on your own site', lastSync: null });
   // What a home still needs before Google will list it (same rules as server/google-vr.js).
   BB.gvrMissing = p => { const out = []; const n = (p.photos || []).length; if (p.published === false) out.push('publish the site'); if (!(p.lat && p.lng)) out.push('add the map pin'); if (n < 5) out.push('add ' + (5 - n) + ' more photo' + (5 - n === 1 ? '' : 's')); if (!String(p.area || '').trim()) out.push('add the town or area'); if (!(+p.maxGuests > 0)) out.push('say how many it sleeps'); return out; };
+  // Calendar catalogue: named sites that offer calendar links (iCal). Each one becomes its own calendar when the host adds
+  // it, with its own feed back, so every site blocks every other through Bookingbooster. [id, name, region, where to find it]
+  BB.ICAL_SITES = BB.ICAL_SITES || [
+    // UK and Ireland
+    ['sawdays', "Sawday's", 'UK', 'Accommodation, then Manage calendar, then the iCal Sync tab'],
+    ['canopystars', 'Canopy & Stars', 'UK', 'Ask your Canopy & Stars contact for the calendar link'],
+    ['pitchup', 'Pitchup', 'UK and Europe', 'Manager portal, then the Allocation tab. Pitchup switches on importing for you'],
+    ['hipcamp', 'Hipcamp', 'UK, US, Australia', 'Calendar, then Options, then Sync external calendars (on a computer)'],
+    ['campanyon', 'Campanyon', 'UK and Nordics', 'Host Dashboard, then your listing, then Calendar'],
+    ['camplify', 'Camplify', 'UK and Australia', 'Listings, then the calendar, then Calendar sync'],
+    ['campsitescouk', 'Campsites.co.uk', 'UK', 'Email Campsites.co.uk bookings and ask them to link your calendar'],
+    ['coolstays', 'Coolstays', 'UK', 'Ask Coolstays for your calendar link'],
+    ['glampsites', 'Glampsites', 'UK', 'Ask Glampsites for your calendar link'],
+    ['qualityunearthed', 'Quality Unearthed', 'UK', 'Ask Quality Unearthed for your calendar link'],
+    ['cottagescom', 'Cottages.com', 'UK', 'Ask your Awaze owner team whether they can link your calendar'],
+    ['hoseasons', 'Hoseasons', 'UK', 'Ask your Awaze owner team whether they can link your calendar'],
+    ['travelchapter', 'The Travel Chapter', 'UK', 'Ask your Travel Chapter owner team for the calendar link'],
+    ['hideaway', 'Hideaway Collection', 'UK', 'Ask your Hideaway Collection owner team for the calendar link'],
+    ['holidayfox', 'Holiday Fox', 'UK', 'Partner area, then iCal calendar feeds'],
+    ['searchandstay', 'Search and Stay', 'UK', 'Import: your property, then the iCal and Date Block tab. Export: Calendar, then Copy iCal'],
+    ['reserveapts', 'Reserve Apartments', 'UK', 'Email Reserve Apartments support and they set it up'],
+    ['simplyowners', 'Simply Owners', 'UK and Ireland', 'Owner console, then Import / Export an iCal link'],
+    ['lodgelovers', 'Lodge Lovers', 'UK', 'Your Listings, then iCal link, then Booking Window'],
+    ['indcottages', 'Independent Cottages', 'UK', 'Ask Independent Cottages to switch calendar import on'],
+    ['plumguide', 'Plum Guide', 'UK and worldwide', 'Listings, then Edit home details, then Calendar, then Import calendar'],
+    ['holidaylettings', 'Holiday Lettings', 'UK', 'Calendar tab, then Import / Export calendar'],
+    ['bestofwales', 'Best of Wales', 'Wales', 'Ask Best of Wales for your calendar link'],
+    ['westwales', 'West Wales Holiday Cottages', 'Wales', 'Ask your West Wales Holiday Cottages contact for the calendar link'],
+    ['bookalighthouse', 'Bookalighthouse.com', 'UK', 'Ask Bookalighthouse for your calendar link'],
+    ['eatsretreats', 'Eats & Retreats', 'UK', 'Ask Eats & Retreats for your calendar link'],
+    ['clickstay', 'Click Stay', 'UK', 'Ask Click Stay for your calendar link'],
+    ['rentalhive', 'The Rental Hive', 'UK', 'Ask The Rental Hive for your calendar link'],
+    ['goboony', 'Goboony', 'UK and Europe', 'Your listing calendar, then calendar sync'],
+    // Europe
+    ['holidu', 'Holidu', 'Europe and UK', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['ferienwohnungen', 'Ferienwohnungen.de', 'Germany', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['casasrurales', 'Casasrurales.net', 'Spain', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['clubrural', 'Clubrural', 'Spain', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['chambreshotes', 'Chambres-hotes.fr', 'France', 'Your property, then Configuration, then iCal & Synchronization'],
+    ['atraveo', 'Atraveo', 'Germany and Europe', 'Owner Portal, then Bookings, then Calendar, then Actions'],
+    ['edomizil', 'e-domizil', 'Germany and Switzerland', 'Owner portal (shared with Atraveo), then Calendar'],
+    ['fewodirekt', 'FeWo-direkt', 'Germany', 'Calendar, then Import / Export (same dashboard as Vrbo)'],
+    ['abritel', 'Abritel', 'France', 'Calendar, then Import / Export (same dashboard as Vrbo)'],
+    ['clevacances', 'Clévacances', 'France', 'My availabilities tab'],
+    ['gitescom', 'Gîtes.com', 'France', 'Owner area, then Synchronise your availability via iCal'],
+    ['spainholiday', 'Spain-Holiday.com', 'Spain', 'Owner area, then calendar, then iCal sync'],
+    ['bedandbreakfasteu', 'Bedandbreakfast.eu', 'Europe', 'Your account, then Synchronising with other platforms'],
+    ['amivac', 'Amivac', 'France', 'Your listing calendar, then iCal'],
+    ['magicstay', 'MagicStay', 'France', 'Your listing calendar, then iCal'],
+    ['adriago', 'Adriago', 'Croatia', 'Your listing calendar, then iCal'],
+    ['handiscover', 'Handiscover', 'Europe', 'Your listing calendar, then iCal'],
+    ['homelike', 'Homelike', 'Germany', 'Your listing calendar, then iCal'],
+    ['wunderflats', 'Wunderflats', 'Germany', 'Your listing, then Synchronise your booking calendar'],
+    ['uniplaces', 'Uniplaces', 'Portugal and Europe', 'Your listing, then Sync your listing calendar with iCal'],
+    // Worldwide
+    ['expedia', 'Expedia', 'Worldwide', 'Through your Vrbo dashboard: Calendar, then Import / Export'],
+    ['stayz', 'Stayz', 'Australia', 'Calendar, then Reservations, then the Import / Export arrows'],
+    ['bookabach', 'Bookabach', 'New Zealand', 'Calendars & Reservations, then Import / Export'],
+    ['holidayhouses', 'Holiday Houses', 'New Zealand', 'Your listing calendar, then iCal'],
+    ['tripadvisor', 'Tripadvisor Rentals', 'Worldwide', 'Calendar tab, then Import / Export calendar'],
+    ['agoda', 'Agoda Homes', 'Asia and worldwide', 'Calendar, then Calendar connections (homes with one unit)'],
+    ['houfy', 'Houfy', 'US and worldwide', 'Manage Listings, then Calendar, then Import / Export'],
+    ['misterbnb', 'Misterb&b', 'Worldwide', 'Your listing calendar, then calendar sync'],
+    ['tripvillas', 'Tripvillas', 'Asia and worldwide', 'Your listing calendar, then iCal'],
+    ['glampinghub', 'Glamping Hub', 'Worldwide', 'Your listing calendar, then iCal links'],
+    ['thedyrt', 'The Dyrt', 'US', 'Your listing, then Import and export calendars'],
+    ['dubizzle', 'Dubizzle Holiday Homes', 'UAE', 'Your listing, then Manage your calendar with iCalendar'],
+    ['dtravel', 'Dtravel', 'Worldwide', 'Your listing, then Calendar syncing using iCal'],
+    // Your own calendars
+    ['gcal', 'Google Calendar', 'Anywhere', 'Settings, then your calendar, then Secret address in iCal format'],
+    ['outlook', 'Outlook', 'Anywhere', 'Calendar settings, then Shared calendars, then Publish a calendar (ICS link)'],
+    ['icloud', 'Apple Calendar (iCloud)', 'Anywhere', 'Share the calendar as a Public Calendar and copy the link'],
+    // Other booking systems and website plugins
+    ['wixhotels', 'Wix Hotels', 'Anywhere', 'Wix Hotels, then Sync with an external calendar, then Find your iCal URL'],
+    ['motopress', 'MotoPress Hotel Booking', 'Anywhere', 'WordPress, then Accommodation, then Sync Calendars'],
+    ['wpbooking', 'WP Booking System', 'Anywhere', 'WordPress, then your calendar, then iCalendar Import / Export'],
+    ['hbook', 'HBook', 'Anywhere', 'WordPress, then HBook, then iCal settings'],
+    ['wprentals', 'WP Rentals', 'Anywhere', 'Your listing, then iCalendar import / export'],
+    ['cozystay', 'CozyStay', 'Anywhere', 'Your room, then Connect calendar via iCal'],
+    ['anytimebooking', 'Anytime Booking', 'UK', 'Channels, then 2-way iCal'],
+    ['bookster', 'Bookster', 'UK', 'Marketing channels, then via iCalendar'],
+    ['freetobook', 'Freetobook', 'UK', 'Each room has an iCal feed in your settings'],
+    ['bedful', 'Bedful', 'UK', 'Bookings, then iCal availability'],
+    ['innstyle', 'InnStyle', 'UK', 'Channels, then 2-way iCal feed'],
+    ['ownerrez', 'OwnerRez', 'Anywhere', 'Channel management, then Calendar Import / Export'],
+  ];
+  const siteDef = id => BB.ICAL_SITES.find(x => x[0] === id);
+  BB.registerSites = function () {
+    BB.ICAL_SITES.forEach(([id, name]) => { if (!BB.CHANNEL[id]) BB.CHANNEL[id] = name; if (!BB.ICAL_IDS.includes(id)) { BB.ICAL_IDS.push(id); BB.SYNC_IDS.push(id); } });
+  };
+  BB.act.addCalendarSite = function (id) {
+    const d = siteDef(id); const s = S(); if (!d) return { ok: false, error: 'Unknown site' };
+    let i = s.integrations.find(x => x.id === id);
+    if (!i) { i = { id, name: d[1], group: 'Add-ons', addon: true, ical: true, site: true, connected: false, where: d[3] || '', detail: 'Paste your ' + d[1] + ' calendar link (iCal). Dates booked there are blocked on your sites, and your Bookingbooster link pasted into ' + d[1] + ' closes the dates booked everywhere else.', lastSync: null }; s.integrations.push(i); }
+    i.shown = true; BB.store.commit({ type: 'integration', id }); return { ok: true };
+  };
   BB.ensureChannels = function (s) {
     if (!s || !Array.isArray(s.integrations)) return;
     BB.SYNC_EXTRA.forEach(x => { if (!s.integrations.some(i => i.id === x.id)) s.integrations.push(Object.assign({}, x)); });
   };
-  try { BB.ensureChannels(S()); } catch (_) {}
+  try { BB.registerSites(); BB.ensureChannels(S()); } catch (_) {}
 
   // Pick which listing in the channel manager is which home. The listings come from the server when the host connects.
   BB.act.mapChannelListing = function (id, pid, listingId) {

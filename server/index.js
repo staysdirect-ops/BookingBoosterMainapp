@@ -588,9 +588,9 @@ async function route(req, res) {
   }
   // <token>.ics carries direct bookings and blocks made here; <token>.<calendar>.ics (for example .airbnb.ics) also
   // carries the dates read from every other calendar, so Airbnb, Vrbo and Booking.com block each other through us.
-  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z]+))?\.ics$/))) {
+  if ((mm = p.match(/^\/ical\/([a-z0-9-]+)\/([^/]+)\/([A-Za-z0-9_-]+)(?:\.([a-z0-9]+))?\.ics$/))) {
     const r = await ws.bySlug(mm[1]); const pid = decodeURIComponent(mm[2]);
-    if (!r || !auth.verify(mm[3], 'ical', r.id, pid) || (mm[4] && !ical.CHANNELS.includes(mm[4]))) return send(res, 404, 'Not found', 'text/plain');
+    if (!r || !auth.verify(mm[3], 'ical', r.id, pid)) return send(res, 404, 'Not found', 'text/plain');
     const w = await ws.open(r.id); w.catchUp(); const f = ical.feed(w.state, pid, MAIN_HOST, mm[4]); if (!f) return send(res, 404, 'Not found', 'text/plain');
     return send(res, 200, f, 'text/calendar; charset=utf-8', { 'cache-control': 'no-cache', 'content-disposition': 'inline; filename="' + pid + '.ics"' });
   }
@@ -971,7 +971,7 @@ async function route(req, res) {
     if (p === '/api/credits') return json(res, Object.assign(await credits.summary(w.id), { recent: await credits.recent(w.id, 20) }));
     if (p === '/api/trip-link' && m === 'POST') { const j = await jsonBody(req); const b = w.state.bookings.find(x => x.id === j.bookingId); if (!b) throw err(404, 'Booking not found'); return json(res, { url: urls.trip(w, b) }); }
     if (p === '/api/outbox') return json(res, { items: await msg.outbox(w.id, 100) });
-    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
+    if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.icalIds(w.state).map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
     // Calendar sync add-on: connect a channel manager with the host's own API key (kept encrypted, never sent to the browser).
     // The Channex screen where the host links their Airbnb, Booking.com or Vrbo account to one home.
     if (p === '/app/channels/sites' && m === 'POST') {
