@@ -50,6 +50,10 @@ module.exports = {
   storage: SB_URL && SB_KEY && (SERVERLESS || E.USE_SUPABASE_STORAGE === '1') ? { url: SB_URL, key: SB_KEY, bucket: E.STORAGE_BUCKET || 'files' } : null,
   jobsKey: E.JOBS_KEY || '',
   secret: secret(),
+  // Bing Webmaster Tools meta tag code for the marketing site (Bing results feed ChatGPT search and Copilot).
+  bingVerification: String(E.BING_SITE_VERIFICATION || '').replace(/[^\w-]/g, ''),
+  // Comma-separated https profile URLs added to the company's sameAs in structured data.
+  profileLinks: String(E.PROFILE_LINKS || '').split(',').map(x => x.trim()).filter(x => /^https:\/\/[^\s"<>]+$/.test(x)),
   secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? 'https:' : '')),
   outreachTestOn: E.ALLOW_TEST_CLOCK === '1' ? String(E.OUTREACH_TEST_ON || '').split(',').map(x => x.trim()).filter(Boolean) : [], // tests only: switch outreach drafts on
   testClock: E.ALLOW_TEST_CLOCK === '1', // tests only: lets /admin/leads/run move the lead-email clock forward
@@ -79,6 +83,7 @@ module.exports = {
   credits: { enabled: E.AI_CREDITS !== 'off', monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
   // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
   google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
+  bing: { apiKey: E.BING_WEBMASTER_API_KEY, apiBase: E.BING_API_BASE },
   nuki: { token: E.NUKI_API_TOKEN },
   admins: String(E.ADMIN_EMAILS || '').toLowerCase().split(/[\s,]+/).filter(Boolean),
   // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission

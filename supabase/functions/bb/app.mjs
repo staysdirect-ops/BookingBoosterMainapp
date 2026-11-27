@@ -960,7 +960,7 @@ var require_bb_embedded_files = __commonJS({
   const first = name => String(name || '').split(' ')[0];
   const stamp = () => S().today + 'T' + S().clock;
   const sum = (a, f) => a.reduce((s, x) => s + f(x), 0);
-  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['google', 'Google AI Overview']];
+  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['claude', 'Claude'], ['google', 'Google AI Overview']];
   const sw = (on, attrs, label) => '<button type="button" class="switch" role="switch" aria-checked="' + !!on + '" aria-label="' + esc(label) + '" ' + attrs + '></button>';
   const vh = (title, sub, acts, back) => (back ? '<button type="button" class="ag-back" data-ag-nav="' + back[0] + '">' + I('back') + esc(back[1]) + '</button>' : '') +
     '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
@@ -1780,7 +1780,7 @@ var require_bb_embedded_files = __commonJS({
       const open = s.ai.tasks.filter(t => !t.done);
       const fixFor = s.ai.tasks.find(t => !t.done && t.fixes.includes(sel));
       const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
-      const realK = S().live ? ['chatgpt', 'gemini', 'perplexity', 'google'].find(k => q.answers && q.answers[k]) : null;
+      const realK = S().live ? ['chatgpt', 'gemini', 'perplexity', 'claude', 'google'].find(k => q.answers && q.answers[k]) : null;
       const ans = S().live ? (realK ? '<p>' + esc(q.answers[realK]).replace(/\\n+/g, '</p><p>') + '</p>' + (q.engines[realK] ? '' : '<div class="ag-miss">' + I('x') + '<span>' + esc(p.name) + ' is not mentioned yet.' + (fixFor ? ' Fix: ' + esc(fixFor.text.charAt(0).toLowerCase() + fixFor.text.slice(1)) + '.' : '') + '</span></div>')
           : '<p class="muted">' + (((BB.BOOT && BB.BOOT.aiEngines) || []).length ? 'Not checked yet. Run a check to see what AI assistants answer.' : 'AI checks are not switched on for this server yet. Your score stays at 0 until they are.') + '</p>')
         : q.engines.chatgpt
@@ -1846,7 +1846,7 @@ var require_bb_embedded_files = __commonJS({
       const diagram = '<section class="a-card ag-card ag-diag"><div class="a-card-h"><h3>How your direct bookings flow</h3><span class="ag-meta">' + (issues.length ? issues.length + (issues.length === 1 ? ' link paused' : ' links paused') : S().live && !c('stripe') ? 'Running, with booking requests' : 'Everything is running') + '</span></div>' +
         '<div class="ag-dflow"><div class="ag-dcol"><span class="eyebrow">Guests find you</span>' +
           node('Google search', c('gsc') ? 'Pages indexed, rankings tracked' : 'Rankings not tracked', c('google') || c('gsc'), 'search') +
-          '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
+          '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'claude', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
           node('Your guest list', c('email') ? ((n => n + (n === 1 ? ' subscribed guest' : ' subscribed guests'))(s.guests.filter(g => g.subscribed).length)) : 'Emails paused', c('email'), 'mail') +
           '<div class="ag-dn opt' + (syncing.length ? ' on' : '') + '"><span class="ag-dn-i">' + I('sync') + '</span><span><b>Calendar sync</b><small>' + (syncing.length ? 'Blocking dates booked on ' + syncing.map(i => i.id === 'cm' ? 'your channel manager' : BB.CHANNEL[i.id]).join(', ') : 'Optional add-on, off') + '</small></span><em class="ag-opt">Optional</em></div>' +
         '</div>' +
@@ -1942,7 +1942,7 @@ var require_bb_embedded_files = __commonJS({
     ['Image and video SEO', 'tool', 'Photo captions become alt text and image sitemap entries. A YouTube walkthrough adds video schema.'],
     ['SXO (search experience)', 'auto', 'Price up front, instant booking, reviews and a host note on the page that search visitors land on.'],
     ['AEO (answer engines)', 'tool', 'An answer-first summary, FAQ ideas with drafted answers, FAQPage and speakable schema.'],
-    ['GEO (generative engines)', 'auto', 'llms.txt, AI crawler access and real weekly checks in ChatGPT, Gemini, Perplexity and Google, with the sites they cite.'],
+    ['GEO (generative engines)', 'auto', 'llms.txt, AI crawler access and real weekly checks in ChatGPT, Gemini, Perplexity, Claude and Google, with the sites they cite.'],
     ['LLMO (brand recognition)', 'guide', 'sameAs links tie your listings and profiles to one home, and we track whether answers link to your site.'],
     ['AIO (Google AI Overviews)', 'tool', 'Google answers are checked with each AI run, and the summary sits where AI Overviews read first.'],
     ['Ecommerce SEO', 'part', 'Partly applies: each home is a bookable product with Offer schema, a live price and checkout. There are no category pages to manage.'],
@@ -1957,6 +1957,15 @@ var require_bb_embedded_files = __commonJS({
     st.sh_files[pid] = { loading: true };
     try { st.sh_files[pid] = await BB.api.call(API() + 'seo/files?propertyId=' + encodeURIComponent(pid), null, 'GET'); }
     catch (e) { st.sh_files[pid] = { error: e.message }; }
+    if (st.view === 'seo') inst.render();
+  }
+  // The snippet and DNS records for a home's own site hosted elsewhere, loaded once per address.
+  async function loadOwn(inst, p) {
+    const st = inst.st, o = BB.seo.seoOf(p); st.sh_own = st.sh_own || {};
+    if (!api() || !o.ownSite || (st.sh_own[p.id] && st.sh_own[p.id].for === o.ownSite)) return;
+    st.sh_own[p.id] = { for: o.ownSite, loading: true };
+    try { st.sh_own[p.id] = Object.assign(await BB.api.call(API() + 'seo/own-site?propertyId=' + encodeURIComponent(p.id), null, 'GET'), { for: o.ownSite }); }
+    catch (e) { st.sh_own[p.id] = { for: o.ownSite, error: e.message }; }
     if (st.view === 'seo') inst.render();
   }
   async function write(inst, what) {
@@ -2002,6 +2011,9 @@ var require_bb_embedded_files = __commonJS({
     'sh-gbp': (inst, v) => { const p = home(inst); const g = Object.assign({}, BB.seo.seoOf(p).gbp); g[v] = !g[v]; BB.act.updateSeo(p.id, { gbp: g }); },
     'sh-submit': async (inst, v, el) => { el.disabled = true; el.textContent = 'Submitting\u2026'; try { const j = await BB.api.call(API() + 'seo/submit', { propertyId: home(inst).id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } inst.render(); },
     'sh-ping': async (inst, v, el) => { const p = home(inst); el.disabled = true; try { const j = await BB.api.call(API() + 'seo/ping', { propertyId: p.id }); BB.api.accept(j); BB.toast(j.message, j.ok ? 'good' : undefined); } catch (e) { BB.toast(e.message); } el.disabled = false; },
+    'sh-own-del': inst => { const p = home(inst); BB.act.updateSeo(p.id, { ownSite: '' }); BB.toast('Website removed', 'good'); },
+    'sh-own-copy': (inst, v, el) => { const k = (inst.st.sh_own || {})[home(inst).id] || {}; BB.copy(v === 'snippet' ? k.snippet : v, el); },
+    'sh-own-tab': (inst, v) => inst.set({ sh_own_tab: v }),
     'sh-files': inst => inst.set({ sh_show: inst.st.sh_show === 'files' ? null : 'files' }),
     'sh-copy': (inst, v) => { try { navigator.clipboard.writeText(v); BB.toast('Copied'); } catch (_) {} },
   };
@@ -2019,6 +2031,7 @@ var require_bb_embedded_files = __commonJS({
     const f = ev.target.closest('form[data-shform]'); if (!f) return; ev.preventDefault();
     const p = home(inst), st = inst.st, k = f.dataset.shform;
     if (k === 'link') { const u = String(st.sh_link || '').trim(); if (!/^https:\\/\\/\\S+\\.\\S+/.test(u)) { BB.toast('Paste a full link that starts with https://'); return; } BB.act.updateSeo(p.id, { sameAs: (BB.seo.seoOf(p).sameAs || []).concat(u) }); st.sh_link = ''; BB.toast(BB.seo.LINK_LABEL[BB.seo.linkKind(u)] + ' added', 'good'); }
+    if (k === 'own') { const u = String(st.sh_ownurl || '').trim(), x = /^https?:\\/\\//i.test(u) ? u.replace(/^http:/i, 'https:') : 'https://' + u; const o = BB.act.updateSeo(p.id, { ownSite: x }); if (!o || !o.ownSite) { BB.toast('Paste your website address, like mycottage.co.uk'); return; } st.sh_ownurl = undefined; BB.toast('Website saved', 'good'); }
     if (k === 'video') { const u = String(st.sh_video || '').trim(); const o = BB.act.updateSeo(p.id, { videoUrl: u }); if (u && !(o && o.videoUrl)) { BB.toast('Paste a YouTube or Vimeo link'); return; } st.sh_video = undefined; BB.toast(u ? 'Video linked' : 'Video removed', 'good'); }
     if (k === 'pin') { const m = String(st.sh_pin || '').match(/(-?\\d+\\.\\d+)\\s*,\\s*(-?\\d+\\.\\d+)/); if (!m || !BB.act.setMapPin(p.id, m[1], m[2])) { BB.toast('Paste the pin as two numbers, like 54.4281, -2.9037'); return; } st.sh_pin = undefined; BB.toast('Map pin saved', 'good'); }
     inst.render();
@@ -2033,21 +2046,59 @@ var require_bb_embedded_files = __commonJS({
       : g.state === 'error' ? row('Google Search Console', 'warn', 'Google said: ' + esc(g.error || 'not yet') + '. We retry daily.')
       : files.google ? row('Google Search Console', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
       : row('Google Search Console', 'warn', 'Automatic submission is not switched on for this server yet. Google still finds your sitemap through robots.txt.');
+    const b = ix.bing || {};
+    const bRow = !live ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'auto', 'Verified and submitted for you in a real account, with no Bing login.')
+      : b.state === 'submitted' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'ok', 'Verified and sitemap submitted ' + when(b.at) + '. We resubmit daily.')
+      : b.state === 'verifying' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Bing is checking your site. We submit the sitemap as soon as it is verified.')
+      : b.state === 'error' ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Bing said: ' + esc(b.error || 'not yet') + '. We retry daily.')
+      : files.bing ? row('Bing Webmaster Tools (ChatGPT, Copilot)', 'warn', 'Not submitted yet. Press Submit now, or it goes out tonight.')
+      : null;
     const nRow = !live ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'auto', 'Pinged whenever your page changes.')
       : n.state === 'sent' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'ok', 'Told about your latest changes ' + when(n.at) + '.')
       : n.state === 'error' ? row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', esc(n.message || 'Not accepted yet') + ' We retry when the page changes.')
       : row('Bing, Yandex, Seznam, Naver (IndexNow)', 'warn', 'Goes out tonight, or press Submit now.');
     const pf = perf ? '<div class="sh-perf"><span class="eyebrow">Google search, ' + esc(perf.from) + ' to ' + esc(perf.to) + '</span><div class="sh-perf-k"><div><small>Clicks</small><b class="num">' + perf.clicks.toLocaleString('en-GB') + '</b></div><div><small>Impressions</small><b class="num">' + perf.impressions.toLocaleString('en-GB') + '</b></div><div><small>Click rate</small><b class="num">' + perf.ctr + '%</b></div><div><small>Avg position</small><b class="num">' + (perf.position || '\u2013') + '</b></div></div>' +
       (perf.queries.length ? '<table class="tbl sh-q"><thead><tr><th>Top searches</th><th>Clicks</th><th>Shown</th><th>Pos.</th></tr></thead><tbody>' + perf.queries.map(q => '<tr><td>' + esc(q.q) + '</td><td class="num">' + q.clicks + '</td><td class="num">' + q.impressions + '</td><td class="num">' + q.position + '</td></tr>').join('') + '</tbody></table>' : '<p class="muted">No searches yet. New sites usually show up within 2 to 4 weeks.</p>') + '</div>' : '';
-    return '<ul class="sh-checks sh-ixl">' + gRow + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
+    return '<ul class="sh-checks sh-ixl">' + gRow + (bRow || '') + nRow + row('Every other crawler', 'auto', 'robots.txt points to your sitemap, so every engine and AI crawler finds it.') + '</ul>' + pf;
   }
+  // Platform steps for pasting the snippet into a site's header.
+  const PLATFORMS = [
+    ['wordpress', 'WordPress', ['In WordPress, go to Plugins, then Add New, and install the free WPCode plugin.', 'Open Code Snippets, then Header & Footer.', 'Paste the snippet into the Header box and press Save Changes.', 'On WordPress.com this needs the Business plan. On a cheaper plan, use the DNS records instead.']],
+    ['wix', 'Wix', ['In your Wix dashboard, open Settings, then Custom code (under Advanced).', 'Press Add Custom Code and paste the snippet.', 'Choose All pages, place the code in Head, and press Apply.', 'Wix needs a paid plan with your own domain connected for custom code. Otherwise, use the DNS records.']],
+    ['squarespace', 'Squarespace', ['Open Settings, then Developer tools, then Code injection.', 'Paste the snippet into the Header box.', 'Press Save.', 'Code injection needs the Core plan or higher. Otherwise, use the DNS records.']],
+    ['other', 'Other sites', ['Open the editor for your site\\'s home page or theme.', 'Find where code goes in the page head (often called Header code, Head HTML or Tracking code).', 'Paste the snippet and publish the site.', 'Not sure? Send the snippet to whoever built your site, or use the DNS records.']],
+  ];
+  function ownCard(inst, p, o, live) {
+    const st = inst.st, k = (st.sh_own || {})[p.id] || {}, ix = (p.indexing || {}).own || {}, f = ix.found || {};
+    const form = '<form data-shform="own" class="sh-inl"><input data-shf="sh_ownurl" placeholder="mycottage.co.uk" value="' + esc(st.sh_ownurl != null ? st.sh_ownurl : '') + '" aria-label="Your website address"><button class="btn sm" type="submit">' + I('plus') + 'Add my website</button></form>';
+    if (!o.ownSite) return card('own', 'Your own website, hosted elsewhere', 'Optional \xB7 Google \xB7 Bing \xB7 AI', '<p class="sh-help">Got a website on WordPress, Wix, Squarespace or anywhere else? Add it here. You paste one snippet or add two DNS records, once. Then we verify it with Google and Bing for you and submit it every day, so ChatGPT, Gemini, Copilot, Claude and Perplexity can find it. Your booking site here is already handled.</p>' + form);
+    const row = (name, st2, txt) => '<li class="sh-ck sh-ix s-' + st2 + '"><span class="sh-st">' + I(STI[st2]) + '</span><div><b>' + name + '</b><small>' + txt + '</small></div></li>';
+    const when = t => t ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    const eng = (name, v) => !live ? row(name, 'auto', 'Verified and submitted for you once the snippet or DNS records are in place.')
+      : v === 'submitted' ? row(name, 'ok', 'Verified and sitemap submitted ' + when(ix.at) + '. We resubmit daily.')
+      : ix.error ? row(name, 'warn', esc(ix.error) + '. We retry daily.')
+      : row(name, 'warn', ix.at ? 'Waiting for the snippet or DNS records. We check every day, or press Check now.' : 'Add the snippet or DNS records below, then press Check now.');
+    const status = '<ul class="sh-checks sh-ixl">' +
+      (live && ix.at ? row('Snippet on your home page', f.google || f.bing ? 'ok' : f.reached === false ? 'warn' : 'warn', f.google || f.bing ? 'Found ' + when(ix.at) + '.' + (f.structured ? ' Structured data is there too.' : '') : f.reached === false ? 'We could not open your site.' : 'Not found yet. Fine if you used the DNS records.') : '') +
+      (files(inst, p).google ? eng('Google Search Console (Gemini, AI Overviews)', ix.google) : '') + (files(inst, p).bing ? eng('Bing Webmaster Tools (ChatGPT, Copilot)', ix.bing) : '') + '</ul>';
+    const tab = st.sh_own_tab || 'snippet', plat = st.sh_own_plat || 'wordpress';
+    const body = k.loading ? '<p class="muted">Getting your codes\u2026</p>' : k.error ? '<p class="t-bad">' + esc(k.error) + '</p>' : k.off ? '<p class="muted">Automatic verification is not switched on for this server yet. The snippet below still adds your structured data and llms.txt link.</p>' : '';
+    const tabs = '<div class="ag-ptabs sh-own-tabs" role="tablist">' + [['snippet', 'Paste a snippet'], ['dns', 'Add DNS records']].map(([v, l]) => '<button type="button" role="tab" aria-selected="' + (tab === v) + '" data-sh="sh-own-tab" data-v="' + v + '"><span><b>' + l + '</b></span></button>').join('') + '</div>';
+    const snip = k.snippet ? '<p class="sh-help">Paste this once into your site\\'s header. It proves the site is yours to Google and Bing, and adds ' + esc(p.name) + '\\'s details and booking link for AI assistants. If you change your prices or details, copy it again.</p><pre class="sh-pre">' + esc(k.snippet) + '</pre><div class="sh-row"><span class="sh-sp"></span><button class="btn sm primary" data-sh="sh-own-copy" data-v="snippet">' + I('copy') + 'Copy snippet</button></div>' +
+      PLATFORMS.map(([id, name, steps]) => '<details class="sh-steps"' + (id === plat ? ' open' : '') + '><summary>' + name + '</summary><ol>' + steps.map(x => '<li>' + esc(x) + '</li>').join('') + '</ol></details>').join('') : '';
+    const dns = k.dns && k.dns.length ? '<p class="sh-help">No access to your site\\'s code? Add these at the company where you bought your domain (GoDaddy, 123 Reg, IONOS, Namecheap, Cloudflare and so on), under DNS settings. Changes can take up to a day to show.</p><div class="tblwrap"><table class="tbl"><thead><tr><th>For</th><th>Type</th><th>Name / host</th><th>Value</th><th></th></tr></thead><tbody>' +
+      k.dns.map(r => '<tr><td>' + esc(r.engine) + '</td><td class="mono">' + esc(r.type) + '</td><td class="mono">' + esc(r.name) + '</td><td class="mono">' + esc(r.value) + '</td><td><button class="btn sm ghost" data-sh="sh-own-copy" data-v="' + esc(r.value) + '" aria-label="Copy value">' + I('copy') + '</button></td></tr>').join('') + '</tbody></table></div><p class="sh-tip">' + I('bolt') + '<span>DNS proves the site is yours, but it does not add your structured data. Paste the snippet as well if you can.</span></p>' : '<p class="muted">DNS records appear here once automatic verification is switched on.</p>';
+    return card('own', 'Your own website: ' + esc(o.ownSite.replace(/^https:\\/\\//, '')), 'Google \xB7 Bing \xB7 AI', status + body + (k.snippet || k.dns ? tabs + (tab === 'dns' ? dns : snip) : '') +
+      '<div class="sh-row"><button class="btn sm ghost" data-sh="sh-own-del">' + I('x') + 'Remove this website</button><span class="sh-sp"></span><button class="btn sm primary" data-sh="sh-submit"' + (api() ? '' : ' disabled') + '>' + I('send') + 'Check now</button></div>');
+  }
+  const files = (inst, p) => ((inst.st.sh_files || {})[p.id] || {});
   function edBox(inst, key, val, rows, ph) { return '<textarea class="sh-ta" data-shf="' + key + '" id="' + ID(inst, key) + '" rows="' + rows + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea>'; }
   const byLine = by => by === 'claude' ? '<span class="sh-by ai">' + I('spark') + 'Written by Claude from your facts. Check it before you publish.</span>' : by === 'rules' ? '<span class="sh-by">' + I('edit') + 'Drafted from your facts. Make it yours before you publish.</span>' : '';
 
   V.seo = {
     label: 'Search health', group: 'Get found', icon: 'search', order: 15,
     click: onClick, input: onInput, submit: onSubmit,
-    after(inst) { const p = home(inst); if (p) loadFiles(inst, p.id); },
+    after(inst) { const p = home(inst); if (p) { loadFiles(inst, p.id); loadOwn(inst, p); } },
     render(inst) {
       const s = S(), st = inst.st;
       if (!s.properties.length) return '<div class="ag sh">' + vh('Search health', 'Add a home first, then come back to see how it shows up in Google and AI answers.') + '</div>';
@@ -2110,7 +2161,7 @@ var require_bb_embedded_files = __commonJS({
         '</div>' +
 
         '<div class="sh-grid">' +
-          card('cites', 'Sites AI assistants cite', 'GEO \xB7 LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
+          card('cites', 'Sites AI assistants cite', 'GEO \xB7 LLMO', srcs.length ? '<p class="sh-help">The sources ChatGPT, Gemini, Perplexity, Claude and Google used when answering your tracked questions. Getting listed or mentioned on the top ones is the fastest way into answers.</p><ul class="sh-src">' + srcs.map(x => { const own = ownDom && ownDom.startsWith(x.domain); return '<li class="' + (own ? 'own' : '') + '"><span class="mono">' + esc(x.domain) + '</span>' + (own ? BB.pill('good', 'Your site') : BB.pill('muted', BB.seo.LINK_LABEL[BB.seo.linkKind('https://' + x.domain)])) + '<i><em style="width:' + Math.round(100 * x.n / maxSrc) + '%"></em></i><span class="num">' + x.n + '</span><span class="sh-eng">' + BB.aiLogos(Object.keys(x.engines), 'sh-logos') + '</span></li>'; }).join('') + '</ul>'
             : '<p class="muted">' + (live ? 'Shown after the next AI check. We record every site each answer cites.' : 'Run an AI check to see the sites answers cite.') + '</p>') +
           card('index', 'Indexing', 'Technical', (files.sitemap ? '<ul class="sh-files"><li><span>Sitemap with images</span><a class="mono" href="' + esc(files.sitemap) + '" target="_blank" rel="noopener">' + esc(files.sitemap.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>robots.txt</span><a class="mono" href="' + esc(files.robots) + '" target="_blank" rel="noopener">' + esc(files.robots.replace(/^https?:\\/\\//, '')) + '</a></li><li><span>llms.txt</span><a class="mono" href="' + esc(files.llmsUrl) + '" target="_blank" rel="noopener">' + esc(files.llmsUrl.replace(/^https?:\\/\\//, '')) + '</a></li></ul>' : '<p class="muted">' + (files.loading ? 'Loading\u2026' : 'Sitemap, robots.txt and llms.txt are published with your site.') + '</p>') +
             indexStatus(p, files, live) +
@@ -2119,6 +2170,8 @@ var require_bb_embedded_files = __commonJS({
             '<button class="btn sm" data-sh="sh-files">' + I('search') + (st.sh_show === 'files' ? 'Hide what crawlers see' : 'See what crawlers and AI read') + '</button>' +
             (st.sh_show === 'files' ? (files.jsonld ? '<div class="sh-types">' + files.jsonld['@graph'].map(n => BB.pill('info', n['@type'])).join('') + '</div><span class="eyebrow">llms.txt</span><pre class="sh-pre">' + esc(files.llms) + '</pre><span class="eyebrow">Structured data</span><pre class="sh-pre">' + esc(JSON.stringify(files.jsonld, null, 2)) + '</pre>' : '<p class="muted">' + esc(files.error || 'Loading\u2026') + '</p>') : '')) +
         '</div>' +
+
+        ownCard(inst, p, o, live) +
 
         card('cover', 'Every kind of search, covered', 'What is automatic and what is guidance', '<div class="tblwrap"><table class="tbl sh-cover"><tbody>' + COVER.map(([n, k, d]) => '<tr><td><b>' + esc(n) + '</b></td><td>' + BB.pill(COVL[k][0], COVL[k][1]) + '</td><td class="muted">' + esc(d) + '</td></tr>').join('') + '</tbody></table></div>') +
       '</div>';
@@ -7615,7 +7668,7 @@ body.p-lock { overflow: hidden; }
   const clip = (t, n) => String(t || '').trim().slice(0, n);
 
   // The SEO fields a host can edit, kept together on the home so they never collide with booking fields.
-  const SEO_KEYS = { summary: 600, areaIntro: 4000, videoUrl: 300, sameAs: 12, keywords: 20, gbp: 20, metaTitle: 70, metaDescription: 170 };
+  const SEO_KEYS = { summary: 600, areaIntro: 4000, videoUrl: 300, sameAs: 12, keywords: 20, gbp: 20, metaTitle: 70, metaDescription: 170, ownSite: 120 };
   const seoOf = p => Object.assign({ summary: '', areaIntro: '', videoUrl: '', sameAs: [], keywords: [], gbp: {}, metaTitle: '', metaDescription: '' }, p.seo || {});
 
   // Where a link points, so we can tell listings, social profiles, maps and local press apart.
@@ -7846,6 +7899,8 @@ body.p-lock { overflow: hidden; }
       if (k === 'sameAs') o[k] = (Array.isArray(v) ? v : []).map(u => String(u).trim()).filter(u => /^https:\\/\\/[^\\s<>"]+$/i.test(u)).slice(0, n);
       else if (k === 'keywords') o[k] = (Array.isArray(v) ? v : []).map(x => clip(String(x).toLowerCase().replace(/\\s+/g, ' '), 80)).filter(Boolean).slice(0, n);
       else if (k === 'gbp') { o[k] = {}; GBP.forEach(([id]) => { if (v && v[id]) o[k][id] = true; }); }
+      // The host's own website hosted elsewhere: a public https address, kept as its origin. Empty removes it.
+      else if (k === 'ownSite') { let x = ''; try { const u = new URL(String(v || '').trim()); if (u.protocol === 'https:' && !u.port && /^([a-z0-9-]+\\.)+[a-z]{2,}$/i.test(u.hostname)) x = u.origin.toLowerCase(); } catch (_) {} o[k] = x; }
       else if (k === 'videoUrl') o[k] = /^https:\\/\\/(www\\.)?(youtube\\.com|youtu\\.be|vimeo\\.com)\\/[^\\s<>"]+$/i.test(String(v || '').trim()) ? String(v).trim().slice(0, n) : '';
       else o[k] = clip(v, n);
     });
@@ -7858,7 +7913,7 @@ body.p-lock { overflow: hidden; }
     if (patch && (patch.lat !== undefined || patch.lng !== undefined)) { const la = Number(patch.lat), ln = Number(patch.lng); if (la >= 49 && la <= 61 && ln >= -9 && ln <= 2.5) { p.lat = Math.round(la * 1e5) / 1e5; p.lng = Math.round(ln * 1e5) / 1e5; } }
     if ('videoUrl' in o && o.videoUrl && o.videoUrl !== seoOf(p).videoUrl) o.videoAt = S().today;
     p.seo = Object.assign(seoOf(p), o);
-    const what = { summary: 'the answer-first summary', areaIntro: 'the local area guide', videoUrl: 'the walkthrough video', sameAs: 'where the home is listed', keywords: 'target searches', gbp: 'the Google Business Profile checklist', metaTitle: 'the Google title', metaDescription: 'the Google description' };
+    const what = { summary: 'the answer-first summary', areaIntro: 'the local area guide', videoUrl: 'the walkthrough video', sameAs: 'where the home is listed', keywords: 'target searches', gbp: 'the Google Business Profile checklist', metaTitle: 'the Google title', metaDescription: 'the Google description', ownSite: 'your own website address' };
     if (!keys.every(k => k === 'gbp' || k === 'keywords')) BB.log('site', 'Search health', 'Updated ' + keys.map(k => what[k]).join(' and ') + ' for ' + p.domain + '.', pid, ['Search health', p.domain, 'AI answers']);
     BB.store.commit({ type: 'property', id: pid });
     return p.seo;
@@ -7877,16 +7932,18 @@ body.p-lock { overflow: hidden; }
   };
   BB.act.trackAiQuestions = function (pid, list) {
     const s = S(); if (!BB.q.property(pid)) return 0; let n = 0;
-    (Array.isArray(list) ? list : []).slice(0, 10).forEach(q => { q = clip(q, 140); if (q && !s.ai.questions.some(x => x.q.toLowerCase() === q.toLowerCase() && x.propertyId === pid) && s.ai.questions.length < 40) { s.ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true }); n++; } });
+    (Array.isArray(list) ? list : []).slice(0, 10).forEach(q => { q = clip(q, 140); if (q && !s.ai.questions.some(x => x.q.toLowerCase() === q.toLowerCase() && x.propertyId === pid) && s.ai.questions.length < 40) { s.ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false }, pending: true }); n++; } });
     if (n) { BB.log('ai', 'AI visibility', 'Tracking ' + plural(n, 'new traveller question') + ' for ' + BB.q.property(pid).short + '.', pid); BB.store.commit({ type: 'ai' }); }
     return n;
   };
 
-  // Results from the server's search engine submissions (Google Search Console, IndexNow). Server only.
+  // Results from the server's search engine submissions (Google Search Console, Bing Webmaster Tools, IndexNow). Server only.
   BB.act.setIndexing = function (pid, patch) {
     const p = BB.q.property(pid); if (!p || !patch) return;
     const was = p.indexing || {}; p.indexing = Object.assign({}, was, patch);
     if (patch.google && patch.google.state !== (was.google || {}).state) BB.log('site', 'Search health', patch.google.state === 'submitted' ? 'Submitted ' + p.domain + ' and its sitemap to Google Search Console.' : 'Google Search Console could not take ' + p.domain + ': ' + patch.google.error, pid, ['Search health', 'Google']);
+    if (patch.own && patch.own.google !== 'waiting' && patch.own.bing !== 'verifying' && !patch.own.error && !((was.own || {}).google === 'submitted' || (was.own || {}).bing === 'submitted') && (patch.own.google === 'submitted' || patch.own.bing === 'submitted')) BB.log('site', 'Search health', 'Verified ' + patch.own.origin.replace(/^https:\\/\\//, '') + ' with ' + [patch.own.google === 'submitted' && 'Google', patch.own.bing === 'submitted' && 'Bing'].filter(Boolean).join(' and ') + ' and submitted its sitemap.', pid, ['Search health', 'Your website']);
+    if (patch.bing && patch.bing.state === 'submitted' && (was.bing || {}).state !== 'submitted') BB.log('site', 'Search health', 'Submitted ' + p.domain + ' and its sitemap to Bing, which feeds ChatGPT search and Copilot.', pid, ['Search health', 'Bing']);
     BB.store.commit({ type: 'property', id: pid, quiet: true });
   };
   // Domains AI assistants cite for a home's questions, most cited first: who they recommend instead of you.
@@ -9451,7 +9508,7 @@ body.p-lock { overflow: hidden; }
     lake: { label: 'Harbour cottage', note: 'Sea blues, clean type, harbour views', color: '#0F6E8C' },
     city: { label: 'Georgian townhouse', note: 'Honey stone, elegant type, city calm', color: '#8A5A2B' },
   };
-  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['google', 'Google AI Overviews']];
+  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['claude', 'Claude'], ['google', 'Google AI Overviews']];
   const STAY_TYPES = [['cabin', 'Cabin or lodge'], ['cottage', 'Country cottage'], ['beach', 'Seaside cottage'], ['city', 'City apartment'], ['farm', 'Barn conversion'], ['hut', 'Shepherd\u2019s hut']];
   const FAQ = [
     ['Do I have to leave Airbnb or Vrbo?', 'No. Keep your listings if you like. We focus on growing your direct bookings, so over time fewer stays need a platform. If you keep a listing running, the optional Calendar sync add-on (\xA315 a month) reads the calendar from your channel manager, Airbnb, Vrbo or Booking.com and blocks those dates on your site, so you never double book. We never list your home on the platforms or change your rates there.'],
@@ -10392,7 +10449,7 @@ body.p-lock { overflow: hidden; }
   };
   BB.act.addAiQuestion = function (q, pid) {
     q = String(q || '').trim(); if (!q || !BB.q.property(pid)) return;
-    S().ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true });
+    S().ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false }, pending: true });
     BB.log('ai', 'AI visibility', 'Tracking a new traveller question: "' + q + '".', pid); BB.store.commit({ type: 'ai' });
   };
   BB.act.remindCheckin = function (id) {
@@ -10774,7 +10831,7 @@ body.p-lock { overflow: hidden; }
     const kind = { cabin: 'cabin', lake: 'cottage', city: 'apartment' }[p.theme] || 'holiday let';
     const qs = [kind + ' to stay in ' + area, 'best place to stay in ' + area + ' for a weekend', (p.petsAllowed ? 'dog friendly ' : 'quiet ') + kind + ' ' + area];
     if ((p.amenities || []).some(a => /hot tub/i.test(a))) qs.push(kind + ' with hot tub in ' + area);
-    return qs.map(q => ({ q, propertyId: p.id, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true }));
+    return qs.map(q => ({ q, propertyId: p.id, engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false }, pending: true }));
   };
   BB.seedBlank = function (o) {
     const today = o.today, clock = o.clock || '09:00';
@@ -11059,14 +11116,14 @@ body.p-lock { overflow: hidden; }
     const ai = {
       checkedAt: '2026-11-14',
       questions: [
-        { q: 'cabin with hot tub in the Lake District', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: true, google: true } },
-        { q: 'dog friendly cabin near Windermere', propertyId: 'laurel', engines: { chatgpt: true, gemini: false, perplexity: true, google: true } },
-        { q: 'cottage with kayaks in St Ives', propertyId: 'lakeside', engines: { chatgpt: true, gemini: true, perplexity: false, google: true } },
-        { q: 'harbour cottage Cornwall with sea view', propertyId: 'lakeside', engines: { chatgpt: false, gemini: true, perplexity: false, google: false } },
-        { q: 'apartment in central Bath walkable', propertyId: 'loft', engines: { chatgpt: true, gemini: false, perplexity: false, google: true } },
-        { q: 'romantic weekend in Bath', propertyId: 'loft', engines: { chatgpt: false, gemini: false, perplexity: false, google: false } },
-        { q: 'family cabin Lake District with a stream', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: false, google: true } },
-        { q: 'pet friendly stay Lake District', propertyId: 'laurel', engines: { chatgpt: false, gemini: false, perplexity: true, google: false } },
+        { q: 'cabin with hot tub in the Lake District', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: true, claude: true, google: true } },
+        { q: 'dog friendly cabin near Windermere', propertyId: 'laurel', engines: { chatgpt: true, gemini: false, perplexity: true, claude: true, google: true } },
+        { q: 'cottage with kayaks in St Ives', propertyId: 'lakeside', engines: { chatgpt: true, gemini: true, perplexity: false, claude: false, google: true } },
+        { q: 'harbour cottage Cornwall with sea view', propertyId: 'lakeside', engines: { chatgpt: false, gemini: true, perplexity: false, claude: false, google: false } },
+        { q: 'apartment in central Bath walkable', propertyId: 'loft', engines: { chatgpt: true, gemini: false, perplexity: false, claude: false, google: true } },
+        { q: 'romantic weekend in Bath', propertyId: 'loft', engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false } },
+        { q: 'family cabin Lake District with a stream', propertyId: 'laurel', engines: { chatgpt: true, gemini: true, perplexity: false, claude: false, google: true } },
+        { q: 'pet friendly stay Lake District', propertyId: 'laurel', engines: { chatgpt: false, gemini: false, perplexity: true, claude: false, google: false } },
       ],
       tasks: [
         { id: 'faq-pets', text: 'Add a dog policy FAQ to Larch Fell', done: false, fixes: [1, 7] },
@@ -11643,6 +11700,7 @@ body.p-lock { overflow: hidden; }
     chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
     out: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
+    copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
     upload: '<path d="M12 15V4M7 9l5-5 5 5M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     play: '<path d="M7 4l13 8-13 8z"/>',
@@ -11711,18 +11769,18 @@ body.p-lock { overflow: hidden; }
    Use them only beside the platform name, all at the same size, nominative wording only ("shows up in", "checked on"). */
 (function () {
   const BB = window.BB;
-  const SPRITE = "<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"0\\" height=\\"0\\" style=\\"position:absolute;width:0;height:0;overflow:hidden\\" aria-hidden=\\"true\\" focusable=\\"false\\" id=\\"bbAiSprite\\"><symbol id=\\"bb-ai-chatgpt\\" viewBox=\\"0 0 24 24\\"><path style=\\"fill:var(--ai-chatgpt,#000)\\" fill-rule=\\"evenodd\\" d=\\"M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z\\"></path></symbol><symbol id=\\"bb-ai-gemini\\" viewBox=\\"0 0 24 24\\"><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"#3186FF\\"></path><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"url(#bb-ai-gemini-0)\\"></path><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"url(#bb-ai-gemini-1)\\"></path><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"url(#bb-ai-gemini-2)\\"></path><defs><linearGradient gradientUnits=\\"userSpaceOnUse\\" id=\\"bb-ai-gemini-0\\" x1=\\"7\\" x2=\\"11\\" y1=\\"15.5\\" y2=\\"12\\"><stop stop-color=\\"#08B962\\"></stop><stop offset=\\"1\\" stop-color=\\"#08B962\\" stop-opacity=\\"0\\"></stop></linearGradient><linearGradient gradientUnits=\\"userSpaceOnUse\\" id=\\"bb-ai-gemini-1\\" x1=\\"8\\" x2=\\"11.5\\" y1=\\"5.5\\" y2=\\"11\\"><stop stop-color=\\"#F94543\\"></stop><stop offset=\\"1\\" stop-color=\\"#F94543\\" stop-opacity=\\"0\\"></stop></linearGradient><linearGradient gradientUnits=\\"userSpaceOnUse\\" id=\\"bb-ai-gemini-2\\" x1=\\"3.5\\" x2=\\"17.5\\" y1=\\"13.5\\" y2=\\"12\\"><stop stop-color=\\"#FABC12\\"></stop><stop offset=\\".46\\" stop-color=\\"#FABC12\\" stop-opacity=\\"0\\"></stop></linearGradient></defs></symbol><symbol id=\\"bb-ai-perplexity\\" viewBox=\\"0 0 24 24\\"><path d=\\"M19.785 0v7.272H22.5V17.62h-2.935V24l-7.037-6.194v6.145h-1.091v-6.152L4.392 24v-6.465H1.5V7.188h2.884V0l7.053 6.494V.19h1.09v6.49L19.786 0zm-7.257 9.044v7.319l5.946 5.234V14.44l-5.946-5.397zm-1.099-.08l-5.946 5.398v7.235l5.946-5.234V8.965zm8.136 7.58h1.844V8.349H13.46l6.105 5.54v2.655zm-8.982-8.28H2.59v8.195h1.8v-2.576l6.192-5.62zM5.475 2.476v4.71h5.115l-5.115-4.71zm13.219 0l-5.115 4.71h5.115v-4.71z\\" fill=\\"#22B8CD\\" fill-rule=\\"nonzero\\"></path></symbol><symbol id=\\"bb-ai-google\\" viewBox=\\"0 0 24 24\\"><path d=\\"M23 12.245c0-.905-.075-1.565-.236-2.25h-10.54v4.083h6.186c-.124 1.014-.797 2.542-2.294 3.569l-.021.136 3.332 2.53.23.022C21.779 18.417 23 15.593 23 12.245z\\" fill=\\"#4285F4\\"></path><path d=\\"M12.225 23c3.03 0 5.574-.978 7.433-2.665l-3.542-2.688c-.948.648-2.22 1.1-3.891 1.1a6.745 6.745 0 01-6.386-4.572l-.132.011-3.465 2.628-.045.124C4.043 20.531 7.835 23 12.225 23z\\" fill=\\"#34A853\\"></path><path d=\\"M5.84 14.175A6.65 6.65 0 015.463 12c0-.758.138-1.491.361-2.175l-.006-.147-3.508-2.67-.115.054A10.831 10.831 0 001 12c0 1.772.436 3.447 1.197 4.938l3.642-2.763z\\" fill=\\"#FBBC05\\"></path><path d=\\"M12.225 5.253c2.108 0 3.529.892 4.34 1.638l3.167-3.031C17.787 2.088 15.255 1 12.225 1 7.834 1 4.043 3.469 2.197 7.062l3.63 2.763a6.77 6.77 0 016.398-4.572z\\" fill=\\"#EB4335\\"></path></symbol></svg>";
+  const SPRITE = "<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"0\\" height=\\"0\\" style=\\"position:absolute;width:0;height:0;overflow:hidden\\" aria-hidden=\\"true\\" focusable=\\"false\\" id=\\"bbAiSprite\\"><symbol id=\\"bb-ai-chatgpt\\" viewBox=\\"0 0 24 24\\"><path style=\\"fill:var(--ai-chatgpt,#000)\\" fill-rule=\\"evenodd\\" d=\\"M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z\\"></path></symbol><symbol id=\\"bb-ai-gemini\\" viewBox=\\"0 0 24 24\\"><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"#3186FF\\"></path><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"url(#bb-ai-gemini-0)\\"></path><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"url(#bb-ai-gemini-1)\\"></path><path d=\\"M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z\\" fill=\\"url(#bb-ai-gemini-2)\\"></path><defs><linearGradient gradientUnits=\\"userSpaceOnUse\\" id=\\"bb-ai-gemini-0\\" x1=\\"7\\" x2=\\"11\\" y1=\\"15.5\\" y2=\\"12\\"><stop stop-color=\\"#08B962\\"></stop><stop offset=\\"1\\" stop-color=\\"#08B962\\" stop-opacity=\\"0\\"></stop></linearGradient><linearGradient gradientUnits=\\"userSpaceOnUse\\" id=\\"bb-ai-gemini-1\\" x1=\\"8\\" x2=\\"11.5\\" y1=\\"5.5\\" y2=\\"11\\"><stop stop-color=\\"#F94543\\"></stop><stop offset=\\"1\\" stop-color=\\"#F94543\\" stop-opacity=\\"0\\"></stop></linearGradient><linearGradient gradientUnits=\\"userSpaceOnUse\\" id=\\"bb-ai-gemini-2\\" x1=\\"3.5\\" x2=\\"17.5\\" y1=\\"13.5\\" y2=\\"12\\"><stop stop-color=\\"#FABC12\\"></stop><stop offset=\\".46\\" stop-color=\\"#FABC12\\" stop-opacity=\\"0\\"></stop></linearGradient></defs></symbol><symbol id=\\"bb-ai-perplexity\\" viewBox=\\"0 0 24 24\\"><path d=\\"M19.785 0v7.272H22.5V17.62h-2.935V24l-7.037-6.194v6.145h-1.091v-6.152L4.392 24v-6.465H1.5V7.188h2.884V0l7.053 6.494V.19h1.09v6.49L19.786 0zm-7.257 9.044v7.319l5.946 5.234V14.44l-5.946-5.397zm-1.099-.08l-5.946 5.398v7.235l5.946-5.234V8.965zm8.136 7.58h1.844V8.349H13.46l6.105 5.54v2.655zm-8.982-8.28H2.59v8.195h1.8v-2.576l6.192-5.62zM5.475 2.476v4.71h5.115l-5.115-4.71zm13.219 0l-5.115 4.71h5.115v-4.71z\\" fill=\\"#22B8CD\\" fill-rule=\\"nonzero\\"></path></symbol><symbol id=\\"bb-ai-google\\" viewBox=\\"0 0 24 24\\"><path d=\\"M23 12.245c0-.905-.075-1.565-.236-2.25h-10.54v4.083h6.186c-.124 1.014-.797 2.542-2.294 3.569l-.021.136 3.332 2.53.23.022C21.779 18.417 23 15.593 23 12.245z\\" fill=\\"#4285F4\\"></path><path d=\\"M12.225 23c3.03 0 5.574-.978 7.433-2.665l-3.542-2.688c-.948.648-2.22 1.1-3.891 1.1a6.745 6.745 0 01-6.386-4.572l-.132.011-3.465 2.628-.045.124C4.043 20.531 7.835 23 12.225 23z\\" fill=\\"#34A853\\"></path><path d=\\"M5.84 14.175A6.65 6.65 0 015.463 12c0-.758.138-1.491.361-2.175l-.006-.147-3.508-2.67-.115.054A10.831 10.831 0 001 12c0 1.772.436 3.447 1.197 4.938l3.642-2.763z\\" fill=\\"#FBBC05\\"></path><path d=\\"M12.225 5.253c2.108 0 3.529.892 4.34 1.638l3.167-3.031C17.787 2.088 15.255 1 12.225 1 7.834 1 4.043 3.469 2.197 7.062l3.63 2.763a6.77 6.77 0 016.398-4.572z\\" fill=\\"#EB4335\\"></path></symbol><symbol id=\\"bb-ai-claude\\" viewBox=\\"0 0 24 24\\"><path style=\\"fill:var(--ai-claude,#D97757)\\" d=\\"M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z\\"/></symbol></svg>";
   if (!document.getElementById('bbAiSprite')) document.body.insertAdjacentHTML('afterbegin', SPRITE);
-  BB.AI_ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['google', 'Google AI Overviews']];
-  const NAME = { chatgpt: 'ChatGPT', gemini: 'Gemini', perplexity: 'Perplexity', google: 'Google' };
+  BB.AI_ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['claude', 'Claude'], ['google', 'Google AI Overviews']];
+  const NAME = { chatgpt: 'ChatGPT', gemini: 'Gemini', perplexity: 'Perplexity', claude: 'Claude', google: 'Google' };
   // label: pass a name for a logo shown without visible text; omit when the name sits beside it
   BB.aiLogo = (k, label) => NAME[k] ? '<svg class="ai-logo ai-' + k + '" viewBox="0 0 24 24"' + (label ? ' role="img" aria-label="' + BB.esc(label === true ? NAME[k] : label) + '"' : ' aria-hidden="true"') + ' focusable="false"><use href="#bb-ai-' + k + '"/></svg>' : '';
-  BB.aiLogos = (keys, cls) => '<span class="ai-logos' + (cls ? ' ' + cls : '') + '">' + (keys || ['chatgpt', 'gemini', 'perplexity', 'google']).map(k => BB.aiLogo(k, true)).join('') + '</span>';
+  BB.aiLogos = (keys, cls) => '<span class="ai-logos' + (cls ? ' ' + cls : '') + '">' + (keys || ['chatgpt', 'gemini', 'perplexity', 'claude', 'google']).map(k => BB.aiLogo(k, true)).join('') + '</span>';
   // logo + name chip
   BB.aiName = (k, text) => '<span class="ai-name">' + BB.aiLogo(k) + '<span>' + BB.esc(text || NAME[k]) + '</span></span>';
   // escape text and put the logo before every AI platform it names (for activity lines about AI visibility)
   BB.aiText = function (text) {
-    return BB.esc(text).replace(/\\b(ChatGPT|Gemini|Perplexity|Google(?: AI Overviews?)?)\\b/g, m => '<span class="ai-name">' + BB.aiLogo(m === 'ChatGPT' ? 'chatgpt' : m === 'Gemini' ? 'gemini' : m === 'Perplexity' ? 'perplexity' : 'google') + '<span>' + m + '</span></span>');
+    return BB.esc(text).replace(/\\b(ChatGPT|Gemini|Perplexity|Claude|Google(?: AI Overviews?)?)\\b/g, m => '<span class="ai-name">' + BB.aiLogo(m === 'ChatGPT' ? 'chatgpt' : m === 'Gemini' ? 'gemini' : m === 'Perplexity' ? 'perplexity' : m === 'Claude' ? 'claude' : 'google') + '<span>' + m + '</span></span>');
   };
   BB.AI_TM = 'ChatGPT, Gemini, Perplexity, Google, Claude and Copilot are trademarks of their owners. bookingbooster is not affiliated with or endorsed by them.';
   BB.aiTm = cls => '<p class="ai-tm' + (cls ? ' ' + cls : '') + '">' + BB.esc(BB.AI_TM) + '</p>';
@@ -14276,6 +14334,10 @@ var require_config = __commonJS({
       storage: SB_URL && SB_KEY && (SERVERLESS || E.USE_SUPABASE_STORAGE === "1") ? { url: SB_URL, key: SB_KEY, bucket: E.STORAGE_BUCKET || "files" } : null,
       jobsKey: E.JOBS_KEY || "",
       secret: secret(),
+      // Bing Webmaster Tools meta tag code for the marketing site (Bing results feed ChatGPT search and Copilot).
+      bingVerification: String(E.BING_SITE_VERIFICATION || "").replace(/[^\w-]/g, ""),
+      // Comma-separated https profile URLs added to the company's sameAs in structured data.
+      profileLinks: String(E.PROFILE_LINKS || "").split(",").map((x) => x.trim()).filter((x) => /^https:\/\/[^\s"<>]+$/.test(x)),
       secureCookies: /^https:/.test(E.BASE_URL || (SERVERLESS ? "https:" : "")),
       outreachTestOn: E.ALLOW_TEST_CLOCK === "1" ? String(E.OUTREACH_TEST_ON || "").split(",").map((x) => x.trim()).filter(Boolean) : [],
       // tests only: switch outreach drafts on
@@ -14340,6 +14402,7 @@ var require_config = __commonJS({
       credits: { enabled: E.AI_CREDITS !== "off", monthly: num(E.AI_CREDIT_MONTHLY, 50), demo: num(E.AI_CREDIT_DEMO, 1), markup: num(E.AI_CREDIT_MARKUP, 1), usdToGbp: num(E.AI_USD_TO_GBP, 0.79), lowWarning: num(E.AI_CREDIT_LOW, 5) },
       // Google Search Console for host sites, through Bookingbooster's own service account (see server/google-search.js).
       google: { serviceAccount: E.GOOGLE_SERVICE_ACCOUNT_JSON, oauthUrl: E.GOOGLE_OAUTH_URL, apiBase: E.GOOGLE_API_BASE },
+      bing: { apiKey: E.BING_WEBMASTER_API_KEY, apiBase: E.BING_API_BASE },
       nuki: { token: E.NUKI_API_TOKEN },
       admins: String(E.ADMIN_EMAILS || "").toLowerCase().split(/[\s,]+/).filter(Boolean),
       // Partner programme (server/affiliates.js): share of every payment, how long a link is remembered, how long commission
@@ -15289,16 +15352,16 @@ var require_seo = __commonJS({
       const faqs = faqsOf(s, p);
       return "# " + p.name + "\n\n> " + (p.headline || "") + " " + kind(p)[0].toUpperCase() + kind(p).slice(1) + " in " + p.area + ", run by " + s.account.business + ". Book direct at " + url + "\n\n## Facts\n\n- Location: " + p.area + ", United Kingdom\n- Sleeps: " + p.maxGuests + "\n- Bedrooms: " + p.bedrooms + "\n- Bathrooms: " + p.baths + "\n- Price: from " + money(p.nightly) + " a night" + (p.weekend ? " (" + money(p.nightly + p.weekend) + " on Friday and Saturday)" : "") + ", cleaning " + money(p.cleaning) + "\n- Minimum stay: " + p.minNights + " night" + (p.minNights === 1 ? "" : "s") + "\n- Pets: " + (p.petsAllowed ? "dogs welcome" + (p.petFee ? ", " + money(p.petFee) + " fee" : "") : "not allowed") + "\n- Check-in: from " + p.checkinTime + ", checkout by " + p.checkoutTime + "\n" + (p.rating && p.reviews ? "- Guest rating: " + p.rating + " out of 5 from " + p.reviews + " reviews\n" : "") + (seoOf(p).summary ? "\n## In short\n\n" + seoOf(p).summary + "\n" : "") + "\n## About\n\n" + (p.about || "") + "\n\n## Amenities\n\n" + (p.amenities || []).map((a) => "- " + a).join("\n") + "\n\n## House rules\n\n" + (p.rules || []).map((a) => "- " + a).join("\n") + (guideOf(p).length || seoOf(p).areaIntro ? "\n\n## Nearby\n\n" + (seoOf(p).areaIntro ? seoOf(p).areaIntro.trim() + "\n\n" : "") + guideOf(p).map((g) => "- " + g[0] + (g[1] ? ": " + g[1] : "") + (g[2] ? ". " + g[2] : "")).join("\n") : "") + "\n\n## Questions guests ask\n\n" + faqs.map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + (reviewsOf(s, p).length ? "\n\n## What guests say\n\n" + reviewsOf(s, p).slice(0, 3).map((r) => "> " + r.text.replace(/\s+/g, " ") + " (" + r.name + ", " + r.stars + " stars)").join("\n\n") : "") + ((seoOf(p).sameAs || []).length || seoOf(p).videoUrl ? "\n\n## Elsewhere\n\n" + (seoOf(p).sameAs || []).map((u) => "- " + u).join("\n") + (seoOf(p).videoUrl ? "\n- Video tour: " + seoOf(p).videoUrl : "") : "") + "\n\n## Booking\n\n- [Check availability and book direct](" + url + "): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n";
     }
+    var PRIVATE = ["Disallow: /app", "Disallow: /trip/", "Disallow: /api/"];
+    var AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot", "GoogleOther", "Gemini-Deep-Research", "Google-CloudVertexBot", "YouBot", "cohere-ai", "CCBot", "PhindBot", "AI2Bot"];
     function robots(sitemapUrl) {
       return [
         "User-agent: *",
         "Allow: /",
-        "Disallow: /app",
-        "Disallow: /trip/",
-        "Disallow: /api/",
+        ...PRIVATE,
         "",
         "# AI search and assistants are welcome to read and cite this site",
-        ...["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot", "Applebot-Extended", "Bingbot", "DuckAssistBot", "MistralAI-User", "Meta-ExternalAgent", "Amazonbot"].map((b) => "User-agent: " + b + "\nAllow: /"),
+        ...AI_BOTS.map((b) => ["User-agent: " + b, "Allow: /", ...PRIVATE].join("\n")),
         "",
         "Sitemap: " + sitemapUrl,
         ""
@@ -15530,7 +15593,7 @@ var require_marketing = __commonJS({
         areaServed: { "@type": "Country", name: "United Kingdom" },
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: co.support, areaServed: "GB", availableLanguage: "en-GB" }
       };
-      org.sameAs = SOCIAL.map((x) => x[1]);
+      org.sameAs = SOCIAL.map((x) => x[1]).concat(co.profiles || []);
       org.knowsAbout = ["Direct booking websites", "Holiday lets", "Short-term lets", "Search engine optimisation", "Local SEO", "Answer engine optimisation", "Generative engine optimisation", "Google AI Overviews", "Guest email marketing"];
       org.slogan = "Fill your calendar without the 15% fee.";
       if (co.name) org.legalName = co.name;
@@ -15589,7 +15652,7 @@ var require_marketing = __commonJS({
       return '<article class="seo" id="seo"><h1>Fill your calendar without the 15% fee.</h1><p>Your own booking website, found on Google and in AI answers, with card payments, a guest app and emails that bring guests back. Bookingbooster sets it all up for your UK holiday let, with no commission on bookings.</p><p><a href="/start">Get my booking site</a> \xB7 <a href="/demo">See the live demo</a></p><h2>Everything a host needs to go direct</h2>' + FEATURES.map(([h, p]) => "<h3>" + esc(h) + "</h3><p>" + esc(p) + "</p>").join("") + "<h2>How it works</h2><ol>" + STEPS.map(([h, p]) => "<li><strong>" + esc(h) + ".</strong> " + esc(p) + "</li>").join("") + "</ol><h2>Pricing</h2><p>One plan, done for you. \xA3" + PRICE.month + " a month, with no setup fee. No commission on bookings. Cancel anytime. Prices include VAT. Covers up to " + PRICE.homes + " homes.</p>" + li(INCLUDED) + "<p>Optional calendar sync add-on: \xA3" + PRICE.addon + " a month.</p><h2>Questions hosts ask</h2>" + allFaq().map(([q, a]) => "<h3>" + esc(q) + "</h3><p>" + esc(a) + "</p>").join("") + '<p>Something else? Email <a href="mailto:' + esc(co.support) + '">' + esc(co.support) + '</a>.</p><p><a href="/direct-booking-website">Direct booking websites</a> \xB7 <a href="/ai-search-for-holiday-lets">Getting found in AI search</a> \xB7 <a href="/seo-for-holiday-lets">SEO, AEO and GEO explained</a> \xB7 <a href="/holiday-let-seo-checklist">Holiday let SEO checklist</a> \xB7 <a href="/guides">Free guides</a> \xB7 <a href="/help">Help</a> \xB7 <a href="/partners">Partner programme</a> \xB7 <a href="/privacy">Privacy</a> \xB7 <a href="/terms">Terms</a></p><p>Follow us: ' + SOCIAL.map(([n, u]) => '<a href="' + u + '" rel="me noopener">' + n + "</a>").join(" \xB7 ") + "</p></article>";
     }
     function llms(base, co) {
-      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
+      return "# Bookingbooster\n\n> Direct booking websites for UK holiday let owners: your own site on your own domain, found on Google and in AI answers, with card payments, online check-in, guest email and text marketing. No commission on bookings. Not a channel manager: an optional add-on syncs calendars with Airbnb, Vrbo, Booking.com or a channel manager so you never double book.\n\n## Key facts\n\n- Website: " + base + "/\n- Serves: holiday let and short-term let owners in the United Kingdom (cottages, cabins, lodges, apartments, barn conversions, shepherd\u2019s huts)\n- Price: \xA3" + PRICE.month + " a month, no setup fee. Or \xA3" + PRICE.year.toLocaleString("en-GB") + " a year paid yearly (two months free). All prices include VAT. Covers up to " + PRICE.homes + " homes.\n- AI credit: \xA3" + PRICE.aiCredit + " a month included, for the AI site builder, funnels and guest reply drafts. Top-ups from \xA310 never expire.\n- Calendar sync add-on: \xA3" + PRICE.addon + " a month\n- Commission on bookings: none. Guests pay the owner directly through Stripe; card fees (about 1.5% + 20p) are passed on at cost.\n- Contract: none, cancel anytime. The owner keeps their domain and guest list.\n- Contact: " + co.support + "\n\n## What is included\n\n" + INCLUDED.map((x) => "- " + x).join("\n") + "\n\n## How it works\n\n" + STEPS.map(([h, p], i) => i + 1 + ". " + h + ": " + p).join("\n") + "\n\n## Questions\n\n" + allFaq().map(([q, a]) => "### " + q + "\n\n" + a).join("\n\n") + "\n\n## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home's facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity, Claude and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n## Links\n\n- [Full text of our guides for AI assistants](" + base + "/llms-full.txt)\n- [Home and pricing](" + base + "/)\n- [Start a booking site](" + base + "/start)\n- [Live demo](" + base + "/demo)\n- [Help](" + base + "/help)\n- [Privacy notice](" + base + "/privacy)\n- [Terms of service](" + base + "/terms)\n" + require_answers().list().map((x) => "- [" + x.title + "](" + base + x.path + "): " + x.description).join("\n") + "\n- Social profiles: " + SOCIAL.map(([n, u]) => "[" + n + "](" + u + ")").join(", ") + "\n";
     }
     module.exports = { SOCIAL, FAQ, MORE, TITLE, DESCRIPTION, PRICE, jsonLd, head, ldScript, content, llms };
   }
@@ -16189,6 +16252,20 @@ var require_ai = __commonJS({
           const j = await post("https://api.perplexity.ai/chat/completions", { authorization: "Bearer " + A.perplexity }, { model: A.perplexityModel, messages: [{ role: "user", content: ask.replace("{q}", q) }] });
           return { text: ((j.choices || [])[0] || {}).message ? j.choices[0].message.content : "", urls: j.citations || (j.search_results || []).map((r) => r.url) };
         }),
+        // Claude (Anthropic) with its web search tool, the same way claude.ai answers a traveller who asks.
+        claude: A.anthropic && (async (q) => {
+          const j = await post(
+            (A.anthropicBase || "https://api.anthropic.com") + "/v1/messages",
+            { "x-api-key": A.anthropic, "anthropic-version": "2023-06-01" },
+            { model: A.anthropicModel, max_tokens: 4e3, tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 3, user_location: { type: "approximate", country: "GB" } }], messages: [{ role: "user", content: ask.replace("{q}", q) }] }
+          );
+          if (j.stop_reason === "refusal") return { text: "", urls: [] };
+          const blocks = j.content || [];
+          const text = blocks.filter((c) => c.type === "text").map((c) => c.text || "").join("");
+          const cited = blocks.filter((c) => c.type === "text").flatMap((c) => c.citations || []).map((c) => c.url);
+          const found = blocks.filter((c) => c.type === "web_search_tool_result" && Array.isArray(c.content)).flatMap((c) => c.content).map((r) => r.url);
+          return { text, urls: [...new Set(cited.concat(found).filter(Boolean))] };
+        }),
         // Google: the regular results page plus any AI Overview, through SerpAPI.
         google: A.serpapi && (async (q) => {
           const r = await fetch("https://serpapi.com/search.json?" + new URLSearchParams({ engine: "google", q, gl: "uk", hl: "en", google_domain: "google.co.uk", api_key: A.serpapi }));
@@ -16582,6 +16659,48 @@ var require_google_search = __commonJS({
         await call("PUT", "/webmasters/v3/sites/" + enc(property) + "/sitemaps/" + enc(sitemapUrl));
         return { property };
       }
+      async function prepare(origin) {
+        if (!await metaFor(origin)) {
+          const j = await call("POST", "/siteVerification/v1/token", { verificationMethod: "META", site: { type: "SITE", identifier: origin + "/" } });
+          const m = String(j.token || "").match(/content="([^"]+)"/);
+          const v = m ? m[1] : String(j.token || "");
+          if (v) {
+            await kv.set(key(origin), v);
+            memo.set(origin, v);
+          }
+        }
+        const domain = new URL(origin).hostname.replace(/^www\./, "");
+        let row = await kv.get("gsvdns:" + domain);
+        if (!row) {
+          const j = await call("POST", "/siteVerification/v1/token", { verificationMethod: "DNS_TXT", site: { type: "INET_DOMAIN", identifier: domain } });
+          if (j.token) {
+            await kv.set("gsvdns:" + domain, String(j.token));
+            row = { v: String(j.token) };
+          }
+        }
+        return { meta: await metaFor(origin), txt: row ? row.v : "", domain };
+      }
+      async function submitExternal(origin, sitemapUrl) {
+        let row = await kv.get("gscx:" + origin), property = row ? row.v : "";
+        if (!property) {
+          const { domain } = await prepare(origin);
+          try {
+            await call("POST", "/siteVerification/v1/webResource?verificationMethod=META", { site: { type: "SITE", identifier: origin + "/" } });
+            property = origin + "/";
+          } catch (e) {
+            try {
+              await call("POST", "/siteVerification/v1/webResource?verificationMethod=DNS_TXT", { site: { type: "INET_DOMAIN", identifier: domain } });
+              property = "sc-domain:" + domain;
+            } catch (_) {
+              return { state: "waiting" };
+            }
+          }
+          await call("PUT", "/webmasters/v3/sites/" + enc(property));
+          await kv.set("gscx:" + origin, property);
+        }
+        await call("PUT", "/webmasters/v3/sites/" + enc(property) + "/sitemaps/" + enc(sitemapUrl));
+        return { state: "submitted", property };
+      }
       async function performance(origin, pagePrefix) {
         const end = new Date(Date.now() - 2 * 864e5), start = new Date(end.getTime() - 27 * 864e5), d = (x) => x.toISOString().slice(0, 10);
         const base = { startDate: d(start), endDate: d(end), dimensionFilterGroups: [{ filters: [{ dimension: "page", operator: "contains", expression: pagePrefix }] }] };
@@ -16591,7 +16710,149 @@ var require_google_search = __commonJS({
         const r1 = (n) => Math.round((n || 0) * 10) / 10;
         return { from: d(start), to: d(end), clicks: tot.clicks || 0, impressions: tot.impressions || 0, ctr: r1(100 * (tot.ctr || 0)), position: r1(tot.position), queries: q.map((x) => ({ q: String(x.keys[0]).slice(0, 100), clicks: x.clicks || 0, impressions: x.impressions || 0, position: r1(x.position) })) };
       }
-      return { enabled, metaTag, submit, performance, account: enabled ? sa.client_email : null };
+      return { enabled, metaTag, submit, prepare, submitExternal, performance, account: enabled ? sa.client_email : null };
+    };
+  }
+});
+
+// server/own-site.js
+var require_own_site = __commonJS({
+  "server/own-site.js"(exports, module) {
+    var seo = require_seo();
+    function originOf(u) {
+      try {
+        const x = new URL(String(u || "").trim());
+        if (x.protocol !== "https:" || x.port || x.username || !/^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(x.hostname) || /^\d+(\.\d+)+$/.test(x.hostname)) return "";
+        return x.origin.toLowerCase();
+      } catch (_) {
+        return "";
+      }
+    }
+    function jsonLd(s, p, origin, bookUrl, base) {
+      const g = seo.jsonLd(s, p, origin + "/")["@graph"];
+      const abs = (u) => typeof u === "string" && u.startsWith("/") ? base + u : u;
+      const keep = g.filter((n) => ["VacationRental", "LodgingBusiness", "Organization", "ItemList"].includes(n["@type"])).map((n) => JSON.parse(JSON.stringify(n)));
+      keep.forEach((n) => {
+        if (Array.isArray(n.image)) n.image = n.image.map((x) => typeof x === "string" ? abs(x) : Object.assign(x, { url: abs(x.url), contentUrl: abs(x.contentUrl) }));
+        else if (n.image) n.image = abs(n.image);
+        if (n["@type"] === "VacationRental" || n["@type"] === "LodgingBusiness") {
+          n.sameAs = [bookUrl].concat(n.sameAs || []);
+          n.potentialAction = { "@type": "ReserveAction", target: { "@type": "EntryPoint", urlTemplate: bookUrl, actionPlatform: ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"] }, result: { "@type": "LodgingReservation", name: "Book " + p.name + " direct" } };
+        }
+        if (n.makesOffer) n.makesOffer.url = bookUrl;
+      });
+      return { "@context": "https://schema.org", "@graph": keep };
+    }
+    function kit(s, p, origin, bookUrl, llmsUrl, base, codes) {
+      const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      const g = codes.google || {}, b = codes.bing || {};
+      const lines = ["<!-- Bookingbooster: helps Google, Bing and AI assistants find " + String(p.name).replace(/--/g, "-") + " -->"];
+      if (g.meta) lines.push('<meta name="google-site-verification" content="' + esc(g.meta) + '">');
+      if (b.code) lines.push('<meta name="msvalidate.01" content="' + esc(b.code) + '">');
+      lines.push('<link rel="alternate" type="text/plain" title="llms.txt" href="' + esc(llmsUrl) + '">');
+      lines.push('<script type="application/ld+json">' + JSON.stringify(jsonLd(s, p, origin, bookUrl, base)).replace(/</g, "\\u003c") + "</script>");
+      const dns = [];
+      if (g.txt) dns.push({ engine: "Google", type: "TXT", name: "@ (" + g.domain + ")", value: g.txt });
+      if (b.code) dns.push({ engine: "Bing", type: "CNAME", name: b.code, value: "verify.bing.com" });
+      return { origin, snippet: lines.join("\n"), dns };
+    }
+    async function check(origin, codes) {
+      const get = async (path) => {
+        try {
+          const r = await fetch(origin + path, { redirect: "follow", signal: AbortSignal.timeout(1e4), headers: { "user-agent": "Bookingbooster-SiteCheck/1.0 (+https://booking-booster.co.uk)" } });
+          return r.ok ? (await r.text()).slice(0, 4e5) : "";
+        } catch (_) {
+          return "";
+        }
+      };
+      const [home, robots] = await Promise.all([get("/"), get("/robots.txt")]);
+      const has = (v) => !!v && home.includes(v);
+      const sm = (robots.match(/^\s*sitemap:\s*(\S+)/im) || [])[1];
+      const sitemap = sm && originOf(sm) === origin ? sm : origin + "/sitemap.xml";
+      return { reached: !!home, google: has((codes.google || {}).meta), bing: has((codes.bing || {}).code), structured: home.includes("Bookingbooster: helps Google"), sitemap };
+    }
+    module.exports = { originOf, jsonLd, kit, check };
+  }
+});
+
+// server/bing-webmaster.js
+var require_bing_webmaster = __commonJS({
+  "server/bing-webmaster.js"(exports, module) {
+    module.exports = function(cfg, kv, log) {
+      const B = cfg.bing || {};
+      const apiKey = String(B.apiKey || "").trim(), enabled = !!apiKey;
+      const API = (B.apiBase || "https://ssl.bing.com/webmaster/api.svc/json").replace(/\/$/, "");
+      async function call(method, name, body) {
+        const r = await fetch(API + "/" + name + "?apikey=" + encodeURIComponent(apiKey), {
+          method,
+          signal: AbortSignal.timeout(2e4),
+          headers: { "content-type": "application/json; charset=utf-8" },
+          body: body ? JSON.stringify(body) : void 0
+        });
+        const t = await r.text();
+        let j = {};
+        try {
+          j = t ? JSON.parse(t) : {};
+        } catch (_) {
+        }
+        if (!r.ok) {
+          const e = new Error(j.Message || j.message || "Bing answered " + r.status);
+          e.status = r.status;
+          e.code = j.ErrorCode;
+          throw e;
+        }
+        return j.d !== void 0 ? j.d : j;
+      }
+      const norm = (u) => String(u || "").toLowerCase().replace(/\/+$/, "");
+      const key = (origin) => "bsv:" + origin;
+      const memo = /* @__PURE__ */ new Map();
+      async function codeFor(origin) {
+        if (!enabled) return "";
+        if (memo.has(origin)) return memo.get(origin);
+        const row = await kv.get(key(origin));
+        const v = row ? row.v : "";
+        if (v) memo.set(origin, v);
+        return v;
+      }
+      async function metaTag(origin) {
+        const v = await codeFor(origin);
+        return v ? '<meta name="msvalidate.01" content="' + v.replace(/[^\w-]/g, "") + '">' : "";
+      }
+      async function find(origin) {
+        return (await call("GET", "GetUserSites") || []).find((x) => norm(x.Url) === norm(origin));
+      }
+      async function prepare(origin) {
+        let site = await find(origin);
+        if (!site) {
+          try {
+            await call("POST", "AddSite", { siteUrl: origin + "/" });
+          } catch (e) {
+            if (!/exist/i.test(e.message)) throw e;
+          }
+          site = await find(origin);
+        }
+        if (!site) throw new Error("Bing did not add the site");
+        if (site.AuthenticationCode && site.AuthenticationCode !== await codeFor(origin)) {
+          await kv.set(key(origin), site.AuthenticationCode);
+          memo.set(origin, site.AuthenticationCode);
+        }
+        return { code: site.AuthenticationCode || "", verified: !!site.IsVerified, site };
+      }
+      async function submit(origin, sitemapUrl, pages) {
+        const siteUrl = origin + "/";
+        const { site } = await prepare(origin);
+        if (!site.IsVerified && !await call("POST", "VerifySite", { siteUrl })) return { state: "verifying" };
+        await call("POST", "SubmitFeed", { siteUrl, feedUrl: sitemapUrl });
+        if (pages && pages.length) {
+          try {
+            await call("POST", "SubmitUrlBatch", { siteUrl, urlList: pages.slice(0, 10) });
+          } catch (e) {
+            log && log("bing urls", origin, e.message);
+          }
+        }
+        return { state: "submitted" };
+      }
+      return { enabled, metaTag, prepare, submit };
     };
   }
 });
@@ -25209,7 +25470,7 @@ var require_preflight = __commonJS({
       add("Free site addresses", cfg.sitesDomain, "SITES_DOMAIN, e.g. bookingbooster.site, with a wildcard DNS record", false);
       add("Own domains", cfg.domains.flyToken && cfg.domains.flyApp ? true : !E.FLY_APP_NAME, "FLY_API_TOKEN and FLY_APP_NAME, so hosts' own domains get certificates", false);
       add("Legal review", cfg.legalReviewed, "LEGAL_REVIEWED=YYYY-MM-DD once a solicitor has signed off /privacy and /terms");
-      add("AI checks", cfg.ai.openai || cfg.ai.gemini || cfg.ai.perplexity || cfg.ai.serpapi, "At least one of OPENAI_API_KEY, GEMINI_API_KEY, PERPLEXITY_API_KEY or SERPAPI_KEY", false);
+      add("AI checks", cfg.ai.openai || cfg.ai.gemini || cfg.ai.perplexity || cfg.ai.anthropic || cfg.ai.serpapi, "At least one of OPENAI_API_KEY, GEMINI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY or SERPAPI_KEY", false);
       add("Reply drafts", cfg.ai.anthropic, "ANTHROPIC_API_KEY, for suggested replies in the inbox", false);
       return out;
     }
@@ -25404,6 +25665,8 @@ var require_server = __commonJS({
     var assist = require_assist()(cfg);
     var seoTools = require_seo_tools()(cfg);
     var google = require_google_search()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
+    var ownSite = require_own_site();
+    var bing = require_bing_webmaster()(cfg, { get: (k) => kvGet.get(k), set: (k, v) => kvSet.run(k, v) }, (...a) => log(...a));
     var credits = require_credits()({ cfg, db, log });
     var leads = require_leads()({ db, cfg, msg, auth, log });
     var domains = require_domains()({ cfg, auth, log });
@@ -25592,6 +25855,16 @@ var require_server = __commonJS({
             out.push({ ok: false, message: prop.name + ': Google said "' + patch.google.error + '".' });
           }
         }
+        if (bing.enabled) {
+          try {
+            const r = await bing.submit(origin, sm, [site]);
+            patch.bing = { state: r.state, sitemap: sm, at: now };
+            out.push({ ok: true, message: prop.name + ": " + (r.state === "submitted" ? "sitemap submitted to Bing." : "Bing is checking the site. We submit the sitemap once it is verified.") });
+          } catch (e) {
+            patch.bing = { state: "error", sitemap: sm, at: now, error: String(e.message).slice(0, 200) };
+            out.push({ ok: false, message: prop.name + ': Bing said "' + patch.bing.error + '".' });
+          }
+        }
         const sig = crypto.createHash("sha1").update(seo.llms(s, prop, site)).digest("hex").slice(0, 16);
         if (o && o.force || (cur.indexnow || {}).sig !== sig) {
           const key = seo.indexNowKey(cfg.secret, w.id), onPath = site.includes("/s/" + w.slug + "/");
@@ -25599,9 +25872,31 @@ var require_server = __commonJS({
           patch.indexnow = { state: r.ok ? "sent" : "error", at: now, sig: r.ok ? sig : (cur.indexnow || {}).sig, message: r.message };
           out.push({ ok: r.ok, message: prop.name + ": " + r.message });
         }
+        const ext = ownSite.originOf((prop.seo || {}).ownSite);
+        if (ext && ext !== origin && (google.enabled || bing.enabled)) {
+          const r = await ownSiteRun(ext);
+          patch.own = Object.assign({ origin: ext, at: now }, r);
+          out.push({ ok: !r.error, message: prop.name + " (" + new URL(ext).hostname + "): " + r.message });
+        }
         if (Object.keys(patch).length) await ws.withWs(w.id, (BB) => BB.act.setIndexing(prop.id, patch), { quiet: true });
       }
       return out;
+    }
+    async function ownSiteCodes(ext) {
+      return { google: google.enabled ? await google.prepare(ext) : {}, bing: bing.enabled ? await bing.prepare(ext) : {} };
+    }
+    async function ownSiteRun(ext) {
+      try {
+        const codes = await ownSiteCodes(ext), found = await ownSite.check(ext, codes), r = { found };
+        if (google.enabled) r.google = (await google.submitExternal(ext, found.sitemap)).state;
+        if (bing.enabled) r.bing = (await bing.submit(ext, found.sitemap, [ext + "/"])).state;
+        const done = [r.google, r.bing].filter(Boolean), all = done.every((x) => x === "submitted");
+        r.message = all ? "verified and sitemap submitted to " + [r.google && "Google", r.bing && "Bing"].filter(Boolean).join(" and ") + "." : !found.reached ? "we could not open the site. We try again tomorrow." : "waiting for the snippet or DNS records. We check again every day.";
+        return r;
+      } catch (e) {
+        log("own site", ext, e.message);
+        return { error: String(e.message).slice(0, 200), message: 'the search engines said "' + String(e.message).slice(0, 120) + '". We retry daily.' };
+      }
     }
     async function seoApi(req, res, p, m, w, live, headers) {
       const s = w.state;
@@ -25626,8 +25921,23 @@ var require_server = __commonJS({
           description: seo.descOf(prop),
           writer: live && seoTools.enabled,
           indexNow: live,
-          google: live && google.enabled
+          google: live && google.enabled,
+          bing: live && bing.enabled
         }, 200, headers);
+      }
+      if (p === "/api/seo/own-site" && m === "GET") {
+        const ext = ownSite.originOf((prop.seo || {}).ownSite);
+        if (!ext) throw err(400, "Add your website address first.");
+        const llmsUrl = onPath ? site + "/llms.txt" : root + "llms.txt";
+        if (!live) return json(res, Object.assign(ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, { google: { meta: "demo-google-code", txt: "google-site-verification=demo-google-code", domain: new URL(ext).hostname.replace(/^www\./, "") }, bing: { code: "DEMOBINGCODE" } }), { demo: true }), 200, headers);
+        if (!google.enabled && !bing.enabled) return json(res, Object.assign(ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, {}), { off: true }), 200, headers);
+        if (!auth.limit("own-site:" + w.id, 30, 36e5)) throw err(429, "Too many requests. Try again in a few minutes.");
+        try {
+          return json(res, ownSite.kit(s, prop, ext, site, llmsUrl, cfg.baseUrl, await ownSiteCodes(ext)), 200, headers);
+        } catch (e) {
+          log("own site kit", e.message);
+          throw err(502, "Google or Bing did not answer just now. Try again in a minute.");
+        }
       }
       if (p === "/api/seo/write" && m === "POST") {
         const what = String(j.what || "");
@@ -25670,7 +25980,7 @@ var require_server = __commonJS({
     async function sitePage(res, w, p, canonical, host, req) {
       const s = w.state;
       if (req && w.kind === "live") visits.count(req, w.id, p.id, s.today);
-      const gsv = host && google.enabled ? await google.metaTag(new URL(canonical).origin) : "";
+      const gsv = host ? (google.enabled ? await google.metaTag(new URL(canonical).origin) : "") + (bing.enabled ? await bing.metaTag(new URL(canonical).origin) : "") : "";
       const built = studio.publishedSite(w, p, canonical);
       if (built) return send(res, 200, gsv ? built.replace("<head>", "<head>" + gsv) : built, "text/html; charset=utf-8", { "cache-control": "no-cache" });
       const st = pub.siteState(s, p.id);
@@ -26014,7 +26324,7 @@ var require_server = __commonJS({
     var authPage = (title, inner, wide, index) => pages.plain({ title, body: inner, wide, index });
     var publicCompany = () => {
       const c = cfg.company;
-      return { name: c.name, number: c.number || "", vat: c.vat || "", address: /to be confirmed/i.test(c.address || "") ? "" : c.address || "", support: c.support };
+      return { name: c.name, number: c.number || "", vat: c.vat || "", address: /to be confirmed/i.test(c.address || "") ? "" : c.address || "", support: c.support, profiles: cfg.profileLinks };
     };
     var E = pages.esc;
     function loginForm(o) {
@@ -26332,7 +26642,7 @@ Disallow: /
         return send(res, 200, pages.page({
           title: p === "/start" ? "Start your booking site \xB7 Bookingbooster" : mkt.TITLE,
           description: mkt.DESCRIPTION,
-          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") : ""),
+          head: mkt.head(cfg.baseUrl, p) + (p === "/" ? mkt.ldScript(cfg.baseUrl, co) + (google.enabled ? await google.metaTag(new URL(cfg.baseUrl).origin) : "") + (bing.enabled ? await bing.metaTag(new URL(cfg.baseUrl).origin) : "") + (cfg.bingVerification ? '<meta name="msvalidate.01" content="' + cfg.bingVerification + '">' : "") : ""),
           content: p === "/" ? mkt.content(cfg.baseUrl, co) : "",
           boot: { mode: "marketing", state: marketing(), opts: Object.assign({ view }, pre), company: co, signupUrl: "/api/signup", dns: await domains.targets(), domainOffer: registrar.offer(), domainSearchUrl: "/api/domains/search", payFirst: stripe.enabled, loggedIn: !!await me(req) }
         }), "text/html; charset=utf-8", { "cache-control": "no-cache" });
@@ -27150,6 +27460,7 @@ Disallow: /
         bg("demos", ws.cleanupDemos(7));
         bg("ids", purgeIds());
         bg("indexnow", pingOwnPages());
+        bg("bing", submitOwnSite());
       }
       if (!cfg.serverless) bg("backup", backup.run(t));
       await Promise.all(jobs);
@@ -27172,6 +27483,16 @@ Disallow: /
       const r = await fetch("https://api.indexnow.org/indexnow", { method: "POST", signal: AbortSignal.timeout(15e3), headers: { "content-type": "application/json; charset=utf-8" }, body: JSON.stringify({ host: u.host, key: ownIndexKey(), keyLocation: cfg.baseUrl + "/" + ownIndexKey() + ".txt", urlList: urls2 }) });
       log("indexnow", "own pages", r.status);
       if (r.status === 200 || r.status === 202) await kvSet.run("indexnow:own", sig);
+    }
+    async function submitOwnSite() {
+      const u = new URL(cfg.baseUrl);
+      if (!bing.enabled || u.protocol !== "https:" || /^(localhost|127\.|10\.|192\.168\.)/.test(u.hostname)) return;
+      try {
+        const r = await bing.submit(u.origin, cfg.baseUrl + "/sitemap.xml", [cfg.baseUrl + "/"]);
+        log("bing", "own site", r.state);
+      } catch (e) {
+        log("bing", "own site", e.message);
+      }
     }
     async function purgeIds() {
       const cut = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);

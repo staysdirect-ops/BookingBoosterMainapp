@@ -47,7 +47,8 @@ function jsonLd(base, co) {
   const org = { '@type': 'Organization', '@id': url + '#org', name: 'Bookingbooster', url, logo: base + '/assets/icons/icon-512.png', email: co.support,
     description: 'Direct booking websites, SEO, AI visibility and guest marketing for UK holiday let and short-term let hosts.', areaServed: { '@type': 'Country', name: 'United Kingdom' },
     contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: co.support, areaServed: 'GB', availableLanguage: 'en-GB' } };
-  org.sameAs = SOCIAL.map(x => x[1]);
+  // PROFILE_LINKS adds the profiles AI answers check a business against (Trustpilot, LinkedIn, Bing Places, Google Business Profile, Companies House).
+  org.sameAs = SOCIAL.map(x => x[1]).concat(co.profiles || []);
   org.knowsAbout = ['Direct booking websites', 'Holiday lets', 'Short-term lets', 'Search engine optimisation', 'Local SEO', 'Answer engine optimisation', 'Generative engine optimisation', 'Google AI Overviews', 'Guest email marketing'];
   org.slogan = 'Fill your calendar without the 15% fee.';
   if (co.name) org.legalName = co.name;
@@ -113,7 +114,7 @@ function llms(base, co) {
     '## What is included\n\n' + INCLUDED.map(x => '- ' + x).join('\n') + '\n\n' +
     '## How it works\n\n' + STEPS.map(([h, p], i) => (i + 1) + '. ' + h + ': ' + p).join('\n') + '\n\n' +
     '## Questions\n\n' + allFaq().map(([q, a]) => '### ' + q + '\n\n' + a).join('\n\n') + '\n\n' +
-    '## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home\'s facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n' +
+    '## Search and AI visibility for hosts\n\n- Automatic: crawlable pages, VacationRental, LodgingBusiness, FAQPage and offer structured data, image sitemaps, llms.txt per home, AI crawlers welcomed, IndexNow pings.\n- Search health score per home across on-page, content, technical, local, image and video, SXO, AEO, GEO, LLMO and Google AI Overviews, with fixes ordered by impact.\n- Writing tools: answer-first summary, local area guide, Google title and FAQ answers drafted from the home\'s facts (with Claude, using AI credit).\n- Weekly AI checks in ChatGPT, Gemini, Perplexity, Claude and Google, recording whether each answer names or links the home and which sites it cites.\n- Guidance: Google Business Profile checklist, Search Console and Bing Webmaster steps.\n\n' +
     '## Links\n\n- [Full text of our guides for AI assistants](' + base + '/llms-full.txt)\n- [Home and pricing](' + base + '/)\n- [Start a booking site](' + base + '/start)\n- [Live demo](' + base + '/demo)\n- [Help](' + base + '/help)\n- [Privacy notice](' + base + '/privacy)\n- [Terms of service](' + base + '/terms)\n' +
     require('./answers').list().map(x => '- [' + x.title + '](' + base + x.path + '): ' + x.description).join('\n') + '\n' +
     '- Social profiles: ' + SOCIAL.map(([n, u]) => '[' + n + '](' + u + ')').join(', ') + '\n';

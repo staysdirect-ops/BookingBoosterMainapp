@@ -22,7 +22,7 @@ function check(cfg, E) {
   add('Free site addresses', cfg.sitesDomain, 'SITES_DOMAIN, e.g. bookingbooster.site, with a wildcard DNS record', false);
   add('Own domains', cfg.domains.flyToken && cfg.domains.flyApp ? true : !E.FLY_APP_NAME, 'FLY_API_TOKEN and FLY_APP_NAME, so hosts\' own domains get certificates', false);
   add('Legal review', cfg.legalReviewed, 'LEGAL_REVIEWED=YYYY-MM-DD once a solicitor has signed off /privacy and /terms');
-  add('AI checks', cfg.ai.openai || cfg.ai.gemini || cfg.ai.perplexity || cfg.ai.serpapi, 'At least one of OPENAI_API_KEY, GEMINI_API_KEY, PERPLEXITY_API_KEY or SERPAPI_KEY', false);
+  add('AI checks', cfg.ai.openai || cfg.ai.gemini || cfg.ai.perplexity || cfg.ai.anthropic || cfg.ai.serpapi, 'At least one of OPENAI_API_KEY, GEMINI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY or SERPAPI_KEY', false);
   add('Reply drafts', cfg.ai.anthropic, 'ANTHROPIC_API_KEY, for suggested replies in the inbox', false);
   return out;
 }
