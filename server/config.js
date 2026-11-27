@@ -88,5 +88,5 @@ module.exports = {
   icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
   // All channels (server/channex.js): Bookingbooster's own Channex account. Switches on by itself once CHANNEX_MIN_HOSTS
   // hosts pay for the add-on (enough to cover Channex's monthly fee); CHANNEX_ALWAYS_ON=1 skips that wait.
-  channex: { key: (E.CHANNEX_API_KEY || '').trim(), base: E.CHANNEX_BASE || 'https://staging.channex.io', minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === '1', hookSecret: E.CHANNEX_WEBHOOK_SECRET || '' },
+  channex: { key: (E.CHANNEX_API_KEY || '').trim(), base: E.CHANNEX_BASE || 'https://staging.channex.io', minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === '1', frameBase: E.CHANNEX_FRAME_BASE || '', hookSecret: E.CHANNEX_WEBHOOK_SECRET || '' },
 };

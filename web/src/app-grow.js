@@ -219,14 +219,14 @@
       inst.st.cn_conf = null; BB.act.toggleIntegration(v); BB.toast(i.addon ? (i.connected ? 'Calendar sync is on for your ' + i.name + '. We check it every few minutes.' : 'Calendar sync stopped for your ' + i.name) : (i.connected ? i.name + ' connected' : i.name + ' disconnected'), i.connected ? 'good' : '');
     },
     'cn-keep': inst => inst.set({ cn_conf: null }),
-    // All channels: pick dates only (£15) or dates and prices (£29), open the Channex screen for a home, or stop.
-    'cx-join': (inst, v) => { const was = BB.q.integration('channex'); const on = was && was.connected; BB.act.joinAllChannels(v === 'prices'); BB.toast(v === 'prices' ? 'All channels is on: dates and prices go to every site you connect' : 'All channels is on: your open dates go to every site you connect', 'good'); inst.set({ cx_conf: null, cx_was: on }); },
+    // All channels: pick dates only (£15) or dates and prices (£29), open the connect-sites screen for a home, or stop.
+    'cx-join': (inst, v) => { const was = BB.q.integration('hub'); const on = was && was.connected; BB.act.joinAllChannels(v === 'prices'); BB.toast(v === 'prices' ? 'All channels is on: dates and prices go to every site you connect' : 'All channels is on: your open dates go to every site you connect', 'good'); inst.set({ cx_conf: null, cx_was: on }); },
     'cx-stop': inst => { if (!inst.st.cx_conf) { inst.set({ cx_conf: true }); return; } BB.act.leaveAllChannels(); BB.toast('All channels is off. Bookings already taken stay on your calendar.'); inst.set({ cx_conf: null, cx_url: null }); },
     'cx-keep': inst => inst.set({ cx_conf: null }),
     'cx-connect': async (inst, v) => {
       if (!S().live) { BB.toast('In your live account this opens the screen where you link Airbnb, Booking.com and Vrbo to this home.'); return; }
       inst.set({ cx_busy: v });
-      try { const j = await BB.api.call('/app/channex/connect', { pid: v }); inst.set({ cx_url: j.url, cx_pid: v, cx_busy: null }); }
+      try { const j = await BB.api.call('/app/channels/sites', { pid: v }); inst.set({ cx_url: j.url, cx_pid: v, cx_busy: null }); }
       catch (e) { BB.toast(e.message, 'bad'); inst.set({ cx_busy: null }); }
     },
     'cx-close': inst => inst.set({ cx_url: null, cx_pid: null }),
@@ -913,7 +913,7 @@
           node('Google search', c('gsc') ? 'Pages indexed, rankings tracked' : 'Rankings not tracked', c('google') || c('gsc'), 'search') +
           '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
           node('Your guest list', c('email') ? ((n => n + (n === 1 ? ' subscribed guest' : ' subscribed guests'))(s.guests.filter(g => g.subscribed).length)) : 'Emails paused', c('email'), 'mail') +
-          (c('channex') ? '<div class="ag-dn opt on"><span class="ag-dn-i">' + I('globe') + '</span><span><b>All channels</b><small>Airbnb, Booking.com, Vrbo and 70+ more, in step with your calendar</small></span><em class="ag-opt">Add-on</em></div>' :
+          (c('hub') ? '<div class="ag-dn opt on"><span class="ag-dn-i">' + I('globe') + '</span><span><b>All channels</b><small>Airbnb, Booking.com, Vrbo and 70+ more, in step with your calendar</small></span><em class="ag-opt">Add-on</em></div>' :
           '<div class="ag-dn opt' + (syncing.length ? ' on' : '') + '"><span class="ag-dn-i">' + I('sync') + '</span><span><b>Calendar sync</b><small>' + (syncing.length ? 'Blocking dates booked on ' + syncing.map(i => i.id === 'cm' ? 'your channel manager' : BB.CHANNEL[i.id]).join(', ') : 'Optional add-on, off. <a href="#all-channels">List on every site</a>') + '</small></span><em class="ag-opt">Optional</em></div>') +
         '</div>' +
         '<div class="ag-darr" aria-hidden="true"><span>' + I('arrow') + '</span><small>Book direct</small></div>' +
@@ -949,8 +949,8 @@
           '<p class="ag-note">' + I('bolt') + '<span>In Nuki Web, open API, create a token with permission to manage smart locks, and paste it here. We create a code for each stay and remove it after checkout.</span></p></div>' : '');
       // All channels: the headline add-on. Everything a host gets, in plain words, then the switch.
       const hub = inst => {
-        const i = BB.q.integration('channex'); if (!i) return '';
-        const g = (BB.BOOT && BB.BOOT.channex) || null; const live = S().live; const waiting = live && (!g || !g.live);
+        const i = BB.q.integration('hub'); if (!i) return '';
+        const g = (BB.BOOT && BB.BOOT.hub) || null; const live = S().live; const waiting = live && (!g || !g.live);
         const tier = S().account.tier === 'all' ? 'prices' : 'dates'; const on = i.connected;
         const pros = [
           ['globe', 'Listed everywhere', 'Airbnb, Booking.com, Vrbo, Expedia, Google, Agoda and 70+ more booking sites, from this one console.'],
@@ -964,7 +964,7 @@
           const demo = !live && on; const state = !on ? '' : demo ? BB.pill('good', 'Live') : waiting ? BB.pill('muted', 'Ready to go') : !m || !m.rate ? BB.pill('muted', 'Setting up') : st2.error ? BB.pill('warn', 'Needs a look') : BB.pill('good', 'Live');
           return '<div class="ag-cx-home"><span><b>' + esc(p.short) + '</b><small>' + (st2.error ? esc(st2.error) : !on ? 'Not listed yet' : demo ? 'Dates' + (tier === 'prices' ? ' and prices' : '') + ' sent to every connected site' : waiting ? 'Set up the moment All channels switches on' : m && m.rate ? (st2.ok ? 'Dates' + (tier === 'prices' ? ' and prices' : '') + ' sent ' + esc(BB.ago(new Date(st2.ok).toLocaleString('sv-SE', { timeZone: 'Europe/London' }).replace(' ', 'T').slice(0, 16))) : 'Sending dates' + (tier === 'prices' ? ' and prices' : '')) : 'Creating the listing') + '</small></span>' + state +
             (on && (!live || (m && m.rate && !waiting)) ? '<button class="btn sm primary" data-ag="cx-connect" data-v="' + p.id + '">' + (st.cx_busy === p.id ? 'Opening…' : 'Connect Airbnb, Booking.com, Vrbo…') + '</button>' : '') + '</div>'; }).join('');
-        const recent = S().blocks.filter(k => k.sync === 'channex' && k.to > S().today).sort((a, b) => a.from < b.from ? -1 : 1).slice(0, 5);
+        const recent = S().blocks.filter(k => k.sync === 'hub' && k.to > S().today).sort((a, b) => a.from < b.from ? -1 : 1).slice(0, 5);
         return '<section class="a-card ag-card ag-cx' + (on ? ' on' : '') + '" id="all-channels"><div class="ag-cx-top"><div><span class="eyebrow">' + (on ? 'On · ' + (tier === 'prices' ? 'dates and prices' : 'dates') + ' on every site' : 'Recommended add-on') + '</span><h3 class="disp">All channels</h3><p>List your homes on every big booking site and run them all from here. One calendar, one price list, every booking in one place.</p></div>' +
           (on ? (i.error && !waiting ? BB.pill('warn', 'Needs a look') : waiting ? BB.pill('muted', 'Switching on soon') : BB.pill('good', 'On')) : BB.pill('muted', 'Not added')) + '</div>' +
           '<ul class="ag-cx-pros">' + pros.map(([ic, t, d]) => '<li>' + I(ic) + '<span><b>' + t + '</b><small>' + d + '</small></span></li>').join('') + '</ul>' +
@@ -974,7 +974,7 @@
           (on ? '<div class="ag-cx-homes">' + homes + '</div>' : '') +
           (st.cx_url ? '<div class="ag-cx-frame"><div class="ag-cx-frame-h"><b>Connect sites to ' + esc((BB.q.property(st.cx_pid) || {}).short || 'this home') + '</b><button class="btn sm ghost" data-ag="cx-close">Done</button></div><iframe src="' + esc(st.cx_url) + '" title="Connect booking sites" referrerpolicy="no-referrer"></iframe><small class="muted">Sign in to Airbnb, Booking.com or Vrbo here and pick the listing for this home. Your dates and prices start flowing straight away.</small></div>' : '') +
           (recent.length ? '<div class="ag-cx-recent"><span class="eyebrow">Coming up from other sites</span>' + recent.map(k => '<button class="btn sm" data-ag-nav="calendar">' + esc(k.ota || 'Booked') + ' · ' + esc((BB.q.property(k.propertyId) || {}).short || '') + ' · ' + D.fmt(k.from) + ' – ' + D.fmt(k.to) + (k.guest ? ' · ' + esc(k.guest) : '') + '</button>').join('') + '</div>' : '') +
-          (on ? (st.cx_conf ? '<div class="ag-ic-conf"><p><b>Switch off All channels?</b> Your dates and prices stop going to other sites. Bookings already taken stay on your calendar. Disconnect the sites in the Channex screen too, so they stop taking bookings.</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cx-stop">Switch off</button><button class="btn sm ghost" data-ag="cx-keep">Keep it on</button></div></div>' : '<div class="ag-acts-row"><button class="btn sm ghost" data-ag="cx-stop">Switch off</button></div>') : '') +
+          (on ? (st.cx_conf ? '<div class="ag-ic-conf"><p><b>Switch off All channels?</b> Your dates and prices stop going to other sites. Bookings already taken stay on your calendar. Disconnect the sites in the Connect sites screen too, so they stop taking bookings.</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cx-stop">Switch off</button><button class="btn sm ghost" data-ag="cx-keep">Keep it on</button></div></div>' : '<div class="ag-acts-row"><button class="btn sm ghost" data-ag="cx-stop">Switch off</button></div>') : '') +
           '</section>';
       };
       const icard = i => {

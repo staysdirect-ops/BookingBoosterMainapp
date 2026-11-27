@@ -59,7 +59,7 @@ test('All channels waits until enough hosts pay for it, then lists every home an
   const s = w.state; const f = fakeFetch(channexApi([]));
   try {
     w.BB.act.joinAllChannels(false); w.drainEffects();
-    const i = w.BB.q.integration('channex');
+    const i = w.BB.q.integration('hub');
     assert.equal(i.connected, true); assert.equal(s.account.addon, true); assert.ok(!s.account.tier);
     await cx.run(w);
     assert.equal(f.calls.length, 0, 'nothing is sent to Channex while it would run at a loss');
@@ -102,7 +102,7 @@ test('All channels with price sync sends nightly prices and minimum stays, and a
   try {
     w.BB.act.joinAllChannels(true); w.drainEffects(); await cx.gate(true); await cx.run(w);
     assert.equal(s.account.tier, 'all');
-    const i = w.BB.q.integration('channex'); const p = s.properties[0];
+    const i = w.BB.q.integration('hub'); const p = s.properties[0];
     const rs = f.calls.filter(c => c.path === '/api/v1/restrictions');
     assert.equal(rs.length, s.properties.length);
     const vals = rs.find(c => c.body.values[0].property_id === i.map[p.id].property).body.values;
@@ -125,14 +125,14 @@ test('bookings from every site come in through the feed, are acknowledged, and c
   const s = w.state; const feed = []; const f = fakeFetch(channexApi(feed));
   try {
     w.BB.act.joinAllChannels(false); w.drainEffects(); await cx.gate(true); await cx.run(w);
-    const i = w.BB.q.integration('channex'); const p = s.properties[1]; const prop = i.map[p.id].property;
+    const i = w.BB.q.integration('hub'); const p = s.properties[1]; const prop = i.map[p.id].property;
     const from = ical.addDay(s.today, 200), to = ical.addDay(s.today, 203);
     feed.push({ id: 'rev-1', property_id: prop, booking_id: 'bk-1', status: 'new', ota_name: 'Airbnb', ota_reservation_code: 'HM123', arrival_date: from, departure_date: to, amount: '540.00', currency: 'GBP', customer: { name: 'Sam', surname: 'Taylor', mail: 'sam@example.com' }, rooms: [{ checkin_date: from, checkout_date: to }] });
     feed.push({ id: 'rev-x', property_id: 'not-ours', booking_id: 'bk-x', status: 'new', arrival_date: from, departure_date: to });
     const notes0 = s.notifications.length;
     const r = await cx.pull();
     assert.equal(r.read, 1);
-    const k = s.blocks.find(x => x.sync === 'channex' && x.ref === 'bk-1');
+    const k = s.blocks.find(x => x.sync === 'hub' && x.ref === 'bk-1');
     assert.ok(k, 'the stay is on the calendar');
     assert.deepEqual([k.propertyId, k.from, k.to, k.ota, k.guest, k.code], [p.id, from, to, 'Airbnb', 'Sam T.', 'HM123']);
     assert.ok(!JSON.stringify(s).includes('sam@example.com'), 'guest contact details are not kept');
@@ -159,7 +159,7 @@ test('the connect screen link, the webhook secret, and switching off', async () 
   const f = fakeFetch(channexApi([]));
   try {
     w.BB.act.joinAllChannels(false); w.drainEffects(); await cx.gate(true); await cx.run(w);
-    const p = w.state.properties[0]; const i = w.BB.q.integration('channex');
+    const p = w.state.properties[0]; const i = w.BB.q.integration('hub');
     const url = new URL(await cx.connectUrl(w, p.id));
     assert.equal(url.host, 'staging.channex.io'); assert.equal(url.pathname, '/auth/exchange');
     assert.equal(url.searchParams.get('oauth_session_key'), 'ott-1'); assert.equal(url.searchParams.get('app_mode'), 'headless');
@@ -194,4 +194,12 @@ test('the add-on on a running subscription follows the plan the host picks', asy
     await stripe.syncAddon('cus_1', null);
     assert.deepEqual(items.map(x => x.price.id), ['p_g'], 'switching off removes it; the plan stays');
   } finally { f.restore(); }
+});
+
+test('hosts never see the Channex name: not in the app, the styles or the errors', async () => {
+  const b = require('../web/build')();
+  for (const [k, v] of Object.entries({ css: b.css, prod: b.prodJs, demo: b.demoJs })) assert.doesNotMatch(v, /channex/i, k);
+  const src = require('fs').readFileSync(require.resolve('../server/channex'), 'utf8');
+  assert.ok(!/error = 'Channex/.test(src), 'errors shown to hosts do not name Channex');
+  assert.ok(!/email: s\.account\.email/.test(src), 'the host email is never given to Channex, so it cannot email them');
 });

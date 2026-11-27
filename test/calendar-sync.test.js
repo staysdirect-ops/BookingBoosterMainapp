@@ -94,14 +94,14 @@ test('a calendar export with trailing spaces or a byte-order mark still blocks i
 
 test('All channels: switching on is checked on the server, and the Channex webhook needs its secret', async () => {
   const { p } = await t.home();
-  assert.equal((await t.act('toggleIntegration', 'channex')).status, 400, 'switched with its own action, not the plain toggle');
-  assert.equal((await t.act('applyChannexBooking', p.id, { ref: 'x', from: t.dateIn(5), to: t.dateIn(6) })).status, 403, 'only the server records bookings from other sites');
-  assert.equal((await t.call('/app/channex/connect', { body: { pid: p.id } })).status, 400, 'switch it on first');
+  assert.equal((await t.act('toggleIntegration', 'hub')).status, 400, 'switched with its own action, not the plain toggle');
+  assert.equal((await t.act('applyHubBooking', p.id, { ref: 'x', from: t.dateIn(5), to: t.dateIn(6) })).status, 403, 'only the server records bookings from other sites');
+  assert.equal((await t.call('/app/channels/sites', { body: { pid: p.id } })).status, 400, 'switch it on first');
   await t.act('joinAllChannels', true);
   const st = await state();
-  assert.equal(st.integrations.find(i => i.id === 'channex').connected, true);
+  assert.equal(st.integrations.find(i => i.id === 'hub').connected, true);
   assert.equal(st.account.tier, 'all'); assert.equal(st.account.addon, true);
-  assert.equal((await t.call('/app/channex/connect', { body: { pid: p.id } })).status, 409, 'not live on a server without a Channex key');
+  assert.equal((await t.call('/app/channels/sites', { body: { pid: p.id } })).status, 409, 'not live on a server without a Channex key');
   const hook = await fetch(t.base + '/hooks/channex', { method: 'POST', headers: { 'content-type': 'application/json', 'x-bb-hook': 'wrong' }, body: '{"event":"booking_new"}' });
   assert.equal(hook.status, 404);
   await t.act('leaveAllChannels');

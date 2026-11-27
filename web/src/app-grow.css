@@ -677,7 +677,7 @@
   .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* All channels (Channex): the headline add-on on Connections */
+/* All channels: the headline add-on on Connections */
 .ag .ag-cx { padding: 20px; border: 1.5px solid color-mix(in oklab, var(--primary) 35%, var(--line)); background: linear-gradient(180deg, var(--primary-soft), var(--surface) 70%); display: grid; gap: 16px; }
 .ag .ag-cx.on { border-color: color-mix(in oklab, var(--good) 45%, var(--line)); }
 .ag .ag-cx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }

@@ -945,7 +945,7 @@ var require_bb_embedded_files = __commonJS({
   .ag .ag-ctk { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* All channels (Channex): the headline add-on on Connections */
+/* All channels: the headline add-on on Connections */
 .ag .ag-cx { padding: 20px; border: 1.5px solid color-mix(in oklab, var(--primary) 35%, var(--line)); background: linear-gradient(180deg, var(--primary-soft), var(--surface) 70%); display: grid; gap: 16px; }
 .ag .ag-cx.on { border-color: color-mix(in oklab, var(--good) 45%, var(--line)); }
 .ag .ag-cx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
@@ -1203,14 +1203,14 @@ var require_bb_embedded_files = __commonJS({
       inst.st.cn_conf = null; BB.act.toggleIntegration(v); BB.toast(i.addon ? (i.connected ? 'Calendar sync is on for your ' + i.name + '. We check it every few minutes.' : 'Calendar sync stopped for your ' + i.name) : (i.connected ? i.name + ' connected' : i.name + ' disconnected'), i.connected ? 'good' : '');
     },
     'cn-keep': inst => inst.set({ cn_conf: null }),
-    // All channels: pick dates only (\xA315) or dates and prices (\xA329), open the Channex screen for a home, or stop.
-    'cx-join': (inst, v) => { const was = BB.q.integration('channex'); const on = was && was.connected; BB.act.joinAllChannels(v === 'prices'); BB.toast(v === 'prices' ? 'All channels is on: dates and prices go to every site you connect' : 'All channels is on: your open dates go to every site you connect', 'good'); inst.set({ cx_conf: null, cx_was: on }); },
+    // All channels: pick dates only (\xA315) or dates and prices (\xA329), open the connect-sites screen for a home, or stop.
+    'cx-join': (inst, v) => { const was = BB.q.integration('hub'); const on = was && was.connected; BB.act.joinAllChannels(v === 'prices'); BB.toast(v === 'prices' ? 'All channels is on: dates and prices go to every site you connect' : 'All channels is on: your open dates go to every site you connect', 'good'); inst.set({ cx_conf: null, cx_was: on }); },
     'cx-stop': inst => { if (!inst.st.cx_conf) { inst.set({ cx_conf: true }); return; } BB.act.leaveAllChannels(); BB.toast('All channels is off. Bookings already taken stay on your calendar.'); inst.set({ cx_conf: null, cx_url: null }); },
     'cx-keep': inst => inst.set({ cx_conf: null }),
     'cx-connect': async (inst, v) => {
       if (!S().live) { BB.toast('In your live account this opens the screen where you link Airbnb, Booking.com and Vrbo to this home.'); return; }
       inst.set({ cx_busy: v });
-      try { const j = await BB.api.call('/app/channex/connect', { pid: v }); inst.set({ cx_url: j.url, cx_pid: v, cx_busy: null }); }
+      try { const j = await BB.api.call('/app/channels/sites', { pid: v }); inst.set({ cx_url: j.url, cx_pid: v, cx_busy: null }); }
       catch (e) { BB.toast(e.message, 'bad'); inst.set({ cx_busy: null }); }
     },
     'cx-close': inst => inst.set({ cx_url: null, cx_pid: null }),
@@ -1897,7 +1897,7 @@ var require_bb_embedded_files = __commonJS({
           node('Google search', c('gsc') ? 'Pages indexed, rankings tracked' : 'Rankings not tracked', c('google') || c('gsc'), 'search') +
           '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
           node('Your guest list', c('email') ? ((n => n + (n === 1 ? ' subscribed guest' : ' subscribed guests'))(s.guests.filter(g => g.subscribed).length)) : 'Emails paused', c('email'), 'mail') +
-          (c('channex') ? '<div class="ag-dn opt on"><span class="ag-dn-i">' + I('globe') + '</span><span><b>All channels</b><small>Airbnb, Booking.com, Vrbo and 70+ more, in step with your calendar</small></span><em class="ag-opt">Add-on</em></div>' :
+          (c('hub') ? '<div class="ag-dn opt on"><span class="ag-dn-i">' + I('globe') + '</span><span><b>All channels</b><small>Airbnb, Booking.com, Vrbo and 70+ more, in step with your calendar</small></span><em class="ag-opt">Add-on</em></div>' :
           '<div class="ag-dn opt' + (syncing.length ? ' on' : '') + '"><span class="ag-dn-i">' + I('sync') + '</span><span><b>Calendar sync</b><small>' + (syncing.length ? 'Blocking dates booked on ' + syncing.map(i => i.id === 'cm' ? 'your channel manager' : BB.CHANNEL[i.id]).join(', ') : 'Optional add-on, off. <a href="#all-channels">List on every site</a>') + '</small></span><em class="ag-opt">Optional</em></div>') +
         '</div>' +
         '<div class="ag-darr" aria-hidden="true"><span>' + I('arrow') + '</span><small>Book direct</small></div>' +
@@ -1933,8 +1933,8 @@ var require_bb_embedded_files = __commonJS({
           '<p class="ag-note">' + I('bolt') + '<span>In Nuki Web, open API, create a token with permission to manage smart locks, and paste it here. We create a code for each stay and remove it after checkout.</span></p></div>' : '');
       // All channels: the headline add-on. Everything a host gets, in plain words, then the switch.
       const hub = inst => {
-        const i = BB.q.integration('channex'); if (!i) return '';
-        const g = (BB.BOOT && BB.BOOT.channex) || null; const live = S().live; const waiting = live && (!g || !g.live);
+        const i = BB.q.integration('hub'); if (!i) return '';
+        const g = (BB.BOOT && BB.BOOT.hub) || null; const live = S().live; const waiting = live && (!g || !g.live);
         const tier = S().account.tier === 'all' ? 'prices' : 'dates'; const on = i.connected;
         const pros = [
           ['globe', 'Listed everywhere', 'Airbnb, Booking.com, Vrbo, Expedia, Google, Agoda and 70+ more booking sites, from this one console.'],
@@ -1948,7 +1948,7 @@ var require_bb_embedded_files = __commonJS({
           const demo = !live && on; const state = !on ? '' : demo ? BB.pill('good', 'Live') : waiting ? BB.pill('muted', 'Ready to go') : !m || !m.rate ? BB.pill('muted', 'Setting up') : st2.error ? BB.pill('warn', 'Needs a look') : BB.pill('good', 'Live');
           return '<div class="ag-cx-home"><span><b>' + esc(p.short) + '</b><small>' + (st2.error ? esc(st2.error) : !on ? 'Not listed yet' : demo ? 'Dates' + (tier === 'prices' ? ' and prices' : '') + ' sent to every connected site' : waiting ? 'Set up the moment All channels switches on' : m && m.rate ? (st2.ok ? 'Dates' + (tier === 'prices' ? ' and prices' : '') + ' sent ' + esc(BB.ago(new Date(st2.ok).toLocaleString('sv-SE', { timeZone: 'Europe/London' }).replace(' ', 'T').slice(0, 16))) : 'Sending dates' + (tier === 'prices' ? ' and prices' : '')) : 'Creating the listing') + '</small></span>' + state +
             (on && (!live || (m && m.rate && !waiting)) ? '<button class="btn sm primary" data-ag="cx-connect" data-v="' + p.id + '">' + (st.cx_busy === p.id ? 'Opening\u2026' : 'Connect Airbnb, Booking.com, Vrbo\u2026') + '</button>' : '') + '</div>'; }).join('');
-        const recent = S().blocks.filter(k => k.sync === 'channex' && k.to > S().today).sort((a, b) => a.from < b.from ? -1 : 1).slice(0, 5);
+        const recent = S().blocks.filter(k => k.sync === 'hub' && k.to > S().today).sort((a, b) => a.from < b.from ? -1 : 1).slice(0, 5);
         return '<section class="a-card ag-card ag-cx' + (on ? ' on' : '') + '" id="all-channels"><div class="ag-cx-top"><div><span class="eyebrow">' + (on ? 'On \xB7 ' + (tier === 'prices' ? 'dates and prices' : 'dates') + ' on every site' : 'Recommended add-on') + '</span><h3 class="disp">All channels</h3><p>List your homes on every big booking site and run them all from here. One calendar, one price list, every booking in one place.</p></div>' +
           (on ? (i.error && !waiting ? BB.pill('warn', 'Needs a look') : waiting ? BB.pill('muted', 'Switching on soon') : BB.pill('good', 'On')) : BB.pill('muted', 'Not added')) + '</div>' +
           '<ul class="ag-cx-pros">' + pros.map(([ic, t, d]) => '<li>' + I(ic) + '<span><b>' + t + '</b><small>' + d + '</small></span></li>').join('') + '</ul>' +
@@ -1958,7 +1958,7 @@ var require_bb_embedded_files = __commonJS({
           (on ? '<div class="ag-cx-homes">' + homes + '</div>' : '') +
           (st.cx_url ? '<div class="ag-cx-frame"><div class="ag-cx-frame-h"><b>Connect sites to ' + esc((BB.q.property(st.cx_pid) || {}).short || 'this home') + '</b><button class="btn sm ghost" data-ag="cx-close">Done</button></div><iframe src="' + esc(st.cx_url) + '" title="Connect booking sites" referrerpolicy="no-referrer"></iframe><small class="muted">Sign in to Airbnb, Booking.com or Vrbo here and pick the listing for this home. Your dates and prices start flowing straight away.</small></div>' : '') +
           (recent.length ? '<div class="ag-cx-recent"><span class="eyebrow">Coming up from other sites</span>' + recent.map(k => '<button class="btn sm" data-ag-nav="calendar">' + esc(k.ota || 'Booked') + ' \xB7 ' + esc((BB.q.property(k.propertyId) || {}).short || '') + ' \xB7 ' + D.fmt(k.from) + ' \u2013 ' + D.fmt(k.to) + (k.guest ? ' \xB7 ' + esc(k.guest) : '') + '</button>').join('') + '</div>' : '') +
-          (on ? (st.cx_conf ? '<div class="ag-ic-conf"><p><b>Switch off All channels?</b> Your dates and prices stop going to other sites. Bookings already taken stay on your calendar. Disconnect the sites in the Channex screen too, so they stop taking bookings.</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cx-stop">Switch off</button><button class="btn sm ghost" data-ag="cx-keep">Keep it on</button></div></div>' : '<div class="ag-acts-row"><button class="btn sm ghost" data-ag="cx-stop">Switch off</button></div>') : '') +
+          (on ? (st.cx_conf ? '<div class="ag-ic-conf"><p><b>Switch off All channels?</b> Your dates and prices stop going to other sites. Bookings already taken stay on your calendar. Disconnect the sites in the Connect sites screen too, so they stop taking bookings.</p><div class="ag-acts-row"><button class="btn sm danger" data-ag="cx-stop">Switch off</button><button class="btn sm ghost" data-ag="cx-keep">Keep it on</button></div></div>' : '<div class="ag-acts-row"><button class="btn sm ghost" data-ag="cx-stop">Switch off</button></div>') : '') +
           '</section>';
       };
       const icard = i => {
@@ -3586,16 +3586,16 @@ var require_bb_embedded_files = __commonJS({
 
   // All channels on the dashboard: what it is doing for the host when on, and what they would get when off.
   function allChannels() {
-    const s = S(), i = BB.q.integration('channex'); if (!i) return '';
-    const g = (BB.BOOT && BB.BOOT.channex) || null, waiting = s.live && (!g || !g.live);
+    const s = S(), i = BB.q.integration('hub'); if (!i) return '';
+    const g = (BB.BOOT && BB.BOOT.hub) || null, waiting = s.live && (!g || !g.live);
     if (!i.connected) {
       if (s.account.hideHub) return '';
       return '<div class="a-s12"><section class="a-card a-hub"><div class="a-hub-t"><span class="eyebrow">Add-on</span><h3>List your homes on every booking site, from here</h3><p>Airbnb, Booking.com, Vrbo, Expedia and 70+ more, all fed from your one calendar. A booking anywhere closes the dates everywhere, a price change here updates every site, and every booking lands in this console. From \xA3' + BB.ALL_CHANNELS.addon + ' a month, with no channel manager to pay for.</p></div>' +
         '<ul class="a-hub-p"><li>' + ic('check') + 'No double bookings</li><li>' + ic('check') + 'One price list everywhere</li><li>' + ic('check') + 'Every booking in one place</li></ul>' +
         '<div class="a-hub-a"><button class="btn primary sm" data-a="nav" data-view="connections">See All channels' + ic('arrow') + '</button><button class="btn ghost sm" data-hidehub>Not now</button></div></section></div>';
     }
-    const fut = s.blocks.filter(k => k.sync === 'channex' && k.to > s.today);
-    const sites = [...new Set(s.blocks.filter(k => k.sync === 'channex' && k.ota).map(k => k.ota))];
+    const fut = s.blocks.filter(k => k.sync === 'hub' && k.to > s.today);
+    const sites = [...new Set(s.blocks.filter(k => k.sync === 'hub' && k.ota).map(k => k.ota))];
     const live = Object.values(i.map || {}).filter(m => m && m.rate).length;
     const sub = waiting ? 'Switching on soon' + (g && g.need ? ' \xB7 ' + Math.min(g.paying, g.need) + ' of ' + g.need + ' hosts' : '') : i.error ? 'Needs a look' : plural(live, 'home') + ' listed';
     return '<div class="a-s12"><section class="a-card a-hub on"><div class="a-hub-t"><span class="eyebrow">All channels \xB7 ' + (s.account.tier === 'all' ? 'dates and prices' : 'dates') + '</span><h3>' + (waiting ? 'You are on the list for All channels' : 'Your homes are in step on every site') + '</h3><p>' +
@@ -7169,8 +7169,17 @@ body.p-lock { overflow: hidden; }
     ].filter(Boolean);
   }
 
+  // Dates a guest picked elsewhere (Google Vacation Rentals, a search ad, a shared link): ?checkin=YYYY-MM-DD&checkout=YYYY-MM-DD.
+  function linkSel(pid) {
+    try {
+      const q = new URLSearchParams(location.search), a = q.get('checkin'), b = q.get('checkout'), t = BB.store.get().today, ok = x => /^\\d{4}-\\d{2}-\\d{2}$/.test(x || '');
+      if (ok(a) && ok(b) && a >= t && b > a && BB.q.isAvailable(pid, a, b)) return { a, b };
+    } catch (_) {}
+    return null;
+  }
   function defaultSel(pid) {
     const p = BB.q.property(pid); if (!p) return { a: null, b: null };
+    const fromLink = linkSel(pid); if (fromLink) return fromLink;
     const n = Math.max(p.minNights || 1, 3), t = BB.store.get().today;
     for (let d = D.add(t, 7); d < D.add(t, 150); d = D.add(d, 1)) if (BB.q.isAvailable(pid, d, D.add(d, n))) return { a: d, b: D.add(d, n) };
     return { a: null, b: null };
@@ -10925,46 +10934,46 @@ body.p-lock { overflow: hidden; }
     { id: 'guesty', name: 'Guesty', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Guesty account. Dates booked there close on your sites, and direct bookings close the dates in Guesty within minutes.', lastSync: null },
     { id: 'lodgify', name: 'Lodgify', group: 'Add-ons', addon: true, api: true, readOnly: true, connected: false, detail: 'Reads your Lodgify bookings every few minutes so those dates close on your sites. Lodgify reads your direct bookings back from your Bookingbooster calendar link.', lastSync: null },
   ];
-  // All channels (Channex): one connection that lists every home on Airbnb, Booking.com, Vrbo, Expedia and 70+ more,
+  // All channels: one connection that lists every home on Airbnb, Booking.com, Vrbo, Expedia and 70+ more,
   // keeps open dates (and, on the All channels plan, prices and minimum stays) in step everywhere, and brings their
-  // bookings back here. Bookingbooster runs the Channex account, so the host never needs one of their own.
-  BB.SYNC_EXTRA.push({ id: 'channex', name: 'All channels', group: 'Add-ons', addon: true, hub: true, connected: false, detail: 'List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from one place. Dates, and on the All channels plan prices, stay in step everywhere, and every booking lands here.', lastSync: null });
-  BB.CHANNEL.channex = 'All channels';
+  // bookings back here. Bookingbooster runs the connection, so the host never needs an account of their own.
+  BB.SYNC_EXTRA.push({ id: 'hub', name: 'All channels', group: 'Add-ons', addon: true, hub: true, connected: false, detail: 'List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from one place. Dates, and on the All channels plan prices, stay in step everywhere, and every booking lands here.', lastSync: null });
+  BB.CHANNEL.hub = 'All channels';
   BB.ALL_CHANNELS = { price: 29, addon: 15 };
-  // Short names for the booking sites Channex reports a booking from.
+  // Short names for the booking sites a booking can come from.
   BB.OTA = { BookingCom: 'Booking.com', Airbnb: 'Airbnb', AirBNB: 'Airbnb', Expedia: 'Expedia', VRBO: 'Vrbo', Vrbo: 'Vrbo', Agoda: 'Agoda', Google: 'Google', Hostelworld: 'Hostelworld', Tripadvisor: 'Tripadvisor', Trip: 'Trip.com' };
   BB.otaName = x => BB.OTA[x] || String(x || 'another site').replace(/([a-z])([A-Z])/g, '$1 $2');
   // The host turns it on. prices: true also keeps nightly prices and minimum stays in step (the All channels plan).
   BB.act.joinAllChannels = function (prices) {
-    const s = S(); const i = BB.q.integration('channex'); if (!i) return { ok: false };
+    const s = S(); const i = BB.q.integration('hub'); if (!i) return { ok: false };
     const was = i.connected && (s.account.tier === 'all') === !!prices;
     i.connected = true; s.account.addon = true; if (prices) s.account.tier = 'all'; else delete s.account.tier;
     i.joinedAt = i.joinedAt || stamp();
-    if (!was) BB.log('sync', 'All channels', prices ? 'Switched on All channels with price sync. Your homes, dates and prices go to every booking site you connect.' : 'Switched on All channels. Your homes and open dates go to every booking site you connect.', 'channex');
-    BB.fx('channex.run', {}); BB.fx('billing.addon', {});
-    BB.store.commit({ type: 'integration', id: 'channex' });
+    if (!was) BB.log('sync', 'All channels', prices ? 'Switched on All channels with price sync. Your homes, dates and prices go to every booking site you connect.' : 'Switched on All channels. Your homes and open dates go to every booking site you connect.', 'hub');
+    BB.fx('hub.run', {}); BB.fx('billing.addon', {});
+    BB.store.commit({ type: 'integration', id: 'hub' });
     return { ok: true };
   };
   BB.act.leaveAllChannels = function () {
-    const s = S(); const i = BB.q.integration('channex'); if (!i || !i.connected) return { ok: false };
+    const s = S(); const i = BB.q.integration('hub'); if (!i || !i.connected) return { ok: false };
     i.connected = false; delete s.account.tier;
     if (!(s.integrations || []).some(x => x.addon && !x.hub && x.connected)) s.account.addon = false;
-    BB.log('sync', 'All channels', 'Switched off All channels. Bookings already taken stay on your calendar.', 'channex');
-    BB.fx('channex.run', {}); BB.fx('billing.addon', {});
-    BB.store.commit({ type: 'integration', id: 'channex' });
+    BB.log('sync', 'All channels', 'Switched off All channels. Bookings already taken stay on your calendar.', 'hub');
+    BB.fx('hub.run', {}); BB.fx('billing.addon', {});
+    BB.store.commit({ type: 'integration', id: 'hub' });
     return { ok: true };
   };
-  // A booking from a site connected through Channex (server only). r: { ref, status, from, to, ota, guest, code, amount, currency }
-  BB.act.applyChannexBooking = function (pid, r) {
+  // A booking from a site connected through All channels (server only). r: { ref, status, from, to, ota, guest, code, amount, currency }
+  BB.act.applyHubBooking = function (pid, r) {
     const s = S(); const p = P(pid); if (!p || !r || !r.ref) return { ok: false };
-    const ota = BB.otaName(r.ota); const old = s.blocks.find(k => k.sync === 'channex' && k.ref === r.ref);
-    s.blocks = s.blocks.filter(k => !(k.sync === 'channex' && k.ref === r.ref));
+    const ota = BB.otaName(r.ota); const old = s.blocks.find(k => k.sync === 'hub' && k.ref === r.ref);
+    s.blocks = s.blocks.filter(k => !(k.sync === 'hub' && k.ref === r.ref));
     if (r.status === 'cancelled') {
       if (old) { BB.log('sync', 'All channels', ota + ' cancelled ' + (old.guest ? old.guest + "'s" : 'a') + ' stay at ' + p.short + ', ' + D.fmt(old.from) + '\u2013' + D.fmt(old.to) + '. Those nights are open again everywhere.', pid, [ota, 'Your calendar']); BB.notify('Cancelled on ' + ota + ' \xB7 ' + p.short, D.fmt(old.from) + '\u2013' + D.fmt(old.to) + ' is open again on every site.'); }
       BB.store.commit({ type: 'sync' }); return { ok: true };
     }
     if (!r.from || !r.to || r.to <= s.today) { BB.store.commit({ type: 'sync', quiet: true }); return { ok: true }; }
-    const k = { propertyId: pid, from: r.from, to: r.to, note: 'Booked on ' + ota + (r.guest ? ' \xB7 ' + r.guest : ''), sync: 'channex', ref: r.ref, ota, guest: r.guest || '', code: r.code || '', amount: r.amount || null, currency: r.currency || '' };
+    const k = { propertyId: pid, from: r.from, to: r.to, note: 'Booked on ' + ota + (r.guest ? ' \xB7 ' + r.guest : ''), sync: 'hub', ref: r.ref, ota, guest: r.guest || '', code: r.code || '', amount: r.amount || null, currency: r.currency || '' };
     s.blocks.push(k);
     const clash = s.bookings.find(b => b.propertyId === pid && b.status !== 'cancelled' && b.checkIn < r.to && b.checkOut > r.from);
     if (clash) BB.notify('Possible double booking at ' + p.short, ota + ' ' + D.fmt(r.from) + '\u2013' + D.fmt(r.to) + ' overlaps ' + clash.id + '. Check both calendars.', clash.id);
@@ -10973,7 +10982,7 @@ body.p-lock { overflow: hidden; }
       BB.log('booking', ota, (changed ? 'Changed on ' : 'New booking on ') + ota + ': ' + (r.guest || 'a guest') + ', ' + D.fmt(r.from) + '\u2013' + D.fmt(r.to) + ' at ' + p.short + (r.amount ? ' (' + (r.currency && r.currency !== 'GBP' ? r.currency + ' ' : '\xA3') + r.amount + ')' : '') + '. Closed on every other site straight away.', pid, [ota, 'Your calendar', 'Every other site']);
       if (!old) BB.notify('New ' + ota + ' booking \xB7 ' + p.short, (r.guest || 'A guest') + ', ' + D.fmt(r.from) + '\u2013' + D.fmt(r.to) + '. Closed everywhere else.');
     }
-    const i = BB.q.integration('channex'); if (i) i.lastSync = stamp();
+    const i = BB.q.integration('hub'); if (i) i.lastSync = stamp();
     BB.store.commit({ type: 'sync' });
     return { ok: true };
   };
@@ -11008,14 +11017,14 @@ body.p-lock { overflow: hidden; }
   };
   // All channels: open nights (and prices, on the All channels plan) for every home, so a change reaches every site in minutes.
   const hubPrint = () => {
-    const s = S(); const i = (s.integrations || []).find(x => x.id === 'channex'); if (!i || !i.connected) return '';
+    const s = S(); const i = (s.integrations || []).find(x => x.id === 'hub'); if (!i || !i.connected) return '';
     return s.properties.map(p => p.id + ':' + [...BB.q.blocked(p.id)].filter(n => n >= s.today).sort().join(',') + (s.account.tier === 'all' ? ':' + p.nightly + '/' + p.weekend + '/' + p.minNights : '')).join('|');
   };
   const commit0 = BB.store.commit;
   BB.store.commit = function (meta) {
     const s = S();
     if (s && s.live) { const fp = directPrint(); if (fp && fp !== s.directPrint) { s.directPrint = fp; BB.fx('channels.push', {}); } else if (!fp && s.directPrint) s.directPrint = ''; }
-    if (s && s.live) { const hp = hubPrint(); if (hp && hp !== s.hubPrint) { s.hubPrint = hp; BB.fx('channex.push', {}); } else if (!hp && s.hubPrint) s.hubPrint = ''; }
+    if (s && s.live) { const hp = hubPrint(); if (hp && hp !== s.hubPrint) { s.hubPrint = hp; BB.fx('hub.push', {}); } else if (!hp && s.hubPrint) s.hubPrint = ''; }
     return commit0.call(BB.store, meta);
   };
 })();
@@ -14534,7 +14543,7 @@ var require_config = __commonJS({
       icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
       // All channels (server/channex.js): Bookingbooster's own Channex account. Switches on by itself once CHANNEX_MIN_HOSTS
       // hosts pay for the add-on (enough to cover Channex's monthly fee); CHANNEX_ALWAYS_ON=1 skips that wait.
-      channex: { key: (E.CHANNEX_API_KEY || "").trim(), base: E.CHANNEX_BASE || "https://staging.channex.io", minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === "1", hookSecret: E.CHANNEX_WEBHOOK_SECRET || "" }
+      channex: { key: (E.CHANNEX_API_KEY || "").trim(), base: E.CHANNEX_BASE || "https://staging.channex.io", minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === "1", frameBase: E.CHANNEX_FRAME_BASE || "", hookSecret: E.CHANNEX_WEBHOOK_SECRET || "" }
     };
   }
 });
@@ -21559,14 +21568,14 @@ var require_channex = __commonJS({
       };
       const setIdx = (cid, wid, pid) => kvSet.run("channex:prop:" + cid, JSON.stringify({ wid, pid }));
       const save = (wid, fn) => ws.withWs(wid, (BB) => {
-        const i = BB.q.integration("channex");
+        const i = BB.q.integration("hub");
         if (!i) return;
         fn(i, BB.store.get());
         BB.store.commit({ quiet: true });
       }, { quiet: true });
       async function provision(w) {
         const s = w.state;
-        const i0 = s.integrations.find((x) => x.id === "channex");
+        const i0 = s.integrations.find((x) => x.id === "hub");
         if (!i0) return;
         let group = i0.cxGroup;
         if (!group) {
@@ -21581,7 +21590,7 @@ var require_channex = __commonJS({
           if (m.property && m.room && m.rate) continue;
           if (!m.property) {
             const area = String(p.area || "").split(",").map((x) => x.trim()).filter(Boolean);
-            m.property = idOf(await api("POST", "/properties", { body: { property: { title: String(p.name).slice(0, 250), currency: "GBP", timezone: "Europe/London", property_type: "apartment", country: "GB", city: area[0] || void 0, email: s.account.email || void 0, group_id: group, settings: { min_stay_type: "arrival" } } } }));
+            m.property = idOf(await api("POST", "/properties", { body: { property: { title: String(p.name).slice(0, 250), currency: "GBP", timezone: "Europe/London", property_type: "apartment", country: "GB", city: area[0] || void 0, group_id: group, settings: { min_stay_type: "arrival" } } } }));
             await setIdx(m.property, w.id, p.id);
           }
           if (!m.room) m.room = idOf(await api("POST", "/room_types", { body: { room_type: { property_id: m.property, title: String(p.short || p.name).slice(0, 200), count_of_rooms: 1, occ_adults: Math.max(1, +p.maxGuests || 2), occ_children: 0, occ_infants: 0, room_kind: "room" } } }));
@@ -21591,7 +21600,7 @@ var require_channex = __commonJS({
             i.map = i.map || {};
             i.map[p.id] = m;
           });
-          log("channex", w.id, "set up", p.id, m.property);
+          log("hub", w.id, "set up", p.id, m.property);
         }
       }
       function plan(w) {
@@ -21599,7 +21608,7 @@ var require_channex = __commonJS({
         const s = w.state;
         const BB = w.BB;
         const prices = s.account.tier === "all";
-        const i = s.integrations.find((x) => x.id === "channex");
+        const i = s.integrations.find((x) => x.id === "hub");
         const today = s.today;
         for (const p of s.properties) {
           const m = (i.map || {})[p.id];
@@ -21629,7 +21638,7 @@ var require_channex = __commonJS({
       }
       const hash = (x) => crypto.createHash("sha1").update(JSON.stringify(x)).digest("hex").slice(0, 16);
       async function push(w, { force } = {}) {
-        const i = w.state.integrations.find((x) => x.id === "channex");
+        const i = w.state.integrations.find((x) => x.id === "hub");
         const sent = Object.assign({}, i.sent || {});
         const status = {};
         for (const [pid, P] of Object.entries(plan(w))) {
@@ -21646,7 +21655,7 @@ var require_channex = __commonJS({
             sent[pid] = { a: ha, r: hr, at: force || stale || was.a !== ha || hr && was.r !== hr ? Date.now() : was.at };
             st.ok = st.checked;
           } catch (e) {
-            st.error = "Channex " + e.message;
+            st.error = "The channel connection " + e.message;
             log("channex push", w.id, pid, e.message);
           }
           status[pid] = st;
@@ -21685,13 +21694,13 @@ var require_channex = __commonJS({
             const a = Object.assign({ id: it.id }, it.attributes || {});
             const at = await idx(a.property_id);
             if (!at) {
-              log("channex", "booking for a property we do not know", a.property_id);
+              log("hub", "booking for a property we do not know", a.property_id);
               continue;
             }
             const room = (a.rooms || [])[0] || {};
             const r = { ref: String(a.booking_id || a.id), status: a.status, from: a.arrival_date || room.checkin_date, to: a.departure_date || room.checkout_date, ota: a.ota_name, guest: short(a.customer), code: a.ota_reservation_code || a.unique_id || "", amount: a.amount ? String(a.amount) : null, currency: a.currency || "" };
             try {
-              await ws.withWs(at.wid, (BB) => BB.act.applyChannexBooking(at.pid, r), { action: "channexBooking" });
+              await ws.withWs(at.wid, (BB) => BB.act.applyHubBooking(at.pid, r), { action: "channexBooking" });
               await api("POST", "/booking_revisions/" + encodeURIComponent(a.id) + "/ack");
               read++;
               done++;
@@ -21720,20 +21729,20 @@ var require_channex = __commonJS({
         return a.length === b.length && crypto.timingSafeEqual(a, b);
       };
       async function connectUrl(w, pid) {
-        const i = w.state.integrations.find((x) => x.id === "channex");
+        const i = w.state.integrations.find((x) => x.id === "hub");
         const m = i && i.map && i.map[pid];
         if (!m || !m.property) throw new ApiError("is still setting up this home. Try again in a minute.", 409);
-        const j = await api("POST", "/auth/one_time_token", { body: { one_time_token: { property_id: m.property, group_id: i.cxGroup || void 0, username: String(w.state.account.email || w.id).slice(0, 120) } } });
+        const j = await api("POST", "/auth/one_time_token", { body: { one_time_token: { property_id: m.property, group_id: i.cxGroup || void 0, username: "bb-" + w.id } } });
         const t = j && j.data && j.data.token;
         if (!t) throw new ApiError("did not give us a sign-in link.");
         const q = new URLSearchParams({ oauth_session_key: t, app_mode: "headless", redirect_to: "/channels", property_id: m.property, lng: "en" });
         if (i.cxGroup) q.set("group_id", i.cxGroup);
-        return base() + "/auth/exchange?" + q.toString();
+        return String(C.frameBase || base()).replace(/\/+$/, "") + "/auth/exchange?" + q.toString();
       }
       const running = /* @__PURE__ */ new Map();
       function run(w, opts = {}) {
         const prev = running.get(w.id) || Promise.resolve();
-        const next = prev.then(() => runNow(w.id, opts)).catch((e) => log("channex", w.id, e.message));
+        const next = prev.then(() => runNow(w.id, opts)).catch((e) => log("hub", w.id, e.message));
         running.set(w.id, next);
         next.finally(() => {
           if (running.get(w.id) === next) running.delete(w.id);
@@ -21743,7 +21752,7 @@ var require_channex = __commonJS({
       async function runNow(wid, opts) {
         let w = await ws.open(wid);
         if (!w || w.kind !== "live") return;
-        const i = w.state.integrations.find((x) => x.id === "channex");
+        const i = w.state.integrations.find((x) => x.id === "hub");
         if (!i || !i.connected) return;
         const g = await gate();
         if (!g.live) {
@@ -21757,7 +21766,7 @@ var require_channex = __commonJS({
         } catch (e) {
           log("channex provision", wid, e.message);
           await save(wid, (x) => {
-            x.error = "Channex " + e.message;
+            x.error = "The channel connection " + e.message;
           });
           return;
         }
@@ -22143,7 +22152,7 @@ var require_effects = __commonJS({
             else if (f.type === "ical.sync") await calendars(w, d.id);
             else if (f.type === "channels.sync") await channels.sync(w, { id: d.id });
             else if (f.type === "channels.push") await channels.sync(w, { pull: false });
-            else if (f.type === "channex.run" || f.type === "channex.push") await channex.run(w);
+            else if (f.type === "hub.run" || f.type === "hub.push") await channex.run(w);
             else if (f.type === "billing.addon") await billingAddon(w);
             else if (f.type === "ai.check") await aiCheck(w);
             else if (f.type === "payment.refund") await refund(w, d);
@@ -26047,7 +26056,7 @@ var require_server = __commonJS({
         stripe: stripeReady(w),
         stripeAvailable: stripe.enabled,
         soon: SOON,
-        channex: effects.channex.pub(),
+        hub: effects.channex.pub(),
         aiDrafts: assist.enabled,
         guestFromDomain: cfg.email.guestFromDomain,
         support: cfg.company.support,
@@ -27144,7 +27153,7 @@ Disallow: /
         if (p === "/api/act" && m === "POST") {
           const j = await jsonBody(req, 3e6);
           const name = String(j.name || "");
-          if (["nextDay", "simulateCampaign", "applyCalendar", "applyChannexBooking", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
+          if (["nextDay", "simulateCampaign", "applyCalendar", "applyHubBooking", "applyAiResults", "paymentConfirmed", "expirePending", "setIndexing"].includes(name)) throw err(403, "That action is not available in a live account.");
           if (name === "toggleIntegration" && j.args) {
             const iid = j.args[0], cur = w.state.integrations.find((i) => i.id === iid);
             if (!cur) throw err(404, "Unknown connection");
@@ -27279,18 +27288,18 @@ Disallow: /
           const url = urls.ical(w, x);
           return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map((c) => [c, url.replace(/\.ics$/, "." + c + ".ics")])) };
         }) });
-        if (p === "/app/channex/connect" && m === "POST") {
+        if (p === "/app/channels/sites" && m === "POST") {
           const j = await jsonBody(req, 2e3);
           const pid = String(j.pid || "");
           if (!w.state.properties.some((x) => x.id === pid)) throw err(404, "Home not found");
-          const i = w.state.integrations.find((x) => x.id === "channex");
+          const i = w.state.integrations.find((x) => x.id === "hub");
           if (!i || !i.connected) throw err(400, "Switch on All channels first.");
           if (!(await effects.channex.gate()).live) throw err(409, "All channels is not switched on yet. Your homes are set up the moment it is.");
           if (!auth.limit("cx:" + w.id, 20, 6e5)) throw err(429, "Too many tries. Wait a few minutes and try again.");
           try {
             return json(res, { url: await effects.channex.connectUrl(w, pid) });
           } catch (e) {
-            throw err(e.status === 409 ? 409 : 502, "Channex " + e.message);
+            throw err(e.status === 409 ? 409 : 502, "The channel connection " + e.message);
           }
         }
         if (p === "/app/channel/connect" && m === "POST") {
@@ -27683,8 +27692,8 @@ Disallow: /
           if (rolled || exp.length) await ws.withWs(id, (BB) => exp.forEach((bid) => BB.act.expirePending(bid)), { scheduler: true });
           if (ical2) bg("ical", effects.calendars(w));
           if (ical2 && cx.ready()) {
-            const i = w.state.integrations.find((x) => x.id === "channex");
-            if (i && i.connected) bg("channex", cx.run(w));
+            const i = w.state.integrations.find((x) => x.id === "hub");
+            if (i && i.connected) bg("hub", cx.run(w));
           }
           if (daily && w.kind === "live") bg("index", autoIndex(w).catch((e) => log("index", id, e.message)));
           if (daily && ai.available().length) {

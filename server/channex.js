@@ -60,9 +60,9 @@ module.exports = function ({ cfg, ws, db, log }) {
   const setIdx = (cid, wid, pid) => kvSet.run('channex:prop:' + cid, JSON.stringify({ wid, pid }));
 
   /* ---------- provision ---------- */
-  const save = (wid, fn) => ws.withWs(wid, BB => { const i = BB.q.integration('channex'); if (!i) return; fn(i, BB.store.get()); BB.store.commit({ quiet: true }); }, { quiet: true });
+  const save = (wid, fn) => ws.withWs(wid, BB => { const i = BB.q.integration('hub'); if (!i) return; fn(i, BB.store.get()); BB.store.commit({ quiet: true }); }, { quiet: true });
   async function provision(w) {
-    const s = w.state; const i0 = s.integrations.find(x => x.id === 'channex'); if (!i0) return;
+    const s = w.state; const i0 = s.integrations.find(x => x.id === 'hub'); if (!i0) return;
     let group = i0.cxGroup;
     if (!group) {
       group = idOf(await api('POST', '/groups', { body: { group: { title: String(s.account.business || 'Bookingbooster host').slice(0, 200) + ' (' + w.id + ')' } } }));
@@ -74,14 +74,14 @@ module.exports = function ({ cfg, ws, db, log }) {
       if (m.property && m.room && m.rate) continue;
       if (!m.property) {
         const area = String(p.area || '').split(',').map(x => x.trim()).filter(Boolean);
-        m.property = idOf(await api('POST', '/properties', { body: { property: { title: String(p.name).slice(0, 250), currency: 'GBP', timezone: 'Europe/London', property_type: 'apartment', country: 'GB', city: area[0] || undefined, email: s.account.email || undefined, group_id: group, settings: { min_stay_type: 'arrival' } } } }));
+        m.property = idOf(await api('POST', '/properties', { body: { property: { title: String(p.name).slice(0, 250), currency: 'GBP', timezone: 'Europe/London', property_type: 'apartment', country: 'GB', city: area[0] || undefined, group_id: group, settings: { min_stay_type: 'arrival' } } } }));
         await setIdx(m.property, w.id, p.id);
       }
       if (!m.room) m.room = idOf(await api('POST', '/room_types', { body: { room_type: { property_id: m.property, title: String(p.short || p.name).slice(0, 200), count_of_rooms: 1, occ_adults: Math.max(1, +p.maxGuests || 2), occ_children: 0, occ_infants: 0, room_kind: 'room' } } }));
       if (!m.rate) m.rate = idOf(await api('POST', '/rate_plans', { body: { rate_plan: { property_id: m.property, room_type_id: m.room, title: 'Standard', sell_mode: 'per_room', rate_mode: 'manual', currency: 'GBP', meal_type: 'none', options: [{ occupancy: Math.max(1, +p.maxGuests || 2), is_primary: true, rate: String((+p.nightly || 100).toFixed(2)) }] } } }));
       map[p.id] = m;
       await save(w.id, i => { i.map = i.map || {}; i.map[p.id] = m; });
-      log('channex', w.id, 'set up', p.id, m.property);
+      log('hub', w.id, 'set up', p.id, m.property);
     }
   }
 
@@ -89,7 +89,7 @@ module.exports = function ({ cfg, ws, db, log }) {
   // What each home should look like everywhere, as ranges of equal values.
   function plan(w) {
     const out = {}; const s = w.state; const BB = w.BB; const prices = s.account.tier === 'all';
-    const i = s.integrations.find(x => x.id === 'channex'); const today = s.today;
+    const i = s.integrations.find(x => x.id === 'hub'); const today = s.today;
     for (const p of s.properties) {
       const m = (i.map || {})[p.id]; if (!m || !m.rate) continue;
       const bl = BB.q.blocked(p.id); const avail = [], rates = [];
@@ -105,7 +105,7 @@ module.exports = function ({ cfg, ws, db, log }) {
   }
   const hash = x => crypto.createHash('sha1').update(JSON.stringify(x)).digest('hex').slice(0, 16);
   async function push(w, { force } = {}) {
-    const i = w.state.integrations.find(x => x.id === 'channex'); const sent = Object.assign({}, i.sent || {}); const status = {};
+    const i = w.state.integrations.find(x => x.id === 'hub'); const sent = Object.assign({}, i.sent || {}); const status = {};
     for (const [pid, P] of Object.entries(plan(w))) {
       const st = { checked: new Date().toISOString() };
       try {
@@ -115,7 +115,7 @@ module.exports = function ({ cfg, ws, db, log }) {
         if (hr && (force || stale || was.r !== hr)) await api('POST', '/restrictions', { body: { values: P.rates.filter(r => +r.v.split('/')[0] > 0).map(r => { const [rate, min] = r.v.split('/'); return { property_id: P.m.property, rate_plan_id: P.m.rate, date_from: r.from, date_to: r.to, rate, min_stay_arrival: +min }; }) } });
         sent[pid] = { a: ha, r: hr, at: (force || stale || was.a !== ha || (hr && was.r !== hr)) ? Date.now() : was.at };
         st.ok = st.checked;
-      } catch (e) { st.error = 'Channex ' + e.message; log('channex push', w.id, pid, e.message); }
+      } catch (e) { st.error = 'The channel connection ' + e.message; log('channex push', w.id, pid, e.message); }
       status[pid] = st;
     }
     await save(w.id, x => {
@@ -139,11 +139,11 @@ module.exports = function ({ cfg, ws, db, log }) {
       for (const it of list) {
         const a = Object.assign({ id: it.id }, it.attributes || {});
         const at = await idx(a.property_id);
-        if (!at) { log('channex', 'booking for a property we do not know', a.property_id); continue; } // left in the feed; someone must look
+        if (!at) { log('hub', 'booking for a property we do not know', a.property_id); continue; } // left in the feed; someone must look
         const room = (a.rooms || [])[0] || {};
         const r = { ref: String(a.booking_id || a.id), status: a.status, from: a.arrival_date || room.checkin_date, to: a.departure_date || room.checkout_date, ota: a.ota_name, guest: short(a.customer), code: a.ota_reservation_code || a.unique_id || '', amount: a.amount ? String(a.amount) : null, currency: a.currency || '' };
         try {
-          await ws.withWs(at.wid, BB => BB.act.applyChannexBooking(at.pid, r), { action: 'channexBooking' });
+          await ws.withWs(at.wid, BB => BB.act.applyHubBooking(at.pid, r), { action: 'channexBooking' });
           await api('POST', '/booking_revisions/' + encodeURIComponent(a.id) + '/ack');
           read++; done++;
         } catch (e) { log('channex pull', at.wid, a.id, e.message); }
@@ -166,28 +166,29 @@ module.exports = function ({ cfg, ws, db, log }) {
 
   /* ---------- the Channex screen where the host links Airbnb, Booking.com, Vrbo ---------- */
   async function connectUrl(w, pid) {
-    const i = w.state.integrations.find(x => x.id === 'channex'); const m = i && i.map && i.map[pid];
+    const i = w.state.integrations.find(x => x.id === 'hub'); const m = i && i.map && i.map[pid];
     if (!m || !m.property) throw new ApiError('is still setting up this home. Try again in a minute.', 409);
-    const j = await api('POST', '/auth/one_time_token', { body: { one_time_token: { property_id: m.property, group_id: i.cxGroup || undefined, username: String(w.state.account.email || w.id).slice(0, 120) } } });
+    const j = await api('POST', '/auth/one_time_token', { body: { one_time_token: { property_id: m.property, group_id: i.cxGroup || undefined, username: 'bb-' + w.id } } });
     const t = j && j.data && j.data.token; if (!t) throw new ApiError('did not give us a sign-in link.');
     const q = new URLSearchParams({ oauth_session_key: t, app_mode: 'headless', redirect_to: '/channels', property_id: m.property, lng: 'en' }); if (i.cxGroup) q.set('group_id', i.cxGroup);
-    return base() + '/auth/exchange?' + q.toString();
+    // CHANNEX_FRAME_BASE: our own white-label domain for the screen (set up with Channex support), so hosts see our address.
+    return String(C.frameBase || base()).replace(/\/+$/, '') + '/auth/exchange?' + q.toString();
   }
 
   /* ---------- one workspace, from a change or the scheduled tick ---------- */
   const running = new Map();
   function run(w, opts = {}) {
     const prev = running.get(w.id) || Promise.resolve();
-    const next = prev.then(() => runNow(w.id, opts)).catch(e => log('channex', w.id, e.message));
+    const next = prev.then(() => runNow(w.id, opts)).catch(e => log('hub', w.id, e.message));
     running.set(w.id, next); next.finally(() => { if (running.get(w.id) === next) running.delete(w.id); });
     return next;
   }
   async function runNow(wid, opts) {
     let w = await ws.open(wid); if (!w || w.kind !== 'live') return;
-    const i = w.state.integrations.find(x => x.id === 'channex'); if (!i || !i.connected) return;
+    const i = w.state.integrations.find(x => x.id === 'hub'); if (!i || !i.connected) return;
     const g = await gate();
     if (!g.live) { if (!i.waiting) await save(wid, x => { x.waiting = true; }); return; }
-    try { await provision(w); } catch (e) { log('channex provision', wid, e.message); await save(wid, x => { x.error = 'Channex ' + e.message; }); return; }
+    try { await provision(w); } catch (e) { log('channex provision', wid, e.message); await save(wid, x => { x.error = 'The channel connection ' + e.message; }); return; }
     if (i.waiting) await save(wid, x => { x.waiting = false; });
     w = await ws.open(wid);
     await push(w, opts);

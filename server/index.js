@@ -135,7 +135,7 @@ let marketingState = null;
 const marketing = () => marketingState || (marketingState = seedDemo());
 async function hostBoot(w, surface) {
   const s = w.state;
-  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, channex: effects.channex.pub(), aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain, support: cfg.company.support,
+  return { aiCredit: credits.enabled ? await credits.summary(w.id) : null, mode: 'host', surface, slug: w.slug, state: s, version: w.version, actUrl: '/api/act', stateUrl: '/api/state', poll: cfg.serverless, streamUrl: '/api/stream', stripe: stripeReady(w), stripeAvailable: stripe.enabled, soon: SOON, hub: effects.channex.pub(), aiDrafts: assist.enabled, guestFromDomain: cfg.email.guestFromDomain, support: cfg.company.support,
     ...hostLinks(w), aiEngines: ai.available(), test: testNotes() };
 }
 const SOON = ['cleaner', 'google', 'gsc', 'analytics', 'pricelabs']; // shown in live accounts as coming soon
@@ -887,7 +887,7 @@ async function route(req, res) {
     if ((p.startsWith('/app/studio/') || p.startsWith('/app/funnel/')) && studio.preview(res, w, p, u.searchParams)) return;
     if (p === '/api/act' && m === 'POST') {
       const j = await jsonBody(req, 3e6); const name = String(j.name || '');
-      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyChannexBooking', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing'].includes(name)) throw err(403, 'That action is not available in a live account.');
+      if (['nextDay', 'simulateCampaign', 'applyCalendar', 'applyHubBooking', 'applyAiResults', 'paymentConfirmed', 'expirePending', 'setIndexing'].includes(name)) throw err(403, 'That action is not available in a live account.');
       if (name === 'toggleIntegration' && j.args) {
         const iid = j.args[0], cur = w.state.integrations.find(i => i.id === iid);
         if (!cur) throw err(404, 'Unknown connection');
@@ -966,13 +966,13 @@ async function route(req, res) {
     if (p === '/api/calendar-feeds') return json(res, { feeds: w.state.properties.map(x => { const url = urls.ical(w, x); return { propertyId: x.id, name: x.name, url, channels: Object.fromEntries(ical.CHANNELS.map(c => [c, url.replace(/\.ics$/, '.' + c + '.ics')])) }; }) });
     // Calendar sync add-on: connect a channel manager with the host's own API key (kept encrypted, never sent to the browser).
     // The Channex screen where the host links their Airbnb, Booking.com or Vrbo account to one home.
-    if (p === '/app/channex/connect' && m === 'POST') {
+    if (p === '/app/channels/sites' && m === 'POST') {
       const j = await jsonBody(req, 2e3); const pid = String(j.pid || '');
       if (!w.state.properties.some(x => x.id === pid)) throw err(404, 'Home not found');
-      const i = w.state.integrations.find(x => x.id === 'channex'); if (!i || !i.connected) throw err(400, 'Switch on All channels first.');
+      const i = w.state.integrations.find(x => x.id === 'hub'); if (!i || !i.connected) throw err(400, 'Switch on All channels first.');
       if (!(await effects.channex.gate()).live) throw err(409, 'All channels is not switched on yet. Your homes are set up the moment it is.');
       if (!auth.limit('cx:' + w.id, 20, 600e3)) throw err(429, 'Too many tries. Wait a few minutes and try again.');
-      try { return json(res, { url: await effects.channex.connectUrl(w, pid) }); } catch (e) { throw err(e.status === 409 ? 409 : 502, 'Channex ' + e.message); }
+      try { return json(res, { url: await effects.channex.connectUrl(w, pid) }); } catch (e) { throw err(e.status === 409 ? 409 : 502, 'The channel connection ' + e.message); }
     }
     if (p === '/app/channel/connect' && m === 'POST') {
       const j = await jsonBody(req, 4e3); const id = String(j.id || ''); const A = effects.channels.ADAPTERS[id];
@@ -1300,7 +1300,7 @@ async function runTick(t) {
       const exp = w.state.bookings.filter(b => b.status === 'pending' && b.holdUntil && b.holdUntil < t).map(b => b.id);
       if (rolled || exp.length) await ws.withWs(id, BB => exp.forEach(bid => BB.act.expirePending(bid)), { scheduler: true });
       if (ical) bg('ical', effects.calendars(w));
-      if (ical && cx.ready()) { const i = w.state.integrations.find(x => x.id === 'channex'); if (i && i.connected) bg('channex', cx.run(w)); }
+      if (ical && cx.ready()) { const i = w.state.integrations.find(x => x.id === 'hub'); if (i && i.connected) bg('hub', cx.run(w)); }
       if (daily && w.kind === 'live') bg('index', autoIndex(w).catch(e => log('index', id, e.message)));
       if (daily && ai.available().length) { const c = w.state.ai.checkedAt; if (!c || c < new Date(t - 7 * 864e5).toISOString().slice(0, 10)) bg('ai', effects.aiCheck(w)); }
     } catch (e) { log('job', id, e.message); }

@@ -243,7 +243,7 @@ module.exports = function (ctx) {
         else if (f.type === 'ical.sync') await calendars(w, d.id);
         else if (f.type === 'channels.sync') await channels.sync(w, { id: d.id });
         else if (f.type === 'channels.push') await channels.sync(w, { pull: false });
-        else if (f.type === 'channex.run' || f.type === 'channex.push') await channex.run(w);
+        else if (f.type === 'hub.run' || f.type === 'hub.push') await channex.run(w);
         else if (f.type === 'billing.addon') await billingAddon(w);
         else if (f.type === 'ai.check') await aiCheck(w);
         else if (f.type === 'payment.refund') await refund(w, d);

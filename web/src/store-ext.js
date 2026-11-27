@@ -456,46 +456,46 @@
     { id: 'guesty', name: 'Guesty', group: 'Add-ons', addon: true, api: true, connected: false, detail: 'Two-way sync with your Guesty account. Dates booked there close on your sites, and direct bookings close the dates in Guesty within minutes.', lastSync: null },
     { id: 'lodgify', name: 'Lodgify', group: 'Add-ons', addon: true, api: true, readOnly: true, connected: false, detail: 'Reads your Lodgify bookings every few minutes so those dates close on your sites. Lodgify reads your direct bookings back from your Bookingbooster calendar link.', lastSync: null },
   ];
-  // All channels (Channex): one connection that lists every home on Airbnb, Booking.com, Vrbo, Expedia and 70+ more,
+  // All channels: one connection that lists every home on Airbnb, Booking.com, Vrbo, Expedia and 70+ more,
   // keeps open dates (and, on the All channels plan, prices and minimum stays) in step everywhere, and brings their
-  // bookings back here. Bookingbooster runs the Channex account, so the host never needs one of their own.
-  BB.SYNC_EXTRA.push({ id: 'channex', name: 'All channels', group: 'Add-ons', addon: true, hub: true, connected: false, detail: 'List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from one place. Dates, and on the All channels plan prices, stay in step everywhere, and every booking lands here.', lastSync: null });
-  BB.CHANNEL.channex = 'All channels';
+  // bookings back here. Bookingbooster runs the connection, so the host never needs an account of their own.
+  BB.SYNC_EXTRA.push({ id: 'hub', name: 'All channels', group: 'Add-ons', addon: true, hub: true, connected: false, detail: 'List your homes on Airbnb, Booking.com, Vrbo, Expedia and 70+ more sites from one place. Dates, and on the All channels plan prices, stay in step everywhere, and every booking lands here.', lastSync: null });
+  BB.CHANNEL.hub = 'All channels';
   BB.ALL_CHANNELS = { price: 29, addon: 15 };
-  // Short names for the booking sites Channex reports a booking from.
+  // Short names for the booking sites a booking can come from.
   BB.OTA = { BookingCom: 'Booking.com', Airbnb: 'Airbnb', AirBNB: 'Airbnb', Expedia: 'Expedia', VRBO: 'Vrbo', Vrbo: 'Vrbo', Agoda: 'Agoda', Google: 'Google', Hostelworld: 'Hostelworld', Tripadvisor: 'Tripadvisor', Trip: 'Trip.com' };
   BB.otaName = x => BB.OTA[x] || String(x || 'another site').replace(/([a-z])([A-Z])/g, '$1 $2');
   // The host turns it on. prices: true also keeps nightly prices and minimum stays in step (the All channels plan).
   BB.act.joinAllChannels = function (prices) {
-    const s = S(); const i = BB.q.integration('channex'); if (!i) return { ok: false };
+    const s = S(); const i = BB.q.integration('hub'); if (!i) return { ok: false };
     const was = i.connected && (s.account.tier === 'all') === !!prices;
     i.connected = true; s.account.addon = true; if (prices) s.account.tier = 'all'; else delete s.account.tier;
     i.joinedAt = i.joinedAt || stamp();
-    if (!was) BB.log('sync', 'All channels', prices ? 'Switched on All channels with price sync. Your homes, dates and prices go to every booking site you connect.' : 'Switched on All channels. Your homes and open dates go to every booking site you connect.', 'channex');
-    BB.fx('channex.run', {}); BB.fx('billing.addon', {});
-    BB.store.commit({ type: 'integration', id: 'channex' });
+    if (!was) BB.log('sync', 'All channels', prices ? 'Switched on All channels with price sync. Your homes, dates and prices go to every booking site you connect.' : 'Switched on All channels. Your homes and open dates go to every booking site you connect.', 'hub');
+    BB.fx('hub.run', {}); BB.fx('billing.addon', {});
+    BB.store.commit({ type: 'integration', id: 'hub' });
     return { ok: true };
   };
   BB.act.leaveAllChannels = function () {
-    const s = S(); const i = BB.q.integration('channex'); if (!i || !i.connected) return { ok: false };
+    const s = S(); const i = BB.q.integration('hub'); if (!i || !i.connected) return { ok: false };
     i.connected = false; delete s.account.tier;
     if (!(s.integrations || []).some(x => x.addon && !x.hub && x.connected)) s.account.addon = false;
-    BB.log('sync', 'All channels', 'Switched off All channels. Bookings already taken stay on your calendar.', 'channex');
-    BB.fx('channex.run', {}); BB.fx('billing.addon', {});
-    BB.store.commit({ type: 'integration', id: 'channex' });
+    BB.log('sync', 'All channels', 'Switched off All channels. Bookings already taken stay on your calendar.', 'hub');
+    BB.fx('hub.run', {}); BB.fx('billing.addon', {});
+    BB.store.commit({ type: 'integration', id: 'hub' });
     return { ok: true };
   };
-  // A booking from a site connected through Channex (server only). r: { ref, status, from, to, ota, guest, code, amount, currency }
-  BB.act.applyChannexBooking = function (pid, r) {
+  // A booking from a site connected through All channels (server only). r: { ref, status, from, to, ota, guest, code, amount, currency }
+  BB.act.applyHubBooking = function (pid, r) {
     const s = S(); const p = P(pid); if (!p || !r || !r.ref) return { ok: false };
-    const ota = BB.otaName(r.ota); const old = s.blocks.find(k => k.sync === 'channex' && k.ref === r.ref);
-    s.blocks = s.blocks.filter(k => !(k.sync === 'channex' && k.ref === r.ref));
+    const ota = BB.otaName(r.ota); const old = s.blocks.find(k => k.sync === 'hub' && k.ref === r.ref);
+    s.blocks = s.blocks.filter(k => !(k.sync === 'hub' && k.ref === r.ref));
     if (r.status === 'cancelled') {
       if (old) { BB.log('sync', 'All channels', ota + ' cancelled ' + (old.guest ? old.guest + "'s" : 'a') + ' stay at ' + p.short + ', ' + D.fmt(old.from) + '–' + D.fmt(old.to) + '. Those nights are open again everywhere.', pid, [ota, 'Your calendar']); BB.notify('Cancelled on ' + ota + ' · ' + p.short, D.fmt(old.from) + '–' + D.fmt(old.to) + ' is open again on every site.'); }
       BB.store.commit({ type: 'sync' }); return { ok: true };
     }
     if (!r.from || !r.to || r.to <= s.today) { BB.store.commit({ type: 'sync', quiet: true }); return { ok: true }; }
-    const k = { propertyId: pid, from: r.from, to: r.to, note: 'Booked on ' + ota + (r.guest ? ' · ' + r.guest : ''), sync: 'channex', ref: r.ref, ota, guest: r.guest || '', code: r.code || '', amount: r.amount || null, currency: r.currency || '' };
+    const k = { propertyId: pid, from: r.from, to: r.to, note: 'Booked on ' + ota + (r.guest ? ' · ' + r.guest : ''), sync: 'hub', ref: r.ref, ota, guest: r.guest || '', code: r.code || '', amount: r.amount || null, currency: r.currency || '' };
     s.blocks.push(k);
     const clash = s.bookings.find(b => b.propertyId === pid && b.status !== 'cancelled' && b.checkIn < r.to && b.checkOut > r.from);
     if (clash) BB.notify('Possible double booking at ' + p.short, ota + ' ' + D.fmt(r.from) + '–' + D.fmt(r.to) + ' overlaps ' + clash.id + '. Check both calendars.', clash.id);
@@ -504,7 +504,7 @@
       BB.log('booking', ota, (changed ? 'Changed on ' : 'New booking on ') + ota + ': ' + (r.guest || 'a guest') + ', ' + D.fmt(r.from) + '–' + D.fmt(r.to) + ' at ' + p.short + (r.amount ? ' (' + (r.currency && r.currency !== 'GBP' ? r.currency + ' ' : '£') + r.amount + ')' : '') + '. Closed on every other site straight away.', pid, [ota, 'Your calendar', 'Every other site']);
       if (!old) BB.notify('New ' + ota + ' booking · ' + p.short, (r.guest || 'A guest') + ', ' + D.fmt(r.from) + '–' + D.fmt(r.to) + '. Closed everywhere else.');
     }
-    const i = BB.q.integration('channex'); if (i) i.lastSync = stamp();
+    const i = BB.q.integration('hub'); if (i) i.lastSync = stamp();
     BB.store.commit({ type: 'sync' });
     return { ok: true };
   };
@@ -539,14 +539,14 @@
   };
   // All channels: open nights (and prices, on the All channels plan) for every home, so a change reaches every site in minutes.
   const hubPrint = () => {
-    const s = S(); const i = (s.integrations || []).find(x => x.id === 'channex'); if (!i || !i.connected) return '';
+    const s = S(); const i = (s.integrations || []).find(x => x.id === 'hub'); if (!i || !i.connected) return '';
     return s.properties.map(p => p.id + ':' + [...BB.q.blocked(p.id)].filter(n => n >= s.today).sort().join(',') + (s.account.tier === 'all' ? ':' + p.nightly + '/' + p.weekend + '/' + p.minNights : '')).join('|');
   };
   const commit0 = BB.store.commit;
   BB.store.commit = function (meta) {
     const s = S();
     if (s && s.live) { const fp = directPrint(); if (fp && fp !== s.directPrint) { s.directPrint = fp; BB.fx('channels.push', {}); } else if (!fp && s.directPrint) s.directPrint = ''; }
-    if (s && s.live) { const hp = hubPrint(); if (hp && hp !== s.hubPrint) { s.hubPrint = hp; BB.fx('channex.push', {}); } else if (!hp && s.hubPrint) s.hubPrint = ''; }
+    if (s && s.live) { const hp = hubPrint(); if (hp && hp !== s.hubPrint) { s.hubPrint = hp; BB.fx('hub.push', {}); } else if (!hp && s.hubPrint) s.hubPrint = ''; }
     return commit0.call(BB.store, meta);
   };
 })();

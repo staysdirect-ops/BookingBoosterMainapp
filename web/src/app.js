@@ -449,16 +449,16 @@
 
   // All channels on the dashboard: what it is doing for the host when on, and what they would get when off.
   function allChannels() {
-    const s = S(), i = BB.q.integration('channex'); if (!i) return '';
-    const g = (BB.BOOT && BB.BOOT.channex) || null, waiting = s.live && (!g || !g.live);
+    const s = S(), i = BB.q.integration('hub'); if (!i) return '';
+    const g = (BB.BOOT && BB.BOOT.hub) || null, waiting = s.live && (!g || !g.live);
     if (!i.connected) {
       if (s.account.hideHub) return '';
       return '<div class="a-s12"><section class="a-card a-hub"><div class="a-hub-t"><span class="eyebrow">Add-on</span><h3>List your homes on every booking site, from here</h3><p>Airbnb, Booking.com, Vrbo, Expedia and 70+ more, all fed from your one calendar. A booking anywhere closes the dates everywhere, a price change here updates every site, and every booking lands in this console. From £' + BB.ALL_CHANNELS.addon + ' a month, with no channel manager to pay for.</p></div>' +
         '<ul class="a-hub-p"><li>' + ic('check') + 'No double bookings</li><li>' + ic('check') + 'One price list everywhere</li><li>' + ic('check') + 'Every booking in one place</li></ul>' +
         '<div class="a-hub-a"><button class="btn primary sm" data-a="nav" data-view="connections">See All channels' + ic('arrow') + '</button><button class="btn ghost sm" data-hidehub>Not now</button></div></section></div>';
     }
-    const fut = s.blocks.filter(k => k.sync === 'channex' && k.to > s.today);
-    const sites = [...new Set(s.blocks.filter(k => k.sync === 'channex' && k.ota).map(k => k.ota))];
+    const fut = s.blocks.filter(k => k.sync === 'hub' && k.to > s.today);
+    const sites = [...new Set(s.blocks.filter(k => k.sync === 'hub' && k.ota).map(k => k.ota))];
     const live = Object.values(i.map || {}).filter(m => m && m.rate).length;
     const sub = waiting ? 'Switching on soon' + (g && g.need ? ' · ' + Math.min(g.paying, g.need) + ' of ' + g.need + ' hosts' : '') : i.error ? 'Needs a look' : plural(live, 'home') + ' listed';
     return '<div class="a-s12"><section class="a-card a-hub on"><div class="a-hub-t"><span class="eyebrow">All channels · ' + (s.account.tier === 'all' ? 'dates and prices' : 'dates') + '</span><h3>' + (waiting ? 'You are on the list for All channels' : 'Your homes are in step on every site') + '</h3><p>' +
