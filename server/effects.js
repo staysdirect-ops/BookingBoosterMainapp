@@ -8,6 +8,16 @@ module.exports = function (ctx) {
   const { cfg, ws, msg, stripe, ai, auth, urls, db, log, secrets } = ctx;
   const host = new URL(cfg.baseUrl).host;
   const channels = ctx.channels || require('./channels')({ ws, secrets, log, host });
+  const channex = ctx.channex || require('./channex')({ cfg, ws, db, log });
+  // The add-on on a running subscription follows what the host picks in their console (prorated by Stripe).
+  async function billingAddon(w) {
+    if (!stripe.enabled || w.kind !== 'live') return;
+    const r = await ws.row(w.id); if (!r || !r.stripe_customer || r.billing_status !== 'active') return; // checkout adds it for new sign-ups
+    const a = w.state.account; const want = stripe.addonPrice({ addon: !!a.addon, tier: a.tier, annual: !!a.annual });
+    if (a.addon && !want) { log('billing addon', w.id, 'no Stripe price for', a.tier || 'addon'); return; }
+    const res = await stripe.syncAddon(r.stripe_customer, want);
+    if (res.changed) log('billing addon', w.id, want || 'removed');
+  }
   const money = n => '£' + Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: n % 1 ? 2 : 0 });
   const fmt = (iso, o) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', Object.assign({ timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }, o || {}));
   const first = n => String(n || '').split(' ')[0];
@@ -98,9 +108,8 @@ module.exports = function (ctx) {
   }
 
   // Calendar links (iCal): read each home's links and block the dates taken there. Dates only.
-  const ICAL_IDS = ical.CHANNELS;
   async function calendars(w, id, only) {
-    const ids = id ? [id] : ICAL_IDS.concat(Object.keys(channels.ADAPTERS));
+    const ids = id ? [id] : ical.icalIds(w.state).concat(Object.keys(channels.ADAPTERS));
     for (const iid of ids) {
       if (channels.ADAPTERS[iid]) { await channels.sync(w, { id: iid, only }); continue; }
       const i = w.state.integrations.find(x => x.id === iid); if (!i || !i.connected || !i.links) continue;
@@ -233,6 +242,8 @@ module.exports = function (ctx) {
         else if (f.type === 'ical.sync') await calendars(w, d.id);
         else if (f.type === 'channels.sync') await channels.sync(w, { id: d.id });
         else if (f.type === 'channels.push') await channels.sync(w, { pull: false });
+        else if (f.type === 'hub.run' || f.type === 'hub.push') await channex.run(w);
+        else if (f.type === 'billing.addon') await billingAddon(w);
         else if (f.type === 'ai.check') await aiCheck(w);
         else if (f.type === 'payment.refund') await refund(w, d);
         else if (f.type === 'payment.link') await paymentLink(w, d);
@@ -240,9 +251,9 @@ module.exports = function (ctx) {
         else if (f.type === 'payment.invoice') await invoiceEmail(w, d);
         else if (f.type === 'lock.code') await lockCode(w, d);
         else if (f.type === 'email.host') await hostAlert(w, d);
-        else if (f.type === 'property.added') { await hostEmail(w, d); await ws.withWs(w.id, () => {}); }
+        else if (f.type === 'property.added') { await hostEmail(w, d); await ws.withWs(w.id, () => {}); await channex.run(w); }
       } catch (e) { log('effect ' + f.type + ' failed:', e.message); }
     }
   }
-  return Object.assign(run, { calendars, freshen, channels, aiCheck, siteLive });
+  return Object.assign(run, { calendars, freshen, channels, channex, aiCheck, siteLive, billingAddon });
 };

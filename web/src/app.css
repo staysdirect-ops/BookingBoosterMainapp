@@ -605,3 +605,15 @@
 .x-app .a-bankf { display: grid; gap: 10px; margin-top: 10px; }
 .x-app .a-bankf .a-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 520px) { .x-app .a-bankf .a-f2 { grid-template-columns: 1fr; } }
+
+/* All channels on the dashboard */
+.x-app .a-hub { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 24px; align-items: center; background: linear-gradient(120deg, var(--primary-soft), var(--surface) 65%); border-color: color-mix(in oklab, var(--primary) 30%, var(--line)); }
+.x-app .a-hub.on { background: linear-gradient(120deg, var(--good-soft), var(--surface) 65%); border-color: color-mix(in oklab, var(--good) 35%, var(--line)); }
+.x-app .a-hub-t h3 { margin: 4px 0 6px; font-size: 1.15rem; }
+.x-app .a-hub-t p { margin: 0; color: var(--muted); max-width: 70ch; }
+.x-app .a-hub-p { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.x-app .a-hub-p li { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.x-app .a-hub-p svg { width: 18px; height: 18px; color: var(--good); }
+.x-app .a-hub .a-minis { grid-column: 1 / -1; }
+.x-app .a-hub-a { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 720px) { .x-app .a-hub { grid-template-columns: minmax(0, 1fr); } }
