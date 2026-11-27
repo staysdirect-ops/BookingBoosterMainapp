@@ -14,7 +14,7 @@
   const first = name => String(name || '').split(' ')[0];
   const stamp = () => S().today + 'T' + S().clock;
   const sum = (a, f) => a.reduce((s, x) => s + f(x), 0);
-  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['google', 'Google AI Overview']];
+  const ENGINES = [['chatgpt', 'ChatGPT'], ['gemini', 'Gemini'], ['perplexity', 'Perplexity'], ['claude', 'Claude'], ['google', 'Google AI Overview']];
   const sw = (on, attrs, label) => '<button type="button" class="switch" role="switch" aria-checked="' + !!on + '" aria-label="' + esc(label) + '" ' + attrs + '></button>';
   const vh = (title, sub, acts, back) => (back ? '<button type="button" class="ag-back" data-ag-nav="' + back[0] + '">' + I('back') + esc(back[1]) + '</button>' : '') +
     '<div class="a-vh"><div><h2 class="disp">' + title + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acts ? '<div class="a-acts">' + acts + '</div>' : '') + '</div>';
@@ -851,7 +851,7 @@
       const open = s.ai.tasks.filter(t => !t.done);
       const fixFor = s.ai.tasks.find(t => !t.done && t.fixes.includes(sel));
       const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
-      const realK = S().live ? ['chatgpt', 'gemini', 'perplexity', 'google'].find(k => q.answers && q.answers[k]) : null;
+      const realK = S().live ? ['chatgpt', 'gemini', 'perplexity', 'claude', 'google'].find(k => q.answers && q.answers[k]) : null;
       const ans = S().live ? (realK ? '<p>' + esc(q.answers[realK]).replace(/\n+/g, '</p><p>') + '</p>' + (q.engines[realK] ? '' : '<div class="ag-miss">' + I('x') + '<span>' + esc(p.name) + ' is not mentioned yet.' + (fixFor ? ' Fix: ' + esc(fixFor.text.charAt(0).toLowerCase() + fixFor.text.slice(1)) + '.' : '') + '</span></div>')
           : '<p class="muted">' + (((BB.BOOT && BB.BOOT.aiEngines) || []).length ? 'Not checked yet. Run a check to see what AI assistants answer.' : 'AI checks are not switched on for this server yet. Your score stays at 0 until they are.') + '</p>')
         : q.engines.chatgpt
@@ -918,7 +918,7 @@
       const diagram = '<section class="a-card ag-card ag-diag"><div class="a-card-h"><h3>How your direct bookings flow</h3><span class="ag-meta">' + (issues.length ? issues.length + (issues.length === 1 ? ' link paused' : ' links paused') : S().live && !c('stripe') ? 'Running, with booking requests' : 'Everything is running') + '</span></div>' +
         '<div class="ag-dflow"><div class="ag-dcol"><span class="eyebrow">Guests find you</span>' +
           node('Google search', c('gsc') ? 'Pages indexed, rankings tracked' : 'Rankings not tracked', c('google') || c('gsc'), 'search') +
-          '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
+          '<div class="ag-dn ag-dn-ai"><span class="ag-dn-i">' + I('search') + '</span><span><b>AI answers</b><small>' + BB.aiLogos(['chatgpt', 'gemini', 'perplexity', 'claude', 'google'], 'ag-dn-logos') + '</small></span><i class="ag-dn-s" aria-label="Working"></i></div>' +
           node('Your guest list', c('email') ? ((n => n + (n === 1 ? ' subscribed guest' : ' subscribed guests'))(s.guests.filter(g => g.subscribed).length)) : 'Emails paused', c('email'), 'mail') +
           (c('hub') ? '<div class="ag-dn opt on"><span class="ag-dn-i">' + I('globe') + '</span><span><b>All channels</b><small>Airbnb, Booking.com, Vrbo and 70+ more, in step with your calendar</small></span><em class="ag-opt">Add-on</em></div>' :
           '<div class="ag-dn opt' + (syncing.length ? ' on' : '') + '"><span class="ag-dn-i">' + I('sync') + '</span><span><b>Calendar sync</b><small>' + (syncing.length ? 'Blocking dates booked on ' + syncing.map(i => i.id === 'cm' ? 'your channel manager' : BB.CHANNEL[i.id]).join(', ') : 'Optional add-on, off. <a href="#all-channels">List on every site</a>') + '</small></span><em class="ag-opt">Optional</em></div>') +

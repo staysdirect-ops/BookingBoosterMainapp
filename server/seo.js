@@ -117,9 +117,12 @@ function llms(s, p, url) {
     '\n\n## Booking\n\n- [Check availability and book direct](' + url + '): live calendar, instant confirmation, card, Apple Pay or Google Pay.\n';
 }
 
+// A crawler that matches a named group ignores the * group, so every group repeats the private paths.
+const PRIVATE = ['Disallow: /app', 'Disallow: /trip/', 'Disallow: /api/'];
+const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'Bingbot', 'DuckAssistBot', 'MistralAI-User', 'Meta-ExternalAgent', 'Amazonbot', 'GoogleOther', 'Gemini-Deep-Research', 'Google-CloudVertexBot', 'YouBot', 'cohere-ai', 'CCBot', 'PhindBot', 'AI2Bot'];
 function robots(sitemapUrl) {
-  return ['User-agent: *', 'Allow: /', 'Disallow: /app', 'Disallow: /trip/', 'Disallow: /api/', '', '# AI search and assistants are welcome to read and cite this site',
-    ...['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'Bingbot', 'DuckAssistBot', 'MistralAI-User', 'Meta-ExternalAgent', 'Amazonbot'].map(b => 'User-agent: ' + b + '\nAllow: /'), '', 'Sitemap: ' + sitemapUrl, ''].join('\n');
+  return ['User-agent: *', 'Allow: /', ...PRIVATE, '', '# AI search and assistants are welcome to read and cite this site',
+    ...AI_BOTS.map(b => ['User-agent: ' + b, 'Allow: /', ...PRIVATE].join('\n')), '', 'Sitemap: ' + sitemapUrl, ''].join('\n');
 }
 function sitemap(urls) {
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map(u => '  <url><loc>' + esc(u.loc) + '</loc>' + (u.lastmod ? '<lastmod>' + u.lastmod + '</lastmod>' : '') + '</url>').join('\n') + '\n</urlset>\n';

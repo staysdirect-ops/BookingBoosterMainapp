@@ -48,7 +48,7 @@
   };
   BB.act.addAiQuestion = function (q, pid) {
     q = String(q || '').trim(); if (!q || !BB.q.property(pid)) return;
-    S().ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true });
+    S().ai.questions.push({ q, propertyId: pid, engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false }, pending: true });
     BB.log('ai', 'AI visibility', 'Tracking a new traveller question: "' + q + '".', pid); BB.store.commit({ type: 'ai' });
   };
   BB.act.remindCheckin = function (id) {
@@ -430,7 +430,7 @@
     const kind = { cabin: 'cabin', lake: 'cottage', city: 'apartment' }[p.theme] || 'holiday let';
     const qs = [kind + ' to stay in ' + area, 'best place to stay in ' + area + ' for a weekend', (p.petsAllowed ? 'dog friendly ' : 'quiet ') + kind + ' ' + area];
     if ((p.amenities || []).some(a => /hot tub/i.test(a))) qs.push(kind + ' with hot tub in ' + area);
-    return qs.map(q => ({ q, propertyId: p.id, engines: { chatgpt: false, gemini: false, perplexity: false, google: false }, pending: true }));
+    return qs.map(q => ({ q, propertyId: p.id, engines: { chatgpt: false, gemini: false, perplexity: false, claude: false, google: false }, pending: true }));
   };
   BB.seedBlank = function (o) {
     const today = o.today, clock = o.clock || '09:00';
