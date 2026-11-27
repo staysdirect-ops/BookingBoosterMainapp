@@ -86,6 +86,7 @@ module.exports = {
   // The bonus is capped at £50: a referred host must never cost more than £50 to win.
   affiliate: { bonus: Math.round(Math.max(0, Math.min(50, +(E.AFFILIATE_BONUS || 50))) * 100), cookieDays: Math.max(1, +(E.AFFILIATE_COOKIE_DAYS || 90)), holdDays: Math.max(0, +(E.AFFILIATE_HOLD_DAYS || 30)), minPayout: Math.round(Math.max(0, +(E.AFFILIATE_MIN_PAYOUT || 50)) * 100) },
   icalEveryMin: +(E.ICAL_SYNC_MINUTES || 10),
+  googleVr: { partner: E.GOOGLE_VR_PARTNER || 'bookingbooster' }, // the partner name Google gives us in Hotel Center
   // All channels (server/channex.js): Bookingbooster's own Channex account. Switches on by itself once CHANNEX_MIN_HOSTS
   // hosts pay for the add-on (enough to cover Channex's monthly fee); CHANNEX_ALWAYS_ON=1 skips that wait.
   channex: { key: (E.CHANNEX_API_KEY || '').trim(), base: E.CHANNEX_BASE || 'https://staging.channex.io', minHosts: Math.max(0, +(E.CHANNEX_MIN_HOSTS || 9)), always: E.CHANNEX_ALWAYS_ON === '1', frameBase: E.CHANNEX_FRAME_BASE || '', hookSecret: E.CHANNEX_WEBHOOK_SECRET || '' },

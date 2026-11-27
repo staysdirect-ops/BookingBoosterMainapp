@@ -53,7 +53,7 @@ module.exports = function ({ cfg, ws, db, log }) {
     gateCache = { at: Date.now(), ready: ready(), paying, need, live: ready() && (C.always || paying >= need) };
     return gateCache;
   }
-  const pub = () => { const g = gateCache || { ready: ready(), paying: 0, need: +C.minHosts || 0, live: false }; return { ready: g.ready, live: g.live, paying: g.paying, need: g.need }; };
+  const pub = () => { const g = gateCache || { ready: ready(), paying: 0, need: +C.minHosts || 0, live: false }; return { ready: g.ready, live: g.live, paying: g.paying, need: g.need, provider: 'Channex.io' }; }; // provider: the name Booking.com and Expedia list us under
 
   /* ---------- property index: Channex property id -> workspace and home ---------- */
   const idx = async pid => { const r = await kvGet.get('channex:prop:' + pid); return r ? JSON.parse(r.v) : null; };
@@ -158,7 +158,7 @@ module.exports = function ({ cfg, ws, db, log }) {
     if (!ready() || !cfg.baseUrl || /localhost|127\.0\.0\.1/.test(cfg.baseUrl)) return;
     const r = await kvGet.get('channex:hook'); if (r && JSON.parse(r.v).base === base()) return;
     try {
-      const j = await api('POST', '/webhooks', { body: { webhook: { callback_url: cfg.baseUrl + '/hooks/channex', event_mask: 'booking_new;booking_modification;booking_cancellation', is_global: true, is_active: true, send_data: false, headers: { 'x-bb-hook': hookSecret() } } } });
+      const j = await api('POST', '/webhooks', { body: { webhook: { callback_url: cfg.baseUrl + '/webhooks/channex', event_mask: 'booking_new;booking_modification;booking_cancellation', is_global: true, is_active: true, send_data: false, headers: { 'x-bb-hook': hookSecret() } } } });
       await kvSet.run('channex:hook', JSON.stringify({ base: base(), id: idOf(j) }));
     } catch (e) { log('channex hook', e.message); if (e.status === 422) await kvSet.run('channex:hook', JSON.stringify({ base: base(), id: null, note: e.message })); }
   }

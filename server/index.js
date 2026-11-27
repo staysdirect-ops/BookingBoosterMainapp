@@ -77,6 +77,7 @@ const adminUsers = require('./admin-users');
 const stripeAuto = require('./stripe-auto').auto({ cfg, stripe, db, log });
 const flows = require('./flows')({ db, cfg, msg, auth, ws, leads, hostMail, stripe, log }); // sales automation flows, /admin/flows
 const effects = require('./effects')({ cfg, ws, msg, stripe, ai, auth, urls, db, log, payUrl, secrets });
+const googleVr = require('./google-vr')({ cfg, ws, urls });
 ws.onEffects((w, fx) => effects(w, fx).catch(e => log('effects', e.message)));
 
 /* ---------------- http helpers ---------------- */
@@ -479,7 +480,7 @@ const GUIDES_A = ['direct-booking-playbook.pdf', 'direct-booking-launch-checklis
 async function route(req, res) {
   await db.ready;
   await stripeAuto.load(); // Stripe prices and webhook secrets kept in the database
-  const u = new URL(req.url, 'http://x'); const p = u.pathname; const m = req.method;
+  const u = new URL(req.url, 'http://x'); const p = u.pathname; const m = req.method; let mm0;
   const host = String(req.headers.host || '').toLowerCase();
   if (m === 'POST' && !p.startsWith('/webhooks/') && !p.startsWith('/u/') && p !== '/api/leads' && !sameOrigin(req)) return json(res, { error: 'Cross-site request blocked' }, 403);
 
@@ -521,8 +522,15 @@ async function route(req, res) {
   if (p === '/app/sw.js') return file(res, path.join(ROOT, 'web'), 'sw.js', 'no-cache', { 'service-worker-allowed': '/app' });
   if (p === '/app/offline') return send(res, 200, authPage('Offline', '<h1>You are offline.</h1><p>Bookingbooster needs a connection to load your bookings. It will open again as soon as you have signal.</p><p><a href="/app/phone">Try again</a></p>'), 'text/html; charset=utf-8');
   if (p === '/webhooks/stripe' && m === 'POST') return await stripeWebhook(req, res);
+  // Google Vacation Rentals: the daily listing feed (a ZIP), the Point of Sale file, and the landing link guests arrive on.
+  if ((mm0 = p.match(/^\/feeds\/google-vr\/([a-f0-9]+)\/(listings\.zip|pos\.xml)$/))) {
+    const a = Buffer.from(mm0[1]), b = Buffer.from(googleVr.key()); if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return notFound(res);
+    if (mm0[2] === 'pos.xml') return send(res, 200, googleVr.pos(), 'application/xml; charset=utf-8', { 'cache-control': 'no-store' });
+    return send(res, 200, await googleVr.feedZip(), 'application/zip', { 'cache-control': 'no-store', 'content-disposition': 'attachment; filename="listings.zip"' });
+  }
+  if ((mm0 = p.match(/^\/go\/vr\/([^/]+)$/))) { const to = await googleVr.landing(decodeURIComponent(mm0[1]), u.searchParams); return to ? redirect(res, to) : notFound(res); }
   // Channex tells us a booking came in on one of the sites; we read the details back from its feed.
-  if (p === '/hooks/channex' && m === 'POST') {
+  if (p === '/webhooks/channex' && m === 'POST') {
     await jsonBody(req, 2e5).catch(() => null);
     if (!effects.channex.hookOk(req.headers['x-bb-hook'])) return notFound(res);
     effects.channex.pull().catch(e => log('channex hook', e.message));

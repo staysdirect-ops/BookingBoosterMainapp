@@ -102,7 +102,7 @@ test('All channels: switching on is checked on the server, and the Channex webho
   assert.equal(st.integrations.find(i => i.id === 'hub').connected, true);
   assert.equal(st.account.tier, 'all'); assert.equal(st.account.addon, true);
   assert.equal((await t.call('/app/channels/sites', { body: { pid: p.id } })).status, 409, 'not live on a server without a Channex key');
-  const hook = await fetch(t.base + '/hooks/channex', { method: 'POST', headers: { 'content-type': 'application/json', 'x-bb-hook': 'wrong' }, body: '{"event":"booking_new"}' });
+  const hook = await fetch(t.base + '/webhooks/channex', { method: 'POST', headers: { 'content-type': 'application/json', 'x-bb-hook': 'wrong' }, body: '{"event":"booking_new"}' });
   assert.equal(hook.status, 404);
   await t.act('leaveAllChannels');
   assert.ok(!(await state()).account.tier);

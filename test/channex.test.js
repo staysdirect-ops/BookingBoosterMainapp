@@ -64,7 +64,7 @@ test('All channels waits until enough hosts pay for it, then lists every home an
     await cx.run(w);
     assert.equal(f.calls.length, 0, 'nothing is sent to Channex while it would run at a loss');
     assert.equal(i.waiting, true);
-    assert.deepEqual(cx.pub(), { ready: true, live: false, paying: 1, need: 2 });
+    assert.deepEqual(cx.pub(), { ready: true, live: false, paying: 1, need: 2, provider: 'Channex.io' });
 
     paying.push({ addon: true }, { addon: false }); await cx.gate(true);
     await cx.run(w);
